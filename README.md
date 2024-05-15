@@ -3,6 +3,9 @@ Garmin Connect IQ Remote for Insta360 Cameras
 
 This is a very early, in progress, under development widget to Remote Control via Bluetooth the Insta360 One R Modular camera. Don't expect this widget to work ;) 
 
+The 'BLE Barrel' directory contrains a Garmin CIQ Barrel (library) with the main code for interacting with the camera.
+
+the 'OneR Remote' & 'OneR remote DF' contains the actual code (mainly UI) for the widget and datafield 
 
 The widget will scan for and automatically connect to your camera: Press the menu button to select the shooting mode (or to switch GPS telemetry on & off) and press the start button to start and stop the shooting. While shooting, when pressing stop, a menu will be displayed where you can select Stop (for actually stopping the recording), Highlight (will leave a mark in the video file, that you will find in the App) and Track that (will start a Deep Track in the app. you need to hold the selfie stick straight at the person you want to track).
 
