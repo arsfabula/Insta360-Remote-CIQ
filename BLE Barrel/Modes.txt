@@ -1,0 +1,109 @@
+Mode    X3   X2  X  R   RS   R1 
+5k30    D    D
+5k25    D    D
+5k24    D    D
+4K60    T    N
+4k50    D    D
+4k30    D    D
+4k25    T    N
+4k24    T    N
+3K100   T    T
+HDR     D    D 
+TLapse  D    D
+Bullet  D    D
+TShift
+Loop
+Pré
+
+D = Done
+T = To Do
+N = Not Available
+A = Not on Apple app 
+
+X3:
+Modes Photo: Standard, HDR, Rafale, Intervalle, Starlapse
+Modes vidéo: 
+    Standard, 
+    HDR actif, 5k30/25/24 
+    Timelapse, 8k30/25/24, 5k30/25/24
+    TimeShift, 5k30/25/24
+    Bullet Time, 4k120, 3k180
+    Enregistrement en boucle, as standard 
+    Pré-enregistrement
+Mode 360 ：
+    5.7K: 5760x2880@30/25/24fps
+    4K: 3840x1920@60/50/30/25/24fps
+    3K: 3008x1504@100fps
+Mode Mono-objectif :
+    4K : 3840x2160 à 30/25/24ips
+    3.6K : 3584x2016 à 60/50/30/25/24ips
+    2.7K: 2720x1530@60/50/30/25/24
+    1080P : 1920x1088 à 60/50/30/25/24ips
+
+X2:
+Modes de photo: Standard, HDR, Burst, Intervalle, Mode de Nuit, PureShot, InstaPano
+Modes de vidéo: Standard, HDR, Timelapse, TimeShift, Bullet Time, Steady Cam
+Mode 360:
+    5,7K@30fps, 25fps, 24fps
+    4K@50fps, 30fps
+    3K@100fps
+Mode Steady Cam Mode:
+    2560x1440@50fps, 30fps
+    1920x1080@50fps, 30fps
+
+X:
+Modes photo : standard 360, photos synchronisées,  HDR 360, photos d'intervalle 360, photos RAW 360
+Mode vidéo : standard,  time-lapse, bullet time, vidéo HDR, vidéo log 360
+Mode 360: 
+    5760*2880@30fps, 5760*2880@24fps, 5760*2880@25fps, 
+    3840*1920@50fps, 3840*1920@30fps, 
+    3008*1504@100fps
+
+RS:
+Mode photo: Standard, HDR, Intervalle, Prise de vue nocturne, Starlapse, Rafale, PureShot
+Mode vidéo: Vidéo standard, HDR, Timelapse, TimeShift, Bullet Time, Enregistrement en boucle
+Mode 360:
+    5760x2880@30/25/24fps,
+    3840x1920@50/30fps,
+    3008x1504@100fps
+
+RS1:
+Mode photo: Standard, HDR, Intervalle, Starlapse, Rafale, PureShot
+Mode vidéo: Vidéo standard, Timelapse, TimeShift, Enregistrement en boucle
+Mode 360:
+    5888x2944 à 30ips
+    6144x3072 à 25/24ips
+    3840x1920 à 30/25/24ips
+    3040x1520à 50ips
+
+R: 
+Mode vidéo: vidéo standard, vidéo HDR, mode Timelapse, vidéo Bullet Time
+Mode 360:
+    5760x2880@30fps, 
+    5760x2880@24fps, 
+    5760x2880@25fps, 
+    3840x1920@50fps, 
+    3840x1920@30fps, 
+    3008x1504@100fps
+
+Apple remote
+Video Standard 5k30/25/24, 4k30/60
+HDR 5k30/25/24
+TLapse 8k/30/25/24, 5k30/25/24
+TimeShift 5k30/25/24
+Bullet  4k120, 3k180
+Loop    5k30/25/24, 4k30/60
+
+Photo 72mp / 18mp 0-15s
+HDR 18mp 0-15s
+Burst 18mp 0-15s
+Interval 72/18mp
+Starlapse no option
+
+Single lens mode
+Standard video  4k/30/25/24 1k30/25/24 16:9 9:16
+loop            4k/30/25/24 1k30/25/24 16:9 9:16
+Me mode         1k30/60
+
+photo 36/9mp  16:9 9:16 1:1
+

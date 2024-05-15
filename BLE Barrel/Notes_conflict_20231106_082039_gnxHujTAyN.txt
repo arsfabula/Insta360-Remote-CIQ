@@ -1,0 +1,561 @@
+To do:
+- No exit. 
+- message on switch off / disconnected ?
+- Read Camera Status (batttery, storage)
+- On Photo Interval, count number of photos instead of elapsed time.
+- Add initial reset (code 0x07) - Don't erase watch defaults
+
+Done:
+- Add GPS info to photos
+- Bug handle starting / stoping
+- Add GPS Status
+- Glance View
+- Check heading value
+
+Additional Features:
+- start / stop on HR or Speed
+- Highlight on HR or Speed or jump/bump
+- Rolling recording
+- 
+
+Ce widget est gratuit. Si vous le trouvez  utile et voulez m'offrir un verre, vous pouvez via https://www.paypal.me/arsfabula 
+This widget is free. If you find it useful and want to offer me a cold drink, you can via https://www.paypal.me/arsfabula 
+
+Wireshark fitler: btatt.value contains 0004.0000
+Search for 0004.0000.0900 (set video mode)
+Search for 00122a00 (BT write request)
+
+Format:
+00 01 02 03 04 05 06 07 08 09 10 11 12 13 14
+LL LL 00 00 04 00 00 XX 00 02 SS SS 00 80 00 ...
+
+LLLL = Length of message, can be split into several packets. Max length for 1 packet is 20 bytes. Little endian. 
+XX = Command 
+SSSS = Sequence Number little endian
+Byte 4 is always 04 except for keep alive messages (05)
+
+XX Byte 7 command
+  00 Keep Alive (7 bytes, empty, byte 4 = 05 instead of 04)
+  03 photo
+  04 start last byte = 01 (Normal), 02 (Bullet), 03 (HDR), 06 (Loop)
+  05 stop
+  07 reset / set defauls 10682
+  08 status request ?
+  09 Settings, byte 24,25,26
+      0a 18 02 Time Lapse
+	    0a 18 07 5k30fps
+	    0b 18 07 4k30fps ?
+	    0c 18 07 4k50fps
+	    0d 18 04 Bullet 
+      0d 18 07 3k100fps
+	    13 18 07 5k25fps
+	    14 18 07 5k24fps 
+	    13 18 09 hdr 25fps
+  0a ?
+
+	0f Apply Settings
+  16 Interval photo & video ? byte 18 = 0x01 (video) & 0x02 (photo)
+  17 Stop TimeLapse & Interval byte 17 = 0x08 instead if 0x10 in standard video
+  27 
+  35 GPS Telemetry
+  3c time highlight & "mark that" highlight (change Lens ?)
+  41 X3 ? 
+  42 X3 Status request ?
+  
+XX From Slave:
+  00 Keep Alive (7 bytes, empty, byte 4 = 05 instead of 04)
+  03 ? 
+  06 saving ? 
+  0a photo taken (1 per file in case of burst / braketing / interval etc)
+  10 recording started or ended see Byte 18. >0 = start. 0=end.
+  12 interval photo taken, byte 18 = Seq No
+  17 ?
+  C8 OK ? File name ?
+  f4 error (camera is busy)
+
+Video GPS Telemetry  All Little endian
+00-13 47 00 00 00 04 00 00 35 00 02 ff 00 00 80 
+14-17 00 00 0a 35 ?
+18-21 UX Epoch - 32bit integer
+22-25 00 00 00 00 
+26-28 00 e6 03 41 ?
+29-36 Latitude - 64bit float
+37 	  N / S - ASCII
+38-45 Longitude  - 64bit float
+46 	  E / W  - ASCII
+47-54 Speed m/s  - 64bit float
+55-62 Heading �  - 64bit float
+63-70 Altitude M   - 64bit float
+
+Photo GPS (std, hdr, burst, night)
+00        05        10        15        20        25        30        35        40        45        50        55        60
+3f000000040000030002080000800000122d5a18cb01a35db2364740966d647316cf1840002082398a2981406a0230019a0100aa0100ba0100d20100e20200
+460000000400000300020001008000000801122d5a18a3ea4e55b1364740b71d45e21ccf18400080a5b3c63681406a0230019a0100aa0100ba0100d20100e202001a0327004e
+410000000400000300020a01008000000803122d5a1803cc33b9b136474070bee1000bcf184000c053816c3381406a0230019a0100aa0100ba0100d20100e20200
+410000000400000300022b01008000000804122d5a18affe1a04b23647406b7e94d523cf184000c03a33c43281406a0230019a0100aa0100ba0100d20100e20200
+
+00-15 Header
+16-19 ?
+20-27 Latitude
+28-35 Longitude
+36-43 Altitude
+44-62 ?
+
+0000BE81-0000-1000-8000-00805f9b34fb
+Garmin F5 10:4e:89:5e:bb:d6
+Apple Watch BT Mac: f8:6f:c1:b6:b7:a4
+
+Installation
+1) Wireshark
+2) Python
+3) Silicon Labs drivers
+4) Install & configure NRF tool
+
+https://learn.adafruit.com/introducing-adafruit-ble-bluetooth-low-energy-friend/introduction
+https://learn.adafruit.com/introducing-adafruit-ble-bluetooth-low-energy-friend/ble-sniffer
+https://www.silabs.com/developers/usb-to-uart-bridge-vcp-drivers
+https://www.nordicsemi.com/Products/Development-tools/nrf-sniffer-for-bluetooth-le/download
+https://infocenter.nordicsemi.com/index.jsp?topic=%2Fug_sniffer_ble%2FUG%2Fsniffer_ble%2Finstalling_sniffer_plugin.html
+
+python  "C:\Program Files\Wireshark\extcap\nrf_sniffer_ble.py" --capture --extcap-interface COM3 --fifo \\.\pipe\wireshark_extcap_COM3_20200828164544 --extcap-control-out \\.\pipe\wireshark_control_ext_to_ws_COM3_20200828164544 --extcap-control-in \\.\pipe\wireshark_control_ws_to_ext_COM3_20200828164544
+python  "C:\Program Files\Wireshark\extcap\nrf_sniffer_ble.py" --capture --extcap-interface COM3 --fifo \\.\pipe\wireshark_extcap_COM3_20200828164544 --extcap-control-out \\.\pipe\wireshark_control_ext_to_ws_COM3_20200828164544 --extcap-control-in \\.\pipe\wireshark_control_ws_to_ext_COM3_20200828164544
+
+dcim shutter live mjpeg pref
+cherokee
+
+/usr/lib/cgi-bin   cd 
+
+4k module
+14-00-00-00-04-00-00-10-20-02-ff-8a-43-f4-35-ee-08-01-10-00 # start record
+14-00-00-00-04-00-00-10-20-02-ff-8a-43-f4-00-ff-08-00-10-00 # stop record
+14-00-00-00-04-00-00-10-20-02-ff-8a-43-f4-36-69-08-01-10-00 # ? start record ?
+14-00-00-00-04-00-00-10-20-02-ff-8a-43-f4-00-76-08-00-10-00 # ? stop record ?
+14-00-00-00-04-00-00-10-20-02-ff-8a-43-f4-00-00-08-05-10-00 # start HDR photo
+12-00-00-00-04-00-00-0a-20-02-ff-8a-43-f4-00-00-08-01       # HDR photo 1
+12 00 00 00 04 00 00 04 00 02 16 00 00 80 00 00 08 01       # From Wireshark iWatch Sniff 
+12-00-00-00-04-00-00-0a-20-02-ff-8a-43-f4-00-00-08-01       # HDR photo 2
+12-00-00-00-04-00-00-0a-20-02-ff-8a-43-f4-00-d2-08-01       # HDR photo 3
+14-00-00-00-04-00-00-10-20-02-ff-8a-43-f4-35-18-08-00-10-00 # stop HDR photo
+
+360 module
+14-00-00-00-04-00-00-10-20-02-ff-8a-43-f4-30-33-08-0e-10-00 # start Night shot
+12-00-00-00-04-00-00-0a-20-02-ff-8a-43-f4-00-00-08-01       # Night shot 1-9
+14-00-00-00-04-00-00-10-20-02-ff-8a-43-f4-32-30-08-00-10-00 # End Night shot
+14-00-00-00-04-00-00-10-20-02-ff-8a-43-f4-00-00-08-09-10-00 # start record HDR
+14-00-00-00-04-00-00-10-20-02-ff-8a-43-f4-00-ff-08-09-10-00 # start record HDR
+14-00-00-00-04-00-00-10-20-02-ff-8a-43-f4-00-00-08-00-10-00 # stop record HDR
+14-00-00-00-04-00-00-10-20-02-ff-8a-43-f4-ef-ca-08-01-10-00 # start record
+14-00-00-00-04-00-00-10-20-02-ff-8a-43-f4-e5-dc-08-00-10-00 # stop record
+14-00-00-00-04-00-00-10-20-02-ff-8a-43-f4-00-51-08-04-10-00 # Normal shot
+12-00-00-00-04-00-00-0a-20-02-ff-8a-43-f4-00-51-08-01       # shot 1
+14-00-00-00-04-00-00-10-20-02-ff-8a-43-f4-30-86-08-00-10-00 # End  shot
+
+Wireshark
+13 00 00 00 04 00 00 08 00 02 00 00 00 80 00 00 0a 01 30    # request for Name 
+24 00 00 00 04 00 00 c8 00 02 00 00 00 80 00 ff 08 30 12 10 # answer
+02 40 20 17 00 13 00 04 00 1b 2c 00 82 03 0d 49 6e 73 74 61 33 36 30 20 4f 6e 65 52 # answer "Insta 360"
+14 00 00 00 04 00 00 08 00 02 01 00 00 80 00 00 0a 02 0f 1e # request for Serial No, Fw version
+36 00 00 00 04 00 00 27 00 02 02 00 00 80 00 00 0a 24 66 66 # request for ?
+66 66 66 66 66 66 2d 61 34 38 30 2d 61 35 30 33 2d 66 66 66 # request for ? 
+66 2d 66 66 66 66 62 30 37 61 63 62 32 38					# request for ?
+12 00 00 00 04 00 00 c8 00 02 02 00 00 80 36 2e 08 00		# answer
+1f 00 00 00 04 00 00 08 00 02 03 00 00 80 00 00 0a 0d 04 05 # request for ?
+0b 11 13 19 1f 26 27 2f 30 31 32							# request for ?
+25 00 00 00 04 00 00 08 00 02 05 00 00 80 00 00 0a 13 06 07	# request for ?
+18 00 00 00 04 00 00 08 00 02 07 00 00 80 00 00 0a 06 01 24
+
+Apple Watch
+3D-00-00-00-04-00-00-C8-00-02-37-00-00-80-30-38-08-0B-08-14 
+08-03-08-42-08-41-12-21-18-50-5A-04-08-00-10-2F-A2-01-10-08
+00-10-80-80-D0-9B-92-07-18-80-80-80-D0-A0-07-88-04-00-90-04
+01
+16-00-00-00-04-00-00-C8-00-02-38-00-00-80-31-37-0A-04-08-00
+10-00
+3D-00-00-00-04-00-00-C8-00-02-39-00-00-80-30-38-08-0B-08-14
+14-00-00-00-04-00-00-10-20-02-FF-8A-43-F4-00-00-08-01-10-00 # Start recording (status)
+14 00 00 00 04 00 00 10 20 02 ff 8a 43 f4 00 00 08 01 10 00
+10-00-00-00-04-00-00-C8-00-02-3B-00-00-80-00-FF
+3D-00-00-00-04-00-00-C8-00-02-3C-00-00-80-BF-00-08-0B-08-14
+08-03-08-42-08-41-12-21-18-5A-5A-04-08-00-10-2F-A2-01-10-08
+00-10-80-80-D0-E9-91-07-18-80-80-80-D0-A0-07-88-04-00-90-04
+01
+21-00-00-00-04-00-00-F4-01-02-3D-00-00-80-00-00-12-0F-63-61
+6D-65-72-61-20-69-73-20-62-75-73-79-2E, "mera is busy."
+14-00-00-00-04-00-00-10-20-02-FF-8A-43-F4-00-00-08-00-10-00 # Stop Recording (status)
+
+
+dtoverlay=dwc,dr_mode=host
+
+Bluefruit sniffer
+Switch on ? 
+   121900b43422a762b16cfcb2a620d65de4aab72b2e086f5d0d0200
+   121900b43422a762b16cfcb2a624d65de4aab72b2e086f5d0d0200
+   121d00b42c22a762b16cfcb2a620d65de4aab72b2e086f5d0d0200
+   121900b43422a762b16cfcb2a620d65de4aab72a2e086fdd0d0200
+   
+Master:
+160000000400000800020100008000000a041e1d
+
+��zIAEAH09BDV6W5S�x2_1477.03_1520.93_1516.63_-0.239777_0.0786981_-179.762
+
+0000   05 06 21 01 51 b9 06 0a 03 24 39 b6 04 29 e9 00
+0010   00 23 94 34 8b 0e 0e 0a 00 04 00 12 2a 00 07 00
+0020   00 00 05 00 00 35 66 8b
+0000   05 06 21 01 31 b9 06 0a 03 0b 38 a5 04 fa 73 00
+0010   00 23 94 34 8b 02 0e 0a 00 04 00 12 2a 00 07 00
+0020   00 00 05 00 00 ed 3f e1
+
+
+Eureka ?
+12 00 00 00 04 00 00 04 00 02 16 00 00 80 00 00 08 01   # Start Standard recording
+12 00 00 00 04 00 00 05 00 02 33 00 00 80 00 00 10 01 	# Stop record + file name 
+
+12 00 00 00 04 00 00 0a 20 02 ff 8a 43 f4 00 00 08 01   # (known msg code) ?
+12 00 00 00 04 00 00 0a 20 02 ff 8a 43 f4 bf 7c 08 01   # (known msg code) ?
+12 00 00 00 04 00 00 0a 20 02 ff 8a 43 f4 3f 10 08 01   # 
+12 00 00 00 04 00 00 c8 00 02 0d 00 00 80 37 2e 08 1f	# (known msg code) ?
+10 00 00 00 04 00 00 0f 00 02 03 00 00 80 00 00         # nada
+12 12 08 01 28 80 f7 02 60 ad af be f7 05 68 a0 38 d0 02 01 # nada
+16 00 00 00 04 00 00 08 00 02 01 00 00 80 00 00 0a 04 1e 1d # status ? (lots of data)
+
+New ?
+14 00 00 00 04 00 00 10 20 02 ff 8a 43 f4 3f a3 08 00 10 00 # standard photo ?
+12 00 00 00 04 00 00 04 00 02 14 00 00 80 00 00 08 01 # Start 5.7k25fps
+12 00 00 00 04 00 00 04 00 02 3a 00 00 80 00 00 08 01 # Start 5.7k24fps 
+12 00 00 00 04 00 00 04 00 02 54 00 00 80 00 00 08 01 # start 4k30fps
+12 00 00 00 04 00 00 04 00 02 63 00 00 80 00 00 08 01 # start 4k50fps
+12 00 00 00 04 00 00 04 00 02 74 00 00 80 00 00 08 01 # start 3k100fps
+12 00 00 00 04 00 00 04 00 02 8d 00 00 80 00 00 08 03 # start hdr 5.7k25fps
+12 00 00 00 04 00 00 16 00 02 b2 00 00 80 00 00 08 01 # start interval 
+12 00 00 00 04 00 00 04 00 02 c8 00 00 80 00 00 08 02 # start bullet 3k100fps
+12 00 00 00 04 00 00 04 00 02 45 01 00 80 00 00 08 01 # start 
+
+268 bullet 3k100fps
+
+photo
+269 6k
+270 6k timer 5s ?
+271 6k hdr 
+274 6k burst 9 pic
+283 6k interval
+286 6k night shot
+video
+295 5.7k30fps with stats
+
+ascii -> hex
+insv = 696e7376
+insp = 696e7370
+
+
+ 6300 Start channel capture
+ 6850 Connection request
+10590 2nd connection request, start of Master-Slave sniffer
+10682 reset defaults
+
+standard recording 25fps
+11773 1a 00 00 00 04 00 00 09 00 02 0c 00 00 80 00 00 0a 01 1f 12-03 f8 01 0a 18 07
+12181 1a 00 00 00 04 00 00 09 00 02 11 00 00 80 00 00 0a 01 1f 12-03 f8 01 13 18 07
+12189 10 00 00 00 04 00 00 0f 00 02 12 00 00 80 00 00
+12279 18 00 00 00 04 00 00 08 00 02 13 00 00 80 00 00 0a 06 0b 14-03 42 1b 41 Status req ?
+12319 12 00 00 00 04 00 00 04 00 02 14 00 00 80 00 00 08 01 start
+12439 18 00 00 00 04 00 00 08 00 02 15 00 00 80 00 00 0a 06 0b 14 Status req ?                     @ N                @ E 
+12518 47 00 00 00 04 00 00 35 00 02 16 00 00 80 00 00 0a 35 d0 fb-545f00000000300241f63a0ce7b13647404ed116-0d8d13cf1840457258668a6bbfe73fc179cc7445-556b4000e0e92266378140 
+12554 47 00 00 00 04 00 00 35 00 02 17 00 00 80 00 00 0a 35 d0 fb-545f00000000e70341060a2e42b23647404e47e0-594216cf18404590117f9c9bc7e03f0000000000-00f0bf000085e2d8368140 
+12618 47 00 00 00 04 00 00 35 00 02 18 00 00 80 00 00 0a 35 d1 fb-545f00000000e7034136d7f37bb23647404e174a-c5ae14cf184045adc8a7b9c02adc3f0000000000-00f0bf0040396433378140
+12686 47 00 00 00 04 00 00 35 00 02 19 00 00 80 00 00 0a 35 d2 fb-545f00000000e70341fb1f0afeb13647404e9080-e0f111cf184045f33de69c9ef3d93f0000000000-00f0bf0060a69b18398140
+12754 47 00 00 00 04 00 00 35 00 02 1a 00 00 80 00 00 0a 35 d3 fb-545f00000000e7034174ae8bfbb13647404e7872-674f0fcf184045b4ec4ef77fd7d93f0000000000-00f0bf0000a454fc388140
+12822 47 00 00 00 04 00 00 35 00 02 1b 00 00 80 00 00 0a 35 d4 fb-545f00000000e703418f3540ecb13647404e3857-4df40ccf1840453f0b328e7766e23f0000000000-00f0bf000029ed02398140
+12856 12 00 00 00 04 00 00 05 00 02 1c 00 00 80 00 00 10 01 Stop
+13058 18 00 00 00 04 00 00 08 00 02 1d 00 00 80 00 00 0a 06 0b 14...
+13083 file 261 no stats
+13236 18 00 00 00 04 00 00 08 00 02 1e 00 00 80 00 00 0a 06 0b 14
+
+standard recording 24fps
+13438 1a 00 00 00 04 00 00 09 00 02 20 00 00 80 00 00 0a 01 1f 12-03 f8 01 14 18 07
+13574 standard recording (aborted?)
+16124 10 00 00 00 04 00 00 0f 00 02 33 00 00 80 00 00
+16136 18 00 00 00 04 00 00 08 00 02 34 00 00 80 00 00 0a 06 0b 14...
+16149 10 00 00 00 04 00 00 0f 00 02 35 00 00 80 00 00
+16297 18 00 00 00 04 00 00 08 00 02 36 00 00 80 00 00 0a 06 0b 14...
+16455 18 00 00 00 04 00 00 08 00 02 37 00 00 80 00 00 0a 06 0b 14...
+16599 18 00 00 00 04 00 00 08 00 02 38 00 00 80 00 00 0a 06 0b 14...
+16747 18 00 00 00 04 00 00 08 00 02 39 00 00 80 00 00 0a 06 0b 14-03 42 1b 41
+16782 12 00 00 00 04 00 00 04 00 02 3a 00 00 80 00 00 08 01 start
+17460 12 00 00 00 04 00 00 05 00 02 44 00 00 80 00 00 10 01 stop
+17678 file 262 no stats
+
+Standard Recording 4k30fps
+18842 17 00 00 00 04 00 00 09 00 02 4d 00 00 80 00 00 0a 01 1f 12-00 18 07
+18851 10 00 00 00 04 00 00 0f 00 02 4e 00 00 80 00 00
+19187 17 00 00 00 04 00 00 09 00 02 52 00 00 80 00 00 0a 01 1f 12-00 18 07
+19212 10 00 00 00 04 00 00 0f 00 02 53 00 00 80 00 00
+19263 12 00 00 00 04 00 00 04 00 02 54 00 00 80 00 00 08 01
+16427 7c 00 00 00 04 00 00 35 00 02 56 00 00 80 00 00 0a 6a 37 fc
+19716 stop
+19901 file 263
+
+Recording 4k50fps
+20558 1a 00 00 00 04 00 00 09 00 02 61 00 00 80 00 00 0a 01 1f 12-03 f8 01 0c 18 07
+20566 10 00 00 00 04 00 00 0f 00 02 62 00 00 80 00 00
+20666 start 264 
+21455 file 264
+
+Recording 3k100fps
+22094 1a 00 00 00 04 00 00 09 00 02 72 00 00 80 00 00 0a 01 1f 12-03 f8 01 0d 18 07
+22102 10 00 00 00 04 00 00 0f 00 02 73 00 00 80 00 00 
+22188 start 265 
+23037 file 265
+
+Recording hdr 5.7k25fps
+23956 1a 00 00 00 04 00 00 09 00 02 83 00 00 80 00 00 0a 01 1f 12-03 f8 01 0a 18 07 
+24574 1a 00 00 00 04 00 00 09 00 02 83 00 00 80 00 00 0a 01 1f 12-03 f8 01 13 18 09 
+24788 start 266 +0803
+26092 file 266
+
+Recording Timelapse
+28116 1a 00 00 00 04 00 00 09 00 02 ad 00 00 80 00 00 0a 01 1f 12-03 f8 01 0a 18 02
+28510 start 267
+29581 stop
+29744 file 267
+
+Recording bullet 3k100fps
+30260 ... 03 f8 01 0d 18 04
+30445 start 268 +0802
+31519 file 268
+
+Standard Photo
+32577 10 00 00 00 04 00 00 0f 00 02 dd 00 00 80 00 00
+32727 3f 00 00 00 04 00 00 03 00 02 df 00 00 80 00 00 12 2d 5a 18-ec 7f 1b fc b1 36 47 40 94 0d d5 13 0f cf 18 40 00 00 45 36-83 37 81 40 6a 02 30 01 9a 01 00 aa 01 00 ba 01 00 d2 01 00-e2 02 00 
+33180 3f 00 00 00 04 00 00 03 00 02 e3 00 00 80 00 00 12 2d 5a 18-8e 03 2b 9d b1 36 47 40 a8 c0 5d c4 14 cf 18 40 00 00 3e 0a-bc 38 81 40 6a 02 30 01 9a 01 00 aa 01 00 ba 01 00 d2 01 00-e2 02 00 
+33679 file 269
+
+Standard Photo timer 5s
+36115 3f 00 00 00 04 00 00 03 00 02 f8 00 00 80 00 00 12 2d 5a 18-b8 9f 77 1d b2 36 47 40 bb 76 79 f7 15 cf 18 40 00 00 0f 9f-df 37 81 40 6a 02 30 01 9a 01 00 aa 01 00 ba 01 00 d2 01 00-e2 02 00
+36654 file 270
+
+HDR Photo 
+37466 460000000400000300020001008000000801122d-5a18a3ea4e55b1364740b71d45e21ccf18400080-a5b3c63681406a0230019a0100aa0100ba0100d2-0100e202001a0327004e
+37547 slave 14000000040000102002ff8a43f4000008051000
+37586 slave 120000000400000a2002ff8a43f400000801
+37588 salve 120000000400000a2002ff8a43f400000801
+37614 salve 120000000400000a2002ff8a43f400000801
+37959 salve 14000000040000102002ff8a43f4323008001000
+38025 salve file 271, 272, 273
+
+burst photo
+39242 410000000400000300020a01008000000803122d-5a1803cc33b9b136474070bee1000bcf184000c0-53816c3381406a0230019a0100aa0100ba0100d2-0100e20200
+40249 slave 14000000040000102002ff8a43f400a908001000
+40319 slave file 274->282
+
+Interval photo
+41021 apply but can't find start command
+
+Night shot photo
+44431 410000000400000300022b01008000000804122d-5a18affe1a04b23647406b7e94d523cf184000c0-3a33c43281406a0230019a0100aa0100ba0100d2-0100e20200
+
+50720 1a 00 00 00 04 00 00 09 00 02 3a 01 00 80 00 00 0a 01 1f 12-03 f8 01 0a 18 07
+51471 standard recording with gps N46d 25m 38s E6d 12m 8s 46.4272222 6.20222222 48.427333 6.202239
+                                    �Time UX�                            @ N                @ E                                @               @            
+470000000400003500024b01008000000a351ffe-545f00000000,e6,03,41,93,df,34,d5,b2,36,47,40,4e,08,f2,51,dc,17,cf,18,40,45,0000000000000000dc7fd5959a-03062501b1ec060a031744aa50d2730000f4529e2e0e120e000400122a0062764000e067916d318140fbf65c
+470000000400003500024c01008000000a3520fe-545f00000000e603419693e79cb23647404e48a2-3c5e17cf1840450000000000000000b8143e949a-62764000a0b68baa328140
+470000000400003500024d01008000000a3521fe-545f00000000e60341328d7613b23647404e111c-615a18cf1840450000000000000000c43b52979a-62764000803a71cd348140
+470000000400003500024e01008000000a3522fe-545f00000000e60341b9299818b23647404e4462-35ea16cf18404500000000000000005896be929a-62764000e0cfaab9338140
+47000000-04:00 00 35 00-02:4f 01-00 80 00 00-0a:35 23 fe 54 5f 00 00 00 00 e6-03:41 6f 92 -6516b23647404ee82a-0e3415cf184045000000000000000070594b8d9a-62764000a0263823348140
+
+
+
+53969                                                !!     
+00        05        10        15        20        25        30        35        40        45        50        55        60        65        70                                                 
+470000000400003500026b01008000000a353ffe545f00000000e6034191481bbbb33647404edcb066ad1dcf18404500000000000000004428a3141ed3374000a02450263c8140
+position (N,E) Direction, distance, slope, altitude, speed
+@00:30 = 46�25'38N 6�12'8E, 22�N, 0.02km, -0,7%, 551.38m, 4.41kmh
+Replace pos 26 on with 00
+
+
+time hightlight (in full ascii ;) com.insta360.keyTime.highLight
+55953 360000000400003c00028b010080000008defcd3-fa051a1e636f6d2e696e7374613336302e6b6579-54696d652e686967686c69676874
+Track that (in full ascii ;) com.insta360.keyTime.trackThat
+57714 360000000400003c0002a8010080000008f8fcd3-fa051a1e636f6d2e696e7374613336302e6b6579-54696d652e747261636b54686174
+60493 file 295
+
+
+24800 hdr video
+28500 timelapse
+30400 bullet
+33200 std photo
+35600 timer 5s
+37400 hdr photo
+39100 burst
+41300 interval
+44300 night
+51300 std video with gps ?
+56000 mark
+57700 track
+
+52500 789.676 545f00000000e60341da62abffb13647404ee9cf
+52564 790.677 545f00000000e60341e444622eb23647404edbfd
+52668 792.202 545f00000000e603419889f63ab23647404ef543
+
+Log:
+
+[ble] uuid: 0000BE80-0000-1000-8000-00805F9B34FB
+[ble] connect
+[ble] scanstate: 0 0
+[ble] connected: null 1
+[ble] setButtonNotifications: 1
+[ble] sendCMD: [18, 0, 0, 0, 4, 0, 0, 4, 0, 2, 22, 0, 0, 128, 0, 0, 8, 1]
+[ble] event : [20, 0, 0, 0, 4, 0, 0, 16, 32, 2, 255, 138, 67, 244, 0, 0, 8, 1, 16, 0]
+[ble] Start Rec
+[ble] sendCMD: [12, 0, 0, 0, 4, 0, 0, 5, 0, 2, 33, 0, 0, 80, 0, 0, 10, 1]
+[ble] sendCMD: [18, 0, 0, 0, 4, 0, 0, 4, 0, 2, 22, 0, 0, 128, 0, 0, 8, 1]
+[ble] sendCMD: [12, 0, 0, 0, 4, 0, 0, 5, 0, 2, 33, 0, 0, 80, 0, 0, 10, 1]
+[ble] sendCMD: [18, 0, 0, 0, 4, 0, 0, 4, 0, 2, 22, 0, 0, 128, 0, 0, 8, 1]
+[ble] sendCMD: [12, 0, 0, 0, 4, 0, 0, 5, 0, 2, 33, 0, 0, 80, 0, 0, 10, 1]
+[ble] event : [20, 0, 0, 0, 4, 0, 0, 16, 32, 2, 255, 138, 67, 244, 0, 0, 8, 0, 16, 0]
+[ble] Stop Rec
+[ble] close
+[ble] initialize
+[ble] scanstate: 1 0
+[ble] registered: 0000BE80-0000-1000-8000-00805F9B34FB 0
+[ble] scan results
+[ble] device: ONE R DV6W5S rssi: -53
+[ble] uuid: 0000BE80-0000-1000-8000-00805F9B34FB
+[ble] connect
+[ble] scanstate: 0 0
+[ble] connected: null 1
+[ble] setButtonNotifications: 1
+[ble] sendCMD: [18, 0, 0, 0, 4, 0, 0, 4, 0, 2, 22, 0, 0, 128, 0, 0, 8, 1]
+[ble] event : [20, 0, 0, 0, 4, 0, 0, 16, 32, 2, 255, 138, 67, 244, 0, 0, 8, 1, 16, 0]
+[ble] Start Rec
+[ble] sendCMD: [18, 0, 0, 0, 4, 0, 0, 5, 0, 2, 51, 0, 0, 128, 0, 0, 16, 1]
+[ble] event : [20, 0, 0, 0, 4, 0, 0, 16, 32, 2, 255, 138, 67, 244, 0, 0, 8, 0, 16, 0]
+[ble] Stop Rec
+[ble] event : [73, 0, 0, 0, 4, 0, 0, 200, 0, 2, 51, 0, 0, 128, 36, 6, 10, 55, 10, 46]
+[ble] char read 0000BE82-0000-1000-8000-00805F9B34FB [73, 0, 0, 0, 4, 0, 0, 200, 0, 2, 51, 0, 0, 128, 36, 6, 10, 55, 10, 46]
+[ble] event : [47, 68, 67, 73, 77, 47, 67, 97, 109, 101, 114, 97, 48, 49, 47, 86, 73, 68, 95, 50]
+[ble] char read 0000BE82-0000-1000-8000-00805F9B34FB [47, 68, 67, 73, 77, 47, 67, 97, 109, 101, 114, 97, 48, 49, 47, 86, 73, 68, 95, 50]
+[ble] event : [48, 50, 48, 48, 55, 50, 48, 95, 49, 54, 51, 54, 50, 49, 95, 49, 48, 95, 52, 57]
+[ble] char read 0000BE82-0000-1000-8000-00805F9B34FB [48, 50, 48, 48, 55, 50, 48, 95, 49, 54, 51, 54, 50, 49, 95, 49, 48, 95, 52, 57]
+[ble] sendCMD: [18, 0, 0, 0, 4, 0, 0, 4, 0, 2, 22, 0, 0, 128, 0, 0, 8, 1]
+[ble] event : [20, 0, 0, 0, 4, 0, 0, 16, 32, 2, 255, 138, 67, 244, 55, 56, 8, 1, 16, 0]
+[ble] Start Rec
+[ble] sendCMD: [18, 0, 0, 0, 4, 0, 0, 5, 0, 2, 51, 0, 0, 128, 0, 0, 16, 1]
+[ble] event : [20, 0, 0, 0, 4, 0, 0, 16, 32, 2, 255, 138, 67, 244, 0, 0, 8, 0, 16, 0]
+[ble] Stop Rec
+[ble] event : [73, 0, 0, 0, 4, 0, 0, 200, 0, 2, 51, 0, 0, 128, 63, 0, 10, 55, 10, 46]
+[ble] char read 0000BE82-0000-1000-8000-00805F9B34FB [73, 0, 0, 0, 4, 0, 0, 200, 0, 2, 51, 0, 0, 128, 63, 0, 10, 55, 10, 46]
+[ble] event : [47, 68, 67, 73, 77, 47, 67, 97, 109, 101, 114, 97, 48, 49, 47, 86, 73, 68, 95, 50]
+[ble] char read 0000BE82-0000-1000-8000-00805F9B34FB [47, 68, 67, 73, 77, 47, 67, 97, 109, 101, 114, 97, 48, 49, 47, 86, 73, 68, 95, 50]
+[ble] event : [48, 50, 48, 48, 55, 50, 48, 95, 49, 54, 51, 55, 49, 56, 95, 49, 48, 95, 52, 57]
+[ble] char read 0000BE82-0000-1000-8000-00805F9B34FB [48, 50, 48, 48, 55, 50, 48, 95, 49, 54, 51, 55, 49, 56, 95, 49, 48, 95, 52, 57]
+[ble] close
+
+hasWatchFace, hasAntPlusBikeSpeed, hasAntPlus, hasPowerSupport, hasSensorLogging, hasCryptographyKeyAgreement, hasBarometerSupport, hasBackgroundSupport, hasBleLinkSupport, hasVibeSupport, hasAntPlusRunningDynamics, hasActiveMinutes, hasGenericPicker, hasAntPlusBikePower, hasShiftingSupport, hasDataFields, hasGeometryIterator, hasCryptographyHmac, hasAccelerometer, hasAntPlusBikeRadar, hasBBISupport, has1hzWatchfaceSupport, hasActivityMonitoring, hasToneSupport, hasNavigationDataSupport, hasAntPlusBikeSpeedCadence, hasAppBasePropertiesPersistence, hasHeartRateHistoryDeprecated, hasMenu2, hasAntPlusBikeLight, hasSwimSupport, hasAntPlusBikeCadence, hasFirstbeat, hasCartography, hasTextPicker, hasCryptographyCipher, hasCryptographyCmac, hasNumberPicker, hasPositionSupport, hasMagnetometer, hasProgressBar, hasAnt, hasFloorsClimbed, hasPersistedContentSupport, hasTemperatureHistory, hasElevationHistory, hasCryptographyHash, hasBleMailboxSupport, hasBacklightSupport, hasEncryptionSupport, hasPersistedLocations, hasWorkoutSupport, hasCommunications, hasDownloadableFITSupport, hasAppBaseProperties, hasCourseSupport, hasSleepMode, hasSensorHistory, hasMakeJsonRequest, hasPressureHistory, hasSensorDataSupport, hasConnectAPISupport, hasWaypointSupport, hasCryptography
+hasWatchFace, hasAntPlusBikeSpeed, hasAntPlus, hasPowerSupport, hasSensorLogging, hasCryptographyKeyAgreement, hasBarometerSupport, hasBackgroundSupport, hasBleLinkSupport, hasVibeSupport, hasAntPlusRunningDynamics, hasActiveMinutes, hasGenericPicker, hasBleCentralClient, hasAntPlusBikePower, hasShiftingSupport, hasDataFields, hasGeometryIterator, hasCryptographyHmac, hasAccelerometer, hasAntPlusBikeRadar, hasAnimation, hasBulkDownloadSupport, hasBBISupport, has1hzWatchfaceSupport, hasActivityMonitoring, hasMediaSupport, hasToneSupport, hasNavigationDataSupport, hasAntPlusBikeSpeedCadence, hasAppBasePropertiesPersistence, hasHeartRateHistoryDeprecated, hasMenu2, hasAntPlusBikeLight, hasSwimSupport, hasAntPlusBikeCadence, hasFirstbeat, hasAntPlusShifting, hasCartography, hasTextPicker, hasCryptographyCipher, hasCryptographyCmac, hasNumberPicker, hasPositionSupport, hasMagnetometer, hasProgressBar, hasAnt, hasFloorsClimbed, hasAutoLapByPolylineSupport, hasWatchAppTimerEventSupport, hasWifiSupport, hasPersistedContentSupport, hasTemperatureHistory, hasElevationHistory, hasCryptographyHash, hasBleMailboxSupport, hasBacklightSupport, hasEncryptionSupport, hasPersistedLocations, hasWorkoutSupport, hasCommunications, hasDownloadableFITSupport, hasAppBaseProperties, hasCourseSupport, hasTransparentProgressBarSupport, hasSleepMode, hasSensorHistory, hasMakeJsonRequest, hasPressureHistory, hasSensorDataSupport, hasConnectAPISupport, hasWaypointSupport, hasCryptography
+
+GPSDateTime                     : 2020:09:06 15:21:52Z
+GPSLatitude                     : 46 deg 25' 38.26" N
+GPSLongitude                    : 6 deg 12' 8.27" E
+GPSSpeed                        : 0
+GPSSpeedRef                     : km/h
+GPSTrack                        : 40.7543
+GPSTrackRef                     : True North
+GPSAltitude                     : 550.2502 m
+
+If you want to list all available tags, you can use this command:
+
+./exiftool -s -ee rawvideos/VID_002.insv
+
+ .\exiftool -api largefilesupport -ee -p '${GPSDateTime;DateFmt("%s")} ${gpslatitude#} ${gpslongitude#}'   VID_20200906_171956_00_295.insv >vid1.csv
+  .\exiftool -api largefilesupport -ee -p '$GPSDateTime,$GPSLatitude#,$GPSLongitude#,$GPSSpeed,$GPSSpeedRef,$GPSTrack,$GPSTrackRef,$GPSAltitude' VID_20201008_152427_00_125.insv >vid_gps.csv
+
+GPSDateTime                     : 2020:10:08 13:29:42Z
+GPSLatitude                     : 46 deg 26' 43.53" N
+GPSLongitude                    : 6 deg 13' 5.31" E
+GPSSpeed                        : 13.6781
+GPSSpeedRef                     : km/h
+GPSTrack                        : 344.7911
+GPSTrackRef                     : True North
+GPSAltitude                     : 638.4242 m 
+ 
+ 2nd trace
+ 
+ 6333 std photo
+ 9406 5s photo, timer is done by the watch
+13130 interval photo 11 every 4s
+salve: 
+	12 00 00 00 04 00 00 12 20 02 ff 8a 43 f4 30 ee 08 01
+	12 00 00 00 04 00 00 12 20 02 ff 8a 43 f4 00 00 08 02
+	12 00 00 00 04 00 00 0a 20 02 ff 8a 43 f4 30 0a 08 01
+	12 00 00 00 04 00 00 12 20 02 ff 8a 43 f4 36 6c 08 03
+	12 00 00 00 04 00 00 0a 20 02 ff 8a 43 f4 30 4c 08 01
+	12 00 00 00 04 00 00 12 20 02 ff 8a 43 f4 36 04 08 04
+	12 00 00 00 04 00 00 0a 20 02 ff 8a 43 f4 30 ee 08 01
+	12 00 00 00 04 00 00 12 20 02 ff 8a 43 f4 36 d8 08 05
+etc.
+	12 00 00 00 04 00 00 12 20 02 ff 8a 43 f4 30 c4 08 0d
+	14 00 00 00 04 00 00 10 20 02 ff 8a 43 f4 30 c4 08 00 10 00 # end of capture
+	46 00 00 00 04 00 00 c8 00 02 56 00 00 80 30 2e 0a 34 0a 2e... # file name 
+
+18376 night shot
+	41 00 00 00 04 00 00 03 00 02 65 00 00 80 00 00 08 04 12 2d 5a 18 f3 8f 41 ff b1 36 47 40 14 34 40 15 58 cf 18 40 00 00 01 00 e2 02 00
+    41 00 00 00 04 00 00 03 00 02 2b 01 00 80 00 00 08 04 12 2d 5a 18 af fe 1a 04 b2 36 47 40 6b 7e 94 d5 23 cf 18 40 00 c0 3a 33 c4 32 81 40 6a 02 30 01 9a 01 00 aa 01 00 ba 01 00 d2 01 00 e2 02 00
+
+21232 hdr video 37s
+Set		1a 00 00 00 04 00 00 09 00 02 6e 00 00 80 00 00 0a 01 1f 12-03 f8 01 13 18 09
+Apply	10 00 00 00 04 00 00 0f 00 02 6f 00 00 80 00 00
+Start	12 00 00 00 04 00 00 04 00 02 73 00 00 80 00 00 08 03
+GPS		47 00 00 00 04 00 00 35 00 02 75 00 00 80 00 00 0a 35 3d d7-7e 5f 00 00 00 00 65 01 41 ae 12 cd d3 b1 36 47 40 4e 8b 93-80 89 58 cf 18 40 45 00 00 00 00 00 00 00 00 00 00 00 00 00-00 f0 bf 00 00 00 50 ab 2c 81 40
+...
+GPS		47 00 00 00 04 00 00 35 00 02 79 00 00 80 00 00 0a 35 58 d7-7e 5f 00 00 00 00 88 01 41 6c c6 8a ea b1 36 47-40 4e 59 ab-9d 4b 55 cf 18 40 45 00 00 00 00 00 00 00 00 00 00 00 00 00-00 f0 bf 00 00 00 ee 8c 2c 81 40
+stop	12 00 00 00 04 00 00 05 00 02 7d 00 00 80 00 00 10 03
+
+25242 timelapse video
+set		1a 00 00 00 04 00 00 09 00 02 83 00 00 80 00 00 0a 01 1f 12-03 f8 01 0a 18 02
+apply	10 00 00 00 04 00 00 0f 00 02 84 00 00 80 00 00
+start	12 00 00 00 04 00 00 16 00 02 88 00 00 80 00 00 08 01
+GPS...
+stop	12 00 00 00 04 00 00 17 00 02 aa 00 00 80 00 00 08 01
+
+38675 tl
+start	12 00 00 00 04 00 00 16 00 02 ba 00 00 80 00 00 08 01
+stop	12 00 00 00 04 00 00 17 00 02 bd 00 00 80 00 00 08 01
+
+40846 bullet time
+set 	1a 00 00 00 04 00 00 09 00 02 c4 00 00 80 00 00 0a 01 1f 12-03 f8 01 0d 18 04
+apply	10 00 00 00 04 00 00 0f 00 02 c5 00 00 80 00 00
+start 	12 00 00 00 04 00 00 04 00 02 c9 00 00 80 00 00 08 02
+stop	12 00 00 00 04 00 00 05 00 02 d3 00 00 80 00 00 10 02
+
+48319 video gps walk
+760		47 00 00 00 04 00 00 35 00 02 0b 01 00 80 00 00 0a 35 ee d8-7e 5f 00 00 00 00 03 00 41 10 3d be 13 b7 36 47 40 4e 48 7a-80 55 3d cf 18 40 45 00 00 00 00 00 00 00 00 00 00 00 00 00-00 f0 bf 79 ba 16 b7 71 5c 81 40
+770		47 00 00 00 04 00 00 35 00 02 15 01 00 80 00 00 0a 35 f8 d8-7e 5f 00 00 00 00 02 00 41 8b 78 4b 75 b7 36 47 40 4e 72 93-83 f3 66 cf 18 40 45 00 00 00 00 00 00 00 00 00 00 00 00 00-00 f0 bf a3 fc fe 96 3f 5d 81 40
+780		47 00 00 00 04 00 00 35 00 02 1f 01 00 80 00 00 0a 35 02 d9-7e 5f 00 00 00 00 01 00 41 cd a1 67 3e b3 36 47 40 4e 26 d7-33 97 88 cf 18 40 45 00 00 00 00 00 00 00 00 00 00 00 00 00-00 f0 bf 99 f7 37 d5 b9 51 81 40
+820		47 00 00 00 04 00 00 35 00 02 49 01 00 80 00 00 0a 35 2a d9-7e 5f 00 00 00 00 00 00 41 26 42 b7 98 b0 36 47 40 4e 2f 62-31 9c d6 cf 18 40 45 00 00 00 c0 d1 03 f9 3f bc e7 41 19 81-86 6c 40 07 96 bb cb e4 39 81 40
+850		47 00 00 00 04 00 00 35 00 02 67 01 00 80 00 00 0a 35 48 d9-7e 5f 00 00 00 00 00 00 41 c9 35 71 6b b6 36 47 40 4e 80 39-31 ba 60 cf 18 40 45 00 00 00 a0 c9 f3 fa 3f 88 fa 1e 21 31-8d 73 40 e6 3a 03 81 96 43 81 40
+875		47 00 00 00 04 00 00 35 00 02 82 01 00 80 00 00 0a 35 60 d9-7e 5f 00 00 00 00 e7 03 41 1c d7 3c 9b b7 36 47 40 4e 88 57-9e 47 2c cf 18 40 45 00 00 00 60 ff 7a f3 3f 53 2a 02 33 df-c9 6a 40 8a bf 6d c3 69 55 81 40
+
+Status ?
+00        05        10        15        20        25        30        35        40        45        50        55        60
+3d000000040000c80002070000800000080b08140803084208411221185a5a0408001049a20110080010808080e4ed0518808080d0a007880400900400
+3d000000040000c80002d60000800000080b0814080308420841122118645a0408001044a201100800108080c0adea0518808080d0a007880400900401
+3d000000040000c800024401008000ff080b0814080308420841122118505a0408001040a20110080010808090f3e90518808080d0a007880400900401
+
+3d000000040000c80002f000008000ff080b0814080308420841122118645a0408001047a201100800108080c080a30618808080d0a007880400900400
+3d000000040000c80002850100800000080b0814080308420841122118505a0408001044a201100800108080d0fe9d0618808080d0a007880400900400
+
+
+
+	<drawable-list id="Remote" background="Gfx.COLOR_WHITE">
+    	    <shape type="rectangle" x="1%"  y="2%" width="10%" height="97%" corner_radius="10" color="Gfx.COLOR_BLACK" />
+        	<shape type="rectangle" x="12%" y="2%" width="76%" height="97%" corner_radius="10" color="Gfx.COLOR_WHITE" border_width="10" border_color="Gfx.COLOR_DK_GRAY"/>
+ 	      	<shape type="rectangle" x="89%" y="2%" width="10%" height="97%" corner_radius="10" color="Gfx.COLOR_BLACK" />
+ 	</drawable-list>
+
+
+
+
+
+
+
+  
