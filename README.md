@@ -17,4 +17,5 @@ User of touch screen devices can just tap on the screen to start & stop shooting
 All Garmin's devices with BLE (Bluetooth Low Energy) and CIQ V3.1 or later are supported. Older watches (Fenix 3/5, Descent MK1, Vivoactive, etc) cannot be supported due do lack of hardware compatibility to communicate with the camera. 
 
 Widget avaialbe at https://apps.garmin.com/apps/bb53f4bb-6c8c-4369-bca9-84cc09b25526
+
 Datafield for touch based Garmin Edge Devices avaialble at https://apps.garmin.com/apps/f0cdaa9c-5733-4748-ba66-1c7a3b008922
