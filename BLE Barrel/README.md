@@ -15,7 +15,7 @@ Byte 4 is always 04 except for "keep alive" messages (05)
 XX Byte 7: command to camera
   00 Keep Alive (7 bytes, empty, byte 4 = 05 instead of 04)
   03 photo
-  04 start last byte = 01 (Normal), 02 (Bullet), 03 (HDR), 06 (Loop)
+  04 start last byte (17) = 01 (Normal), 02 (Bullet), 03 (HDR), 06 (Loop)
   05 stop
   07 reset / set defauls 10682
   08 status request ?
