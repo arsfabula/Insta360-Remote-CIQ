@@ -1,0 +1,10 @@
+import Toybox.Lang;
+using Toybox.WatchUi;
+using Toybox.WatchUi as Ui;
+using Toybox.Graphics;
+using Toybox.Graphics as Gfx;
+
+module BLEBarrel {
+    module Rez {
+    } // Rez
+} // BLEBarrel

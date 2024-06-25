@@ -1,0 +1,343 @@
+[ @file = "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote\source\ViewData.mc"; @line = 1; ]
+using Toybox.WatchUi;
+[ @file = "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote\source\ViewData.mc"; @line = 2; ]
+using Toybox.System;
+[ @file = "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote\source\ViewData.mc"; @line = 3; ]
+using BLEBarrel;
+[ @file = "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote\source\ViewData.mc"; @line = 4; @position = 4; ]
+var mMessage = "Starting Widget";
+[ @file = "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote\source\ViewData.mc"; @line = 7; ]
+class ViewData extends WatchUi.View{
+    [ @file = "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote\source\ViewData.mc"; @line = 7; ]
+    <init> {
+    }
+    [ @file = "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote\source\ViewData.mc"; @line = 7; ]
+    static
+    <init> {
+    }
+    [ @file = "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote\source\ViewData.mc"; @line = 8; @position = 12; ]
+    protected
+    var bleDevice;
+    [ @file = "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote\source\ViewData.mc"; @line = 10; ]
+    function initialize(device) as Void {
+C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_source_ViewData_mc_10_32_13_4_start:
+[ "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote\source\ViewData.mc" 11 8 ]
+        %tmp.1 = getm $.Toybox.WatchUi;
+        %tmp.2 = getv %tmp.1 :View;
+        %tmp.3 = getv function %tmp.2 :initialize;
+        invoke %tmp.2 %tmp.3();
+[ "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote\source\ViewData.mc" 12 2 ]
+        %tmp.5 = lgetv %device;
+        putv self :bleDevice %tmp.5;
+C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_source_ViewData_mc_10_32_13_4_stop:
+    }
+    [ @file = "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote\source\ViewData.mc"; @line = 15; ]
+    function onUpdate(dc) {
+C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_source_ViewData_mc_15_26_51_4_start:
+[ "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote\source\ViewData.mc" 16 5 ]
+        [ "C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_source_ViewData_mc_15_26_51_4_start" "C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_source_ViewData_mc_15_26_51_4_stop" ]
+        %centerX.1 = local;
+        %tmp.1 = lgetv %dc;
+        %tmp.2 = getv function %tmp.1 :getWidth;
+        %tmp.3 = invoke %tmp.1 %tmp.2();
+        %tmp.4 = 2;
+        %tmp.5 = div %tmp.3 %tmp.4;
+        lputv %centerX.1 %tmp.5;
+[ "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote\source\ViewData.mc" 17 5 ]
+        [ "C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_source_ViewData_mc_15_26_51_4_start" "C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_source_ViewData_mc_15_26_51_4_stop" ]
+        %centerY.2 = local;
+        %tmp.6 = lgetv %dc;
+        %tmp.7 = getv function %tmp.6 :getHeight;
+        %tmp.8 = invoke %tmp.6 %tmp.7();
+        %tmp.9 = 2;
+        %tmp.10 = div %tmp.8 %tmp.9;
+        lputv %centerY.2 %tmp.10;
+[ "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote\source\ViewData.mc" 18 5 ]
+        [ "C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_source_ViewData_mc_15_26_51_4_start" "C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_source_ViewData_mc_15_26_51_4_stop" ]
+        %radius.3 = local;
+        %tmp.12 = lgetv %centerX.1;
+        lputv %radius.3 %tmp.12;
+[ "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote\source\ViewData.mc" 20 2 ]
+C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_source_ViewData_mc_20_2_20_50_if_stmt:
+        %tmp.14 = lgetv %dc;
+        %tmp.16 = const :setAntiAlias;
+        %tmp.17 = canhazplz %tmp.14 %tmp.16;
+        bf %tmp.17 @C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_source_ViewData_mc_20_2_20_50_if_end;
+C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_source_ViewData_mc_20_2_20_50_if_true:
+C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_source_ViewData_mc_20_27_20_50_start:
+[ "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote\source\ViewData.mc" 20 28 ]
+        %tmp.18 = lgetv %dc;
+        %tmp.19 = as %tmp.18 { (interface { var setAntiAlias; }) };
+        %tmp.20 = getv function %tmp.19 :setAntiAlias;
+        %tmp.21 = true;
+        invoke %tmp.19 %tmp.20(%tmp.21);
+C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_source_ViewData_mc_20_27_20_50_stop:
+        goto @C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_source_ViewData_mc_20_2_20_50_if_end;
+C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_source_ViewData_mc_20_2_20_50_if_end:
+[ "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote\source\ViewData.mc" 21 5 ]
+C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_source_ViewData_mc_21_5_23_5_if_stmt:
+        %tmp.23 = lgetv %radius.3;
+        %tmp.25 = lgetv %centerY.2;
+        %tmp.26 = gt %tmp.23 %tmp.25;
+        bf %tmp.26 @C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_source_ViewData_mc_21_5_23_5_if_end;
+C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_source_ViewData_mc_21_5_23_5_if_true:
+C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_source_ViewData_mc_21_27_23_5_start:
+[ "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote\source\ViewData.mc" 22 6 ]
+        %tmp.28 = lgetv %centerY.2;
+        lputv %radius.3 %tmp.28;
+C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_source_ViewData_mc_21_27_23_5_stop:
+        goto @C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_source_ViewData_mc_21_5_23_5_if_end;
+C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_source_ViewData_mc_21_5_23_5_if_end:
+[ "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote\source\ViewData.mc" 25 2 ]
+        %tmp.29 = getm $.Toybox.System;
+        %tmp.30 = getv function %tmp.29 :println;
+        %tmp.31 = "[on Update]";
+        invoke %tmp.29 %tmp.30(%tmp.31);
+[ "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote\source\ViewData.mc" 26 8 ]
+C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_source_ViewData_mc_26_8_30_8_if_stmt:
+        %tmp.32 = getm $.BLEBarrel;
+        %tmp.33 = getv %tmp.32 :recState;
+        %tmp.34 = getm $.BLEBarrel;
+        %tmp.35 = getv %tmp.34 :stateStartRec;
+        %tmp.36 = eq %tmp.33 %tmp.35;
+        bf %tmp.36 @C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_source_ViewData_mc_26_8_30_8_if_false;
+C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_source_ViewData_mc_26_8_30_8_if_true:
+C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_source_ViewData_mc_26_59_28_8_start:
+[ "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote\source\ViewData.mc" 27 9 ]
+        %tmp.37 = lgetv %dc;
+        %tmp.38 = getv function %tmp.37 :setColor;
+        %tmp.40 = getv ? :Graphics;
+        %tmp.41 = getv %tmp.40 :COLOR_RED;
+        %tmp.43 = getv ? :Graphics;
+        %tmp.44 = getv %tmp.43 :COLOR_BLACK;
+        invoke %tmp.37 %tmp.38(%tmp.41, %tmp.44);
+C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_source_ViewData_mc_26_59_28_8_stop:
+        goto @C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_source_ViewData_mc_26_8_30_8_if_end;
+C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_source_ViewData_mc_26_8_30_8_if_false:
+C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_source_ViewData_mc_28_15_30_8_start:
+[ "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote\source\ViewData.mc" 29 9 ]
+        %tmp.45 = lgetv %dc;
+        %tmp.46 = getv function %tmp.45 :setColor;
+        %tmp.48 = getv ? :Graphics;
+        %tmp.49 = getv %tmp.48 :COLOR_DK_GRAY;
+        %tmp.51 = getv ? :Graphics;
+        %tmp.52 = getv %tmp.51 :COLOR_BLACK;
+        invoke %tmp.45 %tmp.46(%tmp.49, %tmp.52);
+C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_source_ViewData_mc_28_15_30_8_stop:
+C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_source_ViewData_mc_26_8_30_8_if_end:
+[ "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote\source\ViewData.mc" 31 8 ]
+        %tmp.53 = lgetv %dc;
+        %tmp.54 = getv function %tmp.53 :setPenWidth;
+        %tmp.55 = 15;
+        invoke %tmp.53 %tmp.54(%tmp.55);
+[ "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote\source\ViewData.mc" 32 8 ]
+        %tmp.56 = lgetv %dc;
+        %tmp.57 = getv function %tmp.56 :clear;
+        invoke %tmp.56 %tmp.57();
+[ "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote\source\ViewData.mc" 33 8 ]
+        %tmp.58 = lgetv %dc;
+        %tmp.59 = getv function %tmp.58 :drawCircle;
+        %tmp.61 = lgetv %centerX.1;
+        %tmp.63 = lgetv %centerY.2;
+        %tmp.65 = lgetv %radius.3;
+        %tmp.66 = 20;
+        %tmp.67 = sub %tmp.65 %tmp.66;
+        invoke %tmp.58 %tmp.59(%tmp.61, %tmp.63, %tmp.67);
+[ "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote\source\ViewData.mc" 34 2 ]
+        %tmp.68 = getm $.Toybox.System;
+        %tmp.69 = getv function %tmp.68 :println;
+        %tmp.70 = "[VIEW] onupdate: ";
+        %tmp.71 = getm $.BLEBarrel;
+        %tmp.72 = getv %tmp.71 :GPSon;
+        %tmp.73 = add %tmp.70 %tmp.72;
+        invoke %tmp.68 %tmp.69(%tmp.73);
+[ "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote\source\ViewData.mc" 35 2 ]
+C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_source_ViewData_mc_35_2_47_8_if_stmt:
+        %tmp.74 = getm $.BLEBarrel;
+        %tmp.75 = getv %tmp.74 :GPSon;
+        bf %tmp.75 @C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_source_ViewData_mc_35_2_47_8_if_end;
+C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_source_ViewData_mc_35_2_47_8_if_true:
+C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_source_ViewData_mc_35_23_47_8_start:
+[ "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote\source\ViewData.mc" 37 9 ]
+C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_source_ViewData_mc_37_9_43_3_if_stmt:
+        %tmp.76 = getm $.BLEBarrel;
+        %tmp.77 = getv %tmp.76 :GPSaccuracy;
+        %tmp.79 = getv ? :Position;
+        %tmp.80 = getv %tmp.79 :QUALITY_NOT_AVAILABLE;
+        %tmp.81 = eq %tmp.77 %tmp.80;
+        bf %tmp.81 @C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_source_ViewData_mc_37_9_43_3_if_false;
+C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_source_ViewData_mc_37_9_43_3_if_true:
+C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_source_ViewData_mc_37_70_39_9_start:
+[ "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote\source\ViewData.mc" 38 10 ]
+        %tmp.82 = lgetv %dc;
+        %tmp.83 = getv function %tmp.82 :setColor;
+        %tmp.85 = getv ? :Graphics;
+        %tmp.86 = getv %tmp.85 :COLOR_DK_GRAY;
+        %tmp.88 = getv ? :Graphics;
+        %tmp.89 = getv %tmp.88 :COLOR_BLACK;
+        invoke %tmp.82 %tmp.83(%tmp.86, %tmp.89);
+C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_source_ViewData_mc_37_70_39_9_stop:
+        goto @C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_source_ViewData_mc_37_9_43_3_if_end;
+C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_source_ViewData_mc_37_9_43_3_if_false:
+[ "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote\source\ViewData.mc" 39 16 ]
+C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_source_ViewData_mc_39_16_43_3_if_stmt:
+        %tmp.90 = getm $.BLEBarrel;
+        %tmp.91 = getv %tmp.90 :GPSaccuracy;
+        %tmp.93 = getv ? :Position;
+        %tmp.94 = getv %tmp.93 :QUALITY_POOR;
+        %tmp.95 = eq %tmp.91 %tmp.94;
+        bf %tmp.95 @C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_source_ViewData_mc_39_16_43_3_if_false;
+C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_source_ViewData_mc_39_16_43_3_if_true:
+C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_source_ViewData_mc_39_68_41_3_start:
+[ "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote\source\ViewData.mc" 40 10 ]
+        %tmp.96 = lgetv %dc;
+        %tmp.97 = getv function %tmp.96 :setColor;
+        %tmp.99 = getv ? :Graphics;
+        %tmp.100 = getv %tmp.99 :COLOR_ORANGE;
+        %tmp.102 = getv ? :Graphics;
+        %tmp.103 = getv %tmp.102 :COLOR_BLACK;
+        invoke %tmp.96 %tmp.97(%tmp.100, %tmp.103);
+C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_source_ViewData_mc_39_68_41_3_stop:
+        goto @C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_source_ViewData_mc_39_16_43_3_if_end;
+C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_source_ViewData_mc_39_16_43_3_if_false:
+[ "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote\source\ViewData.mc" 41 10 ]
+C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_source_ViewData_mc_41_10_43_3_if_stmt:
+C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_source_ViewData_mc_41_14_41_115_begin:
+        %tmp.104 = getm $.BLEBarrel;
+        %tmp.105 = getv %tmp.104 :GPSaccuracy;
+        %tmp.107 = getv ? :Position;
+        %tmp.108 = getv %tmp.107 :QUALITY_GOOD;
+        %tmp.109 = eq %tmp.105 %tmp.108;
+        bt %tmp.109 @C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_source_ViewData_mc_41_10_43_3_if_true;
+C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_source_ViewData_mc_41_66_41_115_false:
+        %tmp.110 = getm $.BLEBarrel;
+        %tmp.111 = getv %tmp.110 :GPSaccuracy;
+        %tmp.113 = getv ? :Position;
+        %tmp.114 = getv %tmp.113 :QUALITY_USABLE;
+        %tmp.115 = eq %tmp.111 %tmp.114;
+        push %tmp.115;
+C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_source_ViewData_mc_41_66_41_115_end:
+        %tmp.116 = phi [%tmp.109 @C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_source_ViewData_mc_41_14_41_115_begin] [%tmp.115 @C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_source_ViewData_mc_41_66_41_115_false] [%tmp.116 @C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_source_ViewData_mc_41_66_41_115_end];
+        bf %tmp.116 @C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_source_ViewData_mc_41_10_43_3_if_end;
+C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_source_ViewData_mc_41_10_43_3_if_true:
+C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_source_ViewData_mc_41_120_43_3_start:
+[ "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote\source\ViewData.mc" 42 10 ]
+        %tmp.117 = lgetv %dc;
+        %tmp.118 = getv function %tmp.117 :setColor;
+        %tmp.120 = getv ? :Graphics;
+        %tmp.121 = getv %tmp.120 :COLOR_GREEN;
+        %tmp.123 = getv ? :Graphics;
+        %tmp.124 = getv %tmp.123 :COLOR_BLACK;
+        invoke %tmp.117 %tmp.118(%tmp.121, %tmp.124);
+C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_source_ViewData_mc_41_120_43_3_stop:
+        goto @C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_source_ViewData_mc_41_10_43_3_if_end;
+C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_source_ViewData_mc_41_10_43_3_if_end:
+C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_source_ViewData_mc_39_16_43_3_if_end:
+C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_source_ViewData_mc_37_9_43_3_if_end:
+[ "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote\source\ViewData.mc" 44 9 ]
+        %tmp.125 = lgetv %dc;
+        %tmp.126 = getv function %tmp.125 :drawArc;
+        %tmp.128 = lgetv %centerX.1;
+        %tmp.130 = lgetv %centerY.2;
+        %tmp.132 = lgetv %radius.3;
+        %tmp.133 = 20;
+        %tmp.134 = sub %tmp.132 %tmp.133;
+        %tmp.136 = getv ? :Graphics;
+        %tmp.137 = getv %tmp.136 :ARC_COUNTER_CLOCKWISE;
+        %tmp.138 = 70;
+        %tmp.139 = 110;
+        invoke %tmp.125 %tmp.126(%tmp.128, %tmp.130, %tmp.134, %tmp.137, %tmp.138, %tmp.139);
+[ "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote\source\ViewData.mc" 45 9 ]
+        %tmp.140 = lgetv %dc;
+        %tmp.141 = getv function %tmp.140 :drawArc;
+        %tmp.143 = lgetv %centerX.1;
+        %tmp.145 = lgetv %centerY.2;
+        %tmp.147 = lgetv %radius.3;
+        %tmp.148 = 37;
+        %tmp.149 = sub %tmp.147 %tmp.148;
+        %tmp.151 = getv ? :Graphics;
+        %tmp.152 = getv %tmp.151 :ARC_COUNTER_CLOCKWISE;
+        %tmp.153 = 70;
+        %tmp.154 = 110;
+        invoke %tmp.140 %tmp.141(%tmp.143, %tmp.145, %tmp.149, %tmp.152, %tmp.153, %tmp.154);
+[ "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote\source\ViewData.mc" 46 9 ]
+        %tmp.155 = lgetv %dc;
+        %tmp.156 = getv function %tmp.155 :drawArc;
+        %tmp.158 = lgetv %centerX.1;
+        %tmp.160 = lgetv %centerY.2;
+        %tmp.162 = lgetv %radius.3;
+        %tmp.163 = 54;
+        %tmp.164 = sub %tmp.162 %tmp.163;
+        %tmp.166 = getv ? :Graphics;
+        %tmp.167 = getv %tmp.166 :ARC_COUNTER_CLOCKWISE;
+        %tmp.168 = 70;
+        %tmp.169 = 110;
+        invoke %tmp.155 %tmp.156(%tmp.158, %tmp.160, %tmp.164, %tmp.167, %tmp.168, %tmp.169);
+C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_source_ViewData_mc_35_23_47_8_stop:
+        goto @C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_source_ViewData_mc_35_2_47_8_if_end;
+C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_source_ViewData_mc_35_2_47_8_if_end:
+[ "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote\source\ViewData.mc" 49 8 ]
+        %tmp.170 = lgetv %dc;
+        %tmp.171 = getv function %tmp.170 :setColor;
+        %tmp.173 = getv ? :Graphics;
+        %tmp.174 = getv %tmp.173 :COLOR_WHITE;
+        %tmp.176 = getv ? :Graphics;
+        %tmp.177 = getv %tmp.176 :COLOR_BLACK;
+        invoke %tmp.170 %tmp.171(%tmp.174, %tmp.177);
+[ "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote\source\ViewData.mc" 50 8 ]
+        %tmp.178 = lgetv %dc;
+        %tmp.179 = getv function %tmp.178 :drawText;
+        %tmp.181 = lgetv %centerX.1;
+        %tmp.183 = lgetv %centerY.2;
+        %tmp.185 = getv ? :Graphics;
+        %tmp.186 = getv %tmp.185 :FONT_MEDIUM;
+        %tmp.188 = getv ? :mMessage;
+        %tmp.190 = getv ? :Graphics;
+        %tmp.191 = getv %tmp.190 :TEXT_JUSTIFY_CENTER;
+        %tmp.193 = getv ? :Graphics;
+        %tmp.194 = getv %tmp.193 :TEXT_JUSTIFY_VCENTER;
+        %tmp.195 = bitor %tmp.191 %tmp.194;
+        invoke %tmp.178 %tmp.179(%tmp.181, %tmp.183, %tmp.186, %tmp.188, %tmp.195);
+C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_source_ViewData_mc_15_26_51_4_stop:
+    }
+    [ @file = "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote\source\ViewData.mc"; @line = 53; ]
+    function compute(info) {
+C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_source_ViewData_mc_53_24_64_1_start:
+[ "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote\source\ViewData.mc" 55 2 ]
+C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_source_ViewData_mc_55_2_59_2_if_stmt:
+        %tmp.2 = getv ? :bleDevice;
+        %tmp.3 = getv %tmp.2 :scanning;
+        bf %tmp.3 @C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_source_ViewData_mc_55_2_59_2_if_false;
+C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_source_ViewData_mc_55_2_59_2_if_true:
+C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_source_ViewData_mc_55_26_57_2_start:
+[ "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote\source\ViewData.mc" 56 3 ]
+        %tmp.4 = "Scanning...";
+        ret %tmp.4;
+C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_source_ViewData_mc_55_26_57_2_stop:
+        goto @C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_source_ViewData_mc_55_2_59_2_if_end;
+C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_source_ViewData_mc_55_2_59_2_if_false:
+[ "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote\source\ViewData.mc" 57 9 ]
+C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_source_ViewData_mc_57_9_59_2_if_stmt:
+        %tmp.6 = getv ? :bleDevice;
+        %tmp.7 = getv %tmp.6 :device;
+        %tmp.8 = null;
+        %tmp.9 = eq %tmp.7 %tmp.8;
+        bf %tmp.9 @C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_source_ViewData_mc_57_9_59_2_if_end;
+C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_source_ViewData_mc_57_9_59_2_if_true:
+C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_source_ViewData_mc_57_39_59_2_start:
+[ "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote\source\ViewData.mc" 58 3 ]
+        %tmp.10 = "Disconnected";
+        ret %tmp.10;
+C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_source_ViewData_mc_57_39_59_2_stop:
+        goto @C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_source_ViewData_mc_57_9_59_2_if_end;
+C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_source_ViewData_mc_57_9_59_2_if_end:
+C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_source_ViewData_mc_55_2_59_2_if_end:
+[ "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote\source\ViewData.mc" 63 2 ]
+        %tmp.11 = true;
+        ret %tmp.11;
+C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_source_ViewData_mc_53_24_64_1_stop:
+    }
+}
+[ @file = "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote\source\ViewData.mc"; @line = 1; ]
+<init> {
+}
