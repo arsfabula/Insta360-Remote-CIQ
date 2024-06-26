@@ -1,0 +1,63 @@
+[ @file = "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote DF\source\OneRremoteSettings.mc"; @line = 1; ]
+using Toybox.WatchUi as :Ui;
+[ @file = "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote DF\source\OneRremoteSettings.mc"; @line = 3; ]
+class OneRSettingsMenu extends Ui.Menu2{
+    [ @file = "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote DF\source\OneRremoteSettings.mc"; @line = 3; ]
+    <init> {
+    }
+    [ @file = "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote DF\source\OneRremoteSettings.mc"; @line = 3; ]
+    static
+    <init> {
+    }
+    [ @file = "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote DF\source\OneRremoteSettings.mc"; @line = 5; ]
+    function initialize() as Void {
+C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteSettings_mc_5_26_11_4_start:
+[ "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote DF\source\OneRremoteSettings.mc" 6 8 ]
+        %tmp.2 = getv ? :Menu2;
+        %tmp.3 = getv function %tmp.2 :initialize;
+        %tmp.4 = null;
+        invoke %tmp.2 %tmp.3(%tmp.4);
+[ "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote DF\source\OneRremoteSettings.mc" 7 8 ]
+        %tmp.6 = getv ? :Menu2;
+        %tmp.7 = getv function %tmp.6 :setTitle;
+        %tmp.8 = "Insta360 Mode";
+        invoke %tmp.6 %tmp.7(%tmp.8);
+[ "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote DF\source\OneRremoteSettings.mc" 8 2 ]
+        %tmp.10 = getv ? :Menu2;
+        %tmp.11 = getv function %tmp.10 :addItem;
+        %tmp.14 = getm $.Toybox.WatchUi;
+        %tmp.15 = getv function ? %tmp.14 :MenuItem;
+        %tmp.16 = "Start - Stop";
+        %tmp.17 = "";
+        %tmp.18 = "StartStop";
+        %tmp.19 = newd 0;
+        %tmp.12 = newc %tmp.15 (%tmp.16, %tmp.17, %tmp.18, %tmp.19);
+        invoke %tmp.10 %tmp.11(%tmp.12);
+[ "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote DF\source\OneRremoteSettings.mc" 9 2 ]
+        %tmp.21 = getv ? :Menu2;
+        %tmp.22 = getv function %tmp.21 :addItem;
+        %tmp.25 = getm $.Toybox.WatchUi;
+        %tmp.26 = getv function ? %tmp.25 :MenuItem;
+        %tmp.27 = "5.7k / 30";
+        %tmp.28 = "";
+        %tmp.29 = "5.7k30";
+        %tmp.30 = newd 0;
+        %tmp.23 = newc %tmp.26 (%tmp.27, %tmp.28, %tmp.29, %tmp.30);
+        invoke %tmp.21 %tmp.22(%tmp.23);
+[ "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote DF\source\OneRremoteSettings.mc" 10 2 ]
+        %tmp.32 = getv ? :Menu2;
+        %tmp.33 = getv function %tmp.32 :addItem;
+        %tmp.36 = getm $.Toybox.WatchUi;
+        %tmp.37 = getv function ? %tmp.36 :MenuItem;
+        %tmp.38 = "Photo HDR";
+        %tmp.39 = "";
+        %tmp.40 = "PhotoHDR";
+        %tmp.41 = newd 0;
+        %tmp.34 = newc %tmp.37 (%tmp.38, %tmp.39, %tmp.40, %tmp.41);
+        invoke %tmp.32 %tmp.33(%tmp.34);
+C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteSettings_mc_5_26_11_4_stop:
+    }
+}
+[ @file = "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote DF\source\OneRremoteSettings.mc"; @line = 1; ]
+<init> {
+}

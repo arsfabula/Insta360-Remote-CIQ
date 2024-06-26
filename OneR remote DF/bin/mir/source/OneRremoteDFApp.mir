@@ -1,0 +1,85 @@
+[ @file = "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote DF\source\OneRremoteDFApp.mc"; @line = 1; ]
+using Toybox.Application;
+[ @file = "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote DF\source\OneRremoteDFApp.mc"; @line = 2; ]
+using Toybox.BluetoothLowEnergy;
+[ @file = "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote DF\source\OneRremoteDFApp.mc"; @line = 3; ]
+using BLEBarrel;
+[ @file = "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote DF\source\OneRremoteDFApp.mc"; @line = 4; @position = 4; ]
+var bleDevice;
+[ @file = "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote DF\source\OneRremoteDFApp.mc"; @line = 6; ]
+class OneRremoteDFApp extends Application.AppBase{
+    [ @file = "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote DF\source\OneRremoteDFApp.mc"; @line = 6; ]
+    <init> {
+    }
+    [ @file = "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote DF\source\OneRremoteDFApp.mc"; @line = 6; ]
+    static
+    <init> {
+    }
+    [ @file = "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote DF\source\OneRremoteDFApp.mc"; @line = 8; ]
+    function initialize() as Void {
+C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteDFApp_mc_8_26_10_4_start:
+[ "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote DF\source\OneRremoteDFApp.mc" 9 8 ]
+        %tmp.2 = getv ? :AppBase;
+        %tmp.3 = getv function %tmp.2 :initialize;
+        invoke %tmp.2 %tmp.3();
+C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteDFApp_mc_8_26_10_4_stop:
+    }
+    [ @file = "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote DF\source\OneRremoteDFApp.mc"; @line = 13; ]
+    function onStart(state) {
+C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteDFApp_mc_13_28_17_4_start:
+[ "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote DF\source\OneRremoteDFApp.mc" 14 2 ]
+        %tmp.3 = getm $.BLEBarrel;
+        %tmp.4 = getv function ? %tmp.3 :BleDevice;
+        %tmp.1 = newc %tmp.4 ();
+        putv self :bleDevice %tmp.1;
+[ "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote DF\source\OneRremoteDFApp.mc" 15 2 ]
+        %tmp.5 = getm $.Toybox.BluetoothLowEnergy;
+        %tmp.6 = getv function %tmp.5 :setDelegate;
+        %tmp.8 = getv ? :bleDevice;
+        invoke %tmp.5 %tmp.6(%tmp.8);
+[ "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote DF\source\OneRremoteDFApp.mc" 16 2 ]
+        %tmp.10 = getv ? :bleDevice;
+        %tmp.11 = getv function %tmp.10 :open;
+        invoke %tmp.10 %tmp.11();
+C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteDFApp_mc_13_28_17_4_stop:
+    }
+    [ @file = "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote DF\source\OneRremoteDFApp.mc"; @line = 20; ]
+    function onStop(state) {
+    }
+    //! Return the initial view of your application here
+    [ @file = "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote DF\source\OneRremoteDFApp.mc"; @line = 24; ]
+    function getInitialView() {
+C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteDFApp_mc_24_30_26_4_start:
+[ "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote DF\source\OneRremoteDFApp.mc" 25 8 ]
+        %tmp.1 = newa 2;
+        %tmp.5 = getv ? :OneRremoteDFView;
+        %tmp.2 = newc %tmp.5 ();
+        %tmp.6 = dup %tmp.1;
+        %tmp.7 = aputv %tmp.6 0 %tmp.2;
+        %tmp.11 = getv ? :InputDelegate;
+        %tmp.8 = newc %tmp.11 ();
+        %tmp.12 = dup %tmp.7;
+        %tmp.13 = aputv %tmp.12 1 %tmp.8;
+        ret %tmp.13;
+C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteDFApp_mc_24_30_26_4_stop:
+    }
+    [ @file = "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote DF\source\OneRremoteDFApp.mc"; @line = 28; ]
+    function getSettingsView() {
+C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteDFApp_mc_28_31_30_4_start:
+[ "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote DF\source\OneRremoteDFApp.mc" 29 8 ]
+        %tmp.1 = newa 2;
+        %tmp.5 = getv ? :OneRSettingsMenu;
+        %tmp.2 = newc %tmp.5 ();
+        %tmp.6 = dup %tmp.1;
+        %tmp.7 = aputv %tmp.6 0 %tmp.2;
+        %tmp.11 = getv ? :OneRSettingsDelegate;
+        %tmp.8 = newc %tmp.11 ();
+        %tmp.12 = dup %tmp.7;
+        %tmp.13 = aputv %tmp.12 1 %tmp.8;
+        ret %tmp.13;
+C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteDFApp_mc_28_31_30_4_stop:
+    }
+}
+[ @file = "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote DF\source\OneRremoteDFApp.mc"; @line = 1; ]
+<init> {
+}

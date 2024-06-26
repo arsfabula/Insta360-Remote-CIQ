@@ -1,0 +1,232 @@
+[ @file = "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote DF\source\OneRremoteSettingsDelegate.mc"; @line = 1; ]
+using Toybox.WatchUi as :Ui;
+[ @file = "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote DF\source\OneRremoteSettingsDelegate.mc"; @line = 2; ]
+using Toybox.System as :Sys;
+[ @file = "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote DF\source\OneRremoteSettingsDelegate.mc"; @line = 3; ]
+using Toybox.Application as :App;
+[ @file = "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote DF\source\OneRremoteSettingsDelegate.mc"; @line = 5; @position = 4; ]
+var CHmenu;
+[ @file = "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote DF\source\OneRremoteSettingsDelegate.mc"; @line = 9; ]
+class OneRSettingsDelegate extends Ui.Menu2InputDelegate{
+    [ @file = "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote DF\source\OneRremoteSettingsDelegate.mc"; @line = 9; ]
+    <init> {
+    }
+    [ @file = "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote DF\source\OneRremoteSettingsDelegate.mc"; @line = 9; ]
+    static
+    <init> {
+    }
+    [ @file = "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote DF\source\OneRremoteSettingsDelegate.mc"; @line = 11; ]
+    function initialize() as Void {
+C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteSettingsDelegate_mc_11_26_13_4_start:
+[ "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote DF\source\OneRremoteSettingsDelegate.mc" 12 8 ]
+        %tmp.2 = getv ? :Menu2InputDelegate;
+        %tmp.3 = getv function %tmp.2 :initialize;
+        invoke %tmp.2 %tmp.3();
+C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteSettingsDelegate_mc_11_26_13_4_stop:
+    }
+    [ @file = "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote DF\source\OneRremoteSettingsDelegate.mc"; @line = 15; ]
+    function onSelect(item) {
+C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteSettingsDelegate_mc_15_28_56_1_start:
+[ "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote DF\source\OneRremoteSettingsDelegate.mc" 16 4 ]
+        %tmp.1 = getm $.Toybox.System;
+        %tmp.2 = getv function %tmp.1 :println;
+        %tmp.3 = "[OnSelect - Main]";
+        invoke %tmp.1 %tmp.2(%tmp.3);
+[ "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote DF\source\OneRremoteSettingsDelegate.mc" 17 8 ]
+        %tmp.4 = lgetv %item;
+        %tmp.5 = getv function %tmp.4 :getId;
+        %tmp.6 = invoke %tmp.4 %tmp.5();
+        push %tmp.6;
+        switch %tmp.6 @C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteSettingsDelegate_mc_17_8_51_2_switchStmtEnd;
+C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteSettingsDelegate_mc_17_8_51_2_switchStmtBegin:
+[ "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote DF\source\OneRremoteSettingsDelegate.mc" 18 5 ]
+        %tmp.7 = dup %tmp.6;
+        %tmp.8 = "StartStop";
+        %tmp.9 = getv function %tmp.7 :equals;
+        %tmp.10 = invoke %tmp.7 %tmp.9 (%tmp.8);
+        bt %tmp.10 @C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteSettingsDelegate_mc_18_5_40_8_switchCase;
+[ "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote DF\source\OneRremoteSettingsDelegate.mc" 41 2 ]
+        %tmp.11 = dup %tmp.6;
+        %tmp.12 = "5.7k30";
+        %tmp.13 = getv function %tmp.11 :equals;
+        %tmp.14 = invoke %tmp.11 %tmp.13 (%tmp.12);
+        bt %tmp.14 @C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteSettingsDelegate_mc_41_2_43_8_switchCase;
+[ "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote DF\source\OneRremoteSettingsDelegate.mc" 44 2 ]
+        %tmp.15 = dup %tmp.6;
+        %tmp.16 = "PhotoHDR";
+        %tmp.17 = getv function %tmp.15 :equals;
+        %tmp.18 = invoke %tmp.15 %tmp.17 (%tmp.16);
+        bt %tmp.18 @C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteSettingsDelegate_mc_44_2_46_8_switchCase;
+[ "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote DF\source\OneRremoteSettingsDelegate.mc" 47 2 ]
+        %tmp.19 = dup %tmp.6;
+        %tmp.20 = "item_horaire";
+        %tmp.21 = getv function %tmp.19 :equals;
+        %tmp.22 = invoke %tmp.19 %tmp.21 (%tmp.20);
+        bt %tmp.22 @C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteSettingsDelegate_mc_47_2_48_8_switchCase;
+[ "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote DF\source\OneRremoteSettingsDelegate.mc" 49 2 ]
+        %tmp.23 = dup %tmp.6;
+        %tmp.24 = "item_nbCH";
+        %tmp.25 = getv function %tmp.23 :equals;
+        %tmp.26 = invoke %tmp.23 %tmp.25 (%tmp.24);
+        bt %tmp.26 @C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteSettingsDelegate_mc_49_2_50_17_switchCase;
+C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteSettingsDelegate_mc_17_8_51_2_switchStmtDefault:
+        goto @C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteSettingsDelegate_mc_17_8_51_2_defaultCodeBegin;
+C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteSettingsDelegate_mc_18_5_40_8_switchCase:
+[ "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote DF\source\OneRremoteSettingsDelegate.mc" 19 12 ]
+C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteSettingsDelegate_mc_19_12_39_12_if_stmt:
+        %tmp.28 = getv ? :BLEBarrel;
+        %tmp.29 = getv %tmp.28 :recState;
+        %tmp.31 = getv ? :BLEBarrel;
+        %tmp.32 = getv %tmp.31 :stateStopRec;
+        %tmp.33 = eq %tmp.29 %tmp.32;
+        bf %tmp.33 @C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteSettingsDelegate_mc_19_12_39_12_if_false;
+C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteSettingsDelegate_mc_19_12_39_12_if_true:
+C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteSettingsDelegate_mc_19_62_31_12_start:
+[ "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote DF\source\OneRremoteSettingsDelegate.mc" 20 14 ]
+        %tmp.34 = getv self :BLEBarrel;
+        %tmp.36 = getv ? :BLEBarrel;
+        %tmp.37 = getv %tmp.36 :stateStarting;
+        putv %tmp.34 :recState %tmp.37;
+[ "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote DF\source\OneRremoteSettingsDelegate.mc" 21 17 ]
+        %tmp.38 = "Starting...";
+        putv self :mMessage %tmp.38;
+[ "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote DF\source\OneRremoteSettingsDelegate.mc" 23 17 ]
+C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteSettingsDelegate_mc_23_17_30_17_if_stmt:
+        %tmp.40 = getv ? :BLEBarrel;
+        %tmp.41 = getv %tmp.40 :videoMode;
+        bf %tmp.41 @C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteSettingsDelegate_mc_23_17_30_17_if_false;
+C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteSettingsDelegate_mc_23_17_30_17_if_true:
+C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteSettingsDelegate_mc_23_42_27_17_start:
+[ "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote DF\source\OneRremoteSettingsDelegate.mc" 24 18 ]
+        %tmp.43 = getv ? :bleDevice;
+        %tmp.44 = getv function %tmp.43 :sendCMD;
+        %tmp.46 = getv ? :BLEBarrel;
+        %tmp.47 = getv %tmp.46 :currentMode;
+        invoke %tmp.43 %tmp.44(%tmp.47);
+[ "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote DF\source\OneRremoteSettingsDelegate.mc" 25 18 ]
+        %tmp.49 = getv ? :bleDevice;
+        %tmp.50 = getv function %tmp.49 :sendCMD;
+        %tmp.52 = getv ? :BLEBarrel;
+        %tmp.53 = getv %tmp.52 :cmdApply;
+        invoke %tmp.49 %tmp.50(%tmp.53);
+[ "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote DF\source\OneRremoteSettingsDelegate.mc" 26 18 ]
+        %tmp.55 = getv ? :bleDevice;
+        %tmp.56 = getv function %tmp.55 :sendCMD;
+        %tmp.58 = getv ? :BLEBarrel;
+        %tmp.59 = getv %tmp.58 :cmdStartRec;
+        invoke %tmp.55 %tmp.56(%tmp.59);
+C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteSettingsDelegate_mc_23_42_27_17_stop:
+        goto @C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteSettingsDelegate_mc_23_17_30_17_if_end;
+C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteSettingsDelegate_mc_23_17_30_17_if_false:
+C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteSettingsDelegate_mc_27_24_30_17_start:
+[ "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote DF\source\OneRremoteSettingsDelegate.mc" 28 21 ]
+        %tmp.61 = getv ? :bleDevice;
+        %tmp.62 = getv function %tmp.61 :sendCMD;
+        %tmp.64 = getv ? :BLEBarrel;
+        %tmp.65 = getv %tmp.64 :cmdApply;
+        invoke %tmp.61 %tmp.62(%tmp.65);
+[ "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote DF\source\OneRremoteSettingsDelegate.mc" 29 18 ]
+        %tmp.67 = getv ? :bleDevice;
+        %tmp.68 = getv function %tmp.67 :sendCMD;
+        %tmp.70 = getv ? :BLEBarrel;
+        %tmp.71 = getv %tmp.70 :currentMode;
+        invoke %tmp.67 %tmp.68(%tmp.71);
+C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteSettingsDelegate_mc_27_24_30_17_stop:
+C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteSettingsDelegate_mc_23_17_30_17_if_end:
+C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteSettingsDelegate_mc_19_62_31_12_stop:
+        goto @C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteSettingsDelegate_mc_19_12_39_12_if_end;
+C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteSettingsDelegate_mc_19_12_39_12_if_false:
+[ "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote DF\source\OneRremoteSettingsDelegate.mc" 31 19 ]
+C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteSettingsDelegate_mc_31_19_39_12_if_stmt:
+        %tmp.73 = getv ? :BLEBarrel;
+        %tmp.74 = getv %tmp.73 :recState;
+        %tmp.76 = getv ? :BLEBarrel;
+        %tmp.77 = getv %tmp.76 :stateStartRec;
+        %tmp.78 = eq %tmp.74 %tmp.77;
+        bf %tmp.78 @C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteSettingsDelegate_mc_31_19_39_12_if_false;
+C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteSettingsDelegate_mc_31_19_39_12_if_true:
+C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteSettingsDelegate_mc_31_70_35_12_start:
+[ "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote DF\source\OneRremoteSettingsDelegate.mc" 32 14 ]
+        %tmp.79 = getv self :BLEBarrel;
+        %tmp.81 = getv ? :BLEBarrel;
+        %tmp.82 = getv %tmp.81 :stateStopping;
+        putv %tmp.79 :recState %tmp.82;
+[ "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote DF\source\OneRremoteSettingsDelegate.mc" 33 17 ]
+        %tmp.83 = "Stopping...";
+        putv self :mMessage %tmp.83;
+[ "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote DF\source\OneRremoteSettingsDelegate.mc" 34 17 ]
+        %tmp.85 = getv ? :bleDevice;
+        %tmp.86 = getv function %tmp.85 :sendCMD;
+        %tmp.88 = getv ? :BLEBarrel;
+        %tmp.89 = getv %tmp.88 :cmdStopRec;
+        invoke %tmp.85 %tmp.86(%tmp.89);
+C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteSettingsDelegate_mc_31_70_35_12_stop:
+        goto @C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteSettingsDelegate_mc_31_19_39_12_if_end;
+C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteSettingsDelegate_mc_31_19_39_12_if_false:
+C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteSettingsDelegate_mc_31_19_39_12_if_end:
+C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteSettingsDelegate_mc_19_12_39_12_if_end:
+[ "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote DF\source\OneRremoteSettingsDelegate.mc" 40 3 ]
+        goto break @C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteSettingsDelegate_mc_17_8_51_2_switchStmtEnd;
+C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteSettingsDelegate_mc_41_2_43_8_switchCase:
+[ "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote DF\source\OneRremoteSettingsDelegate.mc" 42 6 ]
+        %tmp.91 = getv ? :InputDelegate;
+        %tmp.92 = getv function %tmp.91 :switchMode;
+        %tmp.93 = 0;
+        invoke %tmp.91 %tmp.92(%tmp.93);
+[ "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote DF\source\OneRremoteSettingsDelegate.mc" 43 3 ]
+        goto break @C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteSettingsDelegate_mc_17_8_51_2_switchStmtEnd;
+C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteSettingsDelegate_mc_44_2_46_8_switchCase:
+[ "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote DF\source\OneRremoteSettingsDelegate.mc" 45 3 ]
+        %tmp.95 = getv ? :InputDelegate;
+        %tmp.96 = getv function %tmp.95 :switchMode;
+        %tmp.97 = 10;
+        invoke %tmp.95 %tmp.96(%tmp.97);
+[ "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote DF\source\OneRremoteSettingsDelegate.mc" 46 3 ]
+        goto break @C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteSettingsDelegate_mc_17_8_51_2_switchStmtEnd;
+C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteSettingsDelegate_mc_47_2_48_8_switchCase:
+[ "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote DF\source\OneRremoteSettingsDelegate.mc" 48 3 ]
+        goto break @C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteSettingsDelegate_mc_17_8_51_2_switchStmtEnd;
+C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteSettingsDelegate_mc_49_2_50_17_switchCase:
+[ "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote DF\source\OneRremoteSettingsDelegate.mc" 50 12 ]
+        goto break @C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteSettingsDelegate_mc_17_8_51_2_switchStmtEnd;
+C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteSettingsDelegate_mc_17_8_51_2_defaultCodeBegin:
+C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteSettingsDelegate_mc_17_8_51_2_switchStmtEnd:
+        pop;
+[ "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote DF\source\OneRremoteSettingsDelegate.mc" 52 8 ]
+        %tmp.99 = getv ? :BLEBarrel;
+        %tmp.100 = getv %tmp.99 :currentLabel;
+        putv self :mMessage %tmp.100;
+[ "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote DF\source\OneRremoteSettingsDelegate.mc" 53 8 ]
+        %tmp.102 = getv ? :WatchUi;
+        %tmp.103 = getv function %tmp.102 :popView;
+        %tmp.105 = getv ? :WatchUi;
+        %tmp.106 = getv %tmp.105 :SLIDE_IMMEDIATE;
+        invoke %tmp.102 %tmp.103(%tmp.106);
+[ "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote DF\source\OneRremoteSettingsDelegate.mc" 55 2 ]
+        %tmp.107 = true;
+        ret %tmp.107;
+C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteSettingsDelegate_mc_15_28_56_1_stop:
+    }
+    [ @file = "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote DF\source\OneRremoteSettingsDelegate.mc"; @line = 58; ]
+    function onBack() {
+C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteSettingsDelegate_mc_58_19_62_4_start:
+[ "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote DF\source\OneRremoteSettingsDelegate.mc" 59 5 ]
+        %tmp.1 = getm $.Toybox.System;
+        %tmp.2 = getv function %tmp.1 :println;
+        %tmp.3 = "[onBack - Main]";
+        invoke %tmp.1 %tmp.2(%tmp.3);
+[ "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote DF\source\OneRremoteSettingsDelegate.mc" 60 8 ]
+        %tmp.5 = getv ? :WatchUi;
+        %tmp.6 = getv function %tmp.5 :popView;
+        %tmp.8 = getv ? :WatchUi;
+        %tmp.9 = getv %tmp.8 :SLIDE_IMMEDIATE;
+        invoke %tmp.5 %tmp.6(%tmp.9);
+[ "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote DF\source\OneRremoteSettingsDelegate.mc" 61 2 ]
+        %tmp.10 = false;
+        ret %tmp.10;
+C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteSettingsDelegate_mc_58_19_62_4_stop:
+    }
+}
+[ @file = "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote DF\source\OneRremoteSettingsDelegate.mc"; @line = 1; ]
+<init> {
+}
