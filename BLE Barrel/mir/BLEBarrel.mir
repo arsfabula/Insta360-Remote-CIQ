@@ -2324,7 +2324,7 @@ module BLEBarrel {
     [ @file = "C:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\BLEBarrel.mc"; @line = 15; @position = 6; ]
     const DEVICE_NAME4 = "GO3 ";
     [ @file = "C:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\BLEBarrel.mc"; @line = 16; @position = 6; ]
-    const DEVICE_NAME5 = "ACE ";
+    const DEVICE_NAME5 = "Ace ";
     [ @file = "C:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\BLEBarrel.mc"; @line = 17; @position = 6; ]
     const DEVICE_NAME6 = "X4 ";
     [ @file = "C:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\BLEBarrel.mc"; @line = 19; @position = 6; ]

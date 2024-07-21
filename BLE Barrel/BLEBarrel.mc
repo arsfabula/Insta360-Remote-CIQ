@@ -13,7 +13,7 @@ const DEVICE_NAME = "ONE "; // Full name is "ONE R DV6W5S";
 const DEVICE_NAME2 = "GO2 "; 
 const DEVICE_NAME3 = "X3 "; // Full name is "X3 7MN5JB";
 const DEVICE_NAME4 = "GO3 "; 
-const DEVICE_NAME5 = "ACE ";
+const DEVICE_NAME5 = "Ace ";
 const DEVICE_NAME6 = "X4 ";
 
 const LBS_SERVICE = BluetoothLowEnergy.stringToUuid("0000BE80-0000-1000-8000-00805F9B34FB");    // Camera Service entry point

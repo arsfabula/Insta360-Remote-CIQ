@@ -1,25 +1,1372 @@
-[ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B3589-00\source\Rez.mcgen"; @line = 1; ]
+[ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 1; ]
 import Toybox.Lang;
-[ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B3589-00\source\Rez.mcgen"; @line = 2; ]
+[ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 2; ]
 using Toybox.WatchUi;
-[ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B3589-00\source\Rez.mcgen"; @line = 3; ]
+[ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 3; ]
 using Toybox.WatchUi as :Ui;
-[ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B3589-00\source\Rez.mcgen"; @line = 4; ]
+[ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 4; ]
 using Toybox.Graphics;
-[ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B3589-00\source\Rez.mcgen"; @line = 5; ]
+[ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 5; ]
 using Toybox.Graphics as :Gfx;
-[ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B3589-00\source\Rez.mcgen"; @line = 7; ]
+[ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 7; ]
 module BLEBarrel {
-    [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B3589-00\source\Rez.mcgen"; @line = 7; ]
+    [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 7; ]
     <init> {
     }
-    [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B3589-00\source\Rez.mcgen"; @line = 8; ]
+    [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 8; ]
     module Rez {
-        [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B3589-00\source\Rez.mcgen"; @line = 8; ]
+        [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 8; ]
         <init> {
+        }
+        [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 9; ]
+        module Styles {
+            [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 9; ]
+            <init> {
+            }
+            [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 10; ]
+            module prompt_font_enhanced_readability__body_with_title {
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 10; ]
+                <init> {
+                }
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 11; @position = 22; ]
+                const exclude as Boolean = true;
+            }
+            [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 14; ]
+            module system_size__menu_header {
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 14; ]
+                <init> {
+                }
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 15; @position = 22; ]
+                const width as Number = 260;
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 16; @position = 22; ]
+                const height as Number = 81;
+            }
+            [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 19; ]
+            module system_loc__hint_button_left_bottom {
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 19; ]
+                <init> {
+                }
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 20; @position = 22; ]
+                const x as Number = 10;
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 21; @position = 22; ]
+                const y as Number = 172;
+            }
+            [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 24; ]
+            module prompt_font_enhanced_readability__body_no_title {
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 24; ]
+                <init> {
+                }
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 25; @position = 22; ]
+                const exclude as Boolean = true;
+            }
+            [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 28; ]
+            module prompt_loc__body_no_title {
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 28; ]
+                <init> {
+                }
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 29; @position = 22; ]
+                const x as Number = 26;
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 30; @position = 22; ]
+                const y as Number = 26;
+            }
+            [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 33; ]
+            module system_icon_dark__about {
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 33; ]
+                <init> {
+                }
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 34; @position = 22; ]
+                const filename as String = "C:\\Users\\greg\\AppData\\Roaming\\Garmin\\ConnectIQ\\Devices\\fenix7pro\\system_icon_dark__about.svg";
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 35; @position = 22; ]
+                const compress as String = "true";
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 36; @position = 22; ]
+                const dithering as String = "none";
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 37; @position = 22; ]
+                const automaticPalette as String = "true";
+            }
+            [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 40; ]
+            module system_icon_light__question {
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 40; ]
+                <init> {
+                }
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 41; @position = 22; ]
+                const filename as String = "C:\\Users\\greg\\AppData\\Roaming\\Garmin\\ConnectIQ\\Devices\\fenix7pro\\system_icon_light__question.svg";
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 42; @position = 22; ]
+                const dithering as String = "none";
+            }
+            [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 45; ]
+            module system_loc__hint_button_left_top {
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 45; ]
+                <init> {
+                }
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 46; @position = 22; ]
+                const exclude as Boolean = true;
+            }
+            [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 49; ]
+            module prompt_font__title {
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 49; ]
+                <init> {
+[ "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen" 50 22 ]
+                    %tmp.1 = getm $.Toybox.Graphics;
+                    %tmp.2 = getv %tmp.1 :TEXT_JUSTIFY_CENTER;
+                    %tmp.3 = getm $.Toybox.Graphics;
+                    %tmp.4 = getv %tmp.3 :TEXT_JUSTIFY_VCENTER;
+                    %tmp.5 = bitor %tmp.2 %tmp.4;
+                    putv self :justification %tmp.5;
+[ "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen" 51 22 ]
+                    %tmp.6 = getm $.Toybox.Graphics;
+                    %tmp.7 = getv %tmp.6 :FONT_XTINY;
+                    putv self :font %tmp.7;
+                }
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 50; @position = 22; ]
+                const justification;
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 51; @position = 22; ]
+                const font;
+            }
+            [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 54; ]
+            module system_icon_dark__discard {
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 54; ]
+                <init> {
+                }
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 55; @position = 22; ]
+                const filename as String = "C:\\Users\\greg\\AppData\\Roaming\\Garmin\\ConnectIQ\\Devices\\fenix7pro\\system_icon_dark__discard.svg";
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 56; @position = 22; ]
+                const compress as String = "true";
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 57; @position = 22; ]
+                const dithering as String = "none";
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 58; @position = 22; ]
+                const automaticPalette as String = "true";
+            }
+            [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 61; ]
+            module system_size__menu_item {
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 61; ]
+                <init> {
+                }
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 62; @position = 22; ]
+                const width as Number = 260;
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 63; @position = 22; ]
+                const height as Number = 68;
+            }
+            [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 66; ]
+            module system_color_dark__text {
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 66; ]
+                <init> {
+[ "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen" 68 22 ]
+                    %tmp.8 = getm $.Toybox.Graphics;
+                    %tmp.9 = getv %tmp.8 :COLOR_TRANSPARENT;
+                    putv self :background %tmp.9;
+                }
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 67; @position = 22; ]
+                const color as Number = 0xFFFFFF;
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 68; @position = 22; ]
+                const background;
+            }
+            [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 71; ]
+            module system_icon_destructive__discard {
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 71; ]
+                <init> {
+                }
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 72; @position = 22; ]
+                const filename as String = "C:\\Users\\greg\\AppData\\Roaming\\Garmin\\ConnectIQ\\Devices\\fenix7pro\\system_icon_destructive__discard.svg";
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 73; @position = 22; ]
+                const dithering as String = "none";
+            }
+            [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 76; ]
+            module system_icon_dark__hint_action_menu {
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 76; ]
+                <init> {
+                }
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 77; @position = 22; ]
+                const filename as String = "C:\\Users\\greg\\AppData\\Roaming\\Garmin\\ConnectIQ\\Devices\\fenix7pro\\system_icon_dark__hint_button_right_top.svg";
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 78; @position = 22; ]
+                const dithering as String = "none";
+            }
+            [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 81; ]
+            module prompt_size__title {
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 81; ]
+                <init> {
+                }
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 82; @position = 22; ]
+                const width as Number = 208;
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 83; @position = 22; ]
+                const height as Number = 39;
+            }
+            [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 86; ]
+            module confirmation_font__body {
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 86; ]
+                <init> {
+[ "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen" 87 22 ]
+                    %tmp.10 = getm $.Toybox.Graphics;
+                    %tmp.11 = getv %tmp.10 :TEXT_JUSTIFY_CENTER;
+                    %tmp.12 = getm $.Toybox.Graphics;
+                    %tmp.13 = getv %tmp.12 :TEXT_JUSTIFY_VCENTER;
+                    %tmp.14 = bitor %tmp.11 %tmp.13;
+                    putv self :justification %tmp.14;
+[ "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen" 88 22 ]
+                    %tmp.15 = getm $.Toybox.Graphics;
+                    %tmp.16 = getv %tmp.15 :FONT_TINY;
+                    putv self :font %tmp.16;
+                }
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 87; @position = 22; ]
+                const justification;
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 88; @position = 22; ]
+                const font;
+            }
+            [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 91; ]
+            module system_color_dark__background {
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 91; ]
+                <init> {
+                }
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 92; @position = 22; ]
+                const color as Number = 0x000000;
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 93; @position = 22; ]
+                const background as Number = 0x000000;
+            }
+            [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 96; ]
+            module system_icon_destructive__hint_button_left_top {
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 96; ]
+                <init> {
+                }
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 97; @position = 22; ]
+                const filename as String = "C:\\Users\\greg\\AppData\\Roaming\\Garmin\\ConnectIQ\\Devices\\fenix7pro\\system_icon_destructive__hint_button_left_top.svg";
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 98; @position = 22; ]
+                const dithering as String = "none";
+            }
+            [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 101; ]
+            module system_size__launch_icon {
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 101; ]
+                <init> {
+                }
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 102; @position = 22; ]
+                const scaleX as Number = 40;
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 103; @position = 22; ]
+                const scaleY as Number = 40;
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 104; @position = 22; ]
+                const scaleRelativeTo as String = "screen";
+            }
+            [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 107; ]
+            module confirmation_input__confirm {
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 107; ]
+                <init> {
+[ "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen" 108 22 ]
+                    %tmp.17 = getm $.Toybox.WatchUi;
+                    %tmp.18 = getv %tmp.17 :KEY_ENTER;
+                    putv self :button %tmp.18;
+                }
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 108; @position = 22; ]
+                const button;
+            }
+            [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 111; ]
+            module prompt_font__body_with_title {
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 111; ]
+                <init> {
+[ "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen" 112 22 ]
+                    %tmp.19 = getm $.Toybox.Graphics;
+                    %tmp.20 = getv %tmp.19 :TEXT_JUSTIFY_CENTER;
+                    putv self :justification %tmp.20;
+[ "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen" 113 22 ]
+                    %tmp.21 = getm $.Toybox.Graphics;
+                    %tmp.22 = getv %tmp.21 :FONT_TINY;
+                    putv self :font %tmp.22;
+                }
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 112; @position = 22; ]
+                const justification;
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 113; @position = 22; ]
+                const font;
+            }
+            [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 116; ]
+            module confirmation_loc__body {
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 116; ]
+                <init> {
+                }
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 117; @position = 22; ]
+                const x as Number = 52;
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 118; @position = 22; ]
+                const y as Number = 52;
+            }
+            [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 121; ]
+            module system_icon_destructive__hint_button_left_bottom {
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 121; ]
+                <init> {
+                }
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 122; @position = 22; ]
+                const filename as String = "C:\\Users\\greg\\AppData\\Roaming\\Garmin\\ConnectIQ\\Devices\\fenix7pro\\system_icon_destructive__hint_button_left_bottom.svg";
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 123; @position = 22; ]
+                const dithering as String = "none";
+            }
+            [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 126; ]
+            module prompt_color_dark__background {
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 126; ]
+                <init> {
+                }
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 127; @position = 22; ]
+                const color as Number = 0x000000;
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 128; @position = 22; ]
+                const background as Number = 0x000000;
+            }
+            [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 131; ]
+            module system_icon_destructive__hint_action_menu {
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 131; ]
+                <init> {
+                }
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 132; @position = 22; ]
+                const filename as String = "C:\\Users\\greg\\AppData\\Roaming\\Garmin\\ConnectIQ\\Devices\\fenix7pro\\system_icon_destructive__hint_button_right_top.svg";
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 133; @position = 22; ]
+                const dithering as String = "none";
+            }
+            [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 136; ]
+            module system_loc__hint_action_menu {
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 136; ]
+                <init> {
+                }
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 137; @position = 22; ]
+                const x as Number = 225;
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 138; @position = 22; ]
+                const y as Number = 48;
+            }
+            [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 141; ]
+            module confirmation_icon__hint_confirm {
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 141; ]
+                <init> {
+                }
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 142; @position = 22; ]
+                const filename as String = "C:\\Users\\greg\\AppData\\Roaming\\Garmin\\ConnectIQ\\Devices\\fenix7pro\\confirmation_icon__hint_completion.svg";
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 143; @position = 22; ]
+                const dithering as String = "none";
+            }
+            [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 146; ]
+            module system_loc__hint_button_left_middle {
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 146; ]
+                <init> {
+                }
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 147; @position = 22; ]
+                const x as Number = 3;
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 148; @position = 22; ]
+                const y as Number = 108;
+            }
+            [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 151; ]
+            module prompt_size__body_no_title {
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 151; ]
+                <init> {
+                }
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 152; @position = 22; ]
+                const width as Number = 208;
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 153; @position = 22; ]
+                const height as Number = 208;
+            }
+            [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 156; ]
+            module system_icon_light__hint_button_left_top {
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 156; ]
+                <init> {
+                }
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 157; @position = 22; ]
+                const filename as String = "C:\\Users\\greg\\AppData\\Roaming\\Garmin\\ConnectIQ\\Devices\\fenix7pro\\system_icon_light__hint_button_left_top.svg";
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 158; @position = 22; ]
+                const dithering as String = "none";
+            }
+            [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 161; ]
+            module prompt_color_light__background {
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 161; ]
+                <init> {
+                }
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 162; @position = 22; ]
+                const color as Number = 0xFFFFFF;
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 163; @position = 22; ]
+                const background as Number = 0xFFFFFF;
+            }
+            [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 166; ]
+            module confirmation_input__delete {
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 166; ]
+                <init> {
+[ "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen" 167 22 ]
+                    %tmp.23 = getm $.Toybox.WatchUi;
+                    %tmp.24 = getv %tmp.23 :KEY_ENTER;
+                    putv self :button %tmp.24;
+                }
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 167; @position = 22; ]
+                const button;
+            }
+            [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 170; ]
+            module system_icon_dark__hint_button_left_top {
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 170; ]
+                <init> {
+                }
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 171; @position = 22; ]
+                const filename as String = "C:\\Users\\greg\\AppData\\Roaming\\Garmin\\ConnectIQ\\Devices\\fenix7pro\\system_icon_dark__hint_button_left_top.svg";
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 172; @position = 22; ]
+                const dithering as String = "none";
+            }
+            [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 175; ]
+            module system_input__action_menu {
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 175; ]
+                <init> {
+[ "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen" 176 22 ]
+                    %tmp.25 = getm $.Toybox.WatchUi;
+                    %tmp.26 = getv %tmp.25 :KEY_ENTER;
+                    putv self :button %tmp.26;
+                }
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 176; @position = 22; ]
+                const button;
+            }
+            [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 179; ]
+            module system_icon_light__save {
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 179; ]
+                <init> {
+                }
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 180; @position = 22; ]
+                const filename as String = "C:\\Users\\greg\\AppData\\Roaming\\Garmin\\ConnectIQ\\Devices\\fenix7pro\\system_icon_light__save.svg";
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 181; @position = 22; ]
+                const dithering as String = "none";
+            }
+            [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 184; ]
+            module prompt_color_light__body {
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 184; ]
+                <init> {
+[ "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen" 186 22 ]
+                    %tmp.27 = getm $.Toybox.Graphics;
+                    %tmp.28 = getv %tmp.27 :COLOR_TRANSPARENT;
+                    putv self :background %tmp.28;
+                }
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 185; @position = 22; ]
+                const color as Number = 0x000000;
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 186; @position = 22; ]
+                const background;
+            }
+            [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 189; ]
+            module system_loc__subwindow {
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 189; ]
+                <init> {
+                }
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 190; @position = 22; ]
+                const exclude as Boolean = true;
+            }
+            [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 193; ]
+            module system_icon_light__warning {
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 193; ]
+                <init> {
+                }
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 194; @position = 22; ]
+                const filename as String = "C:\\Users\\greg\\AppData\\Roaming\\Garmin\\ConnectIQ\\Devices\\fenix7pro\\system_icon_light__warning.svg";
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 195; @position = 22; ]
+                const dithering as String = "none";
+            }
+            [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 198; ]
+            module confirmation_color_light__body {
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 198; ]
+                <init> {
+[ "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen" 200 22 ]
+                    %tmp.29 = getm $.Toybox.Graphics;
+                    %tmp.30 = getv %tmp.29 :COLOR_TRANSPARENT;
+                    putv self :background %tmp.30;
+                }
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 199; @position = 22; ]
+                const color as Number = 0x000000;
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 200; @position = 22; ]
+                const background;
+            }
+            [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 203; ]
+            module confirmation_icon_light__hint_keep {
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 203; ]
+                <init> {
+                }
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 204; @position = 22; ]
+                const filename as String = "C:\\Users\\greg\\AppData\\Roaming\\Garmin\\ConnectIQ\\Devices\\fenix7pro\\confirmation_icon__hint_keep.svg";
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 205; @position = 22; ]
+                const dithering as String = "none";
+            }
+            [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 208; ]
+            module activity_color_light__background {
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 208; ]
+                <init> {
+                }
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 209; @position = 22; ]
+                const color as Number = 0xFFFFFF;
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 210; @position = 22; ]
+                const background as Number = 0xFFFFFF;
+            }
+            [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 213; ]
+            module system_icon_positive__hint_button_right_top {
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 213; ]
+                <init> {
+                }
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 214; @position = 22; ]
+                const filename as String = "C:\\Users\\greg\\AppData\\Roaming\\Garmin\\ConnectIQ\\Devices\\fenix7pro\\system_icon_positive__hint_button_right_top.svg";
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 215; @position = 22; ]
+                const dithering as String = "none";
+            }
+            [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 218; ]
+            module system_size__screen {
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 218; ]
+                <init> {
+                }
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 219; @position = 22; ]
+                const width as Number = 260;
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 220; @position = 22; ]
+                const height as Number = 260;
+            }
+            [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 223; ]
+            module system_icon_destructive__hint_button_right_bottom {
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 223; ]
+                <init> {
+                }
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 224; @position = 22; ]
+                const filename as String = "C:\\Users\\greg\\AppData\\Roaming\\Garmin\\ConnectIQ\\Devices\\fenix7pro\\system_icon_destructive__hint_button_right_bottom.svg";
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 225; @position = 22; ]
+                const dithering as String = "none";
+            }
+            [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 228; ]
+            module system_color_light__background {
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 228; ]
+                <init> {
+                }
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 229; @position = 22; ]
+                const color as Number = 0xFFFFFF;
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 230; @position = 22; ]
+                const background as Number = 0xFFFFFF;
+            }
+            [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 233; ]
+            module system_icon_destructive__hint_button_right_top {
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 233; ]
+                <init> {
+                }
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 234; @position = 22; ]
+                const filename as String = "C:\\Users\\greg\\AppData\\Roaming\\Garmin\\ConnectIQ\\Devices\\fenix7pro\\system_icon_destructive__hint_button_right_top.svg";
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 235; @position = 22; ]
+                const dithering as String = "none";
+            }
+            [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 238; ]
+            module confirmation_loc__hint_confirm {
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 238; ]
+                <init> {
+                }
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 239; @position = 22; ]
+                const x as Number = 210;
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 240; @position = 22; ]
+                const y as Number = 48;
+            }
+            [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 243; ]
+            module activity_color_dark__text {
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 243; ]
+                <init> {
+[ "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen" 245 22 ]
+                    %tmp.31 = getm $.Toybox.Graphics;
+                    %tmp.32 = getv %tmp.31 :COLOR_TRANSPARENT;
+                    putv self :background %tmp.32;
+                }
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 244; @position = 22; ]
+                const color as Number = 0xFFFFFF;
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 245; @position = 22; ]
+                const background;
+            }
+            [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 248; ]
+            module confirmation_input__keep {
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 248; ]
+                <init> {
+[ "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen" 249 22 ]
+                    %tmp.33 = getm $.Toybox.WatchUi;
+                    %tmp.34 = getv %tmp.33 :KEY_DOWN;
+                    putv self :button %tmp.34;
+                }
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 249; @position = 22; ]
+                const button;
+            }
+            [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 252; ]
+            module prompt_loc__body_with_title {
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 252; ]
+                <init> {
+                }
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 253; @position = 22; ]
+                const x as Number = 26;
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 254; @position = 22; ]
+                const y as Number = 78;
+            }
+            [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 257; ]
+            module system_icon_dark__search {
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 257; ]
+                <init> {
+                }
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 258; @position = 22; ]
+                const filename as String = "C:\\Users\\greg\\AppData\\Roaming\\Garmin\\ConnectIQ\\Devices\\fenix7pro\\system_icon_dark__search.svg";
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 259; @position = 22; ]
+                const compress as String = "true";
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 260; @position = 22; ]
+                const dithering as String = "none";
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 261; @position = 22; ]
+                const automaticPalette as String = "true";
+            }
+            [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 264; ]
+            module activity_color_light__text {
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 264; ]
+                <init> {
+[ "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen" 266 22 ]
+                    %tmp.35 = getm $.Toybox.Graphics;
+                    %tmp.36 = getv %tmp.35 :COLOR_TRANSPARENT;
+                    putv self :background %tmp.36;
+                }
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 265; @position = 22; ]
+                const color as Number = 0x000000;
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 266; @position = 22; ]
+                const background;
+            }
+            [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 269; ]
+            module confirmation_icon__hint_keep {
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 269; ]
+                <init> {
+                }
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 270; @position = 22; ]
+                const filename as String = "C:\\Users\\greg\\AppData\\Roaming\\Garmin\\ConnectIQ\\Devices\\fenix7pro\\confirmation_icon__hint_keep.svg";
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 271; @position = 22; ]
+                const dithering as String = "none";
+            }
+            [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 274; ]
+            module system_icon_dark__save {
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 274; ]
+                <init> {
+                }
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 275; @position = 22; ]
+                const filename as String = "C:\\Users\\greg\\AppData\\Roaming\\Garmin\\ConnectIQ\\Devices\\fenix7pro\\system_icon_dark__save.svg";
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 276; @position = 22; ]
+                const compress as String = "true";
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 277; @position = 22; ]
+                const dithering as String = "none";
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 278; @position = 22; ]
+                const automaticPalette as String = "true";
+            }
+            [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 281; ]
+            module system_icon_destructive__hint_button_left_middle {
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 281; ]
+                <init> {
+                }
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 282; @position = 22; ]
+                const filename as String = "C:\\Users\\greg\\AppData\\Roaming\\Garmin\\ConnectIQ\\Devices\\fenix7pro\\system_icon_destructive__hint_button_left_middle.svg";
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 283; @position = 22; ]
+                const dithering as String = "none";
+            }
+            [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 286; ]
+            module system_icon_light__search {
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 286; ]
+                <init> {
+                }
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 287; @position = 22; ]
+                const filename as String = "C:\\Users\\greg\\AppData\\Roaming\\Garmin\\ConnectIQ\\Devices\\fenix7pro\\system_icon_light__search.svg";
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 288; @position = 22; ]
+                const dithering as String = "none";
+            }
+            [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 291; ]
+            module system_icon_dark__hint_button_left_bottom {
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 291; ]
+                <init> {
+                }
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 292; @position = 22; ]
+                const filename as String = "C:\\Users\\greg\\AppData\\Roaming\\Garmin\\ConnectIQ\\Devices\\fenix7pro\\system_icon_dark__hint_button_left_bottom.svg";
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 293; @position = 22; ]
+                const dithering as String = "none";
+            }
+            [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 296; ]
+            module system_icon_positive__hint_button_left_top {
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 296; ]
+                <init> {
+                }
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 297; @position = 22; ]
+                const filename as String = "C:\\Users\\greg\\AppData\\Roaming\\Garmin\\ConnectIQ\\Devices\\fenix7pro\\system_icon_positive__hint_button_left_top.svg";
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 298; @position = 22; ]
+                const dithering as String = "none";
+            }
+            [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 301; ]
+            module system_loc__hint_button_right_bottom {
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 301; ]
+                <init> {
+                }
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 302; @position = 22; ]
+                const x as Number = 225;
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 303; @position = 22; ]
+                const y as Number = 172;
+            }
+            [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 306; ]
+            module confirmation_icon_dark__hint_reject {
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 306; ]
+                <init> {
+                }
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 307; @position = 22; ]
+                const filename as String = "C:\\Users\\greg\\AppData\\Roaming\\Garmin\\ConnectIQ\\Devices\\fenix7pro\\confirmation_icon__hint_reject.svg";
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 308; @position = 22; ]
+                const dithering as String = "none";
+            }
+            [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 311; ]
+            module confirmation_color_dark__body {
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 311; ]
+                <init> {
+[ "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen" 313 22 ]
+                    %tmp.37 = getm $.Toybox.Graphics;
+                    %tmp.38 = getv %tmp.37 :COLOR_TRANSPARENT;
+                    putv self :background %tmp.38;
+                }
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 312; @position = 22; ]
+                const color as Number = 0xFFFFFF;
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 313; @position = 22; ]
+                const background;
+            }
+            [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 316; ]
+            module confirmation_icon_light__hint_confirm {
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 316; ]
+                <init> {
+                }
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 317; @position = 22; ]
+                const filename as String = "C:\\Users\\greg\\AppData\\Roaming\\Garmin\\ConnectIQ\\Devices\\fenix7pro\\confirmation_icon__hint_completion.svg";
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 318; @position = 22; ]
+                const dithering as String = "none";
+            }
+            [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 321; ]
+            module prompt_color_dark__title {
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 321; ]
+                <init> {
+[ "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen" 323 22 ]
+                    %tmp.39 = getm $.Toybox.Graphics;
+                    %tmp.40 = getv %tmp.39 :COLOR_TRANSPARENT;
+                    putv self :background %tmp.40;
+                }
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 322; @position = 22; ]
+                const color as Number = 0xFFFFFF;
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 323; @position = 22; ]
+                const background;
+            }
+            [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 326; ]
+            module system_icon_destructive__cancel {
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 326; ]
+                <init> {
+                }
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 327; @position = 22; ]
+                const filename as String = "C:\\Users\\greg\\AppData\\Roaming\\Garmin\\ConnectIQ\\Devices\\fenix7pro\\system_icon_destructive__cancel.svg";
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 328; @position = 22; ]
+                const dithering as String = "none";
+            }
+            [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 331; ]
+            module system_icon_light__hint_button_right_bottom {
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 331; ]
+                <init> {
+                }
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 332; @position = 22; ]
+                const filename as String = "C:\\Users\\greg\\AppData\\Roaming\\Garmin\\ConnectIQ\\Devices\\fenix7pro\\system_icon_light__hint_button_right_bottom.svg";
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 333; @position = 22; ]
+                const dithering as String = "none";
+            }
+            [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 336; ]
+            module prompt_loc__title {
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 336; ]
+                <init> {
+                }
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 337; @position = 22; ]
+                const x as Number = 26;
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 338; @position = 22; ]
+                const y as Number = 19;
+            }
+            [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 341; ]
+            module confirmation_font_enhanced_readability__body {
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 341; ]
+                <init> {
+                }
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 342; @position = 22; ]
+                const exclude as Boolean = true;
+            }
+            [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 345; ]
+            module prompt_color_light__title {
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 345; ]
+                <init> {
+[ "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen" 347 22 ]
+                    %tmp.41 = getm $.Toybox.Graphics;
+                    %tmp.42 = getv %tmp.41 :COLOR_TRANSPARENT;
+                    putv self :background %tmp.42;
+                }
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 346; @position = 22; ]
+                const color as Number = 0x000000;
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 347; @position = 22; ]
+                const background;
+            }
+            [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 350; ]
+            module system_icon_dark__hint_button_right_top {
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 350; ]
+                <init> {
+                }
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 351; @position = 22; ]
+                const filename as String = "C:\\Users\\greg\\AppData\\Roaming\\Garmin\\ConnectIQ\\Devices\\fenix7pro\\system_icon_dark__hint_button_right_top.svg";
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 352; @position = 22; ]
+                const dithering as String = "none";
+            }
+            [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 355; ]
+            module system_icon_dark__hint_button_left_middle {
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 355; ]
+                <init> {
+                }
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 356; @position = 22; ]
+                const filename as String = "C:\\Users\\greg\\AppData\\Roaming\\Garmin\\ConnectIQ\\Devices\\fenix7pro\\system_icon_dark__hint_button_left_middle.svg";
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 357; @position = 22; ]
+                const dithering as String = "none";
+            }
+            [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 360; ]
+            module confirmation_icon_dark__hint_keep {
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 360; ]
+                <init> {
+                }
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 361; @position = 22; ]
+                const filename as String = "C:\\Users\\greg\\AppData\\Roaming\\Garmin\\ConnectIQ\\Devices\\fenix7pro\\confirmation_icon__hint_keep.svg";
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 362; @position = 22; ]
+                const dithering as String = "none";
+            }
+            [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 365; ]
+            module system_icon_light__cancel {
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 365; ]
+                <init> {
+                }
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 366; @position = 22; ]
+                const filename as String = "C:\\Users\\greg\\AppData\\Roaming\\Garmin\\ConnectIQ\\Devices\\fenix7pro\\system_icon_light__cancel.svg";
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 367; @position = 22; ]
+                const dithering as String = "none";
+            }
+            [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 370; ]
+            module confirmation_icon_light__hint_reject {
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 370; ]
+                <init> {
+                }
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 371; @position = 22; ]
+                const filename as String = "C:\\Users\\greg\\AppData\\Roaming\\Garmin\\ConnectIQ\\Devices\\fenix7pro\\confirmation_icon__hint_reject.svg";
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 372; @position = 22; ]
+                const dithering as String = "none";
+            }
+            [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 375; ]
+            module system_icon_light__about {
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 375; ]
+                <init> {
+                }
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 376; @position = 22; ]
+                const filename as String = "C:\\Users\\greg\\AppData\\Roaming\\Garmin\\ConnectIQ\\Devices\\fenix7pro\\system_icon_light__about.svg";
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 377; @position = 22; ]
+                const dithering as String = "none";
+            }
+            [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 380; ]
+            module system_size__toast_icon {
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 380; ]
+                <init> {
+                }
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 381; @position = 22; ]
+                const scaleX as Number = 40;
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 382; @position = 22; ]
+                const scaleY as Number = 40;
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 383; @position = 22; ]
+                const scaleRelativeTo as String = "screen";
+            }
+            [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 386; ]
+            module system_icon_dark__hint_button_right_middle {
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 386; ]
+                <init> {
+                }
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 387; @position = 22; ]
+                const exclude as Boolean = true;
+            }
+            [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 390; ]
+            module confirmation_icon__hint_reject {
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 390; ]
+                <init> {
+                }
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 391; @position = 22; ]
+                const filename as String = "C:\\Users\\greg\\AppData\\Roaming\\Garmin\\ConnectIQ\\Devices\\fenix7pro\\confirmation_icon__hint_reject.svg";
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 392; @position = 22; ]
+                const dithering as String = "none";
+            }
+            [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 395; ]
+            module system_icon_light__hint_action_menu {
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 395; ]
+                <init> {
+                }
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 396; @position = 22; ]
+                const filename as String = "C:\\Users\\greg\\AppData\\Roaming\\Garmin\\ConnectIQ\\Devices\\fenix7pro\\system_icon_light__hint_button_right_top.svg";
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 397; @position = 22; ]
+                const dithering as String = "none";
+            }
+            [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 400; ]
+            module system_icon_light__hint_button_right_middle {
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 400; ]
+                <init> {
+                }
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 401; @position = 22; ]
+                const exclude as Boolean = true;
+            }
+            [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 404; ]
+            module system_icon_destructive__hint_button_right_middle {
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 404; ]
+                <init> {
+                }
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 405; @position = 22; ]
+                const exclude as Boolean = true;
+            }
+            [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 408; ]
+            module confirmation_loc__hint_reject {
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 408; ]
+                <init> {
+                }
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 409; @position = 22; ]
+                const x as Number = 10;
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 410; @position = 22; ]
+                const y as Number = 172;
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 411; @position = 22; ]
+                const horizontalJustification as String = "left";
+            }
+            [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 414; ]
+            module confirmation_icon_dark__hint_delete {
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 414; ]
+                <init> {
+                }
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 415; @position = 22; ]
+                const filename as String = "C:\\Users\\greg\\AppData\\Roaming\\Garmin\\ConnectIQ\\Devices\\fenix7pro\\confirmation_icon__hint_delete.svg";
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 416; @position = 22; ]
+                const dithering as String = "none";
+            }
+            [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 419; ]
+            module activity_color_dark__background {
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 419; ]
+                <init> {
+                }
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 420; @position = 22; ]
+                const color as Number = 0x000000;
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 421; @position = 22; ]
+                const background as Number = 0x000000;
+            }
+            [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 424; ]
+            module system_icon_light__hint_button_left_bottom {
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 424; ]
+                <init> {
+                }
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 425; @position = 22; ]
+                const filename as String = "C:\\Users\\greg\\AppData\\Roaming\\Garmin\\ConnectIQ\\Devices\\fenix7pro\\system_icon_light__hint_button_left_bottom.svg";
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 426; @position = 22; ]
+                const dithering as String = "none";
+            }
+            [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 429; ]
+            module system_icon_positive__hint_button_left_middle {
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 429; ]
+                <init> {
+                }
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 430; @position = 22; ]
+                const filename as String = "C:\\Users\\greg\\AppData\\Roaming\\Garmin\\ConnectIQ\\Devices\\fenix7pro\\system_icon_positive__hint_button_left_middle.svg";
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 431; @position = 22; ]
+                const dithering as String = "none";
+            }
+            [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 434; ]
+            module system_size__menu_icon {
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 434; ]
+                <init> {
+                }
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 435; @position = 22; ]
+                const scaleX as Number = 40;
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 436; @position = 22; ]
+                const scaleY as Number = 40;
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 437; @position = 22; ]
+                const scaleRelativeTo as String = "screen";
+            }
+            [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 440; ]
+            module system_icon_destructive__warning {
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 440; ]
+                <init> {
+                }
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 441; @position = 22; ]
+                const filename as String = "C:\\Users\\greg\\AppData\\Roaming\\Garmin\\ConnectIQ\\Devices\\fenix7pro\\system_icon_destructive__warning.svg";
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 442; @position = 22; ]
+                const dithering as String = "none";
+            }
+            [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 445; ]
+            module system_loc__hint_button_right_middle {
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 445; ]
+                <init> {
+                }
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 446; @position = 22; ]
+                const exclude as Boolean = true;
+            }
+            [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 449; ]
+            module system_icon_dark__cancel {
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 449; ]
+                <init> {
+                }
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 450; @position = 22; ]
+                const filename as String = "C:\\Users\\greg\\AppData\\Roaming\\Garmin\\ConnectIQ\\Devices\\fenix7pro\\system_icon_dark__cancel.svg";
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 451; @position = 22; ]
+                const compress as String = "true";
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 452; @position = 22; ]
+                const dithering as String = "none";
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 453; @position = 22; ]
+                const automaticPalette as String = "true";
+            }
+            [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 456; ]
+            module prompt_size__body_with_title {
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 456; ]
+                <init> {
+                }
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 457; @position = 22; ]
+                const width as Number = 208;
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 458; @position = 22; ]
+                const height as Number = 156;
+            }
+            [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 461; ]
+            module system_loc__hint_button_right_top {
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 461; ]
+                <init> {
+                }
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 462; @position = 22; ]
+                const x as Number = 225;
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 463; @position = 22; ]
+                const y as Number = 48;
+            }
+            [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 466; ]
+            module system_color_light__text {
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 466; ]
+                <init> {
+[ "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen" 468 22 ]
+                    %tmp.43 = getm $.Toybox.Graphics;
+                    %tmp.44 = getv %tmp.43 :COLOR_TRANSPARENT;
+                    putv self :background %tmp.44;
+                }
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 467; @position = 22; ]
+                const color as Number = 0x000000;
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 468; @position = 22; ]
+                const background;
+            }
+            [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 471; ]
+            module system_icon_light__check {
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 471; ]
+                <init> {
+                }
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 472; @position = 22; ]
+                const filename as String = "C:\\Users\\greg\\AppData\\Roaming\\Garmin\\ConnectIQ\\Devices\\fenix7pro\\system_icon_light__check.svg";
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 473; @position = 22; ]
+                const dithering as String = "none";
+            }
+            [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 476; ]
+            module confirmation_input__reject {
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 476; ]
+                <init> {
+[ "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen" 477 22 ]
+                    %tmp.45 = getm $.Toybox.WatchUi;
+                    %tmp.46 = getv %tmp.45 :KEY_DOWN;
+                    putv self :button %tmp.46;
+                }
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 477; @position = 22; ]
+                const button;
+            }
+            [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 480; ]
+            module system_icon_light__revert {
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 480; ]
+                <init> {
+                }
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 481; @position = 22; ]
+                const filename as String = "C:\\Users\\greg\\AppData\\Roaming\\Garmin\\ConnectIQ\\Devices\\fenix7pro\\system_icon_light__revert.svg";
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 482; @position = 22; ]
+                const dithering as String = "none";
+            }
+            [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 485; ]
+            module system_size__subwindow {
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 485; ]
+                <init> {
+                }
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 486; @position = 22; ]
+                const exclude as Boolean = true;
+            }
+            [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 489; ]
+            module system_icon_positive__hint_button_left_bottom {
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 489; ]
+                <init> {
+                }
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 490; @position = 22; ]
+                const filename as String = "C:\\Users\\greg\\AppData\\Roaming\\Garmin\\ConnectIQ\\Devices\\fenix7pro\\system_icon_positive__hint_button_left_bottom.svg";
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 491; @position = 22; ]
+                const dithering as String = "none";
+            }
+            [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 494; ]
+            module system_icon_dark__check {
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 494; ]
+                <init> {
+                }
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 495; @position = 22; ]
+                const filename as String = "C:\\Users\\greg\\AppData\\Roaming\\Garmin\\ConnectIQ\\Devices\\fenix7pro\\system_icon_dark__check.svg";
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 496; @position = 22; ]
+                const compress as String = "true";
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 497; @position = 22; ]
+                const dithering as String = "none";
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 498; @position = 22; ]
+                const automaticPalette as String = "true";
+            }
+            [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 501; ]
+            module confirmation_loc__hint_keep {
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 501; ]
+                <init> {
+                }
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 502; @position = 22; ]
+                const x as Number = 10;
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 503; @position = 22; ]
+                const y as Number = 172;
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 504; @position = 22; ]
+                const horizontalJustification as String = "left";
+            }
+            [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 507; ]
+            module confirmation_loc__hint_delete {
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 507; ]
+                <init> {
+                }
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 508; @position = 22; ]
+                const x as Number = 210;
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 509; @position = 22; ]
+                const y as Number = 48;
+            }
+            [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 512; ]
+            module system_icon_positive__hint_action_menu {
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 512; ]
+                <init> {
+                }
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 513; @position = 22; ]
+                const filename as String = "C:\\Users\\greg\\AppData\\Roaming\\Garmin\\ConnectIQ\\Devices\\fenix7pro\\system_icon_positive__hint_button_right_top.svg";
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 514; @position = 22; ]
+                const dithering as String = "none";
+            }
+            [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 517; ]
+            module system_icon_positive__hint_button_right_middle {
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 517; ]
+                <init> {
+                }
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 518; @position = 22; ]
+                const exclude as Boolean = true;
+            }
+            [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 521; ]
+            module system_icon_light__hint_button_left_middle {
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 521; ]
+                <init> {
+                }
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 522; @position = 22; ]
+                const filename as String = "C:\\Users\\greg\\AppData\\Roaming\\Garmin\\ConnectIQ\\Devices\\fenix7pro\\system_icon_light__hint_button_left_middle.svg";
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 523; @position = 22; ]
+                const dithering as String = "none";
+            }
+            [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 526; ]
+            module system_icon_dark__hint_button_right_bottom {
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 526; ]
+                <init> {
+                }
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 527; @position = 22; ]
+                const filename as String = "C:\\Users\\greg\\AppData\\Roaming\\Garmin\\ConnectIQ\\Devices\\fenix7pro\\system_icon_dark__hint_button_right_bottom.svg";
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 528; @position = 22; ]
+                const dithering as String = "none";
+            }
+            [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 531; ]
+            module system_icon_positive__hint_button_right_bottom {
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 531; ]
+                <init> {
+                }
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 532; @position = 22; ]
+                const filename as String = "C:\\Users\\greg\\AppData\\Roaming\\Garmin\\ConnectIQ\\Devices\\fenix7pro\\system_icon_positive__hint_button_right_bottom.svg";
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 533; @position = 22; ]
+                const dithering as String = "none";
+            }
+            [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 536; ]
+            module system_icon_dark__revert {
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 536; ]
+                <init> {
+                }
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 537; @position = 22; ]
+                const filename as String = "C:\\Users\\greg\\AppData\\Roaming\\Garmin\\ConnectIQ\\Devices\\fenix7pro\\system_icon_dark__revert.svg";
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 538; @position = 22; ]
+                const compress as String = "true";
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 539; @position = 22; ]
+                const dithering as String = "none";
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 540; @position = 22; ]
+                const automaticPalette as String = "true";
+            }
+            [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 543; ]
+            module confirmation_icon_light__hint_delete {
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 543; ]
+                <init> {
+                }
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 544; @position = 22; ]
+                const filename as String = "C:\\Users\\greg\\AppData\\Roaming\\Garmin\\ConnectIQ\\Devices\\fenix7pro\\confirmation_icon__hint_delete.svg";
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 545; @position = 22; ]
+                const dithering as String = "none";
+            }
+            [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 548; ]
+            module system_icon_dark__question {
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 548; ]
+                <init> {
+                }
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 549; @position = 22; ]
+                const filename as String = "C:\\Users\\greg\\AppData\\Roaming\\Garmin\\ConnectIQ\\Devices\\fenix7pro\\system_icon_dark__question.svg";
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 550; @position = 22; ]
+                const compress as String = "true";
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 551; @position = 22; ]
+                const dithering as String = "none";
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 552; @position = 22; ]
+                const automaticPalette as String = "true";
+            }
+            [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 555; ]
+            module system_icon_light__discard {
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 555; ]
+                <init> {
+                }
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 556; @position = 22; ]
+                const filename as String = "C:\\Users\\greg\\AppData\\Roaming\\Garmin\\ConnectIQ\\Devices\\fenix7pro\\system_icon_light__discard.svg";
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 557; @position = 22; ]
+                const dithering as String = "none";
+            }
+            [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 560; ]
+            module device_info {
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 560; ]
+                <init> {
+[ "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen" 562 22 ]
+                    %tmp.47 = getm $.Toybox.System;
+                    %tmp.48 = getv %tmp.47 :SCREEN_SHAPE_ROUND;
+                    putv self :screenShape %tmp.48;
+                }
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 561; @position = 22; ]
+                const screenWidth as Number = 260;
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 562; @position = 22; ]
+                const screenShape;
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 563; @position = 22; ]
+                const hasNightMode as Boolean = false;
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 564; @position = 22; ]
+                const hasGpu as Boolean = true;
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 565; @position = 22; ]
+                const screenHeight as Number = 260;
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 566; @position = 22; ]
+                const hasTouchScreen as Boolean = true;
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 567; @position = 22; ]
+                const hasEnhancedReadabilityMode as Boolean = false;
+            }
+            [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 570; ]
+            module confirmation_icon_dark__hint_confirm {
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 570; ]
+                <init> {
+                }
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 571; @position = 22; ]
+                const filename as String = "C:\\Users\\greg\\AppData\\Roaming\\Garmin\\ConnectIQ\\Devices\\fenix7pro\\confirmation_icon__hint_completion.svg";
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 572; @position = 22; ]
+                const dithering as String = "none";
+            }
+            [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 575; ]
+            module prompt_font__body_no_title {
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 575; ]
+                <init> {
+[ "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen" 576 22 ]
+                    %tmp.49 = getm $.Toybox.Graphics;
+                    %tmp.50 = getv %tmp.49 :TEXT_JUSTIFY_CENTER;
+                    %tmp.51 = getm $.Toybox.Graphics;
+                    %tmp.52 = getv %tmp.51 :TEXT_JUSTIFY_VCENTER;
+                    %tmp.53 = bitor %tmp.50 %tmp.52;
+                    putv self :justification %tmp.53;
+[ "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen" 577 22 ]
+                    %tmp.54 = getm $.Toybox.Graphics;
+                    %tmp.55 = getv %tmp.54 :FONT_TINY;
+                    putv self :font %tmp.55;
+                }
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 576; @position = 22; ]
+                const justification;
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 577; @position = 22; ]
+                const font;
+            }
+            [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 580; ]
+            module prompt_size__title_icon {
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 580; ]
+                <init> {
+                }
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 581; @position = 22; ]
+                const scaleX as Float = 0.15;
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 582; @position = 22; ]
+                const scaleRelativeTo as String = "screen";
+            }
+            [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 585; ]
+            module system_icon_dark__warning {
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 585; ]
+                <init> {
+                }
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 586; @position = 22; ]
+                const filename as String = "C:\\Users\\greg\\AppData\\Roaming\\Garmin\\ConnectIQ\\Devices\\fenix7pro\\system_icon_dark__warning.svg";
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 587; @position = 22; ]
+                const compress as String = "true";
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 588; @position = 22; ]
+                const dithering as String = "none";
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 589; @position = 22; ]
+                const automaticPalette as String = "true";
+            }
+            [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 592; ]
+            module prompt_loc__title_icon {
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 592; ]
+                <init> {
+                }
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 593; @position = 22; ]
+                const x as Number = 130;
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 594; @position = 22; ]
+                const y as Number = 39;
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 595; @position = 22; ]
+                const horizontalJustification as String = "center";
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 596; @position = 22; ]
+                const verticalJustification as String = "center";
+            }
+            [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 599; ]
+            module prompt_font_enhanced_readability__title {
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 599; ]
+                <init> {
+                }
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 600; @position = 22; ]
+                const exclude as Boolean = true;
+            }
+            [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 603; ]
+            module prompt_color_dark__body {
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 603; ]
+                <init> {
+[ "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen" 605 22 ]
+                    %tmp.56 = getm $.Toybox.Graphics;
+                    %tmp.57 = getv %tmp.56 :COLOR_TRANSPARENT;
+                    putv self :background %tmp.57;
+                }
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 604; @position = 22; ]
+                const color as Number = 0xFFFFFF;
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 605; @position = 22; ]
+                const background;
+            }
+            [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 608; ]
+            module confirmation_icon__hint_delete {
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 608; ]
+                <init> {
+                }
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 609; @position = 22; ]
+                const filename as String = "C:\\Users\\greg\\AppData\\Roaming\\Garmin\\ConnectIQ\\Devices\\fenix7pro\\confirmation_icon__hint_delete.svg";
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 610; @position = 22; ]
+                const dithering as String = "none";
+            }
+            [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 613; ]
+            module system_icon_light__hint_button_right_top {
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 613; ]
+                <init> {
+                }
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 614; @position = 22; ]
+                const filename as String = "C:\\Users\\greg\\AppData\\Roaming\\Garmin\\ConnectIQ\\Devices\\fenix7pro\\system_icon_light__hint_button_right_top.svg";
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 615; @position = 22; ]
+                const dithering as String = "none";
+            }
+            [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 618; ]
+            module confirmation_size__body {
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 618; ]
+                <init> {
+                }
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 619; @position = 22; ]
+                const width as Number = 156;
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 620; @position = 22; ]
+                const height as Number = 156;
+            }
+            [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 623; ]
+            module system_icon_positive__check {
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 623; ]
+                <init> {
+                }
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 624; @position = 22; ]
+                const filename as String = "C:\\Users\\greg\\AppData\\Roaming\\Garmin\\ConnectIQ\\Devices\\fenix7pro\\system_icon_positive__check.svg";
+                [ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 625; @position = 22; ]
+                const dithering as String = "none";
+            }
         }
     }
 }
-[ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B3589-00\source\Rez.mcgen"; @line = 1; ]
+[ @file = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\gen\006-B4375-00\source\Rez.mcgen"; @line = 1; ]
 <init> {
 }
