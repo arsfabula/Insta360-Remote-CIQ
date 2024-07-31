@@ -4,13 +4,13 @@ Partial 'cause there still lot of work to be done.
 
 With CIQ, BT messages are limited to 20 bytes in length. Longer messages must be sent in 20 bytes segments.
 
-Byte position: 00 01 02 03 04 05 06 07 08 09 10 11 12 13 14 15 16 17
-Description:   LL LL 00 00 04 00 00 XX 00 02 SS SS 00 80 00 00 PT PL
+Byte position: 00 01 02 03 04 05 06 07 08 09 10 11 12 13 14 15 16
+Description:   LL LL 00 00 04 00 00 XX 00 02 SS SS 00 80 00 00 PB
 
 LLLL = Length of message, can be split into several packets. Max length for 1 packet is 20 bytes. Little endian. 
 XX = Command 
 SSSS = Sequence Number little endian
-PT & PL = Protobuf type & length
+PB = Start of Protobuf 
 Byte 4 is always 04 except for "keep alive" messages (05)
 
 XX Byte 7: command to camera
