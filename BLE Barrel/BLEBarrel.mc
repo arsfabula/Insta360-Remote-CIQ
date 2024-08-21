@@ -9,12 +9,14 @@ using Toybox.Application.Storage;
 
 module BLEBarrel {
 
-const DEVICE_NAME = "ONE "; // Full name is "ONE R DV6W5S";
-const DEVICE_NAME2 = "GO2 "; 
-const DEVICE_NAME3 = "X3 "; // Full name is "X3 7MN5JB";
-const DEVICE_NAME4 = "GO3 "; 
-const DEVICE_NAME5 = "Ace ";
-const DEVICE_NAME6 = "X4 ";
+// const DEVICE_NAME = "ONE "; // Full name is "ONE R DV6W5S";
+// const DEVICE_NAME2 = "GO2 "; 
+// const DEVICE_NAME3 = "X3 "; // Full name is "X3 7MN5JB";
+// const DEVICE_NAME4 = "GO3 "; 
+// const DEVICE_NAME5 = "Ace ";
+// const DEVICE_NAME6 = "X4 ";
+// const DEVICE_NAME7 = "GO 3"; 
+
 
 const LBS_SERVICE = BluetoothLowEnergy.stringToUuid("0000BE80-0000-1000-8000-00805F9B34FB");    // Camera Service entry point
 const LBS_RW_CHAR = BluetoothLowEnergy.stringToUuid("0000BE81-0000-1000-8000-00805F9B34FB");    // Camera command channel
@@ -39,7 +41,8 @@ var lastTime = Time.now();
 var GPSon = false;
 var GPSaccuracy = Position.QUALITY_NOT_AVAILABLE;
 var connecting = false;
-var MenuLevel = 1;
+var menuLevel = 1;
+var deviceName ="n/a";
 
  
 var SeqNo = 1;
@@ -50,6 +53,7 @@ var cmdApply =    [0x10, 0, 0, 0, 0x4, 0, 0, 0xf, 0, 0x2, 0xff, 0, 0, 0x80, 0, 0
 var cmdSet5k24 =  [0x1a, 0, 0, 0, 0x4, 0, 0, 0x9, 0, 0x2, 0xff, 0, 0, 0x80, 0, 0, 0xa, 0x1, 0x1f, 0x12, 0x3, 0xf8, 0x1, 0x14, 0x18, 0x7]b; // Set video mode to 5.7k 24fps
 var cmdSet5k25 =  [0x1a, 0, 0, 0, 0x4, 0, 0, 0x9, 0, 0x2, 0xff, 0, 0, 0x80, 0, 0, 0xa, 0x1, 0x1f, 0x12, 0x3, 0xf8, 0x1, 0x13, 0x18, 0x7]b; // Set video mode to 5.7k 25fps
 var cmdSet5k30 =  [0x1a, 0, 0, 0, 0x4, 0, 0, 0x9, 0, 0x2, 0xff, 0, 0, 0x80, 0, 0, 0xa, 0x1, 0x1f, 0x12, 0x3, 0xf8, 0x1, 0x0a, 0x18, 0x7]b; // Set video mode to 5.7k 30fps
+var cmdSet8k30 =  [0x1b, 0, 0, 0, 0x4, 0, 0, 0x9, 0, 0x2, 0xff, 0, 0, 0x80, 0, 0, 0xa, 0x1, 0x1f, 0x12, 0x4, 0xf8, 0x1, 0xa7, 0x01, 0x18, 0x7]b; // Set video mode to 8k 30fps
 var cmdSet4k30 =  [0x17, 0, 0, 0, 0x4, 0, 0, 0x9, 0, 0x2, 0xff, 0, 0, 0x80, 0, 0, 0xa, 0x1, 0x1f, 0x12, 0x0, 0x18, 0x7]b; // Set video mode to 4k 30fps
 var cmdSet4k50 =  [0x1a, 0, 0, 0, 0x4, 0, 0, 0x9, 0, 0x2, 0xff, 0, 0, 0x80, 0, 0, 0xa, 0x1, 0x1f, 0x12, 0x3, 0xf8, 0x1, 0x0c, 0x18, 0x7]b; // Set video mode to 4k 50fps
 var cmdSet3k100 = [0x1a, 0, 0, 0, 0x4, 0, 0, 0x9, 0, 0x2, 0xff, 0, 0, 0x80, 0, 0, 0xa, 0x1, 0x1f, 0x12, 0x3, 0xf8, 0x1, 0x0d, 0x18, 0x7]b; // Set video mode to 3k 100fps
@@ -96,6 +100,7 @@ class BleDevice extends BluetoothLowEnergy.BleDelegate {
 		if (!scanning) {
 			if (device == null) {
 		    	recState = stateStopRec;
+				debug("[sendCMD] No device connected, starting scan");
 				BluetoothLowEnergy.setScanState(BluetoothLowEnergy.SCAN_STATE_SCANNING);
 				return;
 //			} else if (!device.isConnected()) {
@@ -107,6 +112,7 @@ class BleDevice extends BluetoothLowEnergy.BleDelegate {
 				service = device.getService(LBS_SERVICE);
 				// debug("sendCMD: service null "  + (service == null));
 				if (service == null) {
+					debug("[sendCMD] No service, starting scan, device connected " + device.isConnected());
 			    	recState = stateStopRec;
 			    	BluetoothLowEnergy.unpairDevice(device);
 			    	device = null;
@@ -137,16 +143,18 @@ class BleDevice extends BluetoothLowEnergy.BleDelegate {
 			queue.add(value);
 		}
 		
-		// kind of a hack: send a unneeded write command for the onCharacteristicWrite function to trigger
-		// need to think of a better way. 
+		
 		try {
-			// debug("sendCMD: service.getChar");
+			debug("sendCMD: service.getChar");
 			ch = service.getCharacteristic(LBS_RW_CHAR);
 		} catch (ex) {
 			    debug("[sendCMD] exception: " + ex.getErrorMessage());
 		}
+		// The onCharacteristicWrite function does the dequeuing, but we write an unneeded message 
+		// to trigger it. 
+//		onCharacteristicWrite(ch, BluetoothLowEnergy.STATUS_SUCCESS);
 		try {
-			// debug("sendCMD: send stateStandby");
+			debug("sendCMD: send stateStandby");
 		    ch.requestWrite(stateStandby, {:writeType => BluetoothLowEnergy.WRITE_TYPE_DEFAULT});
 		} catch (ex) {
 			    debug("[sendCMD] exception: " + ex.getErrorMessage());
@@ -161,7 +169,7 @@ class BleDevice extends BluetoothLowEnergy.BleDelegate {
 		// 2 first bytes is the length of the message (little endian). 
 		// followed by 00 00 04 00 00. Check for this value
 		  if (responseSig.equals(value.slice(2,7))) {
-			// debug("char read " + ch.getUuid() + " " + value + " Size: " + value.size()); 
+			debug("[onCharChanged] " + ch.getUuid() + " " + value + " Size: " + value.size()); 
 			// the 8th byte is the "command" code
 			// Check to see if we got a Stop or Start recording event. 
 			// Command byte == 0x10 position 17 is >0 = start. 0=end.
@@ -189,7 +197,7 @@ class BleDevice extends BluetoothLowEnergy.BleDelegate {
 		  }
 		} 	
 		
-		//second guess elapsed recording time
+		//second guess elapsed recording time (don't know how to decode the protbuf status)
 		if (recState == stateStartRec) {
 			clockTime = Time.now();
 			elapsedRecTime = clockTime.subtract(startRecTime);
@@ -209,7 +217,7 @@ class BleDevice extends BluetoothLowEnergy.BleDelegate {
 		    } catch (ex) {
 			    debug("[onCharWrite] exception: " + ex.getErrorMessage());
 		    }
-			// debug("[onCharWrite] deq : " + queue[0] + " qsize: " + queue.size() + " Status " + st );
+			debug("[onCharWrite] deq : " + queue[0] + " qsize: " + queue.size() + " Status " + st );
 			queue = queue.slice(1,queue.size());
 		} else {
 			debug ("[onCharWrite] queue empty Status " + st );
@@ -269,11 +277,12 @@ class BleDevice extends BluetoothLowEnergy.BleDelegate {
 	}
 
 	function onConnectedStateChanged(dev, state) {
-		// debug("connected: " + dev.getName() + " " + state);
+		debug("connected: " + dev.getName() + " " + dev.isConnected() + " " + state);
 		mMessage = currentLabel + "\n" + startMessage;
 		WatchUi.requestUpdate();
 		if (state == BluetoothLowEnergy.CONNECTION_STATE_CONNECTED) {
 			connecting = false;
+			debug("[onCSC] scanning OFF");
 			if (scanning) {
 			try {
 				BluetoothLowEnergy.setScanState(BluetoothLowEnergy.SCAN_STATE_OFF);
@@ -300,16 +309,20 @@ class BleDevice extends BluetoothLowEnergy.BleDelegate {
 	}
 
 	private function connect(result) {
-		debug("[connect] " + result.getDeviceName());
-		if (!connecting) {
-			connecting = true;
-			try {
-				device = BluetoothLowEnergy.pairDevice(result);
-			} catch (ex) {
-			    debug("[Connect] Pair exception: " + ex.getErrorMessage());
-		    }
-			
+		// debug("[connect] " + result.getDeviceName());
+		try {
+			BluetoothLowEnergy.setScanState(BluetoothLowEnergy.SCAN_STATE_OFF);
+			// debug("[connect] scanning OFF");
+		} catch (ex) {
+		    debug("[connect] scan OFF exception: " + ex.getErrorMessage());
 		}
+		try {
+			device = BluetoothLowEnergy.pairDevice(result);
+		} catch (ex) {
+		    debug("[Connect] Pair exception: " + ex.getErrorMessage());
+		}
+		// debug("[connect] is Connected " + device.isConnected());
+			
 	}
 
 //	private function dumpUuids(iter) {
@@ -321,45 +334,71 @@ class BleDevice extends BluetoothLowEnergy.BleDelegate {
 
 	function onScanResults(scanResults) {
 //		debug("scan results");
-//		var uuids;
+		var uuids;
 		var name;
 		var rssi;
+		var iter;
+
 		for (var result = scanResults.next(); result != null; result = scanResults.next()) {
-//			uuids = result.getServiceUuids();
-			name = result.getDeviceName();
+			uuids = result.getServiceUuids();
+			deviceName = result.getDeviceName();
 			rssi = result.getRssi();
 
-			debug("[onScanResults] device: " + name + " rssi: " + rssi);
+			// debug("[onScanResults] device: " + name + " rssi: " + rssi);
 //			dumpUuids(uuids);
 
-			if (name != null) {
-				// debug ("device name: [" + name.substring(0,4) +"]");
-				if (DEVICE_NAME.equals(name.substring(0,4)) or 
-					DEVICE_NAME2.equals(name.substring(0,4)) or
-					DEVICE_NAME3.equals(name.substring(0,3)) or
-					DEVICE_NAME4.equals(name.substring(0,4)) or
-					DEVICE_NAME5.equals(name.substring(0,4)) or
-					DEVICE_NAME6.equals(name.substring(0,3))) {
+			//search for an insta360 device based on service UUID
+			for (iter = uuids.next(); iter != null; iter = uuids.next()) {
+//				debug("uuid: " + iter);
+				if (iter.equals(LBS_SERVICE)) {
+					// debug("Connect " + iter);
+					menuLevel = 0;
+					if (deviceName.substring(0,3).equals("ONE")) {
+						menuLevel = 1;
+					}
+					if (deviceName.substring(0,3).equals("X3 ")) {
+						menuLevel = 1;
+					}
 
-						//For Ace & Ace pro devices, only "Default Video" mode is supported. 
-						if (DEVICE_NAME5.equals(name.substring(0,4))) {
-							MenuLevel = 0;
-						}
+					if (deviceName.substring(0,3).equals("X4 ")) {
+						menuLevel = 2;
+					}
+					connect(result);
+					return;
+				}
+			}
 
+//			if (name != null) {
+//				// debug ("device name: [" + name.substring(0,4) +"]");
+//				if (DEVICE_NAME.equals(name.substring(0,4)) or 
+//					DEVICE_NAME2.equals(name.substring(0,4)) or
+//					DEVICE_NAME3.equals(name.substring(0,3)) or
+//					DEVICE_NAME4.equals(name.substring(0,4)) or
+//					DEVICE_NAME5.equals(name.substring(0,4)) or
+//					DEVICE_NAME6.equals(name.substring(0,3)) or
+//					DEVICE_NAME7.equals(name.substring(0,4))) {
+//
+//						//For Ace & Ace pro devices, only "Default Video" mode is supported. 
+//						if (DEVICE_NAME5.equals(name.substring(0,4)) or 
+//						    DEVICE_NAME7.equals(name.substring(0,4))) {
+//							menuLevel = 0;
+//						}
+//
 //						try {
 //							Storage.setValue("device", result);
 //						} catch (ex) {
 //			    			debug("[onScanResult] storage write exception " + ex.getErrorMessage());
 //						}
-						connect(result);
-					return;
-				}
-			}
+//						connect(result);
+//					return;
+//				}
+//			}
 			scanTimeout--;
 			mMessage = "Scanning...\n" + scanTimeout;
 			WatchUi.requestUpdate() ;
 			
 			if (scanTimeout == 0) {
+				debug("[onSR] Scan timeout, scan OFF");
 				try {
 					BluetoothLowEnergy.setScanState(BluetoothLowEnergy.SCAN_STATE_OFF);
 				} catch (ex) {
@@ -517,8 +556,8 @@ class BleDevice extends BluetoothLowEnergy.BleDelegate {
 	
 	function open() {
 		var temp;
-		// var result;		
-		
+
+		// Check if watch is touch screen capable
 		if (System.getDeviceSettings().isTouchScreen) {
 			startMessage = "Tap Here";
 		} else {
@@ -555,7 +594,7 @@ class BleDevice extends BluetoothLowEnergy.BleDelegate {
 			GPSon = false;
 		}
 		// Bluetooth initialisation
-		debug("[open] CIQ V " + System.getDeviceSettings().monkeyVersion);
+		debug("[open] Start Scan, CIQ V " + System.getDeviceSettings().monkeyVersion);
 		registerProfiles();
 		BluetoothLowEnergy.setScanState(BluetoothLowEnergy.SCAN_STATE_SCANNING);
 		// try to connect directly to the last known device.

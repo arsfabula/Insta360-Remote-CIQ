@@ -56,7 +56,7 @@ class InputDelegate extends Ui.BehaviorDelegate {
         var menu = new Ui.Menu2({:title=>"Settings"});
 
 		// Build menu according to device 
-		switch (BLEBarrel.MenuLevel) {
+		switch (BLEBarrel.menuLevel) {
 			case 0:
 				break;
 			case 1:
@@ -74,6 +74,21 @@ class InputDelegate extends Ui.BehaviorDelegate {
         		menu.addItem(new Ui.MenuItem("Photo Interval","","PhotoInterval",{}));
         		menu.addItem(new Ui.MenuItem("Night Shot","","NightShot",{}));
 				break;
+			case 2:
+				menu.addItem(new Ui.MenuItem("8K / 30","","8k30",{}));
+				menu.addItem(new Ui.MenuItem("5.7K / 30","","5k30",{}));
+        		menu.addItem(new Ui.MenuItem("5.7K / 25","","5k25",{}));
+        		menu.addItem(new Ui.MenuItem("5.7K / 24","","5k24",{}));
+        		menu.addItem(new Ui.MenuItem("4K / 50","","4k50",{}));
+        		menu.addItem(new Ui.MenuItem("4K / 30","","4k30",{}));
+        		menu.addItem(new Ui.MenuItem("HDR Video","","HDR",{}));
+        		menu.addItem(new Ui.MenuItem("Timelapse","","TimeLapse",{}));
+        		menu.addItem(new Ui.MenuItem("Bullet Time","","BulletTime",{}));
+        		menu.addItem(new Ui.MenuItem("Photo","","Photo",{}));
+        		menu.addItem(new Ui.MenuItem("Photo HDR","","PhotoHDR",{}));
+        		menu.addItem(new Ui.MenuItem("Photo Burst","","PhotoBurst",{}));
+        		menu.addItem(new Ui.MenuItem("Photo Interval","","PhotoInterval",{}));
+        		menu.addItem(new Ui.MenuItem("Night Shot","","NightShot",{}));
 		}
         
         if (BLEBarrel.GPSon) {
@@ -117,6 +132,9 @@ class Menu2Delegate extends Ui.Menu2InputDelegate {
 		
 		itemID = item.getId();
         switch(itemID) {
+            case "8k30" :
+            	BLEBarrel.currentMode = BLEBarrel.cmdSet8k30;
+            	break;  
             case "5k30" :
             	BLEBarrel.currentMode = BLEBarrel.cmdSet5k30;
             	break;  

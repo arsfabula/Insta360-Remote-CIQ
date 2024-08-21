@@ -1,0 +1,190 @@
+[ @file = "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote\source\Main.mc"; @line = 1; ]
+using Toybox.Application;
+[ @file = "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote\source\Main.mc"; @line = 2; ]
+using Toybox.BluetoothLowEnergy;
+[ @file = "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote\source\Main.mc"; @line = 3; ]
+using Toybox.Position;
+[ @file = "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote\source\Main.mc"; @line = 4; ]
+using Toybox.System;
+[ @file = "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote\source\Main.mc"; @line = 5; ]
+using BLEBarrel;
+[ @file = "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote\source\Main.mc"; @line = 7; @position = 4; ]
+var bleDevice;
+[ @file = "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote\source\Main.mc"; @line = 10; ]
+class Main extends Application.AppBase{
+    [ @file = "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote\source\Main.mc"; @line = 10; ]
+    <init> {
+    }
+    [ @file = "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote\source\Main.mc"; @line = 10; ]
+    static
+    <init> {
+    }
+    [ @file = "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote\source\Main.mc"; @line = 13; ]
+    function initialize() as Void {
+C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_source_Main_mc_13_23_15_1_start:
+[ "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote\source\Main.mc" 14 2 ]
+        %tmp.2 = getv ? :AppBase;
+        %tmp.3 = getv function %tmp.2 :initialize;
+        invoke %tmp.2 %tmp.3();
+C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_source_Main_mc_13_23_15_1_stop:
+    }
+    [ @file = "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote\source\Main.mc"; @line = 17; ]
+    function onStart(state) {
+C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_source_Main_mc_17_25_26_1_start:
+[ "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote\source\Main.mc" 18 2 ]
+        %tmp.3 = getm $.BLEBarrel;
+        %tmp.4 = getv function ? %tmp.3 :BleDevice;
+        %tmp.1 = newc %tmp.4 ();
+        putv self :bleDevice %tmp.1;
+[ "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote\source\Main.mc" 20 2 ]
+        %tmp.5 = getm $.Toybox.BluetoothLowEnergy;
+        %tmp.6 = getv function %tmp.5 :setDelegate;
+        %tmp.8 = getv ? :bleDevice;
+        invoke %tmp.5 %tmp.6(%tmp.8);
+[ "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote\source\Main.mc" 21 2 ]
+        %tmp.10 = getv ? :bleDevice;
+        %tmp.11 = getv function %tmp.10 :open;
+        invoke %tmp.10 %tmp.11();
+[ "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote\source\Main.mc" 23 2 ]
+        %tmp.12 = self;
+        %tmp.13 = getv function %tmp.12 :GPSenable;
+        %tmp.14 = getm $.BLEBarrel;
+        %tmp.15 = getv %tmp.14 :GPSon;
+        invoke %tmp.12 %tmp.13(%tmp.15);
+[ "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote\source\Main.mc" 25 2 ]
+        %tmp.16 = false;
+        ret %tmp.16;
+C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_source_Main_mc_17_25_26_1_stop:
+    }
+    [ @file = "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote\source\Main.mc"; @line = 28; ]
+    function GPSenable(state) {
+C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_source_Main_mc_28_28_47_1_start:
+[ "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote\source\Main.mc" 30 2 ]
+C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_source_Main_mc_30_2_46_2_if_stmt:
+        %tmp.2 = lgetv %state;
+        bf %tmp.2 @C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_source_Main_mc_30_2_46_2_if_false;
+C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_source_Main_mc_30_2_46_2_if_true:
+C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_source_Main_mc_30_13_44_2_start:
+[ "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote\source\Main.mc" 33 3 ]
+C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_source_Main_mc_33_3_43_3_if_stmt:
+        %tmp.4 = getv ? :Toybox;
+        %tmp.5 = getv %tmp.4 :Position;
+        %tmp.7 = const :CONSTELLATION_GPS;
+        %tmp.8 = canhazplz %tmp.5 %tmp.7;
+        bf %tmp.8 @C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_source_Main_mc_33_3_43_3_if_false;
+C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_source_Main_mc_33_3_43_3_if_true:
+C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_source_Main_mc_33_47_41_3_start:
+[ "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote\source\Main.mc" 35 4 ]
+        %tmp.9 = getm $.Toybox.Position;
+        %tmp.10 = getv function %tmp.9 :enableLocationEvents;
+        %tmp.11 = newd 2;
+        %tmp.13 = const :acquisitionType;
+        %tmp.14 = getm $.Toybox.Position;
+        %tmp.15 = getv %tmp.14 :LOCATION_CONTINUOUS;
+        %tmp.16 = dup %tmp.11;
+        %tmp.17 = aputv %tmp.16 %tmp.13 %tmp.15;
+        %tmp.19 = const :constellations;
+        %tmp.20 = newa 1;
+        %tmp.21 = getm $.Toybox.Position;
+        %tmp.22 = getv %tmp.21 :CONSTELLATION_GPS;
+        %tmp.23 = dup %tmp.20;
+        %tmp.24 = aputv %tmp.23 0 %tmp.22;
+        %tmp.25 = dup %tmp.17;
+        %tmp.26 = aputv %tmp.25 %tmp.19 %tmp.24;
+        %tmp.27 = self;
+        %tmp.28 = getv function %tmp.27 :method;
+        %tmp.30 = const :onPosition;
+        %tmp.31 = invoke %tmp.27 %tmp.28(%tmp.30);
+        invoke %tmp.9 %tmp.10(%tmp.26, %tmp.31);
+C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_source_Main_mc_33_47_41_3_stop:
+        goto @C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_source_Main_mc_33_3_43_3_if_end;
+C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_source_Main_mc_33_3_43_3_if_false:
+C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_source_Main_mc_41_10_43_3_start:
+[ "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote\source\Main.mc" 42 4 ]
+        %tmp.32 = getm $.Toybox.Position;
+        %tmp.33 = getv function %tmp.32 :enableLocationEvents;
+        %tmp.34 = getm $.Toybox.Position;
+        %tmp.35 = getv %tmp.34 :LOCATION_CONTINUOUS;
+        %tmp.36 = self;
+        %tmp.37 = getv function %tmp.36 :method;
+        %tmp.39 = const :onPosition;
+        %tmp.40 = invoke %tmp.36 %tmp.37(%tmp.39);
+        invoke %tmp.32 %tmp.33(%tmp.35, %tmp.40);
+C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_source_Main_mc_41_10_43_3_stop:
+C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_source_Main_mc_33_3_43_3_if_end:
+C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_source_Main_mc_30_13_44_2_stop:
+        goto @C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_source_Main_mc_30_2_46_2_if_end;
+C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_source_Main_mc_30_2_46_2_if_false:
+C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_source_Main_mc_44_9_46_2_start:
+[ "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote\source\Main.mc" 45 3 ]
+        %tmp.41 = getm $.Toybox.Position;
+        %tmp.42 = getv function %tmp.41 :enableLocationEvents;
+        %tmp.43 = getm $.Toybox.Position;
+        %tmp.44 = getv %tmp.43 :LOCATION_DISABLE;
+        %tmp.45 = null;
+        invoke %tmp.41 %tmp.42(%tmp.44, %tmp.45);
+C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_source_Main_mc_44_9_46_2_stop:
+C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_source_Main_mc_30_2_46_2_if_end:
+C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_source_Main_mc_28_28_47_1_stop:
+    }
+    [ @file = "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote\source\Main.mc"; @line = 49; ]
+    function getInitialView() {
+C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_source_Main_mc_49_27_51_1_start:
+[ "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote\source\Main.mc" 50 2 ]
+        %tmp.1 = newa 2;
+        %tmp.5 = getv ? :ViewData;
+        %tmp.7 = getv ? :bleDevice;
+        %tmp.2 = newc %tmp.5 (%tmp.7);
+        %tmp.8 = dup %tmp.1;
+        %tmp.9 = aputv %tmp.8 0 %tmp.2;
+        %tmp.13 = getv ? :InputDelegate;
+        %tmp.15 = getv ? :bleDevice;
+        %tmp.10 = newc %tmp.13 (%tmp.15);
+        %tmp.16 = dup %tmp.9;
+        %tmp.17 = aputv %tmp.16 1 %tmp.10;
+        ret %tmp.17;
+C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_source_Main_mc_49_27_51_1_stop:
+    }
+    [ @file = "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote\source\Main.mc"; @line = 53; ]
+    function onStop(state) {
+C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_source_Main_mc_53_24_56_1_start:
+[ "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote\source\Main.mc" 54 2 ]
+        %tmp.2 = getv ? :bleDevice;
+        %tmp.3 = getv function %tmp.2 :close;
+        invoke %tmp.2 %tmp.3();
+[ "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote\source\Main.mc" 55 2 ]
+        %tmp.4 = false;
+        ret %tmp.4;
+C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_source_Main_mc_53_24_56_1_stop:
+    }
+    [ @file = "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote\source\Main.mc"; @line = 58; ]
+    function onPosition(info) {
+C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_source_Main_mc_58_27_61_1_start:
+[ "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote\source\Main.mc" 59 2 ]
+        %tmp.1 = getm $.Toybox.System;
+        %tmp.2 = getv function %tmp.1 :println;
+        %tmp.3 = "[onPosition]";
+        invoke %tmp.1 %tmp.2(%tmp.3);
+[ "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote\source\Main.mc" 60 2 ]
+        %tmp.5 = getv ? :bleDevice;
+        %tmp.6 = getv function %tmp.5 :sendPosition;
+        %tmp.8 = lgetv %info;
+        invoke %tmp.5 %tmp.6(%tmp.8);
+C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_source_Main_mc_58_27_61_1_stop:
+    }
+    [ @file = "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote\source\Main.mc"; @line = 63; glance = true; ]
+    function getGlanceView() {
+C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_source_Main_mc_64_26_66_4_start:
+[ "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote\source\Main.mc" 65 8 ]
+        %tmp.1 = newa 1;
+        %tmp.5 = getv ? :MyGlanceView;
+        %tmp.2 = newc %tmp.5 ();
+        %tmp.6 = dup %tmp.1;
+        %tmp.7 = aputv %tmp.6 0 %tmp.2;
+        ret %tmp.7;
+C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_source_Main_mc_64_26_66_4_stop:
+    }
+}
+[ @file = "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote\source\Main.mc"; @line = 1; ]
+<init> {
+}

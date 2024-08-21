@@ -7,7 +7,7 @@ using BLEBarrel;
 [ @file = "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote\source\ViewData.mc"; @line = 4; @position = 4; ]
 var mMessage = "Starting Widget";
 [ @file = "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote\source\ViewData.mc"; @line = 5; @position = 6; ]
-const vNum = "0.9.69";
+const vNum = "0.9.69c";
 [ @file = "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote\source\ViewData.mc"; @line = 8; ]
 class ViewData extends WatchUi.View{
     [ @file = "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote\source\ViewData.mc"; @line = 8; ]

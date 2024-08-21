@@ -1,0 +1,995 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<debugInfo>
+    <manifest filename="C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote\manifest.xml"/>
+    <pcToLineNum>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="1" lineNum="21" parent="globals/BLEBarrel" pc="268435460" symbol="&lt;init&gt;"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="1" lineNum="22" parent="globals/BLEBarrel" pc="268435484" symbol="&lt;init&gt;"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="1" lineNum="23" parent="globals/BLEBarrel" pc="268435508" symbol="&lt;init&gt;"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="1" lineNum="24" parent="globals/BLEBarrel" pc="268435532" symbol="&lt;init&gt;"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="1" lineNum="37" parent="globals/BLEBarrel" pc="268435549" symbol="&lt;init&gt;"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="1" lineNum="40" parent="globals/BLEBarrel" pc="268435566" symbol="&lt;init&gt;"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="1" lineNum="49" parent="globals/BLEBarrel" pc="268435583" symbol="&lt;init&gt;"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\Main.mc" id="3" lineNum="10" parent="globals/Main" pc="268435593" symbol="&lt;init&gt;"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\GlanceView.mc" id="4" lineNum="4" parent="globals/MyGlanceView" pc="268435605" symbol="&lt;init&gt;"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="5" lineNum="76" parent="globals/BLEBarrel/BleDevice" pc="268435617" symbol="&lt;init&gt;"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\Main.mc" id="6" lineNum="17" parent="globals/Main" pc="268435629" symbol="onStart"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\Main.mc" id="6" lineNum="18" parent="globals/Main" pc="268435631" symbol="onStart"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\Main.mc" id="6" lineNum="20" parent="globals/Main" pc="268435660" symbol="onStart"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\Main.mc" id="6" lineNum="21" parent="globals/Main" pc="268435678" symbol="onStart"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\Main.mc" id="6" lineNum="23" parent="globals/Main" pc="268435690" symbol="onStart"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\Main.mc" id="6" lineNum="25" parent="globals/Main" pc="268435708" symbol="onStart"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\Main.mc" id="7" lineNum="58" parent="globals/Main" pc="268435710" symbol="onPosition"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\Main.mc" id="7" lineNum="59" parent="globals/Main" pc="268435712" symbol="onPosition"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\Main.mc" id="7" lineNum="60" parent="globals/Main" pc="268435730" symbol="onPosition"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\Main.mc" id="8" lineNum="49" parent="globals/Main" pc="268435747" symbol="getInitialView"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\Main.mc" id="8" lineNum="50" parent="globals/Main" pc="268435749" symbol="getInitialView"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\Main.mc" id="9" lineNum="13" parent="globals/Main" pc="268435814" symbol="initialize"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\Main.mc" id="9" lineNum="14" parent="globals/Main" pc="268435816" symbol="initialize"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\Main.mc" id="10" lineNum="63" parent="globals/Main" pc="268435829" symbol="getGlanceView"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\Main.mc" id="10" lineNum="65" parent="globals/Main" pc="268435831" symbol="getGlanceView"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\Main.mc" id="11" lineNum="28" parent="globals/Main" pc="268435861" symbol="GPSenable"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\Main.mc" id="11" lineNum="30" parent="globals/Main" pc="268435863" symbol="GPSenable"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\Main.mc" id="11" lineNum="33" parent="globals/Main" pc="268435868" symbol="GPSenable"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\Main.mc" id="11" lineNum="35" parent="globals/Main" pc="268435886" symbol="GPSenable"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\Main.mc" id="11" lineNum="42" parent="globals/Main" pc="268435939" symbol="GPSenable"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\Main.mc" id="11" lineNum="45" parent="globals/Main" pc="268435970" symbol="GPSenable"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\Main.mc" id="12" lineNum="53" parent="globals/Main" pc="268435987" symbol="onStop"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\Main.mc" id="12" lineNum="54" parent="globals/Main" pc="268435989" symbol="onStop"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\Main.mc" id="12" lineNum="55" parent="globals/Main" pc="268436001" symbol="onStop"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\GlanceView.mc" id="13" lineNum="7" parent="globals/MyGlanceView" pc="268436003" symbol="initialize"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\GlanceView.mc" id="13" lineNum="8" parent="globals/MyGlanceView" pc="268436005" symbol="initialize"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\GlanceView.mc" id="14" lineNum="11" parent="globals/MyGlanceView" pc="268436018" symbol="onUpdate"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\GlanceView.mc" id="14" lineNum="12" parent="globals/MyGlanceView" pc="268436020" symbol="onUpdate"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\GlanceView.mc" id="14" lineNum="13" parent="globals/MyGlanceView" pc="268436032" symbol="onUpdate"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\GlanceView.mc" id="14" lineNum="14" parent="globals/MyGlanceView" pc="268436040" symbol="onUpdate"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\GlanceView.mc" id="14" lineNum="16" parent="globals/MyGlanceView" pc="268436057" symbol="onUpdate"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="15" lineNum="164" parent="globals/BLEBarrel/BleDevice" pc="268436089" symbol="onCharacteristicChanged"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="15" lineNum="166" parent="globals/BLEBarrel/BleDevice" pc="268436091" symbol="onCharacteristicChanged"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="15" lineNum="171" parent="globals/BLEBarrel/BleDevice" pc="268436104" symbol="onCharacteristicChanged"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="15" lineNum="172" parent="globals/BLEBarrel/BleDevice" pc="268436133" symbol="onCharacteristicChanged"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="15" lineNum="176" parent="globals/BLEBarrel/BleDevice" pc="268436178" symbol="onCharacteristicChanged"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="15" lineNum="178" parent="globals/BLEBarrel/BleDevice" pc="268436199" symbol="onCharacteristicChanged"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="15" lineNum="179" parent="globals/BLEBarrel/BleDevice" pc="268436211" symbol="onCharacteristicChanged"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="15" lineNum="180" parent="globals/BLEBarrel/BleDevice" pc="268436220" symbol="onCharacteristicChanged"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="15" lineNum="183" parent="globals/BLEBarrel/BleDevice" pc="268436240" symbol="onCharacteristicChanged"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="15" lineNum="185" parent="globals/BLEBarrel/BleDevice" pc="268436261" symbol="onCharacteristicChanged"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="15" lineNum="186" parent="globals/BLEBarrel/BleDevice" pc="268436285" symbol="onCharacteristicChanged"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="15" lineNum="187" parent="globals/BLEBarrel/BleDevice" pc="268436296" symbol="onCharacteristicChanged"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="15" lineNum="189" parent="globals/BLEBarrel/BleDevice" pc="268436315" symbol="onCharacteristicChanged"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="15" lineNum="190" parent="globals/BLEBarrel/BleDevice" pc="268436330" symbol="onCharacteristicChanged"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="15" lineNum="191" parent="globals/BLEBarrel/BleDevice" pc="268436347" symbol="onCharacteristicChanged"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="15" lineNum="192" parent="globals/BLEBarrel/BleDevice" pc="268436371" symbol="onCharacteristicChanged"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="15" lineNum="194" parent="globals/BLEBarrel/BleDevice" pc="268436382" symbol="onCharacteristicChanged"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="15" lineNum="201" parent="globals/BLEBarrel/BleDevice" pc="268436405" symbol="onCharacteristicChanged"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="15" lineNum="202" parent="globals/BLEBarrel/BleDevice" pc="268436416" symbol="onCharacteristicChanged"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="15" lineNum="203" parent="globals/BLEBarrel/BleDevice" pc="268436433" symbol="onCharacteristicChanged"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="15" lineNum="204" parent="globals/BLEBarrel/BleDevice" pc="268436458" symbol="onCharacteristicChanged"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="15" lineNum="208" parent="globals/BLEBarrel/BleDevice" pc="268436499" symbol="onCharacteristicChanged"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="16" lineNum="82" parent="globals/BLEBarrel/BleDevice" pc="268436511" symbol="debug"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="16" lineNum="83" parent="globals/BLEBarrel/BleDevice" pc="268436513" symbol="debug"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="17" lineNum="211" parent="globals/BLEBarrel/BleDevice" pc="268436535" symbol="onCharacteristicWrite"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="17" lineNum="214" parent="globals/BLEBarrel/BleDevice" pc="268436538" symbol="onCharacteristicWrite"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="17" lineNum="216" parent="globals/BLEBarrel/BleDevice" pc="268436554" symbol="onCharacteristicWrite"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="17" lineNum="217" parent="globals/BLEBarrel/BleDevice" pc="268436590" symbol="onCharacteristicWrite"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="17" lineNum="218" parent="globals/BLEBarrel/BleDevice" pc="268436594" symbol="onCharacteristicWrite"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="17" lineNum="220" parent="globals/BLEBarrel/BleDevice" pc="268436628" symbol="onCharacteristicWrite"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="17" lineNum="221" parent="globals/BLEBarrel/BleDevice" pc="268436677" symbol="onCharacteristicWrite"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="17" lineNum="223" parent="globals/BLEBarrel/BleDevice" pc="268436713" symbol="onCharacteristicWrite"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="18" lineNum="259" parent="globals/BLEBarrel/BleDevice" pc="268436731" symbol="onScanStateChange"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="18" lineNum="260" parent="globals/BLEBarrel/BleDevice" pc="268436733" symbol="onScanStateChange"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="18" lineNum="262" parent="globals/BLEBarrel/BleDevice" pc="268436759" symbol="onScanStateChange"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="18" lineNum="263" parent="globals/BLEBarrel/BleDevice" pc="268436767" symbol="onScanStateChange"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="18" lineNum="264" parent="globals/BLEBarrel/BleDevice" pc="268436775" symbol="onScanStateChange"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="18" lineNum="265" parent="globals/BLEBarrel/BleDevice" pc="268436793" symbol="onScanStateChange"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="18" lineNum="268" parent="globals/BLEBarrel/BleDevice" pc="268436807" symbol="onScanStateChange"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="18" lineNum="269" parent="globals/BLEBarrel/BleDevice" pc="268436815" symbol="onScanStateChange"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="18" lineNum="270" parent="globals/BLEBarrel/BleDevice" pc="268436824" symbol="onScanStateChange"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="18" lineNum="271" parent="globals/BLEBarrel/BleDevice" pc="268436833" symbol="onScanStateChange"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="18" lineNum="273" parent="globals/BLEBarrel/BleDevice" pc="268436854" symbol="onScanStateChange"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="18" lineNum="275" parent="globals/BLEBarrel/BleDevice" pc="268436878" symbol="onScanStateChange"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="19" lineNum="279" parent="globals/BLEBarrel/BleDevice" pc="268436890" symbol="onConnectedStateChanged"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="19" lineNum="280" parent="globals/BLEBarrel/BleDevice" pc="268436893" symbol="onConnectedStateChanged"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="19" lineNum="281" parent="globals/BLEBarrel/BleDevice" pc="268436938" symbol="onConnectedStateChanged"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="19" lineNum="282" parent="globals/BLEBarrel/BleDevice" pc="268436962" symbol="onConnectedStateChanged"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="19" lineNum="283" parent="globals/BLEBarrel/BleDevice" pc="268436973" symbol="onConnectedStateChanged"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="19" lineNum="284" parent="globals/BLEBarrel/BleDevice" pc="268436981" symbol="onConnectedStateChanged"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="19" lineNum="285" parent="globals/BLEBarrel/BleDevice" pc="268436989" symbol="onConnectedStateChanged"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="19" lineNum="286" parent="globals/BLEBarrel/BleDevice" pc="268437003" symbol="onConnectedStateChanged"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="19" lineNum="288" parent="globals/BLEBarrel/BleDevice" pc="268437011" symbol="onConnectedStateChanged"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="19" lineNum="289" parent="globals/BLEBarrel/BleDevice" pc="268437031" symbol="onConnectedStateChanged"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="19" lineNum="290" parent="globals/BLEBarrel/BleDevice" pc="268437035" symbol="onConnectedStateChanged"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="19" lineNum="293" parent="globals/BLEBarrel/BleDevice" pc="268437069" symbol="onConnectedStateChanged"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="19" lineNum="295" parent="globals/BLEBarrel/BleDevice" pc="268437080" symbol="onConnectedStateChanged"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="19" lineNum="297" parent="globals/BLEBarrel/BleDevice" pc="268437092" symbol="onConnectedStateChanged"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="19" lineNum="298" parent="globals/BLEBarrel/BleDevice" pc="268437101" symbol="onConnectedStateChanged"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="19" lineNum="299" parent="globals/BLEBarrel/BleDevice" pc="268437109" symbol="onConnectedStateChanged"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="19" lineNum="300" parent="globals/BLEBarrel/BleDevice" pc="268437117" symbol="onConnectedStateChanged"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="20" lineNum="236" parent="globals/BLEBarrel/BleDevice" pc="268437128" symbol="onProfileRegister"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="20" lineNum="237" parent="globals/BLEBarrel/BleDevice" pc="268437130" symbol="onProfileRegister"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="21" lineNum="458" parent="globals/BLEBarrel/BleDevice" pc="268437157" symbol="sendPosition"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="21" lineNum="475" parent="globals/BLEBarrel/BleDevice" pc="268437160" symbol="sendPosition"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="21" lineNum="476" parent="globals/BLEBarrel/BleDevice" pc="268437167" symbol="sendPosition"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="21" lineNum="477" parent="globals/BLEBarrel/BleDevice" pc="268437175" symbol="sendPosition"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="21" lineNum="478" parent="globals/BLEBarrel/BleDevice" pc="268437182" symbol="sendPosition"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="21" lineNum="479" parent="globals/BLEBarrel/BleDevice" pc="268437189" symbol="sendPosition"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="21" lineNum="480" parent="globals/BLEBarrel/BleDevice" pc="268437192" symbol="sendPosition"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="21" lineNum="481" parent="globals/BLEBarrel/BleDevice" pc="268437195" symbol="sendPosition"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="21" lineNum="482" parent="globals/BLEBarrel/BleDevice" pc="268437203" symbol="sendPosition"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="21" lineNum="483" parent="globals/BLEBarrel/BleDevice" pc="268437206" symbol="sendPosition"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="21" lineNum="484" parent="globals/BLEBarrel/BleDevice" pc="268437214" symbol="sendPosition"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="21" lineNum="485" parent="globals/BLEBarrel/BleDevice" pc="268437219" symbol="sendPosition"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="21" lineNum="486" parent="globals/BLEBarrel/BleDevice" pc="268437224" symbol="sendPosition"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="21" lineNum="488" parent="globals/BLEBarrel/BleDevice" pc="268437228" symbol="sendPosition"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="21" lineNum="489" parent="globals/BLEBarrel/BleDevice" pc="268437241" symbol="sendPosition"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="21" lineNum="490" parent="globals/BLEBarrel/BleDevice" pc="268437252" symbol="sendPosition"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="21" lineNum="493" parent="globals/BLEBarrel/BleDevice" pc="268437272" symbol="sendPosition"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="21" lineNum="493" parent="globals/BLEBarrel/BleDevice" pc="268437292" symbol="sendPosition"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="21" lineNum="495" parent="globals/BLEBarrel/BleDevice" pc="268437296" symbol="sendPosition"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="21" lineNum="496" parent="globals/BLEBarrel/BleDevice" pc="268437306" symbol="sendPosition"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="21" lineNum="497" parent="globals/BLEBarrel/BleDevice" pc="268437320" symbol="sendPosition"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="21" lineNum="498" parent="globals/BLEBarrel/BleDevice" pc="268437326" symbol="sendPosition"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="21" lineNum="500" parent="globals/BLEBarrel/BleDevice" pc="268437336" symbol="sendPosition"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="21" lineNum="502" parent="globals/BLEBarrel/BleDevice" pc="268437337" symbol="sendPosition"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="21" lineNum="503" parent="globals/BLEBarrel/BleDevice" pc="268437347" symbol="sendPosition"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="21" lineNum="504" parent="globals/BLEBarrel/BleDevice" pc="268437365" symbol="sendPosition"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="21" lineNum="505" parent="globals/BLEBarrel/BleDevice" pc="268437372" symbol="sendPosition"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="21" lineNum="507" parent="globals/BLEBarrel/BleDevice" pc="268437386" symbol="sendPosition"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="21" lineNum="509" parent="globals/BLEBarrel/BleDevice" pc="268437387" symbol="sendPosition"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="21" lineNum="510" parent="globals/BLEBarrel/BleDevice" pc="268437393" symbol="sendPosition"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="21" lineNum="516" parent="globals/BLEBarrel/BleDevice" pc="268437399" symbol="sendPosition"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="21" lineNum="518" parent="globals/BLEBarrel/BleDevice" pc="268437407" symbol="sendPosition"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="21" lineNum="519" parent="globals/BLEBarrel/BleDevice" pc="268437427" symbol="sendPosition"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="21" lineNum="520" parent="globals/BLEBarrel/BleDevice" pc="268437439" symbol="sendPosition"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="21" lineNum="522" parent="globals/BLEBarrel/BleDevice" pc="268437451" symbol="sendPosition"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="21" lineNum="523" parent="globals/BLEBarrel/BleDevice" pc="268437458" symbol="sendPosition"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="21" lineNum="525" parent="globals/BLEBarrel/BleDevice" pc="268437465" symbol="sendPosition"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="21" lineNum="528" parent="globals/BLEBarrel/BleDevice" pc="268437469" symbol="sendPosition"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="21" lineNum="529" parent="globals/BLEBarrel/BleDevice" pc="268437486" symbol="sendPosition"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="21" lineNum="530" parent="globals/BLEBarrel/BleDevice" pc="268437498" symbol="sendPosition"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="21" lineNum="532" parent="globals/BLEBarrel/BleDevice" pc="268437510" symbol="sendPosition"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="21" lineNum="533" parent="globals/BLEBarrel/BleDevice" pc="268437517" symbol="sendPosition"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="21" lineNum="535" parent="globals/BLEBarrel/BleDevice" pc="268437524" symbol="sendPosition"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="21" lineNum="538" parent="globals/BLEBarrel/BleDevice" pc="268437528" symbol="sendPosition"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="21" lineNum="539" parent="globals/BLEBarrel/BleDevice" pc="268437545" symbol="sendPosition"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="21" lineNum="540" parent="globals/BLEBarrel/BleDevice" pc="268437557" symbol="sendPosition"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="21" lineNum="542" parent="globals/BLEBarrel/BleDevice" pc="268437569" symbol="sendPosition"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="21" lineNum="543" parent="globals/BLEBarrel/BleDevice" pc="268437586" symbol="sendPosition"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="21" lineNum="546" parent="globals/BLEBarrel/BleDevice" pc="268437598" symbol="sendPosition"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="21" lineNum="547" parent="globals/BLEBarrel/BleDevice" pc="268437610" symbol="sendPosition"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="21" lineNum="550" parent="globals/BLEBarrel/BleDevice" pc="268437622" symbol="sendPosition"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="21" lineNum="551" parent="globals/BLEBarrel/BleDevice" pc="268437639" symbol="sendPosition"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="21" lineNum="554" parent="globals/BLEBarrel/BleDevice" pc="268437651" symbol="sendPosition"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="22" lineNum="92" parent="globals/BLEBarrel/BleDevice" pc="268437666" symbol="sendCMD"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="22" lineNum="100" parent="globals/BLEBarrel/BleDevice" pc="268437669" symbol="sendCMD"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="22" lineNum="101" parent="globals/BLEBarrel/BleDevice" pc="268437678" symbol="sendCMD"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="22" lineNum="102" parent="globals/BLEBarrel/BleDevice" pc="268437687" symbol="sendCMD"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="22" lineNum="103" parent="globals/BLEBarrel/BleDevice" pc="268437695" symbol="sendCMD"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="22" lineNum="104" parent="globals/BLEBarrel/BleDevice" pc="268437709" symbol="sendCMD"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="22" lineNum="105" parent="globals/BLEBarrel/BleDevice" pc="268437724" symbol="sendCMD"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="22" lineNum="112" parent="globals/BLEBarrel/BleDevice" pc="268437728" symbol="sendCMD"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="22" lineNum="114" parent="globals/BLEBarrel/BleDevice" pc="268437748" symbol="sendCMD"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="22" lineNum="115" parent="globals/BLEBarrel/BleDevice" pc="268437754" symbol="sendCMD"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="22" lineNum="116" parent="globals/BLEBarrel/BleDevice" pc="268437780" symbol="sendCMD"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="22" lineNum="117" parent="globals/BLEBarrel/BleDevice" pc="268437788" symbol="sendCMD"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="22" lineNum="118" parent="globals/BLEBarrel/BleDevice" pc="268437806" symbol="sendCMD"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="22" lineNum="119" parent="globals/BLEBarrel/BleDevice" pc="268437814" symbol="sendCMD"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="22" lineNum="120" parent="globals/BLEBarrel/BleDevice" pc="268437829" symbol="sendCMD"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="22" lineNum="124" parent="globals/BLEBarrel/BleDevice" pc="268437836" symbol="sendCMD"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="22" lineNum="128" parent="globals/BLEBarrel/BleDevice" pc="268437837" symbol="sendCMD"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="22" lineNum="129" parent="globals/BLEBarrel/BleDevice" pc="268437852" symbol="sendCMD"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="22" lineNum="130" parent="globals/BLEBarrel/BleDevice" pc="268437864" symbol="sendCMD"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="22" lineNum="132" parent="globals/BLEBarrel/BleDevice" pc="268437876" symbol="sendCMD"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="22" lineNum="137" parent="globals/BLEBarrel/BleDevice" pc="268437886" symbol="sendCMD"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="22" lineNum="138" parent="globals/BLEBarrel/BleDevice" pc="268437899" symbol="sendCMD"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="22" lineNum="139" parent="globals/BLEBarrel/BleDevice" pc="268437914" symbol="sendCMD"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="22" lineNum="140" parent="globals/BLEBarrel/BleDevice" pc="268437930" symbol="sendCMD"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="22" lineNum="143" parent="globals/BLEBarrel/BleDevice" pc="268437979" symbol="sendCMD"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="22" lineNum="148" parent="globals/BLEBarrel/BleDevice" pc="268437995" symbol="sendCMD"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="22" lineNum="149" parent="globals/BLEBarrel/BleDevice" pc="268438009" symbol="sendCMD"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="22" lineNum="150" parent="globals/BLEBarrel/BleDevice" pc="268438031" symbol="sendCMD"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="22" lineNum="151" parent="globals/BLEBarrel/BleDevice" pc="268438035" symbol="sendCMD"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="22" lineNum="157" parent="globals/BLEBarrel/BleDevice" pc="268438069" symbol="sendCMD"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="22" lineNum="158" parent="globals/BLEBarrel/BleDevice" pc="268438083" symbol="sendCMD"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="22" lineNum="159" parent="globals/BLEBarrel/BleDevice" pc="268438117" symbol="sendCMD"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="22" lineNum="160" parent="globals/BLEBarrel/BleDevice" pc="268438121" symbol="sendCMD"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="23" lineNum="241" parent="globals/BLEBarrel/BleDevice" pc="268438156" symbol="registerProfiles"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="23" lineNum="242" parent="globals/BLEBarrel/BleDevice" pc="268438159" symbol="registerProfiles"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="23" lineNum="252" parent="globals/BLEBarrel/BleDevice" pc="268438243" symbol="registerProfiles"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="23" lineNum="253" parent="globals/BLEBarrel/BleDevice" pc="268438264" symbol="registerProfiles"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="23" lineNum="254" parent="globals/BLEBarrel/BleDevice" pc="268438268" symbol="registerProfiles"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="24" lineNum="413" parent="globals/BLEBarrel/BleDevice" pc="268438303" symbol="toDouble"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="24" lineNum="415" parent="globals/BLEBarrel/BleDevice" pc="268438306" symbol="toDouble"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="24" lineNum="416" parent="globals/BLEBarrel/BleDevice" pc="268438310" symbol="toDouble"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="24" lineNum="417" parent="globals/BLEBarrel/BleDevice" pc="268438315" symbol="toDouble"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="24" lineNum="418" parent="globals/BLEBarrel/BleDevice" pc="268438320" symbol="toDouble"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="24" lineNum="419" parent="globals/BLEBarrel/BleDevice" pc="268438325" symbol="toDouble"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="24" lineNum="420" parent="globals/BLEBarrel/BleDevice" pc="268438328" symbol="toDouble"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="24" lineNum="421" parent="globals/BLEBarrel/BleDevice" pc="268438331" symbol="toDouble"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="24" lineNum="422" parent="globals/BLEBarrel/BleDevice" pc="268438334" symbol="toDouble"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="24" lineNum="423" parent="globals/BLEBarrel/BleDevice" pc="268438337" symbol="toDouble"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="24" lineNum="424" parent="globals/BLEBarrel/BleDevice" pc="268438340" symbol="toDouble"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="24" lineNum="425" parent="globals/BLEBarrel/BleDevice" pc="268438343" symbol="toDouble"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="24" lineNum="428" parent="globals/BLEBarrel/BleDevice" pc="268438346" symbol="toDouble"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="24" lineNum="429" parent="globals/BLEBarrel/BleDevice" pc="268438360" symbol="toDouble"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="24" lineNum="431" parent="globals/BLEBarrel/BleDevice" pc="268438374" symbol="toDouble"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="24" lineNum="433" parent="globals/BLEBarrel/BleDevice" pc="268438384" symbol="toDouble"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="24" lineNum="434" parent="globals/BLEBarrel/BleDevice" pc="268438394" symbol="toDouble"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="24" lineNum="436" parent="globals/BLEBarrel/BleDevice" pc="268438401" symbol="toDouble"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="24" lineNum="437" parent="globals/BLEBarrel/BleDevice" pc="268438412" symbol="toDouble"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="24" lineNum="439" parent="globals/BLEBarrel/BleDevice" pc="268438419" symbol="toDouble"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="24" lineNum="440" parent="globals/BLEBarrel/BleDevice" pc="268438428" symbol="toDouble"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="24" lineNum="442" parent="globals/BLEBarrel/BleDevice" pc="268438435" symbol="toDouble"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="24" lineNum="443" parent="globals/BLEBarrel/BleDevice" pc="268438442" symbol="toDouble"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="24" lineNum="445" parent="globals/BLEBarrel/BleDevice" pc="268438452" symbol="toDouble"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="24" lineNum="446" parent="globals/BLEBarrel/BleDevice" pc="268438456" symbol="toDouble"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="24" lineNum="447" parent="globals/BLEBarrel/BleDevice" pc="268438463" symbol="toDouble"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="24" lineNum="448" parent="globals/BLEBarrel/BleDevice" pc="268438478" symbol="toDouble"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="24" lineNum="449" parent="globals/BLEBarrel/BleDevice" pc="268438485" symbol="toDouble"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="24" lineNum="450" parent="globals/BLEBarrel/BleDevice" pc="268438492" symbol="toDouble"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="24" lineNum="453" parent="globals/BLEBarrel/BleDevice" pc="268438507" symbol="toDouble"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="24" lineNum="454" parent="globals/BLEBarrel/BleDevice" pc="268438519" symbol="toDouble"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="24" lineNum="455" parent="globals/BLEBarrel/BleDevice" pc="268438531" symbol="toDouble"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="25" lineNum="86" parent="globals/BLEBarrel/BleDevice" pc="268438534" symbol="initialize"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="25" lineNum="87" parent="globals/BLEBarrel/BleDevice" pc="268438536" symbol="initialize"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="25" lineNum="88" parent="globals/BLEBarrel/BleDevice" pc="268438548" symbol="initialize"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="26" lineNum="227" parent="globals/BLEBarrel/BleDevice" pc="268438563" symbol="toTimeString"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="26" lineNum="228" parent="globals/BLEBarrel/BleDevice" pc="268438566" symbol="toTimeString"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="26" lineNum="229" parent="globals/BLEBarrel/BleDevice" pc="268438574" symbol="toTimeString"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="26" lineNum="230" parent="globals/BLEBarrel/BleDevice" pc="268438588" symbol="toTimeString"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="26" lineNum="232" parent="globals/BLEBarrel/BleDevice" pc="268438605" symbol="toTimeString"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="27" lineNum="611" parent="globals/BLEBarrel/BleDevice" pc="268438656" symbol="close"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="27" lineNum="612" parent="globals/BLEBarrel/BleDevice" pc="268438658" symbol="close"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="27" lineNum="614" parent="globals/BLEBarrel/BleDevice" pc="268438672" symbol="close"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="27" lineNum="615" parent="globals/BLEBarrel/BleDevice" pc="268438701" symbol="close"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="27" lineNum="616" parent="globals/BLEBarrel/BleDevice" pc="268438736" symbol="close"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="27" lineNum="617" parent="globals/BLEBarrel/BleDevice" pc="268438765" symbol="close"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="27" lineNum="618" parent="globals/BLEBarrel/BleDevice" pc="268438794" symbol="close"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="27" lineNum="619" parent="globals/BLEBarrel/BleDevice" pc="268438823" symbol="close"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="27" lineNum="620" parent="globals/BLEBarrel/BleDevice" pc="268438852" symbol="close"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="27" lineNum="621" parent="globals/BLEBarrel/BleDevice" pc="268438881" symbol="close"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="27" lineNum="622" parent="globals/BLEBarrel/BleDevice" pc="268438889" symbol="close"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="27" lineNum="624" parent="globals/BLEBarrel/BleDevice" pc="268438906" symbol="close"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="27" lineNum="625" parent="globals/BLEBarrel/BleDevice" pc="268438914" symbol="close"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="27" lineNum="627" parent="globals/BLEBarrel/BleDevice" pc="268438935" symbol="close"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="28" lineNum="311" parent="globals/BLEBarrel/BleDevice" pc="268438952" symbol="&lt;globals/BLEBarrel/BleDevice/&lt;&gt;connect&gt;"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="28" lineNum="312" parent="globals/BLEBarrel/BleDevice" pc="268438955" symbol="&lt;globals/BLEBarrel/BleDevice/&lt;&gt;connect&gt;"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="28" lineNum="314" parent="globals/BLEBarrel/BleDevice" pc="268438977" symbol="&lt;globals/BLEBarrel/BleDevice/&lt;&gt;connect&gt;"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="28" lineNum="315" parent="globals/BLEBarrel/BleDevice" pc="268438991" symbol="&lt;globals/BLEBarrel/BleDevice/&lt;&gt;connect&gt;"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="28" lineNum="316" parent="globals/BLEBarrel/BleDevice" pc="268439011" symbol="&lt;globals/BLEBarrel/BleDevice/&lt;&gt;connect&gt;"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="28" lineNum="317" parent="globals/BLEBarrel/BleDevice" pc="268439015" symbol="&lt;globals/BLEBarrel/BleDevice/&lt;&gt;connect&gt;"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="28" lineNum="320" parent="globals/BLEBarrel/BleDevice" pc="268439049" symbol="&lt;globals/BLEBarrel/BleDevice/&lt;&gt;connect&gt;"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="28" lineNum="321" parent="globals/BLEBarrel/BleDevice" pc="268439076" symbol="&lt;globals/BLEBarrel/BleDevice/&lt;&gt;connect&gt;"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="28" lineNum="322" parent="globals/BLEBarrel/BleDevice" pc="268439080" symbol="&lt;globals/BLEBarrel/BleDevice/&lt;&gt;connect&gt;"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="28" lineNum="324" parent="globals/BLEBarrel/BleDevice" pc="268439114" symbol="&lt;globals/BLEBarrel/BleDevice/&lt;&gt;connect&gt;"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="29" lineNum="335" parent="globals/BLEBarrel/BleDevice" pc="268439141" symbol="onScanResults"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="29" lineNum="342" parent="globals/BLEBarrel/BleDevice" pc="268439144" symbol="onScanResults"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="29" lineNum="343" parent="globals/BLEBarrel/BleDevice" pc="268439159" symbol="onScanResults"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="29" lineNum="344" parent="globals/BLEBarrel/BleDevice" pc="268439169" symbol="onScanResults"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="29" lineNum="345" parent="globals/BLEBarrel/BleDevice" pc="268439184" symbol="onScanResults"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="29" lineNum="347" parent="globals/BLEBarrel/BleDevice" pc="268439194" symbol="onScanResults"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="29" lineNum="351" parent="globals/BLEBarrel/BleDevice" pc="268439220" symbol="onScanResults"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="29" lineNum="353" parent="globals/BLEBarrel/BleDevice" pc="268439235" symbol="onScanResults"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="29" lineNum="354" parent="globals/BLEBarrel/BleDevice" pc="268439253" symbol="onScanResults"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="29" lineNum="355" parent="globals/BLEBarrel/BleDevice" pc="268439270" symbol="onScanResults"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="29" lineNum="356" parent="globals/BLEBarrel/BleDevice" pc="268439278" symbol="onScanResults"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="29" lineNum="357" parent="globals/BLEBarrel/BleDevice" pc="268439310" symbol="onScanResults"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="29" lineNum="359" parent="globals/BLEBarrel/BleDevice" pc="268439322" symbol="onScanResults"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="29" lineNum="360" parent="globals/BLEBarrel/BleDevice" pc="268439354" symbol="onScanResults"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="29" lineNum="363" parent="globals/BLEBarrel/BleDevice" pc="268439366" symbol="onScanResults"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="29" lineNum="364" parent="globals/BLEBarrel/BleDevice" pc="268439398" symbol="onScanResults"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="29" lineNum="366" parent="globals/BLEBarrel/BleDevice" pc="268439410" symbol="onScanResults"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="29" lineNum="367" parent="globals/BLEBarrel/BleDevice" pc="268439421" symbol="onScanResults"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="29" lineNum="369" parent="globals/BLEBarrel/BleDevice" pc="268439425" symbol="onScanResults"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="29" lineNum="398" parent="globals/BLEBarrel/BleDevice" pc="268439454" symbol="onScanResults"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="29" lineNum="399" parent="globals/BLEBarrel/BleDevice" pc="268439469" symbol="onScanResults"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="29" lineNum="400" parent="globals/BLEBarrel/BleDevice" pc="268439487" symbol="onScanResults"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="29" lineNum="402" parent="globals/BLEBarrel/BleDevice" pc="268439498" symbol="onScanResults"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="29" lineNum="403" parent="globals/BLEBarrel/BleDevice" pc="268439508" symbol="onScanResults"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="29" lineNum="405" parent="globals/BLEBarrel/BleDevice" pc="268439522" symbol="onScanResults"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="29" lineNum="406" parent="globals/BLEBarrel/BleDevice" pc="268439542" symbol="onScanResults"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="29" lineNum="407" parent="globals/BLEBarrel/BleDevice" pc="268439546" symbol="onScanResults"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="30" lineNum="559" parent="globals/BLEBarrel/BleDevice" pc="268439596" symbol="open"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="30" lineNum="563" parent="globals/BLEBarrel/BleDevice" pc="268439599" symbol="open"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="30" lineNum="564" parent="globals/BLEBarrel/BleDevice" pc="268439617" symbol="open"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="30" lineNum="566" parent="globals/BLEBarrel/BleDevice" pc="268439632" symbol="open"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="30" lineNum="570" parent="globals/BLEBarrel/BleDevice" pc="268439644" symbol="open"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="30" lineNum="571" parent="globals/BLEBarrel/BleDevice" pc="268439674" symbol="open"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="30" lineNum="572" parent="globals/BLEBarrel/BleDevice" pc="268439683" symbol="open"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="30" lineNum="574" parent="globals/BLEBarrel/BleDevice" pc="268439694" symbol="open"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="30" lineNum="575" parent="globals/BLEBarrel/BleDevice" pc="268439724" symbol="open"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="30" lineNum="576" parent="globals/BLEBarrel/BleDevice" pc="268439754" symbol="open"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="30" lineNum="577" parent="globals/BLEBarrel/BleDevice" pc="268439763" symbol="open"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="30" lineNum="578" parent="globals/BLEBarrel/BleDevice" pc="268439775" symbol="open"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="30" lineNum="580" parent="globals/BLEBarrel/BleDevice" pc="268439790" symbol="open"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="30" lineNum="581" parent="globals/BLEBarrel/BleDevice" pc="268439807" symbol="open"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="30" lineNum="582" parent="globals/BLEBarrel/BleDevice" pc="268439859" symbol="open"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="30" lineNum="583" parent="globals/BLEBarrel/BleDevice" pc="268439868" symbol="open"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="30" lineNum="585" parent="globals/BLEBarrel/BleDevice" pc="268439888" symbol="open"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="30" lineNum="586" parent="globals/BLEBarrel/BleDevice" pc="268439913" symbol="open"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="30" lineNum="587" parent="globals/BLEBarrel/BleDevice" pc="268439919" symbol="open"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="30" lineNum="590" parent="globals/BLEBarrel/BleDevice" pc="268439931" symbol="open"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="30" lineNum="591" parent="globals/BLEBarrel/BleDevice" pc="268439956" symbol="open"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="30" lineNum="592" parent="globals/BLEBarrel/BleDevice" pc="268439962" symbol="open"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="30" lineNum="594" parent="globals/BLEBarrel/BleDevice" pc="268439974" symbol="open"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="30" lineNum="595" parent="globals/BLEBarrel/BleDevice" pc="268440004" symbol="open"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="30" lineNum="596" parent="globals/BLEBarrel/BleDevice" pc="268440013" symbol="open"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="30" lineNum="599" parent="globals/BLEBarrel/BleDevice" pc="268440024" symbol="open"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="30" lineNum="600" parent="globals/BLEBarrel/BleDevice" pc="268440054" symbol="open"/>
+        <entry filename="C:\\Users\\greg\\AppData\\Local\\Temp\\BLE Barrel-1.0.0.barrel15098825190353517041\\content\\BLEBarrel.mc" id="30" lineNum="601" parent="globals/BLEBarrel/BleDevice" pc="268440061" symbol="open"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\ViewData.mc" id="31" lineNum="8" parent="globals/ViewData" pc="268440077" symbol="&lt;init&gt;"/>
+        <entry filename="c:\\Users\\greg\\git\\Insta360-Remote-CIQ\\gen\\006-B4314-00\\source\\Rez.mcgen" id="32" lineNum="7" parent="globals/Rez" pc="268440089" symbol="&lt;init&gt;"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\InputDelegate.mc" id="33" lineNum="109" parent="globals/Menu2Delegate" pc="268440109" symbol="&lt;init&gt;"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\InputDelegate.mc" id="34" lineNum="249" parent="globals/actionDelegate" pc="268440121" symbol="&lt;init&gt;"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\InputDelegate.mc" id="35" lineNum="6" parent="globals/InputDelegate" pc="268440133" symbol="&lt;init&gt;"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\InputDelegate.mc" id="35" lineNum="8" parent="globals/InputDelegate" pc="268440144" symbol="&lt;init&gt;"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\InputDelegate.mc" id="35" lineNum="9" parent="globals/InputDelegate" pc="268440153" symbol="&lt;init&gt;"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\ViewData.mc" id="36" lineNum="58" parent="globals/ViewData" pc="268440163" symbol="compute"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\ViewData.mc" id="36" lineNum="60" parent="globals/ViewData" pc="268440165" symbol="compute"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\ViewData.mc" id="36" lineNum="61" parent="globals/ViewData" pc="268440178" symbol="compute"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\ViewData.mc" id="36" lineNum="62" parent="globals/ViewData" pc="268440187" symbol="compute"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\ViewData.mc" id="36" lineNum="63" parent="globals/ViewData" pc="268440201" symbol="compute"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\ViewData.mc" id="36" lineNum="68" parent="globals/ViewData" pc="268440210" symbol="compute"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\ViewData.mc" id="37" lineNum="11" parent="globals/ViewData" pc="268440212" symbol="initialize"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\ViewData.mc" id="37" lineNum="12" parent="globals/ViewData" pc="268440214" symbol="initialize"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\ViewData.mc" id="37" lineNum="13" parent="globals/ViewData" pc="268440230" symbol="initialize"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\ViewData.mc" id="38" lineNum="16" parent="globals/ViewData" pc="268440240" symbol="onUpdate"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\ViewData.mc" id="38" lineNum="17" parent="globals/ViewData" pc="268440243" symbol="onUpdate"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\ViewData.mc" id="38" lineNum="18" parent="globals/ViewData" pc="268440255" symbol="onUpdate"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\ViewData.mc" id="38" lineNum="19" parent="globals/ViewData" pc="268440267" symbol="onUpdate"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\ViewData.mc" id="38" lineNum="21" parent="globals/ViewData" pc="268440271" symbol="onUpdate"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\ViewData.mc" id="38" lineNum="21" parent="globals/ViewData" pc="268440282" symbol="onUpdate"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\ViewData.mc" id="38" lineNum="22" parent="globals/ViewData" pc="268440297" symbol="onUpdate"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\ViewData.mc" id="38" lineNum="23" parent="globals/ViewData" pc="268440305" symbol="onUpdate"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\ViewData.mc" id="38" lineNum="26" parent="globals/ViewData" pc="268440312" symbol="onUpdate"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\ViewData.mc" id="38" lineNum="27" parent="globals/ViewData" pc="268440327" symbol="onUpdate"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\ViewData.mc" id="38" lineNum="29" parent="globals/ViewData" pc="268440346" symbol="onUpdate"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\ViewData.mc" id="38" lineNum="31" parent="globals/ViewData" pc="268440361" symbol="onUpdate"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\ViewData.mc" id="38" lineNum="32" parent="globals/ViewData" pc="268440373" symbol="onUpdate"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\ViewData.mc" id="38" lineNum="33" parent="globals/ViewData" pc="268440381" symbol="onUpdate"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\ViewData.mc" id="38" lineNum="34" parent="globals/ViewData" pc="268440400" symbol="onUpdate"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\ViewData.mc" id="38" lineNum="35" parent="globals/ViewData" pc="268440428" symbol="onUpdate"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\ViewData.mc" id="38" lineNum="37" parent="globals/ViewData" pc="268440440" symbol="onUpdate"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\ViewData.mc" id="38" lineNum="38" parent="globals/ViewData" pc="268440454" symbol="onUpdate"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\ViewData.mc" id="38" lineNum="39" parent="globals/ViewData" pc="268440472" symbol="onUpdate"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\ViewData.mc" id="38" lineNum="40" parent="globals/ViewData" pc="268440487" symbol="onUpdate"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\ViewData.mc" id="38" lineNum="41" parent="globals/ViewData" pc="268440506" symbol="onUpdate"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\ViewData.mc" id="38" lineNum="42" parent="globals/ViewData" pc="268440536" symbol="onUpdate"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\ViewData.mc" id="38" lineNum="44" parent="globals/ViewData" pc="268440554" symbol="onUpdate"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\ViewData.mc" id="38" lineNum="45" parent="globals/ViewData" pc="268440578" symbol="onUpdate"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\ViewData.mc" id="38" lineNum="46" parent="globals/ViewData" pc="268440602" symbol="onUpdate"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\ViewData.mc" id="38" lineNum="50" parent="globals/ViewData" pc="268440629" symbol="onUpdate"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\ViewData.mc" id="38" lineNum="51" parent="globals/ViewData" pc="268440645" symbol="onUpdate"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\ViewData.mc" id="38" lineNum="52" parent="globals/ViewData" pc="268440677" symbol="onUpdate"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\ViewData.mc" id="38" lineNum="54" parent="globals/ViewData" pc="268440715" symbol="onUpdate"/>
+        <entry filename="c:\\Users\\greg\\git\\Insta360-Remote-CIQ\\gen\\006-B4314-00\\source\\Rez.mcgen" id="39" lineNum="638" parent="globals/BLEBarrel/Rez" pc="268440755" symbol="&lt;init&gt;"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\InputDelegate.mc" id="40" lineNum="242" parent="globals/Menu2Delegate" pc="268440780" symbol="onPosition"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\InputDelegate.mc" id="40" lineNum="244" parent="globals/Menu2Delegate" pc="268440782" symbol="onPosition"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\InputDelegate.mc" id="41" lineNum="110" parent="globals/Menu2Delegate" pc="268440799" symbol="initialize"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\InputDelegate.mc" id="41" lineNum="111" parent="globals/Menu2Delegate" pc="268440801" symbol="initialize"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\InputDelegate.mc" id="42" lineNum="114" parent="globals/Menu2Delegate" pc="268440814" symbol="onSelect"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\InputDelegate.mc" id="42" lineNum="115" parent="globals/Menu2Delegate" pc="268440817" symbol="onSelect"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\InputDelegate.mc" id="42" lineNum="116" parent="globals/Menu2Delegate" pc="268440821" symbol="onSelect"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\InputDelegate.mc" id="42" lineNum="117" parent="globals/Menu2Delegate" pc="268440825" symbol="onSelect"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\InputDelegate.mc" id="42" lineNum="118" parent="globals/Menu2Delegate" pc="268440829" symbol="onSelect"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\InputDelegate.mc" id="42" lineNum="119" parent="globals/Menu2Delegate" pc="268440832" symbol="onSelect"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\InputDelegate.mc" id="42" lineNum="120" parent="globals/Menu2Delegate" pc="268440835" symbol="onSelect"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\InputDelegate.mc" id="42" lineNum="121" parent="globals/Menu2Delegate" pc="268440842" symbol="onSelect"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\InputDelegate.mc" id="42" lineNum="123" parent="globals/Menu2Delegate" pc="268440845" symbol="onSelect"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\InputDelegate.mc" id="42" lineNum="124" parent="globals/Menu2Delegate" pc="268440857" symbol="onSelect"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\InputDelegate.mc" id="42" lineNum="125" parent="globals/Menu2Delegate" pc="268440869" symbol="onSelect"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\InputDelegate.mc" id="42" lineNum="128" parent="globals/Menu2Delegate" pc="268440886" symbol="onSelect"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\InputDelegate.mc" id="42" lineNum="129" parent="globals/Menu2Delegate" pc="268440903" symbol="onSelect"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\InputDelegate.mc" id="42" lineNum="130" parent="globals/Menu2Delegate" pc="268440920" symbol="onSelect"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\InputDelegate.mc" id="42" lineNum="131" parent="globals/Menu2Delegate" pc="268440933" symbol="onSelect"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\InputDelegate.mc" id="42" lineNum="133" parent="globals/Menu2Delegate" pc="268440946" symbol="onSelect"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\InputDelegate.mc" id="42" lineNum="134" parent="globals/Menu2Delegate" pc="268440955" symbol="onSelect"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\InputDelegate.mc" id="42" lineNum="135" parent="globals/Menu2Delegate" pc="268440957" symbol="onSelect"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\InputDelegate.mc" id="42" lineNum="138" parent="globals/Menu2Delegate" pc="268440976" symbol="onSelect"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\InputDelegate.mc" id="42" lineNum="141" parent="globals/Menu2Delegate" pc="268440995" symbol="onSelect"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\InputDelegate.mc" id="42" lineNum="144" parent="globals/Menu2Delegate" pc="268441014" symbol="onSelect"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\InputDelegate.mc" id="42" lineNum="147" parent="globals/Menu2Delegate" pc="268441033" symbol="onSelect"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\InputDelegate.mc" id="42" lineNum="150" parent="globals/Menu2Delegate" pc="268441052" symbol="onSelect"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\InputDelegate.mc" id="42" lineNum="153" parent="globals/Menu2Delegate" pc="268441071" symbol="onSelect"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\InputDelegate.mc" id="42" lineNum="156" parent="globals/Menu2Delegate" pc="268441090" symbol="onSelect"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\InputDelegate.mc" id="42" lineNum="164" parent="globals/Menu2Delegate" pc="268441109" symbol="onSelect"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\InputDelegate.mc" id="42" lineNum="171" parent="globals/Menu2Delegate" pc="268441128" symbol="onSelect"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\InputDelegate.mc" id="42" lineNum="177" parent="globals/Menu2Delegate" pc="268441147" symbol="onSelect"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\InputDelegate.mc" id="42" lineNum="195" parent="globals/Menu2Delegate" pc="268441166" symbol="onSelect"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\InputDelegate.mc" id="42" lineNum="199" parent="globals/Menu2Delegate" pc="268441185" symbol="onSelect"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\InputDelegate.mc" id="42" lineNum="203" parent="globals/Menu2Delegate" pc="268441204" symbol="onSelect"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\InputDelegate.mc" id="42" lineNum="212" parent="globals/Menu2Delegate" pc="268441223" symbol="onSelect"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\InputDelegate.mc" id="42" lineNum="216" parent="globals/Menu2Delegate" pc="268441242" symbol="onSelect"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\InputDelegate.mc" id="42" lineNum="221" parent="globals/Menu2Delegate" pc="268441261" symbol="onSelect"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\InputDelegate.mc" id="42" lineNum="136" parent="globals/Menu2Delegate" pc="268441283" symbol="onSelect"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\InputDelegate.mc" id="42" lineNum="137" parent="globals/Menu2Delegate" pc="268441304" symbol="onSelect"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\InputDelegate.mc" id="42" lineNum="139" parent="globals/Menu2Delegate" pc="268441307" symbol="onSelect"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\InputDelegate.mc" id="42" lineNum="140" parent="globals/Menu2Delegate" pc="268441328" symbol="onSelect"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\InputDelegate.mc" id="42" lineNum="142" parent="globals/Menu2Delegate" pc="268441331" symbol="onSelect"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\InputDelegate.mc" id="42" lineNum="143" parent="globals/Menu2Delegate" pc="268441352" symbol="onSelect"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\InputDelegate.mc" id="42" lineNum="145" parent="globals/Menu2Delegate" pc="268441355" symbol="onSelect"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\InputDelegate.mc" id="42" lineNum="146" parent="globals/Menu2Delegate" pc="268441376" symbol="onSelect"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\InputDelegate.mc" id="42" lineNum="148" parent="globals/Menu2Delegate" pc="268441379" symbol="onSelect"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\InputDelegate.mc" id="42" lineNum="149" parent="globals/Menu2Delegate" pc="268441400" symbol="onSelect"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\InputDelegate.mc" id="42" lineNum="151" parent="globals/Menu2Delegate" pc="268441403" symbol="onSelect"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\InputDelegate.mc" id="42" lineNum="152" parent="globals/Menu2Delegate" pc="268441424" symbol="onSelect"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\InputDelegate.mc" id="42" lineNum="154" parent="globals/Menu2Delegate" pc="268441427" symbol="onSelect"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\InputDelegate.mc" id="42" lineNum="155" parent="globals/Menu2Delegate" pc="268441448" symbol="onSelect"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\InputDelegate.mc" id="42" lineNum="158" parent="globals/Menu2Delegate" pc="268441451" symbol="onSelect"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\InputDelegate.mc" id="42" lineNum="159" parent="globals/Menu2Delegate" pc="268441465" symbol="onSelect"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\InputDelegate.mc" id="42" lineNum="160" parent="globals/Menu2Delegate" pc="268441479" symbol="onSelect"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\InputDelegate.mc" id="42" lineNum="161" parent="globals/Menu2Delegate" pc="268441493" symbol="onSelect"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\InputDelegate.mc" id="42" lineNum="162" parent="globals/Menu2Delegate" pc="268441507" symbol="onSelect"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\InputDelegate.mc" id="42" lineNum="163" parent="globals/Menu2Delegate" pc="268441528" symbol="onSelect"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\InputDelegate.mc" id="42" lineNum="166" parent="globals/Menu2Delegate" pc="268441531" symbol="onSelect"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\InputDelegate.mc" id="42" lineNum="167" parent="globals/Menu2Delegate" pc="268441545" symbol="onSelect"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\InputDelegate.mc" id="42" lineNum="168" parent="globals/Menu2Delegate" pc="268441559" symbol="onSelect"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\InputDelegate.mc" id="42" lineNum="169" parent="globals/Menu2Delegate" pc="268441573" symbol="onSelect"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\InputDelegate.mc" id="42" lineNum="170" parent="globals/Menu2Delegate" pc="268441594" symbol="onSelect"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\InputDelegate.mc" id="42" lineNum="173" parent="globals/Menu2Delegate" pc="268441597" symbol="onSelect"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\InputDelegate.mc" id="42" lineNum="174" parent="globals/Menu2Delegate" pc="268441611" symbol="onSelect"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\InputDelegate.mc" id="42" lineNum="175" parent="globals/Menu2Delegate" pc="268441625" symbol="onSelect"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\InputDelegate.mc" id="42" lineNum="176" parent="globals/Menu2Delegate" pc="268441646" symbol="onSelect"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\InputDelegate.mc" id="42" lineNum="178" parent="globals/Menu2Delegate" pc="268441649" symbol="onSelect"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\InputDelegate.mc" id="42" lineNum="180" parent="globals/Menu2Delegate" pc="268441661" symbol="onSelect"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\InputDelegate.mc" id="42" lineNum="181" parent="globals/Menu2Delegate" pc="268441668" symbol="onSelect"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\InputDelegate.mc" id="42" lineNum="183" parent="globals/Menu2Delegate" pc="268441675" symbol="onSelect"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\InputDelegate.mc" id="42" lineNum="184" parent="globals/Menu2Delegate" pc="268441698" symbol="onSelect"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\InputDelegate.mc" id="42" lineNum="185" parent="globals/Menu2Delegate" pc="268441710" symbol="onSelect"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\InputDelegate.mc" id="42" lineNum="186" parent="globals/Menu2Delegate" pc="268441734" symbol="onSelect"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\InputDelegate.mc" id="42" lineNum="187" parent="globals/Menu2Delegate" pc="268441746" symbol="onSelect"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\InputDelegate.mc" id="42" lineNum="188" parent="globals/Menu2Delegate" pc="268441771" symbol="onSelect"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\InputDelegate.mc" id="42" lineNum="189" parent="globals/Menu2Delegate" pc="268441783" symbol="onSelect"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\InputDelegate.mc" id="42" lineNum="190" parent="globals/Menu2Delegate" pc="268441795" symbol="onSelect"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\InputDelegate.mc" id="42" lineNum="192" parent="globals/Menu2Delegate" pc="268441812" symbol="onSelect"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\InputDelegate.mc" id="42" lineNum="193" parent="globals/Menu2Delegate" pc="268441833" symbol="onSelect"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\InputDelegate.mc" id="42" lineNum="194" parent="globals/Menu2Delegate" pc="268441846" symbol="onSelect"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\InputDelegate.mc" id="42" lineNum="196" parent="globals/Menu2Delegate" pc="268441849" symbol="onSelect"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\InputDelegate.mc" id="42" lineNum="197" parent="globals/Menu2Delegate" pc="268441870" symbol="onSelect"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\InputDelegate.mc" id="42" lineNum="198" parent="globals/Menu2Delegate" pc="268441883" symbol="onSelect"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\InputDelegate.mc" id="42" lineNum="200" parent="globals/Menu2Delegate" pc="268441886" symbol="onSelect"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\InputDelegate.mc" id="42" lineNum="201" parent="globals/Menu2Delegate" pc="268441907" symbol="onSelect"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\InputDelegate.mc" id="42" lineNum="202" parent="globals/Menu2Delegate" pc="268441920" symbol="onSelect"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\InputDelegate.mc" id="42" lineNum="205" parent="globals/Menu2Delegate" pc="268441923" symbol="onSelect"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\InputDelegate.mc" id="42" lineNum="206" parent="globals/Menu2Delegate" pc="268441944" symbol="onSelect"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\InputDelegate.mc" id="42" lineNum="207" parent="globals/Menu2Delegate" pc="268441958" symbol="onSelect"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\InputDelegate.mc" id="42" lineNum="208" parent="globals/Menu2Delegate" pc="268441972" symbol="onSelect"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\InputDelegate.mc" id="42" lineNum="209" parent="globals/Menu2Delegate" pc="268441986" symbol="onSelect"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\InputDelegate.mc" id="42" lineNum="210" parent="globals/Menu2Delegate" pc="268442000" symbol="onSelect"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\InputDelegate.mc" id="42" lineNum="211" parent="globals/Menu2Delegate" pc="268442014" symbol="onSelect"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\InputDelegate.mc" id="42" lineNum="213" parent="globals/Menu2Delegate" pc="268442017" symbol="onSelect"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\InputDelegate.mc" id="42" lineNum="214" parent="globals/Menu2Delegate" pc="268442038" symbol="onSelect"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\InputDelegate.mc" id="42" lineNum="215" parent="globals/Menu2Delegate" pc="268442051" symbol="onSelect"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\InputDelegate.mc" id="42" lineNum="217" parent="globals/Menu2Delegate" pc="268442054" symbol="onSelect"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\InputDelegate.mc" id="42" lineNum="218" parent="globals/Menu2Delegate" pc="268442076" symbol="onSelect"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\InputDelegate.mc" id="42" lineNum="219" parent="globals/Menu2Delegate" pc="268442103" symbol="onSelect"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\InputDelegate.mc" id="42" lineNum="220" parent="globals/Menu2Delegate" pc="268442106" symbol="onSelect"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\InputDelegate.mc" id="42" lineNum="222" parent="globals/Menu2Delegate" pc="268442109" symbol="onSelect"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\InputDelegate.mc" id="42" lineNum="225" parent="globals/Menu2Delegate" pc="268442127" symbol="onSelect"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\InputDelegate.mc" id="42" lineNum="226" parent="globals/Menu2Delegate" pc="268442132" symbol="onSelect"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\InputDelegate.mc" id="42" lineNum="227" parent="globals/Menu2Delegate" pc="268442153" symbol="onSelect"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\InputDelegate.mc" id="42" lineNum="230" parent="globals/Menu2Delegate" pc="268442175" symbol="onSelect"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\InputDelegate.mc" id="42" lineNum="231" parent="globals/Menu2Delegate" pc="268442201" symbol="onSelect"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\InputDelegate.mc" id="42" lineNum="232" parent="globals/Menu2Delegate" pc="268442219" symbol="onSelect"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\InputDelegate.mc" id="42" lineNum="233" parent="globals/Menu2Delegate" pc="268442242" symbol="onSelect"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\InputDelegate.mc" id="42" lineNum="236" parent="globals/Menu2Delegate" pc="268442268" symbol="onSelect"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\InputDelegate.mc" id="42" lineNum="237" parent="globals/Menu2Delegate" pc="268442321" symbol="onSelect"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\InputDelegate.mc" id="42" lineNum="238" parent="globals/Menu2Delegate" pc="268442335" symbol="onSelect"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\InputDelegate.mc" id="42" lineNum="239" parent="globals/Menu2Delegate" pc="268442367" symbol="onSelect"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\InputDelegate.mc" id="43" lineNum="250" parent="globals/actionDelegate" pc="268442380" symbol="initialize"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\InputDelegate.mc" id="43" lineNum="251" parent="globals/actionDelegate" pc="268442382" symbol="initialize"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\InputDelegate.mc" id="44" lineNum="254" parent="globals/actionDelegate" pc="268442395" symbol="onSelect"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\InputDelegate.mc" id="44" lineNum="256" parent="globals/actionDelegate" pc="268442397" symbol="onSelect"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\InputDelegate.mc" id="44" lineNum="257" parent="globals/actionDelegate" pc="268442404" symbol="onSelect"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\InputDelegate.mc" id="44" lineNum="262" parent="globals/actionDelegate" pc="268442423" symbol="onSelect"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\InputDelegate.mc" id="44" lineNum="265" parent="globals/actionDelegate" pc="268442442" symbol="onSelect"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\InputDelegate.mc" id="44" lineNum="258" parent="globals/actionDelegate" pc="268442464" symbol="onSelect"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\InputDelegate.mc" id="44" lineNum="259" parent="globals/actionDelegate" pc="268442478" symbol="onSelect"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\InputDelegate.mc" id="44" lineNum="260" parent="globals/actionDelegate" pc="268442490" symbol="onSelect"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\InputDelegate.mc" id="44" lineNum="261" parent="globals/actionDelegate" pc="268442513" symbol="onSelect"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\InputDelegate.mc" id="44" lineNum="263" parent="globals/actionDelegate" pc="268442516" symbol="onSelect"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\InputDelegate.mc" id="44" lineNum="264" parent="globals/actionDelegate" pc="268442539" symbol="onSelect"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\InputDelegate.mc" id="44" lineNum="266" parent="globals/actionDelegate" pc="268442542" symbol="onSelect"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\InputDelegate.mc" id="44" lineNum="267" parent="globals/actionDelegate" pc="268442565" symbol="onSelect"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\InputDelegate.mc" id="44" lineNum="270" parent="globals/actionDelegate" pc="268442569" symbol="onSelect"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\InputDelegate.mc" id="44" lineNum="271" parent="globals/actionDelegate" pc="268442584" symbol="onSelect"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\InputDelegate.mc" id="44" lineNum="272" parent="globals/actionDelegate" pc="268442596" symbol="onSelect"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\InputDelegate.mc" id="45" lineNum="55" parent="globals/InputDelegate" pc="268442598" symbol="onMenu"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\InputDelegate.mc" id="45" lineNum="56" parent="globals/InputDelegate" pc="268442601" symbol="onMenu"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\InputDelegate.mc" id="45" lineNum="59" parent="globals/InputDelegate" pc="268442641" symbol="onMenu"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\InputDelegate.mc" id="45" lineNum="60" parent="globals/InputDelegate" pc="268442650" symbol="onMenu"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\InputDelegate.mc" id="45" lineNum="62" parent="globals/InputDelegate" pc="268442665" symbol="onMenu"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\InputDelegate.mc" id="45" lineNum="77" parent="globals/InputDelegate" pc="268442681" symbol="onMenu"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\InputDelegate.mc" id="45" lineNum="61" parent="globals/InputDelegate" pc="268442700" symbol="onMenu"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\InputDelegate.mc" id="45" lineNum="63" parent="globals/InputDelegate" pc="268442703" symbol="onMenu"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\InputDelegate.mc" id="45" lineNum="64" parent="globals/InputDelegate" pc="268442752" symbol="onMenu"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\InputDelegate.mc" id="45" lineNum="65" parent="globals/InputDelegate" pc="268442801" symbol="onMenu"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\InputDelegate.mc" id="45" lineNum="66" parent="globals/InputDelegate" pc="268442850" symbol="onMenu"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\InputDelegate.mc" id="45" lineNum="67" parent="globals/InputDelegate" pc="268442899" symbol="onMenu"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\InputDelegate.mc" id="45" lineNum="68" parent="globals/InputDelegate" pc="268442948" symbol="onMenu"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\InputDelegate.mc" id="45" lineNum="69" parent="globals/InputDelegate" pc="268442997" symbol="onMenu"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\InputDelegate.mc" id="45" lineNum="70" parent="globals/InputDelegate" pc="268443046" symbol="onMenu"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\InputDelegate.mc" id="45" lineNum="71" parent="globals/InputDelegate" pc="268443095" symbol="onMenu"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\InputDelegate.mc" id="45" lineNum="72" parent="globals/InputDelegate" pc="268443144" symbol="onMenu"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\InputDelegate.mc" id="45" lineNum="73" parent="globals/InputDelegate" pc="268443193" symbol="onMenu"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\InputDelegate.mc" id="45" lineNum="74" parent="globals/InputDelegate" pc="268443242" symbol="onMenu"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\InputDelegate.mc" id="45" lineNum="75" parent="globals/InputDelegate" pc="268443291" symbol="onMenu"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\InputDelegate.mc" id="45" lineNum="76" parent="globals/InputDelegate" pc="268443340" symbol="onMenu"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\InputDelegate.mc" id="45" lineNum="78" parent="globals/InputDelegate" pc="268443343" symbol="onMenu"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\InputDelegate.mc" id="45" lineNum="79" parent="globals/InputDelegate" pc="268443392" symbol="onMenu"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\InputDelegate.mc" id="45" lineNum="80" parent="globals/InputDelegate" pc="268443441" symbol="onMenu"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\InputDelegate.mc" id="45" lineNum="81" parent="globals/InputDelegate" pc="268443490" symbol="onMenu"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\InputDelegate.mc" id="45" lineNum="82" parent="globals/InputDelegate" pc="268443539" symbol="onMenu"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\InputDelegate.mc" id="45" lineNum="83" parent="globals/InputDelegate" pc="268443588" symbol="onMenu"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\InputDelegate.mc" id="45" lineNum="84" parent="globals/InputDelegate" pc="268443637" symbol="onMenu"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\InputDelegate.mc" id="45" lineNum="85" parent="globals/InputDelegate" pc="268443686" symbol="onMenu"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\InputDelegate.mc" id="45" lineNum="86" parent="globals/InputDelegate" pc="268443735" symbol="onMenu"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\InputDelegate.mc" id="45" lineNum="87" parent="globals/InputDelegate" pc="268443784" symbol="onMenu"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\InputDelegate.mc" id="45" lineNum="88" parent="globals/InputDelegate" pc="268443833" symbol="onMenu"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\InputDelegate.mc" id="45" lineNum="89" parent="globals/InputDelegate" pc="268443882" symbol="onMenu"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\InputDelegate.mc" id="45" lineNum="90" parent="globals/InputDelegate" pc="268443931" symbol="onMenu"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\InputDelegate.mc" id="45" lineNum="91" parent="globals/InputDelegate" pc="268443980" symbol="onMenu"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\InputDelegate.mc" id="45" lineNum="94" parent="globals/InputDelegate" pc="268444030" symbol="onMenu"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\InputDelegate.mc" id="45" lineNum="95" parent="globals/InputDelegate" pc="268444042" symbol="onMenu"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\InputDelegate.mc" id="45" lineNum="97" parent="globals/InputDelegate" pc="268444094" symbol="onMenu"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\InputDelegate.mc" id="45" lineNum="99" parent="globals/InputDelegate" pc="268444143" symbol="onMenu"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\InputDelegate.mc" id="45" lineNum="101" parent="globals/InputDelegate" pc="268444192" symbol="onMenu"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\InputDelegate.mc" id="45" lineNum="103" parent="globals/InputDelegate" pc="268444230" symbol="onMenu"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\InputDelegate.mc" id="46" lineNum="11" parent="globals/InputDelegate" pc="268444232" symbol="initialize"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\InputDelegate.mc" id="46" lineNum="12" parent="globals/InputDelegate" pc="268444234" symbol="initialize"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\InputDelegate.mc" id="46" lineNum="13" parent="globals/InputDelegate" pc="268444246" symbol="initialize"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\InputDelegate.mc" id="47" lineNum="17" parent="globals/InputDelegate" pc="268444256" symbol="onSelect"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\InputDelegate.mc" id="47" lineNum="19" parent="globals/InputDelegate" pc="268444259" symbol="onSelect"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\InputDelegate.mc" id="47" lineNum="20" parent="globals/InputDelegate" pc="268444299" symbol="onSelect"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\InputDelegate.mc" id="47" lineNum="21" parent="globals/InputDelegate" pc="268444348" symbol="onSelect"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\InputDelegate.mc" id="47" lineNum="22" parent="globals/InputDelegate" pc="268444397" symbol="onSelect"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\InputDelegate.mc" id="47" lineNum="27" parent="globals/InputDelegate" pc="268444446" symbol="onSelect"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\InputDelegate.mc" id="47" lineNum="28" parent="globals/InputDelegate" pc="268444460" symbol="onSelect"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\InputDelegate.mc" id="47" lineNum="29" parent="globals/InputDelegate" pc="268444474" symbol="onSelect"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\InputDelegate.mc" id="47" lineNum="30" parent="globals/InputDelegate" pc="268444486" symbol="onSelect"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\InputDelegate.mc" id="47" lineNum="31" parent="globals/InputDelegate" pc="268444498" symbol="onSelect"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\InputDelegate.mc" id="47" lineNum="32" parent="globals/InputDelegate" pc="268444510" symbol="onSelect"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\InputDelegate.mc" id="47" lineNum="33" parent="globals/InputDelegate" pc="268444536" symbol="onSelect"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\InputDelegate.mc" id="47" lineNum="34" parent="globals/InputDelegate" pc="268444559" symbol="onSelect"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\InputDelegate.mc" id="47" lineNum="36" parent="globals/InputDelegate" pc="268444585" symbol="onSelect"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\InputDelegate.mc" id="47" lineNum="38" parent="globals/InputDelegate" pc="268444611" symbol="onSelect"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\InputDelegate.mc" id="47" lineNum="39" parent="globals/InputDelegate" pc="268444634" symbol="onSelect"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\InputDelegate.mc" id="47" lineNum="41" parent="globals/InputDelegate" pc="268444660" symbol="onSelect"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\InputDelegate.mc" id="47" lineNum="42" parent="globals/InputDelegate" pc="268444675" symbol="onSelect"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\InputDelegate.mc" id="47" lineNum="47" parent="globals/InputDelegate" pc="268444716" symbol="onSelect"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\InputDelegate.mc" id="47" lineNum="48" parent="globals/InputDelegate" pc="268444754" symbol="onSelect"/>
+        <entry filename="C:\\Users\\greg\\git\\Insta360-Remote-CIQ\\OneR remote\\source\\InputDelegate.mc" id="47" lineNum="51" parent="globals/InputDelegate" pc="268444767" symbol="onSelect"/>
+    </pcToLineNum>
+    <symbolTable>
+        <entry id="8388639" module="true" symbol="Graphics"/>
+        <entry field="true" id="17" symbol="LBS_NOTIF_CHAR"/>
+        <entry field="true" id="44" symbol="currentLabel"/>
+        <entry id="8391711" symbol="constellations"/>
+        <entry id="37" symbol="cmdSetPhotoBurst"/>
+        <entry id="8388632" method="true" symbol="&lt;init&gt;"/>
+        <entry field="true" id="15" symbol="GPSaccuracy"/>
+        <entry id="55" symbol="stateStandby"/>
+        <entry id="8391715" symbol="acquisitionType"/>
+        <entry field="true" id="50" symbol="queue"/>
+        <entry field="true" id="47" symbol="elapsedRecTime"/>
+        <entry field="true" id="21" symbol="SeqNo"/>
+        <entry id="66" method="true" symbol="sendPosition"/>
+        <entry id="8390424" module="true" symbol="Storage"/>
+        <entry id="23" symbol="cmdApply"/>
+        <entry field="true" id="48" symbol="lastTime"/>
+        <entry id="58" method="true" symbol="onPosition"/>
+        <entry id="8388776" method="true" symbol="toDouble"/>
+        <entry id="3" module="true" symbol="globals/BLEBarrel/Rez"/>
+        <entry field="true" id="8388611" module="true" symbol="Toybox"/>
+        <entry id="27" symbol="cmdSet4k50"/>
+        <entry field="true" id="46" symbol="deviceName"/>
+        <entry id="26" symbol="cmdSet4k30"/>
+        <entry id="8391256" method="true" symbol="onScanResults"/>
+        <entry field="true" id="71" symbol="AppName"/>
+        <entry id="8391255" method="true" symbol="onScanStateChange"/>
+        <entry id="12" object="true" symbol="actionDelegate"/>
+        <entry id="6" module="true" symbol="globals/Rez/Strings"/>
+        <entry id="8389080" method="true" symbol="onMenu"/>
+        <entry field="true" id="59" symbol="button"/>
+        <entry id="8388648" module="true" symbol="WatchUi"/>
+        <entry id="24" symbol="cmdHighlight"/>
+        <entry id="33" symbol="cmdSetHDR"/>
+        <entry id="4" module="true" symbol="globals/Rez"/>
+        <entry id="14" object="true" symbol="BleDevice"/>
+        <entry id="8391340" symbol="descriptors"/>
+        <entry id="8389124" method="true" symbol="onUpdate"/>
+        <entry id="30" symbol="cmdSet5k30"/>
+        <entry id="29" symbol="cmdSet5k25"/>
+        <entry id="28" symbol="cmdSet5k24"/>
+        <entry id="8391263" method="true" symbol="onCharacteristicChanged"/>
+        <entry id="8388771" module="true" object="true" symbol="Drawables"/>
+        <entry id="8391258" method="true" symbol="onConnectedStateChanged"/>
+        <entry id="8389137" method="true" symbol="compute"/>
+        <entry id="52" symbol="responseSig"/>
+        <entry id="65" method="true" symbol="sendCMD"/>
+        <entry field="true" id="68" symbol="photoFiller"/>
+        <entry field="true" id="19" symbol="LBS_RW_CHAR"/>
+        <entry field="true" id="16" symbol="GPSon"/>
+        <entry id="8389793" method="true" symbol="debug"/>
+        <entry id="8391335" symbol="writeType"/>
+        <entry id="38" symbol="cmdSetPhotoHDR"/>
+        <entry id="5" module="true" symbol="globals/Rez/Drawables"/>
+        <entry field="true" id="18" symbol="LBS_NOTIF_DESC"/>
+        <entry id="32" symbol="cmdSetBullet"/>
+        <entry field="true" id="63" symbol="scanTimeout"/>
+        <entry field="true" id="69" symbol="photoHeader"/>
+        <entry id="60" method="true" symbol="&lt;globals/BLEBarrel/BleDevice/&lt;&gt;connect&gt;"/>
+        <entry id="10" object="true" symbol="MyGlanceView"/>
+        <entry id="11" object="true" symbol="ViewData"/>
+        <entry id="8388644" module="true" symbol="System"/>
+        <entry id="62" method="true" symbol="registerProfiles"/>
+        <entry id="67" method="true" symbol="toTimeString"/>
+        <entry id="8391257" method="true" symbol="onProfileRegister"/>
+        <entry id="8389619" method="true" symbol="onSelect"/>
+        <entry field="true" id="49" symbol="menuLevel"/>
+        <entry id="8388645" module="true" symbol="Time"/>
+        <entry id="8388769" module="true" object="true" symbol="Rez"/>
+        <entry id="36" symbol="cmdSetPhoto"/>
+        <entry field="true" id="64" symbol="scanning"/>
+        <entry id="8389256" method="true" symbol="open"/>
+        <entry id="8388640" module="true" symbol="Lang"/>
+        <entry field="true" id="43" symbol="connecting"/>
+        <entry field="true" id="70" symbol="LauncherIcon"/>
+        <entry field="true" id="22" symbol="clockTime"/>
+        <entry id="8388610" symbol="statics"/>
+        <entry field="true" id="51" symbol="recState"/>
+        <entry field="true" id="20" symbol="LBS_SERVICE"/>
+        <entry id="57" method="true" symbol="GPSenable"/>
+        <entry id="2" module="true" symbol="globals/BLEBarrel"/>
+        <entry id="8389350" module="true" symbol="globals"/>
+        <entry id="8391334" symbol="uuid"/>
+        <entry id="8388770" module="true" object="true" symbol="Strings"/>
+        <entry id="8391193" module="true" symbol="BluetoothLowEnergy"/>
+        <entry id="8388702" method="true" symbol="initialize"/>
+        <entry id="8389279" method="true" symbol="onStart"/>
+        <entry field="true" id="45" symbol="currentMode"/>
+        <entry id="40" symbol="cmdStartRec"/>
+        <entry id="7" module="true" symbol="BLEBarrel"/>
+        <entry id="41" symbol="cmdStopRec"/>
+        <entry id="8391701" method="true" symbol="setAntiAlias"/>
+        <entry field="true" id="56" symbol="videoMode"/>
+        <entry id="31" symbol="cmdSet8k30"/>
+        <entry id="9" object="true" symbol="Menu2Delegate"/>
+        <entry id="8389280" method="true" symbol="getInitialView"/>
+        <entry id="8389281" method="true" symbol="onStop"/>
+        <entry id="34" symbol="cmdSetInterval"/>
+        <entry id="8391341" symbol="characteristics"/>
+        <entry field="true" id="13" symbol="bleDevice"/>
+        <entry id="8" object="true" symbol="Main"/>
+        <entry field="true" id="8389115" symbol="mMessage"/>
+        <entry field="true" id="54" symbol="startRecTime"/>
+        <entry field="true" id="53" symbol="startMessage"/>
+        <entry field="true" id="61" symbol="device"/>
+        <entry field="true" id="8391705" symbol="CONSTELLATION_GPS"/>
+        <entry id="42" symbol="cmdTrackThat"/>
+        <entry id="8388656" object="true" symbol="InputDelegate"/>
+        <entry id="8389257" method="true" symbol="close"/>
+        <entry id="8388642" module="true" symbol="Position"/>
+        <entry id="25" symbol="cmdSet3k100"/>
+        <entry id="8391260" method="true" symbol="onCharacteristicWrite"/>
+        <entry id="39" symbol="cmdSetTL"/>
+        <entry id="8391457" method="true" symbol="getGlanceView"/>
+        <entry id="35" symbol="cmdSetNightShot"/>
+        <entry id="8388635" module="true" symbol="Application"/>
+        <entry field="true" id="8389642" symbol="title"/>
+    </symbolTable>
+    <localVars>
+        <entry arg="true" endPc="268435709" name="state" stackId="1" startPc="268435629"/>
+        <entry arg="true" endPc="268435746" name="info" stackId="1" startPc="268435710"/>
+        <entry arg="true" endPc="268435986" name="state" stackId="1" startPc="268435861"/>
+        <entry arg="true" endPc="268436002" name="state" stackId="1" startPc="268435987"/>
+        <entry arg="true" endPc="268436088" name="dc" stackId="1" startPc="268436018"/>
+        <entry arg="true" endPc="268436510" name="ch" stackId="1" startPc="268436089"/>
+        <entry arg="true" endPc="268436510" name="value" stackId="2" startPc="268436089"/>
+        <entry arg="true" endPc="268436534" name="str" stackId="1" startPc="268436511"/>
+        <entry arg="true" endPc="268436730" name="ch" stackId="1" startPc="268436535"/>
+        <entry arg="true" endPc="268436730" name="st" stackId="2" startPc="268436535"/>
+        <entry endPc="268436622" name="ex" stackId="3" startPc="268436590"/>
+        <entry arg="true" endPc="268436889" name="scanState" stackId="1" startPc="268436731"/>
+        <entry arg="true" endPc="268436889" name="status" stackId="2" startPc="268436731"/>
+        <entry arg="true" endPc="268437127" name="dev" stackId="1" startPc="268436890"/>
+        <entry arg="true" endPc="268437127" name="state" stackId="2" startPc="268436890"/>
+        <entry endPc="268437063" name="ex" stackId="3" startPc="268437031"/>
+        <entry arg="true" endPc="268437156" name="uuid" stackId="1" startPc="268437128"/>
+        <entry arg="true" endPc="268437156" name="status" stackId="2" startPc="268437128"/>
+        <entry arg="true" endPc="268437665" name="info" stackId="1" startPc="268437157"/>
+        <entry endPc="268437664" name="header" stackId="2" startPc="268437160"/>
+        <entry endPc="268437664" name="uxEpoch" stackId="3" startPc="268437160"/>
+        <entry endPc="268437664" name="filler" stackId="4" startPc="268437160"/>
+        <entry endPc="268437664" name="location" stackId="5" startPc="268437160"/>
+        <entry endPc="268437664" name="latitude" stackId="6" startPc="268437160"/>
+        <entry endPc="268437664" name="longitude" stackId="7" startPc="268437160"/>
+        <entry endPc="268437664" name="speed" stackId="8" startPc="268437160"/>
+        <entry endPc="268437664" name="heading" stackId="9" startPc="268437160"/>
+        <entry endPc="268437664" name="altitude" stackId="10" startPc="268437160"/>
+        <entry endPc="268437664" name="temp32" stackId="11" startPc="268437160"/>
+        <entry endPc="268437664" name="temp64" stackId="12" startPc="268437160"/>
+        <entry endPc="268437664" name="sector" stackId="13" startPc="268437160"/>
+        <entry arg="true" endPc="268438155" name="value" stackId="1" startPc="268437666"/>
+        <entry endPc="268438154" name="service" stackId="2" startPc="268437669"/>
+        <entry endPc="268438154" name="ch" stackId="3" startPc="268437669"/>
+        <entry endPc="268438154" name="i" stackId="4" startPc="268437669"/>
+        <entry endPc="268438154" name="j" stackId="5" startPc="268437669"/>
+        <entry endPc="268438063" name="ex" stackId="6" startPc="268438031"/>
+        <entry endPc="268438149" name="ex" stackId="7" startPc="268438117"/>
+        <entry endPc="268438301" name="profile" stackId="1" startPc="268438159"/>
+        <entry endPc="268438296" name="ex" stackId="2" startPc="268438264"/>
+        <entry arg="true" endPc="268438533" name="single" stackId="1" startPc="268438303"/>
+        <entry endPc="268438533" name="double" stackId="2" startPc="268438306"/>
+        <entry endPc="268438533" name="d1" stackId="3" startPc="268438306"/>
+        <entry endPc="268438533" name="d2" stackId="4" startPc="268438306"/>
+        <entry endPc="268438533" name="t32" stackId="5" startPc="268438306"/>
+        <entry endPc="268438533" name="ts" stackId="6" startPc="268438306"/>
+        <entry endPc="268438533" name="tb" stackId="7" startPc="268438306"/>
+        <entry endPc="268438533" name="tb1" stackId="8" startPc="268438306"/>
+        <entry endPc="268438533" name="tb2" stackId="9" startPc="268438306"/>
+        <entry endPc="268438533" name="te" stackId="10" startPc="268438306"/>
+        <entry endPc="268438533" name="tm" stackId="11" startPc="268438306"/>
+        <entry endPc="268438533" name="bias" stackId="12" startPc="268438306"/>
+        <entry arg="true" endPc="268438655" name="seconds" stackId="1" startPc="268438563"/>
+        <entry endPc="268438655" name="hours" stackId="2" startPc="268438566"/>
+        <entry endPc="268438655" name="min" stackId="3" startPc="268438566"/>
+        <entry endPc="268438655" name="sec" stackId="4" startPc="268438566"/>
+        <entry arg="true" endPc="268439140" name="result" stackId="1" startPc="268438952"/>
+        <entry endPc="268439043" name="ex" stackId="2" startPc="268439011"/>
+        <entry endPc="268439108" name="ex" stackId="3" startPc="268439076"/>
+        <entry arg="true" endPc="268439595" name="scanResults" stackId="1" startPc="268439141"/>
+        <entry endPc="268439594" name="uuids" stackId="2" startPc="268439144"/>
+        <entry endPc="268439594" name="name" stackId="3" startPc="268439144"/>
+        <entry endPc="268439594" name="rssi" stackId="4" startPc="268439144"/>
+        <entry endPc="268439594" name="iter" stackId="5" startPc="268439144"/>
+        <entry endPc="268439594" name="result" stackId="6" startPc="268439159"/>
+        <entry endPc="268439574" name="ex" stackId="7" startPc="268439542"/>
+        <entry endPc="268440075" name="temp" stackId="1" startPc="268439599"/>
+        <entry arg="true" endPc="268440211" name="info" stackId="1" startPc="268440163"/>
+        <entry arg="true" endPc="268440239" name="device" stackId="1" startPc="268440212"/>
+        <entry arg="true" endPc="268440754" name="dc" stackId="1" startPc="268440240"/>
+        <entry endPc="268440753" name="centerX" stackId="2" startPc="268440243"/>
+        <entry endPc="268440753" name="centerY" stackId="3" startPc="268440243"/>
+        <entry endPc="268440753" name="radius" stackId="4" startPc="268440243"/>
+        <entry arg="true" endPc="268440798" name="info" stackId="1" startPc="268440780"/>
+        <entry arg="true" endPc="268442379" name="item" stackId="1" startPc="268440814"/>
+        <entry endPc="268442378" name="header" stackId="2" startPc="268440817"/>
+        <entry endPc="268442378" name="filler" stackId="3" startPc="268440817"/>
+        <entry endPc="268442378" name="temp64" stackId="4" startPc="268440817"/>
+        <entry endPc="268442378" name="info" stackId="5" startPc="268440817"/>
+        <entry endPc="268442378" name="location" stackId="6" startPc="268440817"/>
+        <entry endPc="268442378" name="itemID" stackId="7" startPc="268440817"/>
+        <entry endPc="268442378" name="chglbl" stackId="8" startPc="268440817"/>
+        <entry arg="true" endPc="268442597" name="item" stackId="1" startPc="268442395"/>
+        <entry endPc="268444231" name="menu" stackId="1" startPc="268442601"/>
+        <entry arg="true" endPc="268444255" name="device" stackId="1" startPc="268444232"/>
+        <entry endPc="268444768" name="actionMenu" stackId="1" startPc="268444259"/>
+    </localVars>
+    <deviceInfo deviceVersion="4866e5192c0c99025597cd8e6e841f3d774b64f7" partNumber="006-B4314-00"/>
+    <annotations>
+        <annotationEntry annotation="glance" class="Main" module="globals" symbol="getInitialView"/>
+        <annotationEntry annotation="initialized" class="Drawables" module="globals/Rez" symbol="LauncherIcon"/>
+        <annotationEntry annotation="glance" class="Main" module="globals" symbol="getGlanceView"/>
+        <annotationEntry annotation="glance" class="BleDevice" module="globals/BLEBarrel" symbol="toDouble"/>
+        <annotationEntry annotation="glance" class="Main" module="globals" symbol="initialize"/>
+        <annotationEntry annotation="glance" class="BleDevice" module="globals/BLEBarrel" symbol="close"/>
+        <annotationEntry annotation="glance" class="BleDevice" module="globals/BLEBarrel" symbol="sendCMD"/>
+        <annotationEntry annotation="glance" class="BleDevice" module="globals/BLEBarrel" symbol="scanning"/>
+        <annotationEntry annotation="glance" class="BleDevice" module="globals/BLEBarrel" symbol="onScanStateChange"/>
+        <annotationEntry annotation="glance" class="BleDevice" module="globals/BLEBarrel" symbol="sendPosition"/>
+        <annotationEntry annotation="glance" class="BleDevice" module="globals/BLEBarrel" symbol="initialize"/>
+        <annotationEntry annotation="initialized" class="Strings" module="globals/Rez" symbol="AppName"/>
+        <annotationEntry annotation="glance" class="BleDevice" module="globals/BLEBarrel" symbol="debug"/>
+        <annotationEntry annotation="glance" class="MyGlanceView" module="globals" symbol="onUpdate"/>
+        <annotationEntry annotation="glance" class="BleDevice" module="globals/BLEBarrel" symbol="device"/>
+        <annotationEntry annotation="glance" class="BleDevice" module="globals/BLEBarrel" symbol="onCharacteristicWrite"/>
+        <annotationEntry annotation="glance" class="BleDevice" module="globals/BLEBarrel" symbol="toTimeString"/>
+        <annotationEntry annotation="glance" class="BleDevice" module="globals/BLEBarrel" symbol="registerProfiles"/>
+        <annotationEntry annotation="glance" class="BleDevice" module="globals/BLEBarrel" symbol="onCharacteristicChanged"/>
+        <annotationEntry annotation="glance" class="BleDevice" module="globals/BLEBarrel" symbol="scanTimeout"/>
+        <annotationEntry annotation="glance" class="BleDevice" module="globals/BLEBarrel" symbol="onScanResults"/>
+        <annotationEntry annotation="glance" class="Main" module="globals" symbol="onStart"/>
+        <annotationEntry annotation="glance" class="BleDevice" module="globals/BLEBarrel" symbol="onConnectedStateChanged"/>
+        <annotationEntry annotation="glance" class="Main" module="globals" symbol="onPosition"/>
+        <annotationEntry annotation="glance" class="Main" module="globals" symbol="onStop"/>
+        <annotationEntry annotation="glance" class="Main" module="globals" symbol="GPSenable"/>
+        <annotationEntry annotation="glance" class="BleDevice" module="globals/BLEBarrel" symbol="button"/>
+        <annotationEntry annotation="glance" class="BleDevice" module="globals/BLEBarrel" symbol="onProfileRegister"/>
+        <annotationEntry annotation="glance" class="MyGlanceView" module="globals" symbol="initialize"/>
+        <annotationEntry annotation="glance" class="BleDevice" module="globals/BLEBarrel" symbol="open"/>
+        <annotationEntry annotation="glance" class="BleDevice" module="globals/BLEBarrel" symbol="connect"/>
+    </annotations>
+    <dataEntryOffsetMappings>
+        <dataEntry label="globals" offset="67" parentId="" symbolId="globals" type="module"/>
+        <dataEntry label="globals/BLEBarrel" offset="207" parentId="globals" symbolId="BLEBarrel" type="module"/>
+        <dataEntry label="globals/Main" offset="629" parentId="globals" symbolId="Main" type="class"/>
+        <dataEntry label="globals/MyGlanceView" offset="727" parentId="globals" symbolId="MyGlanceView" type="class"/>
+        <dataEntry label="globals/BLEBarrel/BleDevice" offset="780" parentId="BLEBarrel" symbolId="BleDevice" type="class"/>
+        <dataEntry label="globals/ViewData" offset="3403" parentId="globals" symbolId="ViewData" type="class"/>
+        <dataEntry label="globals/Rez" offset="3474" parentId="globals" symbolId="Rez" type="module"/>
+        <dataEntry label="globals/Menu2Delegate" offset="3518" parentId="globals" symbolId="Menu2Delegate" type="class"/>
+        <dataEntry label="globals/actionDelegate" offset="3580" parentId="globals" symbolId="actionDelegate" type="class"/>
+        <dataEntry label="globals/InputDelegate" offset="3633" parentId="globals" symbolId="InputDelegate" type="class"/>
+        <dataEntry label="globals/Rez/Drawables" offset="3713" parentId="Rez" symbolId="Drawables" type="module"/>
+        <dataEntry label="globals/Rez/Strings" offset="3748" parentId="Rez" symbolId="Strings" type="module"/>
+        <dataEntry label="globals/BLEBarrel/Rez" offset="3783" parentId="BLEBarrel" symbolId="Rez" type="module"/>
+    </dataEntryOffsetMappings>
+    <functions>
+        <functionEntry accessMode="public" endPc="268435592" name="&lt;init&gt;" parent="BLEBarrel" startPc="268435460">
+            <documentation/>
+        </functionEntry>
+        <functionEntry accessMode="public" endPc="268435592" name="&lt;init&gt;" parent="BLEBarrel" startPc="268435460">
+            <documentation/>
+        </functionEntry>
+        <functionEntry accessMode="public" endPc="268435604" name="&lt;init&gt;" parent="Main" startPc="268435593">
+            <documentation/>
+        </functionEntry>
+        <functionEntry accessMode="public" endPc="268435616" name="&lt;init&gt;" parent="MyGlanceView" startPc="268435605">
+            <documentation/>
+        </functionEntry>
+        <functionEntry accessMode="public" endPc="268435628" name="&lt;init&gt;" parent="BleDevice" startPc="268435617">
+            <documentation/>
+        </functionEntry>
+        <functionEntry accessMode="public" endPc="268435709" name="onStart" parent="Main" startPc="268435629">
+            <param id="state"/>
+            <documentation/>
+        </functionEntry>
+        <functionEntry accessMode="public" endPc="268435746" name="onPosition" parent="Main" startPc="268435710">
+            <param id="info"/>
+            <documentation/>
+        </functionEntry>
+        <functionEntry accessMode="public" endPc="268435813" name="getInitialView" parent="Main" startPc="268435747">
+            <documentation/>
+        </functionEntry>
+        <functionEntry accessMode="public" endPc="268435828" name="initialize" parent="Main" startPc="268435814">
+            <documentation/>
+        </functionEntry>
+        <functionEntry accessMode="public" endPc="268435860" name="getGlanceView" parent="Main" startPc="268435829">
+            <documentation/>
+        </functionEntry>
+        <functionEntry accessMode="public" endPc="268435986" name="GPSenable" parent="Main" startPc="268435861">
+            <param id="state"/>
+            <documentation/>
+        </functionEntry>
+        <functionEntry accessMode="public" endPc="268436002" name="onStop" parent="Main" startPc="268435987">
+            <param id="state"/>
+            <documentation/>
+        </functionEntry>
+        <functionEntry accessMode="public" endPc="268436017" name="initialize" parent="MyGlanceView" startPc="268436003">
+            <documentation/>
+        </functionEntry>
+        <functionEntry accessMode="public" endPc="268436088" name="onUpdate" parent="MyGlanceView" startPc="268436018">
+            <param id="dc"/>
+            <documentation/>
+        </functionEntry>
+        <functionEntry accessMode="public" endPc="268436510" name="onCharacteristicChanged" parent="BleDevice" startPc="268436089">
+            <param id="ch"/>
+            <param id="value"/>
+            <documentation/>
+        </functionEntry>
+        <functionEntry accessMode="protected" endPc="268436534" name="debug" parent="BleDevice" startPc="268436511">
+            <param id="str"/>
+            <documentation/>
+        </functionEntry>
+        <functionEntry accessMode="public" endPc="268436730" name="onCharacteristicWrite" parent="BleDevice" startPc="268436535">
+            <param id="ch"/>
+            <param id="st"/>
+            <documentation/>
+        </functionEntry>
+        <functionEntry accessMode="public" endPc="268436889" name="onScanStateChange" parent="BleDevice" startPc="268436731">
+            <param id="scanState"/>
+            <param id="status"/>
+            <documentation/>
+        </functionEntry>
+        <functionEntry accessMode="public" endPc="268437127" name="onConnectedStateChanged" parent="BleDevice" startPc="268436890">
+            <param id="dev"/>
+            <param id="state"/>
+            <documentation/>
+        </functionEntry>
+        <functionEntry accessMode="public" endPc="268437156" name="onProfileRegister" parent="BleDevice" startPc="268437128">
+            <param id="uuid"/>
+            <param id="status"/>
+            <documentation/>
+        </functionEntry>
+        <functionEntry accessMode="public" endPc="268437665" name="sendPosition" parent="BleDevice" startPc="268437157">
+            <param id="info"/>
+            <documentation/>
+        </functionEntry>
+        <functionEntry accessMode="public" endPc="268438155" name="sendCMD" parent="BleDevice" startPc="268437666">
+            <param id="value"/>
+            <documentation/>
+        </functionEntry>
+        <functionEntry accessMode="public" endPc="268438302" name="registerProfiles" parent="BleDevice" startPc="268438156">
+            <documentation/>
+        </functionEntry>
+        <functionEntry accessMode="public" endPc="268438533" name="toDouble" parent="BleDevice" startPc="268438303">
+            <param id="single"/>
+            <documentation/>
+        </functionEntry>
+        <functionEntry accessMode="public" endPc="268438562" name="initialize" parent="BleDevice" startPc="268438534">
+            <documentation/>
+        </functionEntry>
+        <functionEntry accessMode="public" endPc="268438655" name="toTimeString" parent="BleDevice" startPc="268438563">
+            <param id="seconds"/>
+            <documentation/>
+        </functionEntry>
+        <functionEntry accessMode="public" endPc="268438951" name="close" parent="BleDevice" startPc="268438656">
+            <documentation/>
+        </functionEntry>
+        <functionEntry accessMode="private" endPc="268439140" name="&lt;globals/BLEBarrel/BleDevice/&lt;&gt;connect&gt;" parent="BleDevice" startPc="268438952">
+            <param id="result"/>
+            <documentation/>
+        </functionEntry>
+        <functionEntry accessMode="public" endPc="268439595" name="onScanResults" parent="BleDevice" startPc="268439141">
+            <param id="scanResults"/>
+            <documentation/>
+        </functionEntry>
+        <functionEntry accessMode="public" endPc="268440076" name="open" parent="BleDevice" startPc="268439596">
+            <documentation/>
+        </functionEntry>
+        <functionEntry accessMode="public" endPc="268440088" name="&lt;init&gt;" parent="ViewData" startPc="268440077">
+            <documentation/>
+        </functionEntry>
+        <functionEntry accessMode="public" endPc="268440108" name="&lt;init&gt;" parent="Rez" startPc="268440089">
+            <documentation/>
+        </functionEntry>
+        <functionEntry accessMode="public" endPc="268440120" name="&lt;init&gt;" parent="Menu2Delegate" startPc="268440109">
+            <documentation/>
+        </functionEntry>
+        <functionEntry accessMode="public" endPc="268440132" name="&lt;init&gt;" parent="actionDelegate" startPc="268440121">
+            <documentation/>
+        </functionEntry>
+        <functionEntry accessMode="public" endPc="268440162" name="&lt;init&gt;" parent="InputDelegate" startPc="268440133">
+            <documentation/>
+        </functionEntry>
+        <functionEntry accessMode="public" endPc="268440211" name="compute" parent="ViewData" startPc="268440163">
+            <param id="info"/>
+            <documentation/>
+        </functionEntry>
+        <functionEntry accessMode="public" endPc="268440239" name="initialize" parent="ViewData" startPc="268440212">
+            <param id="device"/>
+            <documentation/>
+        </functionEntry>
+        <functionEntry accessMode="public" endPc="268440754" name="onUpdate" parent="ViewData" startPc="268440240">
+            <param id="dc"/>
+            <documentation/>
+        </functionEntry>
+        <functionEntry accessMode="public" name="&lt;init&gt;" parent="Drawables">
+            <documentation/>
+        </functionEntry>
+        <functionEntry accessMode="public" name="&lt;init&gt;" parent="Strings">
+            <documentation/>
+        </functionEntry>
+        <functionEntry accessMode="public" endPc="268440779" name="&lt;init&gt;" parent="Rez" startPc="268440755">
+            <documentation/>
+        </functionEntry>
+        <functionEntry accessMode="public" endPc="268440798" name="onPosition" parent="Menu2Delegate" startPc="268440780">
+            <param id="info"/>
+            <documentation/>
+        </functionEntry>
+        <functionEntry accessMode="public" endPc="268440813" name="initialize" parent="Menu2Delegate" startPc="268440799">
+            <documentation/>
+        </functionEntry>
+        <functionEntry accessMode="public" endPc="268442379" name="onSelect" parent="Menu2Delegate" startPc="268440814">
+            <param id="item"/>
+            <documentation/>
+        </functionEntry>
+        <functionEntry accessMode="public" endPc="268442394" name="initialize" parent="actionDelegate" startPc="268442380">
+            <documentation/>
+        </functionEntry>
+        <functionEntry accessMode="public" endPc="268442597" name="onSelect" parent="actionDelegate" startPc="268442395">
+            <param id="item"/>
+            <documentation/>
+        </functionEntry>
+        <functionEntry accessMode="public" endPc="268444231" name="onMenu" parent="InputDelegate" startPc="268442598">
+            <documentation/>
+        </functionEntry>
+        <functionEntry accessMode="public" endPc="268444255" name="initialize" parent="InputDelegate" startPc="268444232">
+            <param id="device"/>
+            <documentation/>
+        </functionEntry>
+        <functionEntry accessMode="public" endPc="268444768" name="onSelect" parent="InputDelegate" startPc="268444256">
+            <documentation/>
+        </functionEntry>
+    </functions>
+</debugInfo>
