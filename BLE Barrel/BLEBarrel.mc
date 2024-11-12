@@ -112,7 +112,7 @@ class BleDevice extends BluetoothLowEnergy.BleDelegate {
 				service = device.getService(LBS_SERVICE);
 				// debug("sendCMD: service null "  + (service == null));
 				if (service == null) {
-					debug("[sendCMD] No service, starting scan, device connected " + device.isConnected());
+					debug("[sendCMD] No service, starting scan, device connected ");
 			    	recState = stateStopRec;
 			    	BluetoothLowEnergy.unpairDevice(device);
 			    	device = null;
@@ -145,7 +145,7 @@ class BleDevice extends BluetoothLowEnergy.BleDelegate {
 		
 		
 		try {
-			debug("sendCMD: service.getChar");
+			// debug("sendCMD: service.getChar");
 			ch = service.getCharacteristic(LBS_RW_CHAR);
 		} catch (ex) {
 			    debug("[sendCMD] exception: " + ex.getErrorMessage());
@@ -169,7 +169,7 @@ class BleDevice extends BluetoothLowEnergy.BleDelegate {
 		// 2 first bytes is the length of the message (little endian). 
 		// followed by 00 00 04 00 00. Check for this value
 		  if (responseSig.equals(value.slice(2,7))) {
-			debug("[onCharChanged] " + ch.getUuid() + " " + value + " Size: " + value.size()); 
+			// debug("[onCharChanged] " + ch.getUuid() + " " + value + " Size: " + value.size()); 
 			// the 8th byte is the "command" code
 			// Check to see if we got a Stop or Start recording event. 
 			// Command byte == 0x10 position 17 is >0 = start. 0=end.
@@ -217,7 +217,7 @@ class BleDevice extends BluetoothLowEnergy.BleDelegate {
 		    } catch (ex) {
 			    debug("[onCharWrite] exception: " + ex.getErrorMessage());
 		    }
-			debug("[onCharWrite] deq : " + queue[0] + " qsize: " + queue.size() + " Status " + st );
+			// debug("[onCharWrite] deq : " + queue[0] + " qsize: " + queue.size() + " Status " + st );
 			queue = queue.slice(1,queue.size());
 		} else {
 			debug ("[onCharWrite] queue empty Status " + st );
@@ -277,7 +277,7 @@ class BleDevice extends BluetoothLowEnergy.BleDelegate {
 	}
 
 	function onConnectedStateChanged(dev, state) {
-		debug("connected: " + dev.getName() + " " + dev.isConnected() + " " + state);
+		// debug("connected: " + dev.getName() + " " + dev.isConnected() + " " + state);
 		mMessage = currentLabel + "\n" + startMessage;
 		WatchUi.requestUpdate();
 		if (state == BluetoothLowEnergy.CONNECTION_STATE_CONNECTED) {
@@ -335,14 +335,14 @@ class BleDevice extends BluetoothLowEnergy.BleDelegate {
 	function onScanResults(scanResults) {
 //		debug("scan results");
 		var uuids;
-		var name;
-		var rssi;
+		// var name;
+		// var rssi;
 		var iter;
 
 		for (var result = scanResults.next(); result != null; result = scanResults.next()) {
 			uuids = result.getServiceUuids();
 			deviceName = result.getDeviceName();
-			rssi = result.getRssi();
+			// rssi = result.getRssi();
 
 			// debug("[onScanResults] device: " + name + " rssi: " + rssi);
 //			dumpUuids(uuids);
@@ -350,9 +350,9 @@ class BleDevice extends BluetoothLowEnergy.BleDelegate {
 			//search for an insta360 device based on service UUID
 			for (iter = uuids.next(); iter != null; iter = uuids.next()) {
 //				debug("uuid: " + iter);
-				if (iter.equals(LBS_SERVICE)) {
+				menuLevel = 0;
+				if (iter.equals(LBS_SERVICE) and (deviceName != null)) {
 					// debug("Connect " + iter);
-					menuLevel = 0;
 					if (deviceName.substring(0,3).equals("ONE")) {
 						menuLevel = 1;
 					}
@@ -485,7 +485,7 @@ class BleDevice extends BluetoothLowEnergy.BleDelegate {
 		
 		GPSaccuracy = info.accuracy;
 		WatchUi.requestUpdate();
-		debug("[sendPosition] Accuracy: " + GPSaccuracy); 
+		// debug("[sendPosition] Accuracy: " + GPSaccuracy); 
 		
 
 		if ((device == null) or (recState != stateStartRec)) { return; }

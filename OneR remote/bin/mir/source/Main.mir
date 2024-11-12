@@ -172,7 +172,7 @@ C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_source_Main_mc_58_27_61_1_start
         invoke %tmp.5 %tmp.6(%tmp.8);
 C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_source_Main_mc_58_27_61_1_stop:
     }
-    [ @file = "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote\source\Main.mc"; @line = 63; glance = true; ]
+    [ @file = "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote\source\Main.mc"; @line = 64; glance = true; ]
     function getGlanceView() {
 C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_source_Main_mc_64_26_66_4_start:
 [ "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote\source\Main.mc" 65 8 ]

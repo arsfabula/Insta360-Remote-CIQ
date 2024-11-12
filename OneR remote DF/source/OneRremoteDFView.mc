@@ -4,10 +4,12 @@ using Toybox.Position;
 using Toybox.System;
 using Toybox.Time;
 
+const vNum = "0.9.27";
 var mMessage = "Starting DF";
 var width = 0;
 var height = 0;
 var selectedFont;
+
 
 class OneRremoteDFView extends WatchUi.DataField {
 
@@ -88,8 +90,11 @@ class OneRremoteDFView extends WatchUi.DataField {
             dc.setColor(Graphics.COLOR_BLACK, Graphics.COLOR_TRANSPARENT);
         }
 //        dc.setColor(Graphics.COLOR_BLACK, Graphics.COLOR_TRANSPARENT);
-        dc.drawText(centerX, centerY, selectedFont, mMessage, Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
-       
+		if (mMessage.substring(0,4).equals("Scan")) {
+        	dc.drawText(centerX, centerY, selectedFont, mMessage + "\n" + vNum, Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
+		} else {
+        	dc.drawText(centerX, centerY, selectedFont, mMessage, Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
+       }
      }
 
 }

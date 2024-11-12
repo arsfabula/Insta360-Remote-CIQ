@@ -2494,7 +2494,7 @@ module BLEBarrel {
     var currentLabel = "Default Video";
     [ @file = "C:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\BLEBarrel.mc"; @line = 73; @position = 4; ]
     var startMessage = "";
-    [ @file = "C:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\BLEBarrel.mc"; @line = 75; glance = true; ]
+    [ @file = "C:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\BLEBarrel.mc"; @line = 76; glance = true; ]
     class BleDevice extends BluetoothLowEnergy.BleDelegate{
         [ @file = "C:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\BLEBarrel.mc"; @line = 76; ]
         <init> {
@@ -2607,28 +2607,24 @@ C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_114_25_121_4_start:
             %tmp.28 = self;
             %tmp.29 = getv function %tmp.28 :debug;
             %tmp.30 = "[sendCMD] No service, starting scan, device connected ";
-            %tmp.32 = getv ? :device;
-            %tmp.33 = getv function %tmp.32 :isConnected;
-            %tmp.34 = invoke %tmp.32 %tmp.33();
-            %tmp.35 = add %tmp.30 %tmp.34;
-            invoke %tmp.28 %tmp.29(%tmp.35);
+            invoke %tmp.28 %tmp.29(%tmp.30);
 [ "C:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\BLEBarrel.mc" 116 8 ]
-            %tmp.37 = getv ? :stateStopRec;
-            putv self :recState %tmp.37;
+            %tmp.32 = getv ? :stateStopRec;
+            putv self :recState %tmp.32;
 [ "C:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\BLEBarrel.mc" 117 8 ]
-            %tmp.38 = getm $.Toybox.BluetoothLowEnergy;
-            %tmp.39 = getv function %tmp.38 :unpairDevice;
-            %tmp.41 = getv ? :device;
-            invoke %tmp.38 %tmp.39(%tmp.41);
+            %tmp.33 = getm $.Toybox.BluetoothLowEnergy;
+            %tmp.34 = getv function %tmp.33 :unpairDevice;
+            %tmp.36 = getv ? :device;
+            invoke %tmp.33 %tmp.34(%tmp.36);
 [ "C:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\BLEBarrel.mc" 118 8 ]
-            %tmp.42 = null;
-            putv self :device %tmp.42;
+            %tmp.37 = null;
+            putv self :device %tmp.37;
 [ "C:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\BLEBarrel.mc" 119 5 ]
-            %tmp.43 = getm $.Toybox.BluetoothLowEnergy;
-            %tmp.44 = getv function %tmp.43 :setScanState;
-            %tmp.45 = getm $.Toybox.BluetoothLowEnergy;
-            %tmp.46 = getv %tmp.45 :SCAN_STATE_SCANNING;
-            invoke %tmp.43 %tmp.44(%tmp.46);
+            %tmp.38 = getm $.Toybox.BluetoothLowEnergy;
+            %tmp.39 = getv function %tmp.38 :setScanState;
+            %tmp.40 = getm $.Toybox.BluetoothLowEnergy;
+            %tmp.41 = getv %tmp.40 :SCAN_STATE_SCANNING;
+            invoke %tmp.38 %tmp.39(%tmp.41);
 [ "C:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\BLEBarrel.mc" 120 5 ]
             ret ?;
 C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_114_25_121_4_stop:
@@ -2645,83 +2641,83 @@ C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_123_9_125_2_start:
 C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_123_9_125_2_stop:
 C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_100_2_125_2_if_end:
 [ "C:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\BLEBarrel.mc" 128 2 ]
-            %tmp.48 = getv ? :SeqNo;
-            %tmp.49 = 1;
-            %tmp.50 = add %tmp.48 %tmp.49;
-            putv self :SeqNo %tmp.50;
+            %tmp.43 = getv ? :SeqNo;
+            %tmp.44 = 1;
+            %tmp.45 = add %tmp.43 %tmp.44;
+            putv self :SeqNo %tmp.45;
 [ "C:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\BLEBarrel.mc" 129 2 ]
 C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_129_2_131_2_if_stmt:
-            %tmp.52 = getv ? :SeqNo;
-            %tmp.53 = 254;
-            %tmp.54 = gt %tmp.52 %tmp.53;
-            bf %tmp.54 @C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_129_2_131_2_if_end;
+            %tmp.47 = getv ? :SeqNo;
+            %tmp.48 = 254;
+            %tmp.49 = gt %tmp.47 %tmp.48;
+            bf %tmp.49 @C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_129_2_131_2_if_end;
 C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_129_2_131_2_if_true:
 C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_129_19_131_2_start:
 [ "C:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\BLEBarrel.mc" 130 3 ]
-            %tmp.55 = 1;
-            putv self :SeqNo %tmp.55;
+            %tmp.50 = 1;
+            putv self :SeqNo %tmp.50;
 C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_129_19_131_2_stop:
             goto @C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_129_2_131_2_if_end;
 C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_129_2_131_2_if_end:
 [ "C:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\BLEBarrel.mc" 132 2 ]
-            %tmp.56 = lgetv %value;
-            %tmp.58 = getv ? :SeqNo;
-            %tmp.60 = getv ? :SeqPos;
-            aputv %tmp.56 %tmp.60 %tmp.58;
+            %tmp.51 = lgetv %value;
+            %tmp.53 = getv ? :SeqNo;
+            %tmp.55 = getv ? :SeqPos;
+            aputv %tmp.51 %tmp.55 %tmp.53;
 [ "C:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\BLEBarrel.mc" 137 2 ]
 C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_137_2_144_2_if_stmt:
-            %tmp.61 = lgetv %value;
-            %tmp.62 = getv function %tmp.61 :size;
-            %tmp.63 = invoke %tmp.61 %tmp.62();
-            %tmp.64 = 20;
-            %tmp.65 = gt %tmp.63 %tmp.64;
-            bf %tmp.65 @C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_137_2_144_2_if_false;
+            %tmp.56 = lgetv %value;
+            %tmp.57 = getv function %tmp.56 :size;
+            %tmp.58 = invoke %tmp.56 %tmp.57();
+            %tmp.59 = 20;
+            %tmp.60 = gt %tmp.58 %tmp.59;
+            bf %tmp.60 @C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_137_2_144_2_if_false;
 C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_137_2_144_2_if_true:
 C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_137_25_142_2_start:
 [ "C:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\BLEBarrel.mc" 138 3 ]
-            %tmp.66 = lgetv %value;
-            %tmp.67 = getv function %tmp.66 :size;
-            %tmp.68 = invoke %tmp.66 %tmp.67();
-            %tmp.69 = 1;
-            %tmp.70 = sub %tmp.68 %tmp.69;
-            %tmp.71 = 20;
-            %tmp.72 = div %tmp.70 %tmp.71;
-            lputv %j.4 %tmp.72;
+            %tmp.61 = lgetv %value;
+            %tmp.62 = getv function %tmp.61 :size;
+            %tmp.63 = invoke %tmp.61 %tmp.62();
+            %tmp.64 = 1;
+            %tmp.65 = sub %tmp.63 %tmp.64;
+            %tmp.66 = 20;
+            %tmp.67 = div %tmp.65 %tmp.66;
+            lputv %j.4 %tmp.67;
 [ "C:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\BLEBarrel.mc" 139 3 ]
             for @C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_139_3_141_3_for_test @C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_139_3_141_3_for_incr @C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_139_3_141_3_for_end;
 C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_139_3_141_3_for_init:
-            %tmp.73 = 0;
-            lputv %i.3 %tmp.73;
+            %tmp.68 = 0;
+            lputv %i.3 %tmp.68;
 C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_139_3_141_3_for_test:
-            %tmp.75 = lgetv %i.3;
-            %tmp.76 = lgetv %j.4;
-            %tmp.77 = getv function %tmp.76 :toNumber;
-            %tmp.78 = invoke %tmp.76 %tmp.77();
-            %tmp.79 = lte %tmp.75 %tmp.78;
-            bf %tmp.79 @C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_139_3_141_3_for_end;
+            %tmp.70 = lgetv %i.3;
+            %tmp.71 = lgetv %j.4;
+            %tmp.72 = getv function %tmp.71 :toNumber;
+            %tmp.73 = invoke %tmp.71 %tmp.72();
+            %tmp.74 = lte %tmp.70 %tmp.73;
+            bf %tmp.74 @C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_139_3_141_3_for_end;
 C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_139_3_141_3_for_begin:
 C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_139_39_141_3_start:
 [ "C:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\BLEBarrel.mc" 140 4 ]
-            %tmp.81 = getv ? :queue;
-            %tmp.82 = getv function %tmp.81 :add;
-            %tmp.83 = lgetv %value;
-            %tmp.84 = getv function %tmp.83 :slice;
-            %tmp.86 = lgetv %i.3;
-            %tmp.87 = 20;
-            %tmp.88 = mul %tmp.86 %tmp.87;
-            %tmp.90 = lgetv %i.3;
-            %tmp.91 = 1;
-            %tmp.92 = add %tmp.90 %tmp.91;
-            %tmp.93 = 20;
-            %tmp.94 = mul %tmp.92 %tmp.93;
-            %tmp.95 = invoke %tmp.83 %tmp.84(%tmp.88, %tmp.94);
-            invoke %tmp.81 %tmp.82(%tmp.95);
+            %tmp.76 = getv ? :queue;
+            %tmp.77 = getv function %tmp.76 :add;
+            %tmp.78 = lgetv %value;
+            %tmp.79 = getv function %tmp.78 :slice;
+            %tmp.81 = lgetv %i.3;
+            %tmp.82 = 20;
+            %tmp.83 = mul %tmp.81 %tmp.82;
+            %tmp.85 = lgetv %i.3;
+            %tmp.86 = 1;
+            %tmp.87 = add %tmp.85 %tmp.86;
+            %tmp.88 = 20;
+            %tmp.89 = mul %tmp.87 %tmp.88;
+            %tmp.90 = invoke %tmp.78 %tmp.79(%tmp.83, %tmp.89);
+            invoke %tmp.76 %tmp.77(%tmp.90);
 C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_139_39_141_3_stop:
 C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_139_3_141_3_for_incr:
 [ "C:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\BLEBarrel.mc" 139 ]
-            %tmp.98 = lgetv %i.3;
-            %tmp.99 = add %tmp.98 1;
-            lputv %i.3 %tmp.99;
+            %tmp.93 = lgetv %i.3;
+            %tmp.94 = add %tmp.93 1;
+            lputv %i.3 %tmp.94;
             goto @C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_139_3_141_3_for_test;
 C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_139_3_141_3_for_end:
 C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_137_25_142_2_stop:
@@ -2729,49 +2725,44 @@ C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_137_25_142_2_stop:
 C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_137_2_144_2_if_false:
 C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_142_9_144_2_start:
 [ "C:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\BLEBarrel.mc" 143 3 ]
-            %tmp.101 = getv ? :queue;
-            %tmp.102 = getv function %tmp.101 :add;
-            %tmp.104 = lgetv %value;
-            invoke %tmp.101 %tmp.102(%tmp.104);
+            %tmp.96 = getv ? :queue;
+            %tmp.97 = getv function %tmp.96 :add;
+            %tmp.99 = lgetv %value;
+            invoke %tmp.96 %tmp.97(%tmp.99);
 C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_142_9_144_2_stop:
 C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_137_2_144_2_if_end:
 [ "C:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\BLEBarrel.mc" 147 2 ]
             try @C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_147_2_152_2_beginTry @C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_147_2_152_2_endTry @C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_147_2_152_2_catch @C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_147_2_152_2_finally;
 C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_147_2_152_2_beginTry:
 C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_147_6_150_2_start:
-[ "C:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\BLEBarrel.mc" 148 3 ]
-            %tmp.105 = self;
-            %tmp.106 = getv function %tmp.105 :debug;
-            %tmp.107 = "sendCMD: service.getChar";
-            invoke %tmp.105 %tmp.106(%tmp.107);
 [ "C:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\BLEBarrel.mc" 149 3 ]
-            %tmp.108 = lgetv %service.1;
-            %tmp.109 = getv function %tmp.108 :getCharacteristic;
-            %tmp.111 = getv ? :LBS_RW_CHAR;
-            %tmp.112 = invoke %tmp.108 %tmp.109(%tmp.111);
-            lputv %ch.2 %tmp.112;
+            %tmp.100 = lgetv %service.1;
+            %tmp.101 = getv function %tmp.100 :getCharacteristic;
+            %tmp.103 = getv ? :LBS_RW_CHAR;
+            %tmp.104 = invoke %tmp.100 %tmp.101(%tmp.103);
+            lputv %ch.2 %tmp.104;
 C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_147_6_150_2_stop:
 C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_147_2_152_2_endTry:
             jsr @C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_147_2_152_2_finally;
             goto @C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_147_2_152_2_end;
 C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_147_2_152_2_catch:
-            %tmp.113 = exception;
-            push %tmp.113;
+            %tmp.105 = exception;
+            push %tmp.105;
 [ "C:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\BLEBarrel.mc" 150 4 ]
             [ "C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_147_2_152_2_catch" "C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_150_4_152_2_end" ]
             %ex.5 = local;
-            %tmp.114 = dup %tmp.113;
-            lputv %ex.5 %tmp.114;
+            %tmp.106 = dup %tmp.105;
+            lputv %ex.5 %tmp.106;
 C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_150_15_152_2_start:
 [ "C:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\BLEBarrel.mc" 151 7 ]
-            %tmp.115 = self;
-            %tmp.116 = getv function %tmp.115 :debug;
-            %tmp.117 = "[sendCMD] exception: ";
-            %tmp.118 = lgetv %ex.5;
-            %tmp.119 = getv function %tmp.118 :getErrorMessage;
-            %tmp.120 = invoke %tmp.118 %tmp.119();
-            %tmp.121 = add %tmp.117 %tmp.120;
-            invoke %tmp.115 %tmp.116(%tmp.121);
+            %tmp.107 = self;
+            %tmp.108 = getv function %tmp.107 :debug;
+            %tmp.109 = "[sendCMD] exception: ";
+            %tmp.110 = lgetv %ex.5;
+            %tmp.111 = getv function %tmp.110 :getErrorMessage;
+            %tmp.112 = invoke %tmp.110 %tmp.111();
+            %tmp.113 = add %tmp.109 %tmp.112;
+            invoke %tmp.107 %tmp.108(%tmp.113);
 C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_150_15_152_2_stop:
             jsr @C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_147_2_152_2_finally;
             pop;
@@ -2779,7 +2770,7 @@ C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_150_15_152_2_stop:
 C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_150_4_152_2_end:
             try @C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_147_2_152_2_catch @C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_150_4_152_2_end @C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_150_4_152_2_end @C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_147_2_152_2_finally;
             jsr @C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_147_2_152_2_finally;
-            throw %tmp.113;
+            throw %tmp.105;
 C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_147_2_152_2_finally:
             jsrret;
 C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_147_2_152_2_end:
@@ -2788,43 +2779,43 @@ C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_147_2_152_2_end:
 C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_156_2_161_2_beginTry:
 C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_156_6_159_2_start:
 [ "C:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\BLEBarrel.mc" 157 3 ]
-            %tmp.122 = self;
-            %tmp.123 = getv function %tmp.122 :debug;
-            %tmp.124 = "sendCMD: send stateStandby";
-            invoke %tmp.122 %tmp.123(%tmp.124);
+            %tmp.114 = self;
+            %tmp.115 = getv function %tmp.114 :debug;
+            %tmp.116 = "sendCMD: send stateStandby";
+            invoke %tmp.114 %tmp.115(%tmp.116);
 [ "C:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\BLEBarrel.mc" 158 6 ]
-            %tmp.125 = lgetv %ch.2;
-            %tmp.126 = getv function %tmp.125 :requestWrite;
-            %tmp.128 = getv ? :stateStandby;
-            %tmp.129 = newd 1;
-            %tmp.131 = const :writeType;
-            %tmp.132 = getm $.Toybox.BluetoothLowEnergy;
-            %tmp.133 = getv %tmp.132 :WRITE_TYPE_DEFAULT;
-            %tmp.134 = dup %tmp.129;
-            %tmp.135 = aputv %tmp.134 %tmp.131 %tmp.133;
-            invoke %tmp.125 %tmp.126(%tmp.128, %tmp.135);
+            %tmp.117 = lgetv %ch.2;
+            %tmp.118 = getv function %tmp.117 :requestWrite;
+            %tmp.120 = getv ? :stateStandby;
+            %tmp.121 = newd 1;
+            %tmp.123 = const :writeType;
+            %tmp.124 = getm $.Toybox.BluetoothLowEnergy;
+            %tmp.125 = getv %tmp.124 :WRITE_TYPE_DEFAULT;
+            %tmp.126 = dup %tmp.121;
+            %tmp.127 = aputv %tmp.126 %tmp.123 %tmp.125;
+            invoke %tmp.117 %tmp.118(%tmp.120, %tmp.127);
 C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_156_6_159_2_stop:
 C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_156_2_161_2_endTry:
             jsr @C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_156_2_161_2_finally;
             goto @C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_156_2_161_2_end;
 C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_156_2_161_2_catch:
-            %tmp.136 = exception;
-            push %tmp.136;
+            %tmp.128 = exception;
+            push %tmp.128;
 [ "C:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\BLEBarrel.mc" 159 4 ]
             [ "C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_156_2_161_2_catch" "C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_159_4_161_2_end" ]
             %ex.6 = local;
-            %tmp.137 = dup %tmp.136;
-            lputv %ex.6 %tmp.137;
+            %tmp.129 = dup %tmp.128;
+            lputv %ex.6 %tmp.129;
 C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_159_15_161_2_start:
 [ "C:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\BLEBarrel.mc" 160 7 ]
-            %tmp.138 = self;
-            %tmp.139 = getv function %tmp.138 :debug;
-            %tmp.140 = "[sendCMD] exception: ";
-            %tmp.141 = lgetv %ex.6;
-            %tmp.142 = getv function %tmp.141 :getErrorMessage;
-            %tmp.143 = invoke %tmp.141 %tmp.142();
-            %tmp.144 = add %tmp.140 %tmp.143;
-            invoke %tmp.138 %tmp.139(%tmp.144);
+            %tmp.130 = self;
+            %tmp.131 = getv function %tmp.130 :debug;
+            %tmp.132 = "[sendCMD] exception: ";
+            %tmp.133 = lgetv %ex.6;
+            %tmp.134 = getv function %tmp.133 :getErrorMessage;
+            %tmp.135 = invoke %tmp.133 %tmp.134();
+            %tmp.136 = add %tmp.132 %tmp.135;
+            invoke %tmp.130 %tmp.131(%tmp.136);
 C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_159_15_161_2_stop:
             jsr @C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_156_2_161_2_finally;
             pop;
@@ -2832,7 +2823,7 @@ C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_159_15_161_2_stop:
 C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_159_4_161_2_end:
             try @C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_156_2_161_2_catch @C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_159_4_161_2_end @C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_159_4_161_2_end @C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_156_2_161_2_finally;
             jsr @C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_156_2_161_2_finally;
-            throw %tmp.136;
+            throw %tmp.128;
 C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_156_2_161_2_finally:
             jsrret;
 C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_156_2_161_2_end:
@@ -2864,143 +2855,124 @@ C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_171_4_197_4_if_stmt
             bf %tmp.14 @C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_171_4_197_4_if_end;
 C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_171_4_197_4_if_true:
 C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_171_46_197_4_start:
-[ "C:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\BLEBarrel.mc" 172 3 ]
-            %tmp.15 = self;
-            %tmp.16 = getv function %tmp.15 :debug;
-            %tmp.17 = "[onCharChanged] ";
-            %tmp.18 = lgetv %ch;
-            %tmp.19 = getv function %tmp.18 :getUuid;
-            %tmp.20 = invoke %tmp.18 %tmp.19();
-            %tmp.21 = add %tmp.17 %tmp.20;
-            %tmp.22 = " ";
-            %tmp.23 = add %tmp.21 %tmp.22;
-            %tmp.25 = lgetv %value;
-            %tmp.26 = add %tmp.23 %tmp.25;
-            %tmp.27 = " Size: ";
-            %tmp.28 = add %tmp.26 %tmp.27;
-            %tmp.29 = lgetv %value;
-            %tmp.30 = getv function %tmp.29 :size;
-            %tmp.31 = invoke %tmp.29 %tmp.30();
-            %tmp.32 = add %tmp.28 %tmp.31;
-            invoke %tmp.15 %tmp.16(%tmp.32);
 [ "C:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\BLEBarrel.mc" 176 3 ]
 C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_176_3_196_3_if_stmt:
 C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_176_7_176_47_begin:
-            %tmp.34 = lgetv %value;
-            %tmp.35 = 7;
-            %tmp.36 = agetv %tmp.34 %tmp.35;
-            %tmp.37 = 0x10;
-            %tmp.38 = eq %tmp.36 %tmp.37;
-            bf %tmp.38 @C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_176_3_196_3_if_false;
+            %tmp.16 = lgetv %value;
+            %tmp.17 = 7;
+            %tmp.18 = agetv %tmp.16 %tmp.17;
+            %tmp.19 = 0x10;
+            %tmp.20 = eq %tmp.18 %tmp.19;
+            bf %tmp.20 @C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_176_3_196_3_if_false;
 C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_176_30_176_47_true:
-            %tmp.40 = lgetv %value;
-            %tmp.41 = 17;
-            %tmp.42 = agetv %tmp.40 %tmp.41;
-            %tmp.43 = 0x00;
-            %tmp.44 = gt %tmp.42 %tmp.43;
-            push %tmp.44;
+            %tmp.22 = lgetv %value;
+            %tmp.23 = 17;
+            %tmp.24 = agetv %tmp.22 %tmp.23;
+            %tmp.25 = 0x00;
+            %tmp.26 = gt %tmp.24 %tmp.25;
+            push %tmp.26;
 C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_176_30_176_47_end:
-            %tmp.45 = phi [%tmp.38 @C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_176_7_176_47_begin] [%tmp.44 @C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_176_30_176_47_true] [%tmp.45 @C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_176_30_176_47_end];
-            bf %tmp.45 @C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_176_3_196_3_if_false;
+            %tmp.27 = phi [%tmp.20 @C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_176_7_176_47_begin] [%tmp.26 @C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_176_30_176_47_true] [%tmp.27 @C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_176_30_176_47_end];
+            bf %tmp.27 @C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_176_3_196_3_if_false;
 C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_176_3_196_3_if_true:
 C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_176_50_183_3_start:
 [ "C:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\BLEBarrel.mc" 178 4 ]
-            %tmp.46 = "Shooting";
-            putv self :mMessage %tmp.46;
+            %tmp.28 = "Shooting";
+            putv self :mMessage %tmp.28;
 [ "C:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\BLEBarrel.mc" 179 4 ]
-            %tmp.48 = getv ? :stateStartRec;
-            putv self :recState %tmp.48;
+            %tmp.30 = getv ? :stateStartRec;
+            putv self :recState %tmp.30;
 [ "C:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\BLEBarrel.mc" 180 4 ]
-            %tmp.49 = getm $.Toybox.Time;
-            %tmp.50 = getv function %tmp.49 :now;
-            %tmp.51 = invoke %tmp.49 %tmp.50();
-            putv self :startRecTime %tmp.51;
+            %tmp.31 = getm $.Toybox.Time;
+            %tmp.32 = getv function %tmp.31 :now;
+            %tmp.33 = invoke %tmp.31 %tmp.32();
+            putv self :startRecTime %tmp.33;
 C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_176_50_183_3_stop:
             goto @C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_176_3_196_3_if_end;
 C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_176_3_196_3_if_false:
 [ "C:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\BLEBarrel.mc" 183 11 ]
 C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_183_11_196_3_if_stmt:
 C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_183_15_183_56_begin:
-            %tmp.53 = lgetv %value;
-            %tmp.54 = 7;
-            %tmp.55 = agetv %tmp.53 %tmp.54;
-            %tmp.56 = 0x10;
-            %tmp.57 = eq %tmp.55 %tmp.56;
-            bf %tmp.57 @C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_183_11_196_3_if_false;
+            %tmp.35 = lgetv %value;
+            %tmp.36 = 7;
+            %tmp.37 = agetv %tmp.35 %tmp.36;
+            %tmp.38 = 0x10;
+            %tmp.39 = eq %tmp.37 %tmp.38;
+            bf %tmp.39 @C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_183_11_196_3_if_false;
 C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_183_38_183_56_true:
-            %tmp.59 = lgetv %value;
-            %tmp.60 = 17;
-            %tmp.61 = agetv %tmp.59 %tmp.60;
-            %tmp.62 = 0x00;
-            %tmp.63 = eq %tmp.61 %tmp.62;
-            push %tmp.63;
+            %tmp.41 = lgetv %value;
+            %tmp.42 = 17;
+            %tmp.43 = agetv %tmp.41 %tmp.42;
+            %tmp.44 = 0x00;
+            %tmp.45 = eq %tmp.43 %tmp.44;
+            push %tmp.45;
 C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_183_38_183_56_end:
-            %tmp.64 = phi [%tmp.57 @C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_183_15_183_56_begin] [%tmp.63 @C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_183_38_183_56_true] [%tmp.64 @C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_183_38_183_56_end];
-            bf %tmp.64 @C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_183_11_196_3_if_false;
+            %tmp.46 = phi [%tmp.39 @C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_183_15_183_56_begin] [%tmp.45 @C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_183_38_183_56_true] [%tmp.46 @C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_183_38_183_56_end];
+            bf %tmp.46 @C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_183_11_196_3_if_false;
 C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_183_11_196_3_if_true:
 C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_183_59_187_3_start:
 [ "C:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\BLEBarrel.mc" 185 4 ]
-            %tmp.66 = getv ? :currentLabel;
-            %tmp.67 = "\n";
-            %tmp.68 = add %tmp.66 %tmp.67;
-            %tmp.70 = getv ? :startMessage;
-            %tmp.71 = add %tmp.68 %tmp.70;
-            putv self :mMessage %tmp.71;
+            %tmp.48 = getv ? :currentLabel;
+            %tmp.49 = "\n";
+            %tmp.50 = add %tmp.48 %tmp.49;
+            %tmp.52 = getv ? :startMessage;
+            %tmp.53 = add %tmp.50 %tmp.52;
+            putv self :mMessage %tmp.53;
 [ "C:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\BLEBarrel.mc" 186 4 ]
-            %tmp.73 = getv ? :stateStopRec;
-            putv self :recState %tmp.73;
+            %tmp.55 = getv ? :stateStopRec;
+            putv self :recState %tmp.55;
 C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_183_59_187_3_stop:
             goto @C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_183_11_196_3_if_end;
 C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_183_11_196_3_if_false:
 [ "C:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\BLEBarrel.mc" 187 10 ]
 C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_187_10_196_3_if_stmt:
-            %tmp.75 = getv ? :stateBusy;
-            %tmp.76 = getv function %tmp.75 :equals;
-            %tmp.78 = lgetv %value;
-            %tmp.79 = 7;
-            %tmp.80 = agetv %tmp.78 %tmp.79;
-            %tmp.81 = invoke %tmp.75 %tmp.76(%tmp.80);
-            bf %tmp.81 @C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_187_10_196_3_if_false;
+            %tmp.57 = getv ? :stateBusy;
+            %tmp.58 = getv function %tmp.57 :equals;
+            %tmp.60 = lgetv %value;
+            %tmp.61 = 7;
+            %tmp.62 = agetv %tmp.60 %tmp.61;
+            %tmp.63 = invoke %tmp.57 %tmp.58(%tmp.62);
+            bf %tmp.63 @C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_187_10_196_3_if_false;
 C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_187_10_196_3_if_true:
 C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_187_42_190_6_start:
 [ "C:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\BLEBarrel.mc" 189 4 ]
-            %tmp.82 = "Busy...";
-            putv self :mMessage %tmp.82;
+            %tmp.64 = "Busy...";
+            putv self :mMessage %tmp.64;
 C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_187_42_190_6_stop:
             goto @C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_187_10_196_3_if_end;
 C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_187_10_196_3_if_false:
 [ "C:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\BLEBarrel.mc" 190 13 ]
 C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_190_13_196_3_if_stmt:
-            %tmp.84 = getv ? :stateCmdErr;
-            %tmp.85 = getv function %tmp.84 :equals;
-            %tmp.87 = lgetv %value;
-            %tmp.88 = 0;
-            %tmp.89 = agetv %tmp.87 %tmp.88;
-            %tmp.90 = invoke %tmp.84 %tmp.85(%tmp.89);
-            bf %tmp.90 @C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_190_13_196_3_if_false;
+            %tmp.66 = getv ? :stateCmdErr;
+            %tmp.67 = getv function %tmp.66 :equals;
+            %tmp.69 = lgetv %value;
+            %tmp.70 = 0;
+            %tmp.71 = agetv %tmp.69 %tmp.70;
+            %tmp.72 = invoke %tmp.66 %tmp.67(%tmp.71);
+            bf %tmp.72 @C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_190_13_196_3_if_false;
 C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_190_13_196_3_if_true:
 C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_190_47_193_3_start:
 [ "C:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\BLEBarrel.mc" 191 4 ]
-            %tmp.92 = getv ? :currentLabel;
-            %tmp.93 = "\n";
-            %tmp.94 = add %tmp.92 %tmp.93;
-            %tmp.96 = getv ? :startMessage;
-            %tmp.97 = add %tmp.94 %tmp.96;
-            putv self :mMessage %tmp.97;
+            %tmp.74 = getv ? :currentLabel;
+            %tmp.75 = "\n";
+            %tmp.76 = add %tmp.74 %tmp.75;
+            %tmp.78 = getv ? :startMessage;
+            %tmp.79 = add %tmp.76 %tmp.78;
+            putv self :mMessage %tmp.79;
 [ "C:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\BLEBarrel.mc" 192 4 ]
-            %tmp.99 = getv ? :stateStopRec;
-            putv self :recState %tmp.99;
+            %tmp.81 = getv ? :stateStopRec;
+            putv self :recState %tmp.81;
 C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_190_47_193_3_stop:
             goto @C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_190_13_196_3_if_end;
 C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_190_13_196_3_if_false:
 C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_193_10_196_3_start:
 [ "C:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\BLEBarrel.mc" 194 5 ]
-            %tmp.100 = self;
-            %tmp.101 = getv function %tmp.100 :debug;
-            %tmp.102 = "Unknown Response ";
-            %tmp.104 = lgetv %value;
-            %tmp.105 = add %tmp.102 %tmp.104;
-            invoke %tmp.100 %tmp.101(%tmp.105);
+            %tmp.82 = self;
+            %tmp.83 = getv function %tmp.82 :debug;
+            %tmp.84 = "Unknown Response ";
+            %tmp.86 = lgetv %value;
+            %tmp.87 = add %tmp.84 %tmp.86;
+            invoke %tmp.82 %tmp.83(%tmp.87);
 C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_193_10_196_3_stop:
 C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_190_13_196_3_if_end:
 C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_187_10_196_3_if_end:
@@ -3014,43 +2986,43 @@ C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_166_27_198_2_stop:
 C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_166_2_198_2_if_end:
 [ "C:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\BLEBarrel.mc" 201 2 ]
 C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_201_2_207_2_if_stmt:
-            %tmp.107 = getv ? :recState;
-            %tmp.109 = getv ? :stateStartRec;
-            %tmp.110 = eq %tmp.107 %tmp.109;
-            bf %tmp.110 @C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_201_2_207_2_if_false;
+            %tmp.89 = getv ? :recState;
+            %tmp.91 = getv ? :stateStartRec;
+            %tmp.92 = eq %tmp.89 %tmp.91;
+            bf %tmp.92 @C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_201_2_207_2_if_false;
 C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_201_2_207_2_if_true:
 C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_201_33_205_2_start:
 [ "C:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\BLEBarrel.mc" 202 3 ]
-            %tmp.111 = getm $.Toybox.Time;
-            %tmp.112 = getv function %tmp.111 :now;
-            %tmp.113 = invoke %tmp.111 %tmp.112();
-            putv self :clockTime %tmp.113;
+            %tmp.93 = getm $.Toybox.Time;
+            %tmp.94 = getv function %tmp.93 :now;
+            %tmp.95 = invoke %tmp.93 %tmp.94();
+            putv self :clockTime %tmp.95;
 [ "C:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\BLEBarrel.mc" 203 3 ]
-            %tmp.115 = getv ? :clockTime;
-            %tmp.116 = getv function %tmp.115 :subtract;
-            %tmp.118 = getv ? :startRecTime;
-            %tmp.119 = invoke %tmp.115 %tmp.116(%tmp.118);
-            putv self :elapsedRecTime %tmp.119;
+            %tmp.97 = getv ? :clockTime;
+            %tmp.98 = getv function %tmp.97 :subtract;
+            %tmp.100 = getv ? :startRecTime;
+            %tmp.101 = invoke %tmp.97 %tmp.98(%tmp.100);
+            putv self :elapsedRecTime %tmp.101;
 [ "C:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\BLEBarrel.mc" 204 3 ]
-            %tmp.121 = getv ? :currentLabel;
-            %tmp.122 = "\n";
-            %tmp.123 = add %tmp.121 %tmp.122;
-            %tmp.124 = self;
-            %tmp.125 = getv function %tmp.124 :toTimeString;
-            %tmp.127 = getv ? :elapsedRecTime;
-            %tmp.128 = getv function %tmp.127 :value;
-            %tmp.129 = invoke %tmp.127 %tmp.128();
-            %tmp.130 = invoke %tmp.124 %tmp.125(%tmp.129);
-            %tmp.131 = add %tmp.123 %tmp.130;
-            putv self :mMessage %tmp.131;
+            %tmp.103 = getv ? :currentLabel;
+            %tmp.104 = "\n";
+            %tmp.105 = add %tmp.103 %tmp.104;
+            %tmp.106 = self;
+            %tmp.107 = getv function %tmp.106 :toTimeString;
+            %tmp.109 = getv ? :elapsedRecTime;
+            %tmp.110 = getv function %tmp.109 :value;
+            %tmp.111 = invoke %tmp.109 %tmp.110();
+            %tmp.112 = invoke %tmp.106 %tmp.107(%tmp.111);
+            %tmp.113 = add %tmp.105 %tmp.112;
+            putv self :mMessage %tmp.113;
 C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_201_33_205_2_stop:
             goto @C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_201_2_207_2_if_end;
 C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_201_2_207_2_if_false:
 C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_201_2_207_2_if_end:
 [ "C:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\BLEBarrel.mc" 208 2 ]
-            %tmp.132 = getm $.Toybox.WatchUi;
-            %tmp.133 = getv function %tmp.132 :requestUpdate;
-            invoke %tmp.132 %tmp.133();
+            %tmp.114 = getm $.Toybox.WatchUi;
+            %tmp.115 = getv function %tmp.114 :requestUpdate;
+            invoke %tmp.114 %tmp.115();
 C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_164_45_209_1_stop:
         }
         [ @file = "C:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\BLEBarrel.mc"; @line = 211; ]
@@ -3116,45 +3088,26 @@ C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_217_8_219_6_end:
 C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_215_3_219_6_finally:
             jsrret;
 C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_215_3_219_6_end:
-[ "C:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\BLEBarrel.mc" 220 3 ]
-            %tmp.29 = self;
-            %tmp.30 = getv function %tmp.29 :debug;
-            %tmp.31 = "[onCharWrite] deq : ";
-            %tmp.33 = getv ? :queue;
-            %tmp.34 = 0;
-            %tmp.35 = agetv %tmp.33 %tmp.34;
-            %tmp.36 = add %tmp.31 %tmp.35;
-            %tmp.37 = " qsize: ";
-            %tmp.38 = add %tmp.36 %tmp.37;
-            %tmp.40 = getv ? :queue;
-            %tmp.41 = getv function %tmp.40 :size;
-            %tmp.42 = invoke %tmp.40 %tmp.41();
-            %tmp.43 = add %tmp.38 %tmp.42;
-            %tmp.44 = " Status ";
-            %tmp.45 = add %tmp.43 %tmp.44;
-            %tmp.47 = lgetv %st;
-            %tmp.48 = add %tmp.45 %tmp.47;
-            invoke %tmp.29 %tmp.30(%tmp.48);
 [ "C:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\BLEBarrel.mc" 221 3 ]
-            %tmp.50 = getv ? :queue;
-            %tmp.51 = getv function %tmp.50 :slice;
-            %tmp.52 = 1;
-            %tmp.54 = getv ? :queue;
-            %tmp.55 = getv function %tmp.54 :size;
-            %tmp.56 = invoke %tmp.54 %tmp.55();
-            %tmp.57 = invoke %tmp.50 %tmp.51(%tmp.52, %tmp.56);
-            putv self :queue %tmp.57;
+            %tmp.30 = getv ? :queue;
+            %tmp.31 = getv function %tmp.30 :slice;
+            %tmp.32 = 1;
+            %tmp.34 = getv ? :queue;
+            %tmp.35 = getv function %tmp.34 :size;
+            %tmp.36 = invoke %tmp.34 %tmp.35();
+            %tmp.37 = invoke %tmp.30 %tmp.31(%tmp.32, %tmp.36);
+            putv self :queue %tmp.37;
 C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_214_24_222_2_stop:
             goto @C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_214_2_224_2_if_end;
 C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_214_2_224_2_if_false:
 C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_222_9_224_2_start:
 [ "C:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\BLEBarrel.mc" 223 3 ]
-            %tmp.58 = self;
-            %tmp.59 = getv function %tmp.58 :debug;
-            %tmp.60 = "[onCharWrite] queue empty Status ";
-            %tmp.62 = lgetv %st;
-            %tmp.63 = add %tmp.60 %tmp.62;
-            invoke %tmp.58 %tmp.59(%tmp.63);
+            %tmp.38 = self;
+            %tmp.39 = getv function %tmp.38 :debug;
+            %tmp.40 = "[onCharWrite] queue empty Status ";
+            %tmp.42 = lgetv %st;
+            %tmp.43 = add %tmp.40 %tmp.42;
+            invoke %tmp.38 %tmp.39(%tmp.43);
 C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_222_9_224_2_stop:
 C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_214_2_224_2_if_end:
 C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_211_40_225_1_stop:
@@ -3393,57 +3346,38 @@ C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_259_47_277_1_stop:
         [ @file = "C:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\BLEBarrel.mc"; @line = 279; ]
         function onConnectedStateChanged(dev, state) {
 C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_279_46_309_1_start:
-[ "C:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\BLEBarrel.mc" 280 2 ]
-            %tmp.1 = self;
-            %tmp.2 = getv function %tmp.1 :debug;
-            %tmp.3 = "connected: ";
-            %tmp.4 = lgetv %dev;
-            %tmp.5 = getv function %tmp.4 :getName;
-            %tmp.6 = invoke %tmp.4 %tmp.5();
-            %tmp.7 = add %tmp.3 %tmp.6;
-            %tmp.8 = " ";
-            %tmp.9 = add %tmp.7 %tmp.8;
-            %tmp.10 = lgetv %dev;
-            %tmp.11 = getv function %tmp.10 :isConnected;
-            %tmp.12 = invoke %tmp.10 %tmp.11();
-            %tmp.13 = add %tmp.9 %tmp.12;
-            %tmp.14 = " ";
-            %tmp.15 = add %tmp.13 %tmp.14;
-            %tmp.17 = lgetv %state;
-            %tmp.18 = add %tmp.15 %tmp.17;
-            invoke %tmp.1 %tmp.2(%tmp.18);
 [ "C:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\BLEBarrel.mc" 281 2 ]
-            %tmp.20 = getv ? :currentLabel;
-            %tmp.21 = "\n";
-            %tmp.22 = add %tmp.20 %tmp.21;
-            %tmp.24 = getv ? :startMessage;
-            %tmp.25 = add %tmp.22 %tmp.24;
-            putv self :mMessage %tmp.25;
+            %tmp.2 = getv ? :currentLabel;
+            %tmp.3 = "\n";
+            %tmp.4 = add %tmp.2 %tmp.3;
+            %tmp.6 = getv ? :startMessage;
+            %tmp.7 = add %tmp.4 %tmp.6;
+            putv self :mMessage %tmp.7;
 [ "C:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\BLEBarrel.mc" 282 2 ]
-            %tmp.26 = getm $.Toybox.WatchUi;
-            %tmp.27 = getv function %tmp.26 :requestUpdate;
-            invoke %tmp.26 %tmp.27();
+            %tmp.8 = getm $.Toybox.WatchUi;
+            %tmp.9 = getv function %tmp.8 :requestUpdate;
+            invoke %tmp.8 %tmp.9();
 [ "C:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\BLEBarrel.mc" 283 2 ]
 C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_283_2_308_2_if_stmt:
-            %tmp.29 = lgetv %state;
-            %tmp.30 = getm $.Toybox.BluetoothLowEnergy;
-            %tmp.31 = getv %tmp.30 :CONNECTION_STATE_CONNECTED;
-            %tmp.32 = eq %tmp.29 %tmp.31;
-            bf %tmp.32 @C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_283_2_308_2_if_false;
+            %tmp.11 = lgetv %state;
+            %tmp.12 = getm $.Toybox.BluetoothLowEnergy;
+            %tmp.13 = getv %tmp.12 :CONNECTION_STATE_CONNECTED;
+            %tmp.14 = eq %tmp.11 %tmp.13;
+            bf %tmp.14 @C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_283_2_308_2_if_false;
 C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_283_2_308_2_if_true:
 C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_283_62_296_2_start:
 [ "C:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\BLEBarrel.mc" 284 3 ]
-            %tmp.33 = false;
-            putv self :connecting %tmp.33;
+            %tmp.15 = false;
+            putv self :connecting %tmp.15;
 [ "C:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\BLEBarrel.mc" 285 3 ]
-            %tmp.34 = self;
-            %tmp.35 = getv function %tmp.34 :debug;
-            %tmp.36 = "[onCSC] scanning OFF";
-            invoke %tmp.34 %tmp.35(%tmp.36);
+            %tmp.16 = self;
+            %tmp.17 = getv function %tmp.16 :debug;
+            %tmp.18 = "[onCSC] scanning OFF";
+            invoke %tmp.16 %tmp.17(%tmp.18);
 [ "C:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\BLEBarrel.mc" 286 3 ]
 C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_286_3_294_3_if_stmt:
-            %tmp.38 = getv ? :scanning;
-            bf %tmp.38 @C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_286_3_294_3_if_end;
+            %tmp.20 = getv ? :scanning;
+            bf %tmp.20 @C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_286_3_294_3_if_end;
 C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_286_3_294_3_if_true:
 C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_286_17_294_3_start:
 [ "C:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\BLEBarrel.mc" 287 3 ]
@@ -3451,33 +3385,33 @@ C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_286_17_294_3_start:
 C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_287_3_291_6_beginTry:
 C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_287_7_289_3_start:
 [ "C:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\BLEBarrel.mc" 288 4 ]
-            %tmp.39 = getm $.Toybox.BluetoothLowEnergy;
-            %tmp.40 = getv function %tmp.39 :setScanState;
-            %tmp.41 = getm $.Toybox.BluetoothLowEnergy;
-            %tmp.42 = getv %tmp.41 :SCAN_STATE_OFF;
-            invoke %tmp.39 %tmp.40(%tmp.42);
+            %tmp.21 = getm $.Toybox.BluetoothLowEnergy;
+            %tmp.22 = getv function %tmp.21 :setScanState;
+            %tmp.23 = getm $.Toybox.BluetoothLowEnergy;
+            %tmp.24 = getv %tmp.23 :SCAN_STATE_OFF;
+            invoke %tmp.21 %tmp.22(%tmp.24);
 C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_287_7_289_3_stop:
 C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_287_3_291_6_endTry:
             jsr @C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_287_3_291_6_finally;
             goto @C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_287_3_291_6_end;
 C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_287_3_291_6_catch:
-            %tmp.43 = exception;
-            push %tmp.43;
+            %tmp.25 = exception;
+            push %tmp.25;
 [ "C:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\BLEBarrel.mc" 289 5 ]
             [ "C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_287_3_291_6_catch" "C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_289_5_291_6_end" ]
             %ex.1 = local;
-            %tmp.44 = dup %tmp.43;
-            lputv %ex.1 %tmp.44;
+            %tmp.26 = dup %tmp.25;
+            lputv %ex.1 %tmp.26;
 C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_289_16_291_6_start:
 [ "C:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\BLEBarrel.mc" 290 7 ]
-            %tmp.45 = self;
-            %tmp.46 = getv function %tmp.45 :debug;
-            %tmp.47 = "[onConStateChg] OFF exception: ";
-            %tmp.48 = lgetv %ex.1;
-            %tmp.49 = getv function %tmp.48 :getErrorMessage;
-            %tmp.50 = invoke %tmp.48 %tmp.49();
-            %tmp.51 = add %tmp.47 %tmp.50;
-            invoke %tmp.45 %tmp.46(%tmp.51);
+            %tmp.27 = self;
+            %tmp.28 = getv function %tmp.27 :debug;
+            %tmp.29 = "[onConStateChg] OFF exception: ";
+            %tmp.30 = lgetv %ex.1;
+            %tmp.31 = getv function %tmp.30 :getErrorMessage;
+            %tmp.32 = invoke %tmp.30 %tmp.31();
+            %tmp.33 = add %tmp.29 %tmp.32;
+            invoke %tmp.27 %tmp.28(%tmp.33);
 C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_289_16_291_6_stop:
             jsr @C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_287_3_291_6_finally;
             pop;
@@ -3485,40 +3419,40 @@ C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_289_16_291_6_stop:
 C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_289_5_291_6_end:
             try @C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_287_3_291_6_catch @C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_289_5_291_6_end @C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_289_5_291_6_end @C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_287_3_291_6_finally;
             jsr @C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_287_3_291_6_finally;
-            throw %tmp.43;
+            throw %tmp.25;
 C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_287_3_291_6_finally:
             jsrret;
 C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_287_3_291_6_end:
 [ "C:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\BLEBarrel.mc" 293 4 ]
-            %tmp.52 = false;
-            putv self :scanning %tmp.52;
+            %tmp.34 = false;
+            putv self :scanning %tmp.34;
 C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_286_17_294_3_stop:
             goto @C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_286_3_294_3_if_end;
 C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_286_3_294_3_if_end:
 [ "C:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\BLEBarrel.mc" 295 3 ]
-            %tmp.54 = lgetv %dev;
-            putv self :device %tmp.54;
+            %tmp.36 = lgetv %dev;
+            putv self :device %tmp.36;
 C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_283_62_296_2_stop:
             goto @C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_283_2_308_2_if_end;
 C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_283_2_308_2_if_false:
 C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_296_9_308_2_start:
 [ "C:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\BLEBarrel.mc" 297 3 ]
 C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_297_3_307_3_if_stmt:
-            %tmp.56 = getv ? :scanning;
-            %tmp.57 = not %tmp.56;
-            bf %tmp.57 @C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_297_3_307_3_if_end;
+            %tmp.38 = getv ? :scanning;
+            %tmp.39 = not %tmp.38;
+            bf %tmp.39 @C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_297_3_307_3_if_end;
 C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_297_3_307_3_if_true:
 C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_297_18_307_3_start:
 [ "C:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\BLEBarrel.mc" 298 4 ]
-            %tmp.58 = true;
-            putv self :scanning %tmp.58;
+            %tmp.40 = true;
+            putv self :scanning %tmp.40;
 [ "C:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\BLEBarrel.mc" 299 4 ]
-            %tmp.59 = null;
-            putv self :device %tmp.59;
+            %tmp.41 = null;
+            putv self :device %tmp.41;
 [ "C:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\BLEBarrel.mc" 300 3 ]
-            %tmp.60 = self;
-            %tmp.61 = getv function %tmp.60 :open;
-            invoke %tmp.60 %tmp.61();
+            %tmp.42 = self;
+            %tmp.43 = getv function %tmp.42 :open;
+            invoke %tmp.42 %tmp.43();
 C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_297_18_307_3_stop:
             goto @C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_297_3_307_3_if_end;
 C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_297_3_307_3_if_end:
@@ -3624,211 +3558,209 @@ C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_335_37_409_1_start:
 [ "C:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\BLEBarrel.mc" 337 2 ]
             [ "C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_335_37_409_1_start" "C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_335_37_409_1_stop" ]
             %uuids.1 = local;
-[ "C:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\BLEBarrel.mc" 338 2 ]
-            [ "C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_335_37_409_1_start" "C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_335_37_409_1_stop" ]
-            %name.2 = local;
-[ "C:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\BLEBarrel.mc" 339 2 ]
-            [ "C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_335_37_409_1_start" "C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_335_37_409_1_stop" ]
-            %rssi.3 = local;
 [ "C:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\BLEBarrel.mc" 340 2 ]
             [ "C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_335_37_409_1_start" "C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_335_37_409_1_stop" ]
-            %iter.4 = local;
+            %iter.2 = local;
 [ "C:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\BLEBarrel.mc" 342 2 ]
             for @C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_342_2_408_2_for_test @C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_342_2_408_2_for_incr @C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_342_2_408_2_for_end;
 C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_342_2_408_2_for_init:
             [ "C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_342_2_408_2_for_begin" "C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_342_2_408_2_for_end" ]
-            %result.5 = local;
+            %result.3 = local;
             %tmp.1 = lgetv %scanResults;
             %tmp.2 = getv function %tmp.1 :next;
             %tmp.3 = invoke %tmp.1 %tmp.2();
-            lputv %result.5 %tmp.3;
+            lputv %result.3 %tmp.3;
 C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_342_2_408_2_for_test:
-            %tmp.5 = lgetv %result.5;
+            %tmp.5 = lgetv %result.3;
             %tmp.6 = null;
             %tmp.7 = ne %tmp.5 %tmp.6;
             bf %tmp.7 @C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_342_2_408_2_for_end;
 C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_342_2_408_2_for_begin:
 C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_342_85_408_2_start:
 [ "C:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\BLEBarrel.mc" 343 3 ]
-            %tmp.8 = lgetv %result.5;
+            %tmp.8 = lgetv %result.3;
             %tmp.9 = as %tmp.8 { (!Null) };
             %tmp.10 = getv function %tmp.9 :getServiceUuids;
             %tmp.11 = invoke %tmp.9 %tmp.10();
             lputv %uuids.1 %tmp.11;
 [ "C:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\BLEBarrel.mc" 344 3 ]
-            %tmp.12 = lgetv %result.5;
+            %tmp.12 = lgetv %result.3;
             %tmp.13 = as %tmp.12 { (!Null) };
             %tmp.14 = getv function %tmp.13 :getDeviceName;
             %tmp.15 = invoke %tmp.13 %tmp.14();
             putv self :deviceName %tmp.15;
-[ "C:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\BLEBarrel.mc" 345 3 ]
-            %tmp.16 = lgetv %result.5;
-            %tmp.17 = as %tmp.16 { (!Null) };
-            %tmp.18 = getv function %tmp.17 :getRssi;
-            %tmp.19 = invoke %tmp.17 %tmp.18();
-            lputv %rssi.3 %tmp.19;
 [ "C:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\BLEBarrel.mc" 351 3 ]
             for @C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_351_3_369_3_for_test @C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_351_3_369_3_for_incr @C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_351_3_369_3_for_end;
 C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_351_3_369_3_for_init:
-            %tmp.20 = lgetv %uuids.1;
-            %tmp.21 = getv function %tmp.20 :next;
-            %tmp.22 = invoke %tmp.20 %tmp.21();
-            lputv %iter.4 %tmp.22;
+            %tmp.16 = lgetv %uuids.1;
+            %tmp.17 = getv function %tmp.16 :next;
+            %tmp.18 = invoke %tmp.16 %tmp.17();
+            lputv %iter.2 %tmp.18;
 C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_351_3_369_3_for_test:
-            %tmp.24 = lgetv %iter.4;
-            %tmp.25 = null;
-            %tmp.26 = ne %tmp.24 %tmp.25;
-            bf %tmp.26 @C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_351_3_369_3_for_end;
+            %tmp.20 = lgetv %iter.2;
+            %tmp.21 = null;
+            %tmp.22 = ne %tmp.20 %tmp.21;
+            bf %tmp.22 @C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_351_3_369_3_for_end;
 C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_351_3_369_3_for_begin:
 C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_351_64_369_3_start:
 [ "C:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\BLEBarrel.mc" 353 4 ]
-C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_353_4_368_4_if_stmt:
-            %tmp.27 = lgetv %iter.4;
-            %tmp.28 = as %tmp.27 { (!Null) };
-            %tmp.29 = getv function %tmp.28 :equals;
-            %tmp.31 = getv ? :LBS_SERVICE;
-            %tmp.32 = invoke %tmp.28 %tmp.29(%tmp.31);
-            bf %tmp.32 @C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_353_4_368_4_if_end;
-C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_353_4_368_4_if_true:
-C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_353_34_368_4_start:
-[ "C:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\BLEBarrel.mc" 355 5 ]
-            %tmp.33 = 0;
-            putv self :menuLevel %tmp.33;
+            %tmp.23 = 0;
+            putv self :menuLevel %tmp.23;
+[ "C:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\BLEBarrel.mc" 354 4 ]
+C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_354_4_368_4_if_stmt:
+C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_354_8_354_56_begin:
+            %tmp.24 = lgetv %iter.2;
+            %tmp.25 = as %tmp.24 { (!Null) };
+            %tmp.26 = getv function %tmp.25 :equals;
+            %tmp.28 = getv ? :LBS_SERVICE;
+            %tmp.29 = invoke %tmp.25 %tmp.26(%tmp.28);
+            bf %tmp.29 @C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_354_4_368_4_if_end;
+C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_354_37_354_56_true:
+            %tmp.31 = getv ? :deviceName;
+            %tmp.32 = null;
+            %tmp.33 = ne %tmp.31 %tmp.32;
+            push %tmp.33;
+C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_354_37_354_56_end:
+            %tmp.34 = phi [%tmp.29 @C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_354_8_354_56_begin] [%tmp.33 @C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_354_37_354_56_true] [%tmp.34 @C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_354_37_354_56_end];
+            bf %tmp.34 @C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_354_4_368_4_if_end;
+C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_354_4_368_4_if_true:
+C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_354_59_368_4_start:
 [ "C:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\BLEBarrel.mc" 356 5 ]
 C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_356_5_358_5_if_stmt:
-            %tmp.35 = getv ? :deviceName;
-            %tmp.36 = getv function %tmp.35 :substring;
-            %tmp.37 = 0;
-            %tmp.38 = 3;
-            %tmp.39 = invoke %tmp.35 %tmp.36(%tmp.37, %tmp.38);
-            %tmp.40 = getv function %tmp.39 :equals;
-            %tmp.41 = "ONE";
-            %tmp.42 = invoke %tmp.39 %tmp.40(%tmp.41);
-            bf %tmp.42 @C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_356_5_358_5_if_end;
+            %tmp.36 = getv ? :deviceName;
+            %tmp.37 = as %tmp.36 { (!Null) };
+            %tmp.38 = getv function %tmp.37 :substring;
+            %tmp.39 = 0;
+            %tmp.40 = 3;
+            %tmp.41 = invoke %tmp.37 %tmp.38(%tmp.39, %tmp.40);
+            %tmp.42 = getv function %tmp.41 :equals;
+            %tmp.43 = "ONE";
+            %tmp.44 = invoke %tmp.41 %tmp.42(%tmp.43);
+            bf %tmp.44 @C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_356_5_358_5_if_end;
 C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_356_5_358_5_if_true:
 C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_356_50_358_5_start:
 [ "C:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\BLEBarrel.mc" 357 6 ]
-            %tmp.43 = 1;
-            putv self :menuLevel %tmp.43;
+            %tmp.45 = 1;
+            putv self :menuLevel %tmp.45;
 C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_356_50_358_5_stop:
             goto @C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_356_5_358_5_if_end;
 C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_356_5_358_5_if_end:
 [ "C:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\BLEBarrel.mc" 359 5 ]
 C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_359_5_361_5_if_stmt:
-            %tmp.45 = getv ? :deviceName;
-            %tmp.46 = getv function %tmp.45 :substring;
-            %tmp.47 = 0;
-            %tmp.48 = 3;
-            %tmp.49 = invoke %tmp.45 %tmp.46(%tmp.47, %tmp.48);
-            %tmp.50 = getv function %tmp.49 :equals;
-            %tmp.51 = "X3 ";
-            %tmp.52 = invoke %tmp.49 %tmp.50(%tmp.51);
-            bf %tmp.52 @C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_359_5_361_5_if_end;
+            %tmp.47 = getv ? :deviceName;
+            %tmp.48 = getv function %tmp.47 :substring;
+            %tmp.49 = 0;
+            %tmp.50 = 3;
+            %tmp.51 = invoke %tmp.47 %tmp.48(%tmp.49, %tmp.50);
+            %tmp.52 = getv function %tmp.51 :equals;
+            %tmp.53 = "X3 ";
+            %tmp.54 = invoke %tmp.51 %tmp.52(%tmp.53);
+            bf %tmp.54 @C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_359_5_361_5_if_end;
 C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_359_5_361_5_if_true:
 C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_359_50_361_5_start:
 [ "C:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\BLEBarrel.mc" 360 6 ]
-            %tmp.53 = 1;
-            putv self :menuLevel %tmp.53;
+            %tmp.55 = 1;
+            putv self :menuLevel %tmp.55;
 C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_359_50_361_5_stop:
             goto @C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_359_5_361_5_if_end;
 C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_359_5_361_5_if_end:
 [ "C:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\BLEBarrel.mc" 363 5 ]
 C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_363_5_365_5_if_stmt:
-            %tmp.55 = getv ? :deviceName;
-            %tmp.56 = getv function %tmp.55 :substring;
-            %tmp.57 = 0;
-            %tmp.58 = 3;
-            %tmp.59 = invoke %tmp.55 %tmp.56(%tmp.57, %tmp.58);
-            %tmp.60 = getv function %tmp.59 :equals;
-            %tmp.61 = "X4 ";
-            %tmp.62 = invoke %tmp.59 %tmp.60(%tmp.61);
-            bf %tmp.62 @C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_363_5_365_5_if_end;
+            %tmp.57 = getv ? :deviceName;
+            %tmp.58 = getv function %tmp.57 :substring;
+            %tmp.59 = 0;
+            %tmp.60 = 3;
+            %tmp.61 = invoke %tmp.57 %tmp.58(%tmp.59, %tmp.60);
+            %tmp.62 = getv function %tmp.61 :equals;
+            %tmp.63 = "X4 ";
+            %tmp.64 = invoke %tmp.61 %tmp.62(%tmp.63);
+            bf %tmp.64 @C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_363_5_365_5_if_end;
 C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_363_5_365_5_if_true:
 C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_363_50_365_5_start:
 [ "C:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\BLEBarrel.mc" 364 6 ]
-            %tmp.63 = 2;
-            putv self :menuLevel %tmp.63;
+            %tmp.65 = 2;
+            putv self :menuLevel %tmp.65;
 C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_363_50_365_5_stop:
             goto @C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_363_5_365_5_if_end;
 C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_363_5_365_5_if_end:
 [ "C:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\BLEBarrel.mc" 366 5 ]
-            %tmp.64 = self;
-            %tmp.65 = getv function %tmp.64 :connect;
-            %tmp.67 = lgetv %result.5;
-            %tmp.68 = as %tmp.67 { (!Null) };
-            invoke %tmp.64 %tmp.65(%tmp.68);
+            %tmp.66 = self;
+            %tmp.67 = getv function %tmp.66 :connect;
+            %tmp.69 = lgetv %result.3;
+            %tmp.70 = as %tmp.69 { (!Null) };
+            invoke %tmp.66 %tmp.67(%tmp.70);
 [ "C:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\BLEBarrel.mc" 367 5 ]
             ret ?;
-C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_353_34_368_4_stop:
-            goto @C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_353_4_368_4_if_end;
-C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_353_4_368_4_if_end:
+C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_354_59_368_4_stop:
+            goto @C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_354_4_368_4_if_end;
+C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_354_4_368_4_if_end:
 C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_351_64_369_3_stop:
 C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_351_3_369_3_for_incr:
 [ "C:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\BLEBarrel.mc" 351 ]
-            %tmp.69 = lgetv %uuids.1;
-            %tmp.70 = getv function %tmp.69 :next;
-            %tmp.71 = invoke %tmp.69 %tmp.70();
-            lputv %iter.4 %tmp.71;
+            %tmp.71 = lgetv %uuids.1;
+            %tmp.72 = getv function %tmp.71 :next;
+            %tmp.73 = invoke %tmp.71 %tmp.72();
+            lputv %iter.2 %tmp.73;
             goto @C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_351_3_369_3_for_test;
 C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_351_3_369_3_for_end:
 [ "C:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\BLEBarrel.mc" 396 3 ]
-            %tmp.74 = getv ? :scanTimeout;
-            %tmp.75 = sub %tmp.74 1;
-            putv self :scanTimeout dup %tmp.75;
+            %tmp.76 = getv ? :scanTimeout;
+            %tmp.77 = sub %tmp.76 1;
+            putv self :scanTimeout dup %tmp.77;
 [ "C:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\BLEBarrel.mc" 397 3 ]
-            %tmp.76 = "Scanning...\n";
-            %tmp.78 = getv ? :scanTimeout;
-            %tmp.79 = add %tmp.76 %tmp.78;
-            putv self :mMessage %tmp.79;
+            %tmp.78 = "Scanning...\n";
+            %tmp.80 = getv ? :scanTimeout;
+            %tmp.81 = add %tmp.78 %tmp.80;
+            putv self :mMessage %tmp.81;
 [ "C:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\BLEBarrel.mc" 398 3 ]
-            %tmp.80 = getm $.Toybox.WatchUi;
-            %tmp.81 = getv function %tmp.80 :requestUpdate;
-            invoke %tmp.80 %tmp.81();
+            %tmp.82 = getm $.Toybox.WatchUi;
+            %tmp.83 = getv function %tmp.82 :requestUpdate;
+            invoke %tmp.82 %tmp.83();
 [ "C:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\BLEBarrel.mc" 400 3 ]
 C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_400_3_407_3_if_stmt:
-            %tmp.83 = getv ? :scanTimeout;
-            %tmp.84 = 0;
-            %tmp.85 = eq %tmp.83 %tmp.84;
-            bf %tmp.85 @C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_400_3_407_3_if_end;
+            %tmp.85 = getv ? :scanTimeout;
+            %tmp.86 = 0;
+            %tmp.87 = eq %tmp.85 %tmp.86;
+            bf %tmp.87 @C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_400_3_407_3_if_end;
 C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_400_3_407_3_if_true:
 C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_400_25_407_3_start:
 [ "C:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\BLEBarrel.mc" 401 4 ]
-            %tmp.86 = self;
-            %tmp.87 = getv function %tmp.86 :debug;
-            %tmp.88 = "[onSR] Scan timeout, scan OFF";
-            invoke %tmp.86 %tmp.87(%tmp.88);
+            %tmp.88 = self;
+            %tmp.89 = getv function %tmp.88 :debug;
+            %tmp.90 = "[onSR] Scan timeout, scan OFF";
+            invoke %tmp.88 %tmp.89(%tmp.90);
 [ "C:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\BLEBarrel.mc" 402 4 ]
             try @C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_402_4_406_7_beginTry @C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_402_4_406_7_endTry @C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_402_4_406_7_catch @C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_402_4_406_7_finally;
 C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_402_4_406_7_beginTry:
 C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_402_8_404_4_start:
 [ "C:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\BLEBarrel.mc" 403 5 ]
-            %tmp.89 = getm $.Toybox.BluetoothLowEnergy;
-            %tmp.90 = getv function %tmp.89 :setScanState;
             %tmp.91 = getm $.Toybox.BluetoothLowEnergy;
-            %tmp.92 = getv %tmp.91 :SCAN_STATE_OFF;
-            invoke %tmp.89 %tmp.90(%tmp.92);
+            %tmp.92 = getv function %tmp.91 :setScanState;
+            %tmp.93 = getm $.Toybox.BluetoothLowEnergy;
+            %tmp.94 = getv %tmp.93 :SCAN_STATE_OFF;
+            invoke %tmp.91 %tmp.92(%tmp.94);
 C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_402_8_404_4_stop:
 C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_402_4_406_7_endTry:
             jsr @C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_402_4_406_7_finally;
             goto @C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_402_4_406_7_end;
 C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_402_4_406_7_catch:
-            %tmp.93 = exception;
-            push %tmp.93;
+            %tmp.95 = exception;
+            push %tmp.95;
 [ "C:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\BLEBarrel.mc" 404 6 ]
             [ "C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_402_4_406_7_catch" "C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_404_6_406_7_end" ]
-            %ex.6 = local;
-            %tmp.94 = dup %tmp.93;
-            lputv %ex.6 %tmp.94;
+            %ex.4 = local;
+            %tmp.96 = dup %tmp.95;
+            lputv %ex.4 %tmp.96;
 C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_404_17_406_7_start:
 [ "C:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\BLEBarrel.mc" 405 8 ]
-            %tmp.95 = self;
-            %tmp.96 = getv function %tmp.95 :debug;
-            %tmp.97 = "[onConStateChg] OFF exception: ";
-            %tmp.98 = lgetv %ex.6;
-            %tmp.99 = getv function %tmp.98 :getErrorMessage;
-            %tmp.100 = invoke %tmp.98 %tmp.99();
-            %tmp.101 = add %tmp.97 %tmp.100;
-            invoke %tmp.95 %tmp.96(%tmp.101);
+            %tmp.97 = self;
+            %tmp.98 = getv function %tmp.97 :debug;
+            %tmp.99 = "[onConStateChg] OFF exception: ";
+            %tmp.100 = lgetv %ex.4;
+            %tmp.101 = getv function %tmp.100 :getErrorMessage;
+            %tmp.102 = invoke %tmp.100 %tmp.101();
+            %tmp.103 = add %tmp.99 %tmp.102;
+            invoke %tmp.97 %tmp.98(%tmp.103);
 C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_404_17_406_7_stop:
             jsr @C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_402_4_406_7_finally;
             pop;
@@ -3836,7 +3768,7 @@ C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_404_17_406_7_stop:
 C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_404_6_406_7_end:
             try @C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_402_4_406_7_catch @C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_404_6_406_7_end @C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_404_6_406_7_end @C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_402_4_406_7_finally;
             jsr @C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_402_4_406_7_finally;
-            throw %tmp.93;
+            throw %tmp.95;
 C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_402_4_406_7_finally:
             jsrret;
 C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_402_4_406_7_end:
@@ -3846,10 +3778,10 @@ C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_400_3_407_3_if_end:
 C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_342_85_408_2_stop:
 C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_342_2_408_2_for_incr:
 [ "C:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\BLEBarrel.mc" 342 ]
-            %tmp.102 = lgetv %scanResults;
-            %tmp.103 = getv function %tmp.102 :next;
-            %tmp.104 = invoke %tmp.102 %tmp.103();
-            lputv %result.5 %tmp.104;
+            %tmp.104 = lgetv %scanResults;
+            %tmp.105 = getv function %tmp.104 :next;
+            %tmp.106 = invoke %tmp.104 %tmp.105();
+            lputv %result.3 %tmp.106;
             goto @C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_342_2_408_2_for_test;
 C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_342_2_408_2_for_end:
 C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_335_37_409_1_stop:
@@ -4184,28 +4116,21 @@ C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_456_29_554_1_start:
             %tmp.101 = getm $.Toybox.WatchUi;
             %tmp.102 = getv function %tmp.101 :requestUpdate;
             invoke %tmp.101 %tmp.102();
-[ "C:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\BLEBarrel.mc" 488 2 ]
-            %tmp.103 = self;
-            %tmp.104 = getv function %tmp.103 :debug;
-            %tmp.105 = "[sendPosition] Accuracy: ";
-            %tmp.107 = getv ? :GPSaccuracy;
-            %tmp.108 = add %tmp.105 %tmp.107;
-            invoke %tmp.103 %tmp.104(%tmp.108);
 [ "C:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\BLEBarrel.mc" 491 2 ]
 C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_491_2_491_65_if_stmt:
 C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_491_6_491_52_begin:
-            %tmp.110 = getv ? :device;
-            %tmp.111 = null;
-            %tmp.112 = eq %tmp.110 %tmp.111;
-            bt %tmp.112 @C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_491_2_491_65_if_true;
+            %tmp.104 = getv ? :device;
+            %tmp.105 = null;
+            %tmp.106 = eq %tmp.104 %tmp.105;
+            bt %tmp.106 @C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_491_2_491_65_if_true;
 C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_491_26_491_52_false:
-            %tmp.114 = getv ? :recState;
-            %tmp.116 = getv ? :stateStartRec;
-            %tmp.117 = ne %tmp.114 %tmp.116;
-            push %tmp.117;
+            %tmp.108 = getv ? :recState;
+            %tmp.110 = getv ? :stateStartRec;
+            %tmp.111 = ne %tmp.108 %tmp.110;
+            push %tmp.111;
 C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_491_26_491_52_end:
-            %tmp.118 = phi [%tmp.112 @C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_491_6_491_52_begin] [%tmp.117 @C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_491_26_491_52_false] [%tmp.118 @C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_491_26_491_52_end];
-            bf %tmp.118 @C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_491_2_491_65_if_end;
+            %tmp.112 = phi [%tmp.106 @C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_491_6_491_52_begin] [%tmp.111 @C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_491_26_491_52_false] [%tmp.112 @C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_491_26_491_52_end];
+            bf %tmp.112 @C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_491_2_491_65_if_end;
 C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_491_2_491_65_if_true:
 C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_491_55_491_65_start:
 [ "C:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\BLEBarrel.mc" 491 57 ]
@@ -4215,29 +4140,29 @@ C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_491_55_491_65_stop:
 C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_491_2_491_65_if_end:
 [ "C:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\BLEBarrel.mc" 493 2 ]
 C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_493_2_498_19_if_stmt:
-            %tmp.119 = lgetv %info;
-            %tmp.120 = getv %tmp.119 :position;
-            %tmp.121 = null;
-            %tmp.122 = ne %tmp.120 %tmp.121;
-            bf %tmp.122 @C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_493_2_498_19_if_false;
+            %tmp.113 = lgetv %info;
+            %tmp.114 = getv %tmp.113 :position;
+            %tmp.115 = null;
+            %tmp.116 = ne %tmp.114 %tmp.115;
+            bf %tmp.116 @C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_493_2_498_19_if_false;
 C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_493_2_498_19_if_true:
 C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_493_29_498_2_start:
 [ "C:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\BLEBarrel.mc" 494 3 ]
-            %tmp.123 = lgetv %info;
-            %tmp.124 = getv %tmp.123 :position;
-            %tmp.125 = getv function %tmp.124 :toDegrees;
-            %tmp.126 = invoke %tmp.124 %tmp.125();
-            lputv %location.4 %tmp.126;
+            %tmp.117 = lgetv %info;
+            %tmp.118 = getv %tmp.117 :position;
+            %tmp.119 = getv function %tmp.118 :toDegrees;
+            %tmp.120 = invoke %tmp.118 %tmp.119();
+            lputv %location.4 %tmp.120;
 [ "C:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\BLEBarrel.mc" 495 3 ]
-            %tmp.128 = lgetv %location.4;
-            %tmp.129 = 0;
-            %tmp.130 = agetv %tmp.128 %tmp.129;
-            lputv %latitude.5 %tmp.130;
+            %tmp.122 = lgetv %location.4;
+            %tmp.123 = 0;
+            %tmp.124 = agetv %tmp.122 %tmp.123;
+            lputv %latitude.5 %tmp.124;
 [ "C:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\BLEBarrel.mc" 496 3 ]
-            %tmp.132 = lgetv %location.4;
-            %tmp.133 = 1;
-            %tmp.134 = agetv %tmp.132 %tmp.133;
-            lputv %longitude.6 %tmp.134;
+            %tmp.126 = lgetv %location.4;
+            %tmp.127 = 1;
+            %tmp.128 = agetv %tmp.126 %tmp.127;
+            lputv %longitude.6 %tmp.128;
 C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_493_29_498_2_stop:
             goto @C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_493_2_498_19_if_end;
 C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_493_2_498_19_if_false:
@@ -4248,35 +4173,35 @@ C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_498_9_498_19_stop:
 C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_493_2_498_19_if_end:
 [ "C:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\BLEBarrel.mc" 500 2 ]
 C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_500_2_505_19_if_stmt:
-            %tmp.135 = lgetv %info;
-            %tmp.136 = getv %tmp.135 :heading;
-            %tmp.137 = null;
-            %tmp.138 = ne %tmp.136 %tmp.137;
-            bf %tmp.138 @C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_500_2_505_19_if_false;
+            %tmp.129 = lgetv %info;
+            %tmp.130 = getv %tmp.129 :heading;
+            %tmp.131 = null;
+            %tmp.132 = ne %tmp.130 %tmp.131;
+            bf %tmp.132 @C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_500_2_505_19_if_false;
 C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_500_2_505_19_if_true:
 C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_500_28_505_2_start:
 [ "C:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\BLEBarrel.mc" 501 3 ]
-            %tmp.139 = lgetv %info;
-            %tmp.140 = getv %tmp.139 :heading;
-            %tmp.141 = 180;
-            %tmp.142 = mul %tmp.140 %tmp.141;
-            %tmp.144 = getv ? :Math;
-            %tmp.145 = getv %tmp.144 :PI;
-            %tmp.146 = div %tmp.142 %tmp.145;
-            lputv %heading.8 %tmp.146;
+            %tmp.133 = lgetv %info;
+            %tmp.134 = getv %tmp.133 :heading;
+            %tmp.135 = 180;
+            %tmp.136 = mul %tmp.134 %tmp.135;
+            %tmp.138 = getv ? :Math;
+            %tmp.139 = getv %tmp.138 :PI;
+            %tmp.140 = div %tmp.136 %tmp.139;
+            lputv %heading.8 %tmp.140;
 [ "C:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\BLEBarrel.mc" 502 3 ]
 C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_502_3_504_3_if_stmt:
-            %tmp.148 = lgetv %heading.8;
-            %tmp.149 = 0;
-            %tmp.150 = lt %tmp.148 %tmp.149;
-            bf %tmp.150 @C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_502_3_504_3_if_end;
+            %tmp.142 = lgetv %heading.8;
+            %tmp.143 = 0;
+            %tmp.144 = lt %tmp.142 %tmp.143;
+            bf %tmp.144 @C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_502_3_504_3_if_end;
 C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_502_3_504_3_if_true:
 C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_502_20_504_3_start:
 [ "C:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\BLEBarrel.mc" 503 4 ]
-            %tmp.151 = 360;
-            %tmp.153 = lgetv %heading.8;
-            %tmp.154 = add %tmp.151 %tmp.153;
-            lputv %heading.8 %tmp.154;
+            %tmp.145 = 360;
+            %tmp.147 = lgetv %heading.8;
+            %tmp.148 = add %tmp.145 %tmp.147;
+            lputv %heading.8 %tmp.148;
 C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_502_20_504_3_stop:
             goto @C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_502_3_504_3_if_end;
 C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_502_3_504_3_if_end:
@@ -4290,162 +4215,162 @@ C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_505_9_505_19_stop:
 C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_500_2_505_19_if_end:
 [ "C:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\BLEBarrel.mc" 507 2 ]
 C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_507_2_509_2_if_stmt:
-            %tmp.156 = lgetv %speed.7;
-            %tmp.157 = null;
-            %tmp.158 = eq %tmp.156 %tmp.157;
-            bf %tmp.158 @C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_507_2_509_2_if_end;
+            %tmp.150 = lgetv %speed.7;
+            %tmp.151 = null;
+            %tmp.152 = eq %tmp.150 %tmp.151;
+            bf %tmp.152 @C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_507_2_509_2_if_end;
 C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_507_2_509_2_if_true:
 C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_507_21_509_2_start:
 [ "C:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\BLEBarrel.mc" 508 3 ]
-            %tmp.159 = 0;
-            lputv %speed.7 %tmp.159;
+            %tmp.153 = 0;
+            lputv %speed.7 %tmp.153;
 C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_507_21_509_2_stop:
             goto @C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_507_2_509_2_if_end;
 C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_507_2_509_2_if_end:
 [ "C:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\BLEBarrel.mc" 514 2 ]
 C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_514_2_553_2_if_stmt:
-            %tmp.161 = getv ? :videoMode;
-            bf %tmp.161 @C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_514_2_553_2_if_end;
+            %tmp.155 = getv ? :videoMode;
+            bf %tmp.155 @C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_514_2_553_2_if_end;
 C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_514_2_553_2_if_true:
 C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_514_17_553_2_start:
 [ "C:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\BLEBarrel.mc" 516 3 ]
-            %tmp.162 = lgetv %temp32.10;
-            %tmp.163 = getv function %tmp.162 :encodeNumber;
-            %tmp.164 = lgetv %uxEpoch.2;
-            %tmp.165 = getv function %tmp.164 :value;
-            %tmp.166 = invoke %tmp.164 %tmp.165();
-            %tmp.168 = getv ? :Lang;
-            %tmp.169 = getv %tmp.168 :NUMBER_FORMAT_UINT32;
-            %tmp.170 = null;
-            invoke %tmp.162 %tmp.163(%tmp.166, %tmp.169, %tmp.170);
+            %tmp.156 = lgetv %temp32.10;
+            %tmp.157 = getv function %tmp.156 :encodeNumber;
+            %tmp.158 = lgetv %uxEpoch.2;
+            %tmp.159 = getv function %tmp.158 :value;
+            %tmp.160 = invoke %tmp.158 %tmp.159();
+            %tmp.162 = getv ? :Lang;
+            %tmp.163 = getv %tmp.162 :NUMBER_FORMAT_UINT32;
+            %tmp.164 = null;
+            invoke %tmp.156 %tmp.157(%tmp.160, %tmp.163, %tmp.164);
 [ "C:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\BLEBarrel.mc" 517 3 ]
-            %tmp.171 = lgetv %header.1;
-            %tmp.172 = getv function %tmp.171 :addAll;
-            %tmp.174 = lgetv %temp32.10;
-            invoke %tmp.171 %tmp.172(%tmp.174);
+            %tmp.165 = lgetv %header.1;
+            %tmp.166 = getv function %tmp.165 :addAll;
+            %tmp.168 = lgetv %temp32.10;
+            invoke %tmp.165 %tmp.166(%tmp.168);
 [ "C:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\BLEBarrel.mc" 518 3 ]
-            %tmp.175 = lgetv %header.1;
-            %tmp.176 = getv function %tmp.175 :addAll;
-            %tmp.178 = lgetv %filler.3;
-            invoke %tmp.175 %tmp.176(%tmp.178);
+            %tmp.169 = lgetv %header.1;
+            %tmp.170 = getv function %tmp.169 :addAll;
+            %tmp.172 = lgetv %filler.3;
+            invoke %tmp.169 %tmp.170(%tmp.172);
 [ "C:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\BLEBarrel.mc" 520 3 ]
 C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_520_3_524_3_if_stmt:
-            %tmp.180 = lgetv %latitude.5;
-            %tmp.181 = 0;
-            %tmp.182 = gte %tmp.180 %tmp.181;
-            bf %tmp.182 @C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_520_3_524_3_if_false;
+            %tmp.174 = lgetv %latitude.5;
+            %tmp.175 = 0;
+            %tmp.176 = gte %tmp.174 %tmp.175;
+            bf %tmp.176 @C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_520_3_524_3_if_false;
 C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_520_3_524_3_if_true:
 C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_520_22_522_3_start:
 [ "C:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\BLEBarrel.mc" 521 4 ]
-            %tmp.183 = 0x4e;
-            lputv %sector.12 %tmp.183;
+            %tmp.177 = 0x4e;
+            lputv %sector.12 %tmp.177;
 C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_520_22_522_3_stop:
             goto @C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_520_3_524_3_if_end;
 C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_520_3_524_3_if_false:
 C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_522_10_524_3_start:
 [ "C:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\BLEBarrel.mc" 523 4 ]
-            %tmp.184 = 0x53;
-            lputv %sector.12 %tmp.184;
+            %tmp.178 = 0x53;
+            lputv %sector.12 %tmp.178;
 C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_522_10_524_3_stop:
 C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_520_3_524_3_if_end:
 [ "C:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\BLEBarrel.mc" 526 3 ]
-            %tmp.185 = self;
-            %tmp.186 = getv function %tmp.185 :toDouble;
-            %tmp.187 = lgetv %latitude.5;
-            %tmp.188 = getv function %tmp.187 :abs;
-            %tmp.189 = invoke %tmp.187 %tmp.188();
-            %tmp.190 = invoke %tmp.185 %tmp.186(%tmp.189);
-            lputv %temp64.11 %tmp.190;
+            %tmp.179 = self;
+            %tmp.180 = getv function %tmp.179 :toDouble;
+            %tmp.181 = lgetv %latitude.5;
+            %tmp.182 = getv function %tmp.181 :abs;
+            %tmp.183 = invoke %tmp.181 %tmp.182();
+            %tmp.184 = invoke %tmp.179 %tmp.180(%tmp.183);
+            lputv %temp64.11 %tmp.184;
 [ "C:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\BLEBarrel.mc" 527 3 ]
-            %tmp.191 = lgetv %header.1;
-            %tmp.192 = getv function %tmp.191 :addAll;
-            %tmp.194 = lgetv %temp64.11;
-            invoke %tmp.191 %tmp.192(%tmp.194);
+            %tmp.185 = lgetv %header.1;
+            %tmp.186 = getv function %tmp.185 :addAll;
+            %tmp.188 = lgetv %temp64.11;
+            invoke %tmp.185 %tmp.186(%tmp.188);
 [ "C:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\BLEBarrel.mc" 528 3 ]
-            %tmp.195 = lgetv %header.1;
-            %tmp.196 = getv function %tmp.195 :add;
-            %tmp.198 = lgetv %sector.12;
-            invoke %tmp.195 %tmp.196(%tmp.198);
+            %tmp.189 = lgetv %header.1;
+            %tmp.190 = getv function %tmp.189 :add;
+            %tmp.192 = lgetv %sector.12;
+            invoke %tmp.189 %tmp.190(%tmp.192);
 [ "C:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\BLEBarrel.mc" 530 3 ]
 C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_530_3_534_3_if_stmt:
-            %tmp.200 = lgetv %longitude.6;
-            %tmp.201 = 0;
-            %tmp.202 = gte %tmp.200 %tmp.201;
-            bf %tmp.202 @C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_530_3_534_3_if_false;
+            %tmp.194 = lgetv %longitude.6;
+            %tmp.195 = 0;
+            %tmp.196 = gte %tmp.194 %tmp.195;
+            bf %tmp.196 @C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_530_3_534_3_if_false;
 C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_530_3_534_3_if_true:
 C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_530_23_532_3_start:
 [ "C:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\BLEBarrel.mc" 531 4 ]
-            %tmp.203 = 0x45;
-            lputv %sector.12 %tmp.203;
+            %tmp.197 = 0x45;
+            lputv %sector.12 %tmp.197;
 C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_530_23_532_3_stop:
             goto @C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_530_3_534_3_if_end;
 C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_530_3_534_3_if_false:
 C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_532_10_534_3_start:
 [ "C:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\BLEBarrel.mc" 533 4 ]
-            %tmp.204 = 0x57;
-            lputv %sector.12 %tmp.204;
+            %tmp.198 = 0x57;
+            lputv %sector.12 %tmp.198;
 C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_532_10_534_3_stop:
 C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_530_3_534_3_if_end:
 [ "C:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\BLEBarrel.mc" 536 3 ]
-            %tmp.205 = self;
-            %tmp.206 = getv function %tmp.205 :toDouble;
-            %tmp.207 = lgetv %longitude.6;
-            %tmp.208 = getv function %tmp.207 :abs;
-            %tmp.209 = invoke %tmp.207 %tmp.208();
-            %tmp.210 = invoke %tmp.205 %tmp.206(%tmp.209);
-            lputv %temp64.11 %tmp.210;
+            %tmp.199 = self;
+            %tmp.200 = getv function %tmp.199 :toDouble;
+            %tmp.201 = lgetv %longitude.6;
+            %tmp.202 = getv function %tmp.201 :abs;
+            %tmp.203 = invoke %tmp.201 %tmp.202();
+            %tmp.204 = invoke %tmp.199 %tmp.200(%tmp.203);
+            lputv %temp64.11 %tmp.204;
 [ "C:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\BLEBarrel.mc" 537 3 ]
-            %tmp.211 = lgetv %header.1;
-            %tmp.212 = getv function %tmp.211 :addAll;
-            %tmp.214 = lgetv %temp64.11;
-            invoke %tmp.211 %tmp.212(%tmp.214);
+            %tmp.205 = lgetv %header.1;
+            %tmp.206 = getv function %tmp.205 :addAll;
+            %tmp.208 = lgetv %temp64.11;
+            invoke %tmp.205 %tmp.206(%tmp.208);
 [ "C:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\BLEBarrel.mc" 538 3 ]
-            %tmp.215 = lgetv %header.1;
-            %tmp.216 = getv function %tmp.215 :add;
-            %tmp.218 = lgetv %sector.12;
-            invoke %tmp.215 %tmp.216(%tmp.218);
+            %tmp.209 = lgetv %header.1;
+            %tmp.210 = getv function %tmp.209 :add;
+            %tmp.212 = lgetv %sector.12;
+            invoke %tmp.209 %tmp.210(%tmp.212);
 [ "C:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\BLEBarrel.mc" 540 3 ]
-            %tmp.219 = self;
-            %tmp.220 = getv function %tmp.219 :toDouble;
-            %tmp.221 = lgetv %speed.7;
-            %tmp.222 = getv function %tmp.221 :abs;
-            %tmp.223 = invoke %tmp.221 %tmp.222();
-            %tmp.224 = invoke %tmp.219 %tmp.220(%tmp.223);
-            lputv %temp64.11 %tmp.224;
+            %tmp.213 = self;
+            %tmp.214 = getv function %tmp.213 :toDouble;
+            %tmp.215 = lgetv %speed.7;
+            %tmp.216 = getv function %tmp.215 :abs;
+            %tmp.217 = invoke %tmp.215 %tmp.216();
+            %tmp.218 = invoke %tmp.213 %tmp.214(%tmp.217);
+            lputv %temp64.11 %tmp.218;
 [ "C:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\BLEBarrel.mc" 541 3 ]
-            %tmp.225 = lgetv %header.1;
-            %tmp.226 = getv function %tmp.225 :addAll;
-            %tmp.228 = lgetv %temp64.11;
-            invoke %tmp.225 %tmp.226(%tmp.228);
+            %tmp.219 = lgetv %header.1;
+            %tmp.220 = getv function %tmp.219 :addAll;
+            %tmp.222 = lgetv %temp64.11;
+            invoke %tmp.219 %tmp.220(%tmp.222);
 [ "C:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\BLEBarrel.mc" 544 3 ]
-            %tmp.229 = self;
-            %tmp.230 = getv function %tmp.229 :toDouble;
-            %tmp.232 = lgetv %heading.8;
-            %tmp.233 = invoke %tmp.229 %tmp.230(%tmp.232);
-            lputv %temp64.11 %tmp.233;
+            %tmp.223 = self;
+            %tmp.224 = getv function %tmp.223 :toDouble;
+            %tmp.226 = lgetv %heading.8;
+            %tmp.227 = invoke %tmp.223 %tmp.224(%tmp.226);
+            lputv %temp64.11 %tmp.227;
 [ "C:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\BLEBarrel.mc" 545 3 ]
-            %tmp.234 = lgetv %header.1;
-            %tmp.235 = getv function %tmp.234 :addAll;
-            %tmp.237 = lgetv %temp64.11;
-            invoke %tmp.234 %tmp.235(%tmp.237);
+            %tmp.228 = lgetv %header.1;
+            %tmp.229 = getv function %tmp.228 :addAll;
+            %tmp.231 = lgetv %temp64.11;
+            invoke %tmp.228 %tmp.229(%tmp.231);
 [ "C:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\BLEBarrel.mc" 548 3 ]
-            %tmp.238 = self;
-            %tmp.239 = getv function %tmp.238 :toDouble;
-            %tmp.240 = lgetv %altitude.9;
-            %tmp.241 = getv function %tmp.240 :abs;
-            %tmp.242 = invoke %tmp.240 %tmp.241();
-            %tmp.243 = invoke %tmp.238 %tmp.239(%tmp.242);
-            lputv %temp64.11 %tmp.243;
+            %tmp.232 = self;
+            %tmp.233 = getv function %tmp.232 :toDouble;
+            %tmp.234 = lgetv %altitude.9;
+            %tmp.235 = getv function %tmp.234 :abs;
+            %tmp.236 = invoke %tmp.234 %tmp.235();
+            %tmp.237 = invoke %tmp.232 %tmp.233(%tmp.236);
+            lputv %temp64.11 %tmp.237;
 [ "C:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\BLEBarrel.mc" 549 3 ]
-            %tmp.244 = lgetv %header.1;
-            %tmp.245 = getv function %tmp.244 :addAll;
-            %tmp.247 = lgetv %temp64.11;
-            invoke %tmp.244 %tmp.245(%tmp.247);
+            %tmp.238 = lgetv %header.1;
+            %tmp.239 = getv function %tmp.238 :addAll;
+            %tmp.241 = lgetv %temp64.11;
+            invoke %tmp.238 %tmp.239(%tmp.241);
 [ "C:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\BLEBarrel.mc" 552 3 ]
-            %tmp.248 = self;
-            %tmp.249 = getv function %tmp.248 :sendCMD;
-            %tmp.251 = lgetv %header.1;
-            invoke %tmp.248 %tmp.249(%tmp.251);
+            %tmp.242 = self;
+            %tmp.243 = getv function %tmp.242 :sendCMD;
+            %tmp.245 = lgetv %header.1;
+            invoke %tmp.242 %tmp.243(%tmp.245);
 C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_514_17_553_2_stop:
             goto @C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_514_2_553_2_if_end;
 C_Users_greg_git_Insta360_Remote_CIQ_BLE_Barrel_BLEBarrel_mc_514_2_553_2_if_end:

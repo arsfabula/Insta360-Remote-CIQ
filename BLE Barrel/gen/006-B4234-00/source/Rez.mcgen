@@ -104,8 +104,8 @@ module BLEBarrel {
             } // system_icon_destructive__hint_button_left_top
 
             module system_size__launch_icon {
-                const scaleX as Number = 60;
-                const scaleY as Number = 60;
+                const scaleX as Number = 70;
+                const scaleY as Number = 70;
                 const scaleRelativeTo as String = "screen";
             } // system_size__launch_icon
 

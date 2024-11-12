@@ -1,0 +1,20 @@
+import Toybox.Lang;
+using Toybox.WatchUi;
+using Toybox.WatchUi as Ui;
+using Toybox.Graphics;
+using Toybox.Graphics as Gfx;
+
+module Rez {
+    module Drawables {
+        (:initialized) var LauncherIcon as ResourceId;
+    } // Drawables
+
+    module Strings {
+        (:initialized) var AppName as ResourceId;
+    } // Strings
+} // Rez
+
+module BLEBarrel {
+    module Rez {
+    } // Rez
+} // BLEBarrel

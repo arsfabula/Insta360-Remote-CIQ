@@ -8,10 +8,16 @@ class InputDelegate extends Ui.BehaviorDelegate {
 	var photoHeader = new [0]b;
 	var photoFiller = new [0]b;
 	var nbMode = 0;
-	var maxNbMode = 14;
+	var maxNbMode = 0;
 
-    function initialize() {
+	function initialize() {
         BehaviorDelegate.initialize();
+		// BLEBarrel.menuLevel = 2;
+		if (BLEBarrel.menuLevel == 0) {
+			maxNbMode = 0;
+		} else {
+			maxNbMode = BLEBarrel.menuLevel + 13;
+		}
 //        bleDevice = device;
     }
 
@@ -28,31 +34,36 @@ class InputDelegate extends Ui.BehaviorDelegate {
     	BLEBarrel.videoMode = true;
 		
         switch(nb) {
-            case 0 : 
+			case 0:
+				BLEBarrel.currentLabel = "Default Video";
+				BLEBarrel.currentMode = "DefaultV";
+				break;
+			
+            case 1 : 
             	BLEBarrel.currentLabel = "5.7k / 30";
             	BLEBarrel.currentMode = BLEBarrel.cmdSet5k30;
             	break;  
-            case 1 :
+            case 2 :
             	BLEBarrel.currentLabel = "5.7k / 25";
             	BLEBarrel.currentMode = BLEBarrel.cmdSet5k25;
             	break;
-            case 2 :
+            case 3 :
             	BLEBarrel.currentLabel = "5.7k / 24";
             	BLEBarrel.currentMode = BLEBarrel.cmdSet5k24;
             	break;
-            case 3 :
+            case 4 :
             	BLEBarrel.currentLabel = "4k / 30";
             	BLEBarrel.currentMode = BLEBarrel.cmdSet4k30;
             	break;
-            case 4 :
+            case 5 :
             	BLEBarrel.currentLabel = "4k / 50";
             	BLEBarrel.currentMode = BLEBarrel.cmdSet4k50;
             	break;
-            case 5 : 
+            case 6 : 
             	BLEBarrel.currentLabel = "3k / 100";
             	BLEBarrel.currentMode = BLEBarrel.cmdSet3k100;
             	break;
-            case 6 :
+            case 7 :
             	BLEBarrel.currentLabel = "Video HDR";
 				// for HDR the start & stop commands are slightly differant
             	BLEBarrel.cmdStartRec[17] = 0x03;
@@ -61,7 +72,7 @@ class InputDelegate extends Ui.BehaviorDelegate {
             	BLEBarrel.cmdStopRec[7] = 0x05;
             	BLEBarrel.currentMode = BLEBarrel.cmdSetHDR;
             	break;
-            case 7 :
+            case 8 :
             	BLEBarrel.currentLabel = "TimeLapse";
             	// for Timelapse the start & stop commands are slightly differant
             	BLEBarrel.cmdStartRec[7] = 0x16;
@@ -69,14 +80,14 @@ class InputDelegate extends Ui.BehaviorDelegate {
             	BLEBarrel.cmdStopRec[7] = 0x17;
             	BLEBarrel.currentMode = BLEBarrel.cmdSetTL;
             	break;
-            case 8 :
+            case 9 :
             	BLEBarrel.currentLabel = "BulletTime";
 				// for Bullet time the start & stop commands are slightly differant
             	BLEBarrel.cmdStartRec[17] = 0x02;
             	BLEBarrel.cmdStopRec[17] = 0x02;
             	BLEBarrel.currentMode = BLEBarrel.cmdSetBullet;
             	break;
-            case 9 :
+            case 10 :
             	BLEBarrel.currentLabel = "Photo";
             	// fill GPS position before sending command.
 //            	header = [0x3f, 0x00, 0x00, 0x00, 0x04, 0x00, 0x00, 0x03, 0x00, 0x02, 0xe3, 0x00, 0x00, 0x80, 0x00, 0x00, 0x12, 0x2d, 0x5a, 0x18]b;
@@ -93,17 +104,17 @@ class InputDelegate extends Ui.BehaviorDelegate {
 				BLEBarrel.currentMode = BLEBarrel.cmdSetPhoto;
             	BLEBarrel.videoMode = false;
             	break;
-            case 10 :
+            case 11 :
             	BLEBarrel.currentLabel = "Photo HDR";
             	BLEBarrel.currentMode = BLEBarrel.cmdSetPhotoHDR;
             	BLEBarrel.videoMode = false;
             	break;
-            case 11 :
+            case 12 :
             	BLEBarrel.currentLabel = "Photo Burst";
             	BLEBarrel.currentMode = BLEBarrel.cmdSetPhotoBurst;
             	BLEBarrel.videoMode = false;
             	break;
-            case 12 :
+            case 13 :
             	BLEBarrel.currentLabel = "Photo Interval";
             	// Intervall Photo is almost treated as a Timelapse video. 
             	BLEBarrel.currentMode = BLEBarrel.cmdSetInterval;
@@ -113,16 +124,16 @@ class InputDelegate extends Ui.BehaviorDelegate {
             	BLEBarrel.cmdStopRec[16] = 0x08;
             	BLEBarrel.cmdStopRec[7] = 0x17;
 				break;
-			case 13 :
+			case 14 :
 				BLEBarrel.currentLabel = "Night Shot";
             	BLEBarrel.currentMode = BLEBarrel.cmdSetNightShot;
             	BLEBarrel.videoMode = false;
             	break;
-			case 14:
-				BLEBarrel.currentLabel = "Standby";
-				BLEBarrel.currentMode = "Standby";
-				break;
-			
+			 case 15 : 
+            	BLEBarrel.currentLabel = "8k / 30";
+            	BLEBarrel.currentMode = BLEBarrel.cmdSet8k30;
+            	break;  
+          
          }   
 //       	BLEBarrel.currentLabel = item.getLabel();
 //        Sys.println("Menu Item:" + BLEBarrel.currentLabel + " cmd : " + BLEBarrel.currentMode);
@@ -157,7 +168,7 @@ class InputDelegate extends Ui.BehaviorDelegate {
             mMessage = "Starting...";
             WatchUi.requestUpdate();
             if (BLEBarrel.videoMode) {
-				if (!BLEBarrel.currentLabel.equals("Standby")) {
+				if (!BLEBarrel.currentLabel.equals("Default Video")) {
             		bleDevice.sendCMD(BLEBarrel.currentMode);
             		bleDevice.sendCMD(BLEBarrel.cmdApply);
 				}

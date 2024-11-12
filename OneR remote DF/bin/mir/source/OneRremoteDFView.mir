@@ -8,123 +8,125 @@ using Toybox.Position;
 using Toybox.System;
 [ @file = "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote DF\source\OneRremoteDFView.mc"; @line = 5; ]
 using Toybox.Time;
-[ @file = "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote DF\source\OneRremoteDFView.mc"; @line = 7; @position = 4; ]
-var mMessage = "Starting DF";
+[ @file = "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote DF\source\OneRremoteDFView.mc"; @line = 7; @position = 6; ]
+const vNum = "0.9.27";
 [ @file = "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote DF\source\OneRremoteDFView.mc"; @line = 8; @position = 4; ]
-var width = 0;
+var mMessage = "Starting DF";
 [ @file = "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote DF\source\OneRremoteDFView.mc"; @line = 9; @position = 4; ]
-var height = 0;
+var width = 0;
 [ @file = "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote DF\source\OneRremoteDFView.mc"; @line = 10; @position = 4; ]
+var height = 0;
+[ @file = "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote DF\source\OneRremoteDFView.mc"; @line = 11; @position = 4; ]
 var selectedFont;
-[ @file = "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote DF\source\OneRremoteDFView.mc"; @line = 12; ]
+[ @file = "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote DF\source\OneRremoteDFView.mc"; @line = 14; ]
 class OneRremoteDFView extends WatchUi.DataField{
-    [ @file = "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote DF\source\OneRremoteDFView.mc"; @line = 12; ]
+    [ @file = "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote DF\source\OneRremoteDFView.mc"; @line = 14; ]
     <init> {
     }
-    [ @file = "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote DF\source\OneRremoteDFView.mc"; @line = 12; ]
+    [ @file = "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote DF\source\OneRremoteDFView.mc"; @line = 14; ]
     static
     <init> {
     }
-    [ @file = "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote DF\source\OneRremoteDFView.mc"; @line = 15; ]
+    [ @file = "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote DF\source\OneRremoteDFView.mc"; @line = 17; ]
     function initialize() as Void {
-C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteDFView_mc_15_26_17_4_start:
-[ "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote DF\source\OneRremoteDFView.mc" 16 8 ]
+C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteDFView_mc_17_26_19_4_start:
+[ "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote DF\source\OneRremoteDFView.mc" 18 8 ]
         %tmp.2 = getv ? :DataField;
         %tmp.3 = getv function %tmp.2 :initialize;
         invoke %tmp.2 %tmp.3();
-C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteDFView_mc_15_26_17_4_stop:
+C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteDFView_mc_17_26_19_4_stop:
     }
-    [ @file = "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote DF\source\OneRremoteDFView.mc"; @line = 23; ]
+    [ @file = "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote DF\source\OneRremoteDFView.mc"; @line = 25; ]
     function compute(info) {
-C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteDFView_mc_23_27_39_4_start:
-[ "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote DF\source\OneRremoteDFView.mc" 25 8 ]
-        [ "C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteDFView_mc_23_27_39_4_start" "C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteDFView_mc_23_27_39_4_stop" ]
+C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteDFView_mc_25_27_41_4_start:
+[ "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote DF\source\OneRremoteDFView.mc" 27 8 ]
+        [ "C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteDFView_mc_25_27_41_4_start" "C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteDFView_mc_25_27_41_4_stop" ]
         %GPSinfo.1 = local;
         %tmp.3 = getm $.Toybox.Position;
         %tmp.4 = getv function ? %tmp.3 :Info;
         %tmp.1 = newc %tmp.4 ();
         lputv %GPSinfo.1 %tmp.1;
-[ "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote DF\source\OneRremoteDFView.mc" 27 2 ]
-C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteDFView_mc_27_2_29_2_if_stmt:
+[ "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote DF\source\OneRremoteDFView.mc" 29 2 ]
+C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteDFView_mc_29_2_31_2_if_stmt:
         %tmp.5 = lgetv %info;
         %tmp.6 = getv %tmp.5 :currentLocationAccuracy;
         %tmp.7 = 0;
         %tmp.8 = eq %tmp.6 %tmp.7;
-        bf %tmp.8 @C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteDFView_mc_27_2_29_2_if_end;
-C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteDFView_mc_27_2_29_2_if_true:
-C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteDFView_mc_27_41_29_2_start:
-[ "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote DF\source\OneRremoteDFView.mc" 28 3 ]
-        ret ?;
-C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteDFView_mc_27_41_29_2_stop:
-        goto @C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteDFView_mc_27_2_29_2_if_end;
-C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteDFView_mc_27_2_29_2_if_end:
+        bf %tmp.8 @C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteDFView_mc_29_2_31_2_if_end;
+C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteDFView_mc_29_2_31_2_if_true:
+C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteDFView_mc_29_41_31_2_start:
 [ "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote DF\source\OneRremoteDFView.mc" 30 3 ]
+        ret ?;
+C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteDFView_mc_29_41_31_2_stop:
+        goto @C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteDFView_mc_29_2_31_2_if_end;
+C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteDFView_mc_29_2_31_2_if_end:
+[ "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote DF\source\OneRremoteDFView.mc" 32 3 ]
         %tmp.9 = lgetv %GPSinfo.1;
         %tmp.10 = lgetv %info;
         %tmp.11 = getv %tmp.10 :altitude;
         putv %tmp.9 :altitude %tmp.11;
-[ "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote DF\source\OneRremoteDFView.mc" 31 8 ]
+[ "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote DF\source\OneRremoteDFView.mc" 33 8 ]
         %tmp.12 = lgetv %GPSinfo.1;
         %tmp.13 = lgetv %info;
         %tmp.14 = getv %tmp.13 :currentHeading;
         putv %tmp.12 :heading %tmp.14;
-[ "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote DF\source\OneRremoteDFView.mc" 32 2 ]
+[ "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote DF\source\OneRremoteDFView.mc" 34 2 ]
         %tmp.15 = lgetv %GPSinfo.1;
         %tmp.16 = lgetv %info;
         %tmp.17 = getv %tmp.16 :currentLocation;
         putv %tmp.15 :position %tmp.17;
-[ "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote DF\source\OneRremoteDFView.mc" 33 2 ]
+[ "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote DF\source\OneRremoteDFView.mc" 35 2 ]
         %tmp.18 = lgetv %GPSinfo.1;
         %tmp.19 = lgetv %info;
         %tmp.20 = getv %tmp.19 :currentSpeed;
         putv %tmp.18 :speed %tmp.20;
-[ "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote DF\source\OneRremoteDFView.mc" 34 2 ]
+[ "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote DF\source\OneRremoteDFView.mc" 36 2 ]
         %tmp.21 = lgetv %GPSinfo.1;
         %tmp.22 = getm $.Toybox.Time;
         %tmp.23 = getv function %tmp.22 :now;
         %tmp.24 = invoke %tmp.22 %tmp.23();
         putv %tmp.21 :when %tmp.24;
-[ "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote DF\source\OneRremoteDFView.mc" 37 8 ]
+[ "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote DF\source\OneRremoteDFView.mc" 39 8 ]
         %tmp.26 = getv ? :bleDevice;
         %tmp.27 = getv function %tmp.26 :sendPosition;
         %tmp.29 = lgetv %GPSinfo.1;
         invoke %tmp.26 %tmp.27(%tmp.29);
-C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteDFView_mc_23_27_39_4_stop:
+C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteDFView_mc_25_27_41_4_stop:
     }
-    [ @file = "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote DF\source\OneRremoteDFView.mc"; @line = 40; ]
+    [ @file = "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote DF\source\OneRremoteDFView.mc"; @line = 42; ]
     function onLayout(dc) {
-C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteDFView_mc_40_26_56_4_start:
-[ "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote DF\source\OneRremoteDFView.mc" 41 5 ]
+C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteDFView_mc_42_26_58_4_start:
+[ "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote DF\source\OneRremoteDFView.mc" 43 5 ]
         %tmp.1 = lgetv %dc;
         %tmp.2 = getv function %tmp.1 :getWidth;
         %tmp.3 = invoke %tmp.1 %tmp.2();
         putv self :width %tmp.3;
-[ "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote DF\source\OneRremoteDFView.mc" 42 5 ]
+[ "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote DF\source\OneRremoteDFView.mc" 44 5 ]
         %tmp.4 = lgetv %dc;
         %tmp.5 = getv function %tmp.4 :getHeight;
         %tmp.6 = invoke %tmp.4 %tmp.5();
         putv self :height %tmp.6;
-[ "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote DF\source\OneRremoteDFView.mc" 45 5 ]
+[ "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote DF\source\OneRremoteDFView.mc" 47 5 ]
         %tmp.7 = getm $.Toybox.Graphics;
         %tmp.8 = getv %tmp.7 :FONT_LARGE;
         putv self :selectedFont %tmp.8;
-[ "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote DF\source\OneRremoteDFView.mc" 46 5 ]
-        for @C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteDFView_mc_46_5_50_2_for_test @C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteDFView_mc_46_5_50_2_for_incr @C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteDFView_mc_46_5_50_2_for_end;
-C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteDFView_mc_46_5_50_2_for_init:
-        [ "C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteDFView_mc_46_5_50_2_for_begin" "C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteDFView_mc_46_5_50_2_for_end" ]
+[ "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote DF\source\OneRremoteDFView.mc" 48 5 ]
+        for @C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteDFView_mc_48_5_52_2_for_test @C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteDFView_mc_48_5_52_2_for_incr @C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteDFView_mc_48_5_52_2_for_end;
+C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteDFView_mc_48_5_52_2_for_init:
+        [ "C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteDFView_mc_48_5_52_2_for_begin" "C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteDFView_mc_48_5_52_2_for_end" ]
         %i.1 = local;
         %tmp.10 = getv ? :selectedFont;
         lputv %i.1 %tmp.10;
-C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteDFView_mc_46_5_50_2_for_test:
+C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteDFView_mc_48_5_52_2_for_test:
         %tmp.12 = lgetv %i.1;
         %tmp.13 = getm $.Toybox.Graphics;
         %tmp.14 = getv %tmp.13 :FONT_XTINY;
         %tmp.15 = gt %tmp.12 %tmp.14;
-        bf %tmp.15 @C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteDFView_mc_46_5_50_2_for_end;
-C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteDFView_mc_46_5_50_2_for_begin:
-C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteDFView_mc_46_62_50_2_start:
-[ "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote DF\source\OneRremoteDFView.mc" 47 6 ]
-C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteDFView_mc_47_6_49_7_if_stmt:
+        bf %tmp.15 @C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteDFView_mc_48_5_52_2_for_end;
+C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteDFView_mc_48_5_52_2_for_begin:
+C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteDFView_mc_48_62_52_2_start:
+[ "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote DF\source\OneRremoteDFView.mc" 49 6 ]
+C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteDFView_mc_49_6_51_7_if_stmt:
         %tmp.16 = lgetv %dc;
         %tmp.17 = getv function %tmp.16 :getFontHeight;
         %tmp.19 = lgetv %i.1;
@@ -133,42 +135,42 @@ C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteDFView_mc_4
         %tmp.22 = mul %tmp.20 %tmp.21;
         %tmp.24 = getv ? :width;
         %tmp.25 = gt %tmp.22 %tmp.24;
-        bf %tmp.25 @C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteDFView_mc_47_6_49_7_if_end;
-C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteDFView_mc_47_6_49_7_if_true:
-C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteDFView_mc_47_41_49_7_start:
-[ "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote DF\source\OneRremoteDFView.mc" 48 8 ]
+        bf %tmp.25 @C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteDFView_mc_49_6_51_7_if_end;
+C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteDFView_mc_49_6_51_7_if_true:
+C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteDFView_mc_49_41_51_7_start:
+[ "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote DF\source\OneRremoteDFView.mc" 50 8 ]
         %tmp.27 = lgetv %i.1;
         %tmp.28 = 1;
         %tmp.29 = sub %tmp.27 %tmp.28;
         putv self :selectedFont %tmp.29;
-C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteDFView_mc_47_41_49_7_stop:
-        goto @C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteDFView_mc_47_6_49_7_if_end;
-C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteDFView_mc_47_6_49_7_if_end:
-C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteDFView_mc_46_62_50_2_stop:
-C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteDFView_mc_46_5_50_2_for_incr:
-[ "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote DF\source\OneRremoteDFView.mc" 46 ]
+C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteDFView_mc_49_41_51_7_stop:
+        goto @C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteDFView_mc_49_6_51_7_if_end;
+C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteDFView_mc_49_6_51_7_if_end:
+C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteDFView_mc_48_62_52_2_stop:
+C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteDFView_mc_48_5_52_2_for_incr:
+[ "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote DF\source\OneRremoteDFView.mc" 48 ]
         %tmp.32 = lgetv %i.1;
         %tmp.33 = sub %tmp.32 1;
         lputv %i.1 %tmp.33;
-        goto @C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteDFView_mc_46_5_50_2_for_test;
-C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteDFView_mc_46_5_50_2_for_end:
-[ "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote DF\source\OneRremoteDFView.mc" 51 5 ]
-        for @C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteDFView_mc_51_5_55_2_for_test @C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteDFView_mc_51_5_55_2_for_incr @C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteDFView_mc_51_5_55_2_for_end;
-C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteDFView_mc_51_5_55_2_for_init:
-        [ "C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteDFView_mc_51_5_55_2_for_begin" "C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteDFView_mc_51_5_55_2_for_end" ]
+        goto @C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteDFView_mc_48_5_52_2_for_test;
+C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteDFView_mc_48_5_52_2_for_end:
+[ "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote DF\source\OneRremoteDFView.mc" 53 5 ]
+        for @C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteDFView_mc_53_5_57_2_for_test @C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteDFView_mc_53_5_57_2_for_incr @C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteDFView_mc_53_5_57_2_for_end;
+C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteDFView_mc_53_5_57_2_for_init:
+        [ "C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteDFView_mc_53_5_57_2_for_begin" "C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteDFView_mc_53_5_57_2_for_end" ]
         %i.2 = local;
         %tmp.35 = getv ? :selectedFont;
         lputv %i.2 %tmp.35;
-C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteDFView_mc_51_5_55_2_for_test:
+C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteDFView_mc_53_5_57_2_for_test:
         %tmp.37 = lgetv %i.2;
         %tmp.38 = getm $.Toybox.Graphics;
         %tmp.39 = getv %tmp.38 :FONT_XTINY;
         %tmp.40 = gt %tmp.37 %tmp.39;
-        bf %tmp.40 @C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteDFView_mc_51_5_55_2_for_end;
-C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteDFView_mc_51_5_55_2_for_begin:
-C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteDFView_mc_51_62_55_2_start:
-[ "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote DF\source\OneRremoteDFView.mc" 52 6 ]
-C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteDFView_mc_52_6_54_7_if_stmt:
+        bf %tmp.40 @C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteDFView_mc_53_5_57_2_for_end;
+C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteDFView_mc_53_5_57_2_for_begin:
+C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteDFView_mc_53_62_57_2_start:
+[ "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote DF\source\OneRremoteDFView.mc" 54 6 ]
+C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteDFView_mc_54_6_56_7_if_stmt:
         %tmp.41 = lgetv %dc;
         %tmp.42 = getv function %tmp.41 :getFontHeight;
         %tmp.44 = lgetv %i.2;
@@ -177,32 +179,32 @@ C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteDFView_mc_5
         %tmp.47 = mul %tmp.45 %tmp.46;
         %tmp.49 = getv ? :height;
         %tmp.50 = gt %tmp.47 %tmp.49;
-        bf %tmp.50 @C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteDFView_mc_52_6_54_7_if_end;
-C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteDFView_mc_52_6_54_7_if_true:
-C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteDFView_mc_52_42_54_7_start:
-[ "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote DF\source\OneRremoteDFView.mc" 53 8 ]
+        bf %tmp.50 @C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteDFView_mc_54_6_56_7_if_end;
+C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteDFView_mc_54_6_56_7_if_true:
+C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteDFView_mc_54_42_56_7_start:
+[ "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote DF\source\OneRremoteDFView.mc" 55 8 ]
         %tmp.52 = lgetv %i.2;
         %tmp.53 = 1;
         %tmp.54 = sub %tmp.52 %tmp.53;
         putv self :selectedFont %tmp.54;
-C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteDFView_mc_52_42_54_7_stop:
-        goto @C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteDFView_mc_52_6_54_7_if_end;
-C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteDFView_mc_52_6_54_7_if_end:
-C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteDFView_mc_51_62_55_2_stop:
-C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteDFView_mc_51_5_55_2_for_incr:
-[ "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote DF\source\OneRremoteDFView.mc" 51 ]
+C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteDFView_mc_54_42_56_7_stop:
+        goto @C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteDFView_mc_54_6_56_7_if_end;
+C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteDFView_mc_54_6_56_7_if_end:
+C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteDFView_mc_53_62_57_2_stop:
+C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteDFView_mc_53_5_57_2_for_incr:
+[ "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote DF\source\OneRremoteDFView.mc" 53 ]
         %tmp.57 = lgetv %i.2;
         %tmp.58 = sub %tmp.57 1;
         lputv %i.2 %tmp.58;
-        goto @C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteDFView_mc_51_5_55_2_for_test;
-C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteDFView_mc_51_5_55_2_for_end:
-C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteDFView_mc_40_26_56_4_stop:
+        goto @C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteDFView_mc_53_5_57_2_for_test;
+C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteDFView_mc_53_5_57_2_for_end:
+C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteDFView_mc_42_26_58_4_stop:
     }
-    [ @file = "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote DF\source\OneRremoteDFView.mc"; @line = 60; ]
+    [ @file = "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote DF\source\OneRremoteDFView.mc"; @line = 62; ]
     function onUpdate(dc) {
-C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteDFView_mc_60_26_93_5_start:
-[ "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote DF\source\OneRremoteDFView.mc" 61 5 ]
-        [ "C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteDFView_mc_60_26_93_5_start" "C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteDFView_mc_60_26_93_5_stop" ]
+C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteDFView_mc_62_26_98_5_start:
+[ "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote DF\source\OneRremoteDFView.mc" 63 5 ]
+        [ "C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteDFView_mc_62_26_98_5_start" "C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteDFView_mc_62_26_98_5_stop" ]
         %centerX.1 = local;
         %tmp.1 = lgetv %dc;
         %tmp.2 = getv function %tmp.1 :getWidth;
@@ -210,8 +212,8 @@ C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteDFView_mc_6
         %tmp.4 = 2;
         %tmp.5 = div %tmp.3 %tmp.4;
         lputv %centerX.1 %tmp.5;
-[ "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote DF\source\OneRremoteDFView.mc" 62 5 ]
-        [ "C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteDFView_mc_60_26_93_5_start" "C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteDFView_mc_60_26_93_5_stop" ]
+[ "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote DF\source\OneRremoteDFView.mc" 64 5 ]
+        [ "C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteDFView_mc_62_26_98_5_start" "C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteDFView_mc_62_26_98_5_stop" ]
         %centerY.2 = local;
         %tmp.6 = lgetv %dc;
         %tmp.7 = getv function %tmp.6 :getHeight;
@@ -219,41 +221,41 @@ C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteDFView_mc_6
         %tmp.9 = 2;
         %tmp.10 = div %tmp.8 %tmp.9;
         lputv %centerY.2 %tmp.10;
-[ "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote DF\source\OneRremoteDFView.mc" 63 5 ]
-        [ "C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteDFView_mc_60_26_93_5_start" "C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteDFView_mc_60_26_93_5_stop" ]
+[ "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote DF\source\OneRremoteDFView.mc" 65 5 ]
+        [ "C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteDFView_mc_62_26_98_5_start" "C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteDFView_mc_62_26_98_5_stop" ]
         %radius.3 = local;
         %tmp.12 = lgetv %centerX.1;
         %tmp.13 = 0.8;
         %tmp.14 = mul %tmp.12 %tmp.13;
         lputv %radius.3 %tmp.14;
-[ "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote DF\source\OneRremoteDFView.mc" 65 2 ]
-C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteDFView_mc_65_2_65_50_if_stmt:
+[ "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote DF\source\OneRremoteDFView.mc" 67 2 ]
+C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteDFView_mc_67_2_67_50_if_stmt:
         %tmp.16 = lgetv %dc;
         %tmp.18 = const :setAntiAlias;
         %tmp.19 = canhazplz %tmp.16 %tmp.18;
-        bf %tmp.19 @C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteDFView_mc_65_2_65_50_if_end;
-C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteDFView_mc_65_2_65_50_if_true:
-C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteDFView_mc_65_27_65_50_start:
-[ "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote DF\source\OneRremoteDFView.mc" 65 28 ]
+        bf %tmp.19 @C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteDFView_mc_67_2_67_50_if_end;
+C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteDFView_mc_67_2_67_50_if_true:
+C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteDFView_mc_67_27_67_50_start:
+[ "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote DF\source\OneRremoteDFView.mc" 67 28 ]
         %tmp.20 = lgetv %dc;
         %tmp.21 = as %tmp.20 { (interface { var setAntiAlias; }) };
         %tmp.22 = getv function %tmp.21 :setAntiAlias;
         %tmp.23 = true;
         invoke %tmp.21 %tmp.22(%tmp.23);
-C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteDFView_mc_65_27_65_50_stop:
-        goto @C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteDFView_mc_65_2_65_50_if_end;
-C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteDFView_mc_65_2_65_50_if_end:
-[ "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote DF\source\OneRremoteDFView.mc" 67 8 ]
-C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteDFView_mc_67_8_71_8_if_stmt:
+C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteDFView_mc_67_27_67_50_stop:
+        goto @C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteDFView_mc_67_2_67_50_if_end;
+C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteDFView_mc_67_2_67_50_if_end:
+[ "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote DF\source\OneRremoteDFView.mc" 69 8 ]
+C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteDFView_mc_69_8_73_8_if_stmt:
         %tmp.25 = getv ? :BLEBarrel;
         %tmp.26 = getv %tmp.25 :recState;
         %tmp.28 = getv ? :BLEBarrel;
         %tmp.29 = getv %tmp.28 :stateStartRec;
         %tmp.30 = eq %tmp.26 %tmp.29;
-        bf %tmp.30 @C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteDFView_mc_67_8_71_8_if_false;
-C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteDFView_mc_67_8_71_8_if_true:
-C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteDFView_mc_67_59_69_8_start:
-[ "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote DF\source\OneRremoteDFView.mc" 68 9 ]
+        bf %tmp.30 @C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteDFView_mc_69_8_73_8_if_false;
+C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteDFView_mc_69_8_73_8_if_true:
+C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteDFView_mc_69_59_71_8_start:
+[ "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote DF\source\OneRremoteDFView.mc" 70 9 ]
         %tmp.31 = lgetv %dc;
         %tmp.32 = getv function %tmp.31 :setColor;
         %tmp.33 = getm $.Toybox.Graphics;
@@ -261,11 +263,11 @@ C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteDFView_mc_6
         %tmp.35 = getm $.Toybox.Graphics;
         %tmp.36 = getv %tmp.35 :COLOR_TRANSPARENT;
         invoke %tmp.31 %tmp.32(%tmp.34, %tmp.36);
-C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteDFView_mc_67_59_69_8_stop:
-        goto @C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteDFView_mc_67_8_71_8_if_end;
-C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteDFView_mc_67_8_71_8_if_false:
-C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteDFView_mc_69_15_71_8_start:
-[ "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote DF\source\OneRremoteDFView.mc" 70 9 ]
+C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteDFView_mc_69_59_71_8_stop:
+        goto @C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteDFView_mc_69_8_73_8_if_end;
+C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteDFView_mc_69_8_73_8_if_false:
+C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteDFView_mc_71_15_73_8_start:
+[ "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote DF\source\OneRremoteDFView.mc" 72 9 ]
         %tmp.37 = lgetv %dc;
         %tmp.38 = getv function %tmp.37 :setColor;
         %tmp.39 = getm $.Toybox.Graphics;
@@ -273,32 +275,32 @@ C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteDFView_mc_6
         %tmp.41 = getm $.Toybox.Graphics;
         %tmp.42 = getv %tmp.41 :COLOR_TRANSPARENT;
         invoke %tmp.37 %tmp.38(%tmp.40, %tmp.42);
-C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteDFView_mc_69_15_71_8_stop:
-C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteDFView_mc_67_8_71_8_if_end:
-[ "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote DF\source\OneRremoteDFView.mc" 72 8 ]
+C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteDFView_mc_71_15_73_8_stop:
+C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteDFView_mc_69_8_73_8_if_end:
+[ "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote DF\source\OneRremoteDFView.mc" 74 8 ]
         %tmp.43 = lgetv %dc;
         %tmp.44 = getv function %tmp.43 :setPenWidth;
         %tmp.46 = getv ? :width;
         %tmp.47 = 0.08;
         %tmp.48 = mul %tmp.46 %tmp.47;
         invoke %tmp.43 %tmp.44(%tmp.48);
-[ "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote DF\source\OneRremoteDFView.mc" 73 8 ]
+[ "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote DF\source\OneRremoteDFView.mc" 75 8 ]
         %tmp.49 = lgetv %dc;
         %tmp.50 = getv function %tmp.49 :clear;
         invoke %tmp.49 %tmp.50();
-[ "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote DF\source\OneRremoteDFView.mc" 74 8 ]
+[ "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote DF\source\OneRremoteDFView.mc" 76 8 ]
         %tmp.51 = lgetv %dc;
         %tmp.52 = getv function %tmp.51 :drawCircle;
         %tmp.54 = lgetv %centerX.1;
         %tmp.56 = lgetv %centerY.2;
         %tmp.58 = lgetv %radius.3;
         invoke %tmp.51 %tmp.52(%tmp.54, %tmp.56, %tmp.58);
-[ "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote DF\source\OneRremoteDFView.mc" 76 8 ]
+[ "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote DF\source\OneRremoteDFView.mc" 78 8 ]
         %tmp.59 = lgetv %dc;
         %tmp.60 = getv function %tmp.59 :setPenWidth;
         %tmp.61 = 20;
         invoke %tmp.59 %tmp.60(%tmp.61);
-[ "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote DF\source\OneRremoteDFView.mc" 78 2 ]
+[ "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote DF\source\OneRremoteDFView.mc" 80 2 ]
         %tmp.62 = lgetv %dc;
         %tmp.63 = getv function %tmp.62 :setColor;
         %tmp.64 = getm $.Toybox.Graphics;
@@ -306,7 +308,7 @@ C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteDFView_mc_6
         %tmp.66 = getm $.Toybox.Graphics;
         %tmp.67 = getv %tmp.66 :COLOR_TRANSPARENT;
         invoke %tmp.62 %tmp.63(%tmp.65, %tmp.67);
-[ "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote DF\source\OneRremoteDFView.mc" 79 8 ]
+[ "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote DF\source\OneRremoteDFView.mc" 81 8 ]
         %tmp.68 = lgetv %dc;
         %tmp.69 = getv function %tmp.68 :drawArc;
         %tmp.71 = lgetv %centerX.1;
@@ -317,7 +319,7 @@ C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteDFView_mc_6
         %tmp.78 = 157;
         %tmp.79 = 202;
         invoke %tmp.68 %tmp.69(%tmp.71, %tmp.73, %tmp.75, %tmp.77, %tmp.78, %tmp.79);
-[ "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote DF\source\OneRremoteDFView.mc" 80 8 ]
+[ "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote DF\source\OneRremoteDFView.mc" 82 8 ]
         %tmp.80 = lgetv %dc;
         %tmp.81 = getv function %tmp.80 :drawArc;
         %tmp.83 = lgetv %centerX.1;
@@ -328,7 +330,7 @@ C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteDFView_mc_6
         %tmp.90 = 337;
         %tmp.91 = 22;
         invoke %tmp.80 %tmp.81(%tmp.83, %tmp.85, %tmp.87, %tmp.89, %tmp.90, %tmp.91);
-[ "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote DF\source\OneRremoteDFView.mc" 81 2 ]
+[ "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote DF\source\OneRremoteDFView.mc" 83 2 ]
         %tmp.92 = lgetv %dc;
         %tmp.93 = getv function %tmp.92 :setColor;
         %tmp.94 = getm $.Toybox.Graphics;
@@ -336,7 +338,7 @@ C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteDFView_mc_6
         %tmp.96 = getm $.Toybox.Graphics;
         %tmp.97 = getv %tmp.96 :COLOR_TRANSPARENT;
         invoke %tmp.92 %tmp.93(%tmp.95, %tmp.97);
-[ "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote DF\source\OneRremoteDFView.mc" 82 2 ]
+[ "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote DF\source\OneRremoteDFView.mc" 84 2 ]
         %tmp.98 = lgetv %dc;
         %tmp.99 = getv function %tmp.98 :drawText;
         %tmp.100 = 0.05;
@@ -351,7 +353,7 @@ C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteDFView_mc_6
         %tmp.112 = getv %tmp.111 :TEXT_JUSTIFY_VCENTER;
         %tmp.113 = bitor %tmp.110 %tmp.112;
         invoke %tmp.98 %tmp.99(%tmp.103, %tmp.105, %tmp.107, %tmp.108, %tmp.113);
-[ "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote DF\source\OneRremoteDFView.mc" 83 2 ]
+[ "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote DF\source\OneRremoteDFView.mc" 85 2 ]
         %tmp.114 = lgetv %dc;
         %tmp.115 = getv function %tmp.114 :drawText;
         %tmp.116 = 1.95;
@@ -366,18 +368,18 @@ C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteDFView_mc_6
         %tmp.128 = getv %tmp.127 :TEXT_JUSTIFY_VCENTER;
         %tmp.129 = bitor %tmp.126 %tmp.128;
         invoke %tmp.114 %tmp.115(%tmp.119, %tmp.121, %tmp.123, %tmp.124, %tmp.129);
-[ "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote DF\source\OneRremoteDFView.mc" 85 8 ]
-C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteDFView_mc_85_8_89_8_if_stmt:
+[ "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote DF\source\OneRremoteDFView.mc" 87 8 ]
+C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteDFView_mc_87_8_91_8_if_stmt:
         %tmp.130 = self;
         %tmp.131 = getv function %tmp.130 :getBackgroundColor;
         %tmp.132 = invoke %tmp.130 %tmp.131();
         %tmp.133 = getm $.Toybox.Graphics;
         %tmp.134 = getv %tmp.133 :COLOR_BLACK;
         %tmp.135 = eq %tmp.132 %tmp.134;
-        bf %tmp.135 @C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteDFView_mc_85_8_89_8_if_false;
-C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteDFView_mc_85_8_89_8_if_true:
-C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteDFView_mc_85_58_87_8_start:
-[ "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote DF\source\OneRremoteDFView.mc" 86 12 ]
+        bf %tmp.135 @C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteDFView_mc_87_8_91_8_if_false;
+C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteDFView_mc_87_8_91_8_if_true:
+C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteDFView_mc_87_58_89_8_start:
+[ "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote DF\source\OneRremoteDFView.mc" 88 12 ]
         %tmp.136 = lgetv %dc;
         %tmp.137 = getv function %tmp.136 :setColor;
         %tmp.138 = getm $.Toybox.Graphics;
@@ -385,11 +387,11 @@ C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteDFView_mc_8
         %tmp.140 = getm $.Toybox.Graphics;
         %tmp.141 = getv %tmp.140 :COLOR_TRANSPARENT;
         invoke %tmp.136 %tmp.137(%tmp.139, %tmp.141);
-C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteDFView_mc_85_58_87_8_stop:
-        goto @C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteDFView_mc_85_8_89_8_if_end;
-C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteDFView_mc_85_8_89_8_if_false:
-C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteDFView_mc_87_15_89_8_start:
-[ "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote DF\source\OneRremoteDFView.mc" 88 12 ]
+C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteDFView_mc_87_58_89_8_stop:
+        goto @C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteDFView_mc_87_8_91_8_if_end;
+C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteDFView_mc_87_8_91_8_if_false:
+C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteDFView_mc_89_15_91_8_start:
+[ "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote DF\source\OneRremoteDFView.mc" 90 12 ]
         %tmp.142 = lgetv %dc;
         %tmp.143 = getv function %tmp.142 :setColor;
         %tmp.144 = getm $.Toybox.Graphics;
@@ -397,22 +399,58 @@ C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteDFView_mc_8
         %tmp.146 = getm $.Toybox.Graphics;
         %tmp.147 = getv %tmp.146 :COLOR_TRANSPARENT;
         invoke %tmp.142 %tmp.143(%tmp.145, %tmp.147);
-C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteDFView_mc_87_15_89_8_stop:
-C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteDFView_mc_85_8_89_8_if_end:
-[ "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote DF\source\OneRremoteDFView.mc" 91 8 ]
-        %tmp.148 = lgetv %dc;
-        %tmp.149 = getv function %tmp.148 :drawText;
-        %tmp.151 = lgetv %centerX.1;
-        %tmp.153 = lgetv %centerY.2;
-        %tmp.155 = getv ? :selectedFont;
-        %tmp.157 = getv ? :mMessage;
-        %tmp.158 = getm $.Toybox.Graphics;
-        %tmp.159 = getv %tmp.158 :TEXT_JUSTIFY_CENTER;
-        %tmp.160 = getm $.Toybox.Graphics;
-        %tmp.161 = getv %tmp.160 :TEXT_JUSTIFY_VCENTER;
-        %tmp.162 = bitor %tmp.159 %tmp.161;
-        invoke %tmp.148 %tmp.149(%tmp.151, %tmp.153, %tmp.155, %tmp.157, %tmp.162);
-C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteDFView_mc_60_26_93_5_stop:
+C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteDFView_mc_89_15_91_8_stop:
+C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteDFView_mc_87_8_91_8_if_end:
+[ "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote DF\source\OneRremoteDFView.mc" 93 2 ]
+C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteDFView_mc_93_2_97_7_if_stmt:
+        %tmp.149 = getv ? :mMessage;
+        %tmp.150 = getv function %tmp.149 :substring;
+        %tmp.151 = 0;
+        %tmp.152 = 4;
+        %tmp.153 = invoke %tmp.149 %tmp.150(%tmp.151, %tmp.152);
+        %tmp.154 = getv function %tmp.153 :equals;
+        %tmp.155 = "Scan";
+        %tmp.156 = invoke %tmp.153 %tmp.154(%tmp.155);
+        bf %tmp.156 @C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteDFView_mc_93_2_97_7_if_false;
+C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteDFView_mc_93_2_97_7_if_true:
+C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteDFView_mc_93_46_95_2_start:
+[ "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote DF\source\OneRremoteDFView.mc" 94 9 ]
+        %tmp.157 = lgetv %dc;
+        %tmp.158 = getv function %tmp.157 :drawText;
+        %tmp.160 = lgetv %centerX.1;
+        %tmp.162 = lgetv %centerY.2;
+        %tmp.164 = getv ? :selectedFont;
+        %tmp.166 = getv ? :mMessage;
+        %tmp.167 = "\n";
+        %tmp.168 = add %tmp.166 %tmp.167;
+        %tmp.170 = getv ? :vNum;
+        %tmp.171 = add %tmp.168 %tmp.170;
+        %tmp.172 = getm $.Toybox.Graphics;
+        %tmp.173 = getv %tmp.172 :TEXT_JUSTIFY_CENTER;
+        %tmp.174 = getm $.Toybox.Graphics;
+        %tmp.175 = getv %tmp.174 :TEXT_JUSTIFY_VCENTER;
+        %tmp.176 = bitor %tmp.173 %tmp.175;
+        invoke %tmp.157 %tmp.158(%tmp.160, %tmp.162, %tmp.164, %tmp.171, %tmp.176);
+C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteDFView_mc_93_46_95_2_stop:
+        goto @C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteDFView_mc_93_2_97_7_if_end;
+C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteDFView_mc_93_2_97_7_if_false:
+C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteDFView_mc_95_9_97_7_start:
+[ "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote DF\source\OneRremoteDFView.mc" 96 9 ]
+        %tmp.177 = lgetv %dc;
+        %tmp.178 = getv function %tmp.177 :drawText;
+        %tmp.180 = lgetv %centerX.1;
+        %tmp.182 = lgetv %centerY.2;
+        %tmp.184 = getv ? :selectedFont;
+        %tmp.186 = getv ? :mMessage;
+        %tmp.187 = getm $.Toybox.Graphics;
+        %tmp.188 = getv %tmp.187 :TEXT_JUSTIFY_CENTER;
+        %tmp.189 = getm $.Toybox.Graphics;
+        %tmp.190 = getv %tmp.189 :TEXT_JUSTIFY_VCENTER;
+        %tmp.191 = bitor %tmp.188 %tmp.190;
+        invoke %tmp.177 %tmp.178(%tmp.180, %tmp.182, %tmp.184, %tmp.186, %tmp.191);
+C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteDFView_mc_95_9_97_7_stop:
+C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteDFView_mc_93_2_97_7_if_end:
+C_Users_greg_git_Insta360_Remote_CIQ_OneR_remote_DF_source_OneRremoteDFView_mc_62_26_98_5_stop:
     }
 }
 [ @file = "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote DF\source\OneRremoteDFView.mc"; @line = 1; ]

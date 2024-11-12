@@ -1,6 +1,6 @@
 [ @file = "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote\source\GlanceView.mc"; @line = 1; ]
 using Toybox.WatchUi;
-[ @file = "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote\source\GlanceView.mc"; @line = 3; glance = true; ]
+[ @file = "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote\source\GlanceView.mc"; @line = 4; glance = true; ]
 class MyGlanceView extends WatchUi.GlanceView{
     [ @file = "C:\Users\greg\git\Insta360-Remote-CIQ\OneR remote\source\GlanceView.mc"; @line = 4; ]
     <init> {
