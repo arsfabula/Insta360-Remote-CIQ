@@ -33,6 +33,13 @@ const stateStarting = 2;
 const stateStopping = 3;
 const SeqPos = 10;
 
+// Phase 0 diagnostic build. When true, every scanned device is logged with its
+// advertised name and service UUIDs, and every command sent/received is traced.
+// Purpose: validate the advertised names and the BE80 service filter against
+// real hardware before the model-profile table is written.
+// Set to false once the model detection is confirmed.
+const DEBUG_SCAN = true;
+
 var recState = stateStopRec;
 var startRecTime = Time.now(); 
 var elapsedRecTime;
@@ -142,6 +149,16 @@ class BleDevice extends BluetoothLowEnergy.BleDelegate {
 		} else {
 			queue.add(value);
 		}
+
+		// byte 16 is the first protobuf byte, but cmdApply is only 16 bytes long,
+		// so it must be bounds-checked before being indexed.
+		var pb0 = "-";
+		if (value.size() > 16) {
+			pb0 = value[16].format("%02x");
+		}
+		if (DEBUG_SCAN) {
+			debug("[TX] label=\"" + currentLabel + "\" cmd=0x" + value[7].format("%02x") + " len=" + value.size() + " seq=" + value[SeqPos] + " pb0=" + pb0);
+		}
 		
 		
 		try {
@@ -186,13 +203,22 @@ class BleDevice extends BluetoothLowEnergy.BleDelegate {
 				recState = stateStopRec;
 			} else if (stateBusy.equals(value[7])) {
 				// sendCMD(cmdStopRec);
+				if (DEBUG_SCAN) {
+					debug("[RX] BUSY 0xf4 from cmd 0x" + value[7].format("%02x") + " (mode \"" + currentLabel + "\" may be unsupported)");
+				}
 				mMessage = "Busy...";
    			} else if (stateCmdErr.equals(value[0])) {
+				if (DEBUG_SCAN) {
+					debug("[RX] CMDERR 0x34 from cmd 0x" + value[7].format("%02x") + " (mode \"" + currentLabel + "\" rejected)");
+				}
 				mMessage = currentLabel + "\n" + startMessage;
 				recState = stateStopRec;
 			} else {
 				 debug("Unknown Response " + value);
 				// mMessage = "-";
+			}
+			if (DEBUG_SCAN) {
+				debug("[RX] len=" + value.size() + " b0=" + value[0].format("%02x") + " b7=" + value[7].format("%02x") + " b17=" + value[17].format("%02x"));
 			}
 		  }
 		} 	
@@ -325,12 +351,22 @@ class BleDevice extends BluetoothLowEnergy.BleDelegate {
 			
 	}
 
-//	private function dumpUuids(iter) {
-//		for (var x = iter.next(); x != null; x = iter.next()) {
-//			debug("uuid: " + x);
-//		}
-//		return false;
-//	}
+	// getServiceUuids() yields raw 16-byte UUIDs, which print as unreadable byte
+	// soup. Render them in canonical 8-4-4-4-12 form (BLE stores the first two
+	// groups little-endian) so the scan log can be read and pasted into a report.
+	private function uuidToString(u) {
+		if (u == null or u.size() != 16) {
+			return "<not-a-16-byte-uuid>";
+		}
+		return u.byteAt(1).format("%02x") + u.byteAt(0).format("%02x") + "-" +
+			u.byteAt(3).format("%02x") + u.byteAt(2).format("%02x") + "-" +
+			u.byteAt(4).format("%02x") + u.byteAt(5).format("%02x") + "-" +
+			u.byteAt(6).format("%02x") + u.byteAt(7).format("%02x") + "-" +
+			u.byteAt(8).format("%02x") + u.byteAt(9).format("%02x") +
+			u.byteAt(10).format("%02x") + u.byteAt(11).format("%02x") +
+			u.byteAt(12).format("%02x") + u.byteAt(13).format("%02x") +
+			u.byteAt(14).format("%02x") + u.byteAt(15).format("%02x");
+	}
 
 	function onScanResults(scanResults) {
 //		debug("scan results");
@@ -338,10 +374,12 @@ class BleDevice extends BluetoothLowEnergy.BleDelegate {
 		// var name;
 		// var rssi;
 		var iter;
+		var uuidLog = "";
 
 		for (var result = scanResults.next(); result != null; result = scanResults.next()) {
 			uuids = result.getServiceUuids();
 			deviceName = result.getDeviceName();
+			uuidLog = "";
 			// rssi = result.getRssi();
 
 			// debug("[onScanResults] device: " + name + " rssi: " + rssi);
@@ -349,7 +387,7 @@ class BleDevice extends BluetoothLowEnergy.BleDelegate {
 
 			//search for an insta360 device based on service UUID
 			for (iter = uuids.next(); iter != null; iter = uuids.next()) {
-//				debug("uuid: " + iter);
+				uuidLog = uuidLog + uuidToString(iter) + " ";
 				menuLevel = 0;
 				if (iter.equals(LBS_SERVICE) and (deviceName != null)) {
 					// debug("Connect " + iter);
@@ -366,9 +404,15 @@ class BleDevice extends BluetoothLowEnergy.BleDelegate {
 					if (deviceName.substring(0,3).equals("X5 ")) {
 						menuLevel = 2;
 					}
+					if (DEBUG_SCAN) {
+						debug("[scan] MATCH name=\"" + deviceName + "\" menuLevel=" + menuLevel + " uuids=" + uuidLog);
+					}
 					connect(result);
 					return;
 				}
+			}
+			if (DEBUG_SCAN) {
+				debug("[scan] skip name=\"" + deviceName + "\" uuids=" + uuidLog);
 			}
 
 //			if (name != null) {
