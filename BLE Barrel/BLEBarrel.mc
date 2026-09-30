@@ -351,21 +351,23 @@ class BleDevice extends BluetoothLowEnergy.BleDelegate {
 			
 	}
 
-	// getServiceUuids() yields raw 16-byte UUIDs, which print as unreadable byte
-	// soup. Render them in canonical 8-4-4-4-12 form (BLE stores the first two
-	// groups little-endian) so the scan log can be read and pasted into a report.
+	// getServiceUuids() yields raw 16-byte UUIDs, which print as an unreadable
+	// byte soup. Render them in canonical 8-4-4-4-12 form so the scan log can be
+	// read and pasted into a report.
+	//
+	// BLE transmits the first three groups little-endian and the trailing 48-bit
+	// node id big-endian, so those groups must be reversed. ByteArray exposes no
+	// byteAt(); the [] subscript is the accessor, as already used for value[7].
 	private function uuidToString(u) {
 		if (u == null or u.size() != 16) {
 			return "<not-a-16-byte-uuid>";
 		}
-		return u.byteAt(1).format("%02x") + u.byteAt(0).format("%02x") + "-" +
-			u.byteAt(3).format("%02x") + u.byteAt(2).format("%02x") + "-" +
-			u.byteAt(4).format("%02x") + u.byteAt(5).format("%02x") + "-" +
-			u.byteAt(6).format("%02x") + u.byteAt(7).format("%02x") + "-" +
-			u.byteAt(8).format("%02x") + u.byteAt(9).format("%02x") +
-			u.byteAt(10).format("%02x") + u.byteAt(11).format("%02x") +
-			u.byteAt(12).format("%02x") + u.byteAt(13).format("%02x") +
-			u.byteAt(14).format("%02x") + u.byteAt(15).format("%02x");
+		return u[3].format("%02x") + u[2].format("%02x") + u[1].format("%02x") + u[0].format("%02x") + "-" +
+			u[5].format("%02x") + u[4].format("%02x") + "-" +
+			u[7].format("%02x") + u[6].format("%02x") + "-" +
+			u[8].format("%02x") + u[9].format("%02x") + "-" +
+			u[10].format("%02x") + u[11].format("%02x") + u[12].format("%02x") + u[13].format("%02x") +
+			u[14].format("%02x") + u[15].format("%02x");
 	}
 
 	function onScanResults(scanResults) {
