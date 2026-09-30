@@ -351,23 +351,15 @@ class BleDevice extends BluetoothLowEnergy.BleDelegate {
 			
 	}
 
-	// getServiceUuids() yields raw 16-byte UUIDs, which print as an unreadable
-	// byte soup. Render them in canonical 8-4-4-4-12 form so the scan log can be
-	// read and pasted into a report.
-	//
-	// BLE transmits the first three groups little-endian and the trailing 48-bit
-	// node id big-endian, so those groups must be reversed. ByteArray exposes no
-	// byteAt(); the [] subscript is the accessor, as already used for value[7].
+	// getServiceUuids() yields Toybox.BluetoothLowEnergy.Uuid objects, not byte
+	// arrays. Uuid.toString() already returns canonical 8-4-4-4-12 form, which is
+	// why the onProfileRegister trace prints 0000BE80-0000-1000-8000-00805F9B34FB
+	// with no formatting at all. Nothing needs decoding here.
 	private function uuidToString(u) {
-		if (u == null or u.size() != 16) {
-			return "<not-a-16-byte-uuid>";
+		if (u == null) {
+			return "<null-uuid>";
 		}
-		return u[3].format("%02x") + u[2].format("%02x") + u[1].format("%02x") + u[0].format("%02x") + "-" +
-			u[5].format("%02x") + u[4].format("%02x") + "-" +
-			u[7].format("%02x") + u[6].format("%02x") + "-" +
-			u[8].format("%02x") + u[9].format("%02x") + "-" +
-			u[10].format("%02x") + u[11].format("%02x") + u[12].format("%02x") + u[13].format("%02x") +
-			u[14].format("%02x") + u[15].format("%02x");
+		return u.toString();
 	}
 
 	function onScanResults(scanResults) {
