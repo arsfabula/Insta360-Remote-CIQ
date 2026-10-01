@@ -20,13 +20,21 @@ class OneRSettingsDelegate extends Ui.Menu2InputDelegate {
        		    	BLEBarrel.recState = BLEBarrel.stateStarting;
                 	mMessage = "Starting...";
 //                	WatchUi.requestUpdate();
-                	if (BLEBarrel.videoMode) {
+if (BLEBarrel.videoMode) {
+                	// "Default Video" leaves currentMode as the string "DefaultV" and
+                	// not a command, so it must not be sent. Same guard as the OneR
+                	// Remote InputDelegate: start the capture, leave the camera
+                	// settings alone.
+            		if (!BLEBarrel.currentMode.equals("DefaultV")) {
             	    	bleDevice.sendCMD(BLEBarrel.currentMode);
             	    	bleDevice.sendCMD(BLEBarrel.cmdApply);
-            	    	bleDevice.sendCMD(BLEBarrel.cmdStartRec);
+            		}
+            	bleDevice.sendCMD(BLEBarrel.cmdStartRec);
                 	} else {
-               	    	bleDevice.sendCMD(BLEBarrel.cmdApply);
-            	    	bleDevice.sendCMD(BLEBarrel.currentMode);
+                	if (!BLEBarrel.currentMode.equals("DefaultV")) {
+                	    bleDevice.sendCMD(BLEBarrel.cmdApply);
+                	    bleDevice.sendCMD(BLEBarrel.currentMode);
+                	}
                 	}
             } else if (BLEBarrel.recState == BLEBarrel.stateStartRec) {
         		    BLEBarrel.recState = BLEBarrel.stateStopping;

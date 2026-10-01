@@ -104,11 +104,18 @@ class BleDevice extends BluetoothLowEnergy.BleDelegate {
 
 		// check that the camera is actually connected, otherwise start a scan
 		// debug("sendCMD: new scan ? " + scanning + " " + (device == null));
+		// The BLE calls in this reconnect block throw when the camera has dropped
+		// out from under us, which is a normal race and not a programming error.
+		// They are guarded like the getCharacteristic and requestWrite calls below.
 		if (!scanning) {
 			if (device == null) {
 		    	recState = stateStopRec;
 				debug("[sendCMD] No device connected, starting scan");
-				BluetoothLowEnergy.setScanState(BluetoothLowEnergy.SCAN_STATE_SCANNING);
+				try {
+					BluetoothLowEnergy.setScanState(BluetoothLowEnergy.SCAN_STATE_SCANNING);
+				} catch (ex) {
+					debug("[sendCMD] exception: " + ex.getErrorMessage());
+				}
 				return;
 //			} else if (!device.isConnected()) {
 //		    	recState = stateStopRec;
@@ -116,14 +123,28 @@ class BleDevice extends BluetoothLowEnergy.BleDelegate {
 //				BluetoothLowEnergy.setScanState(BluetoothLowEnergy.SCAN_STATE_SCANNING);
 //				return;
 			} else {
-				service = device.getService(LBS_SERVICE);
+				try {
+					service = device.getService(LBS_SERVICE);
+				} catch (ex) {
+					debug("[sendCMD] exception: " + ex.getErrorMessage());
+					service = null;
+				}
 				// debug("sendCMD: service null "  + (service == null));
 				if (service == null) {
 					debug("[sendCMD] No service, starting scan, device connected ");
 			    	recState = stateStopRec;
-			    	BluetoothLowEnergy.unpairDevice(device);
-			    	device = null;
-					BluetoothLowEnergy.setScanState(BluetoothLowEnergy.SCAN_STATE_SCANNING);
+					try {
+						BluetoothLowEnergy.unpairDevice(device);
+					} catch (ex) {
+						debug("[sendCMD] exception: " + ex.getErrorMessage());
+					}
+					// dropped once unpaired, so the next sendCMD goes via the scan path
+					device = null;
+					try {
+						BluetoothLowEnergy.setScanState(BluetoothLowEnergy.SCAN_STATE_SCANNING);
+					} catch (ex) {
+						debug("[sendCMD] exception: " + ex.getErrorMessage());
+					}
 					return;
 				} 
 			}
