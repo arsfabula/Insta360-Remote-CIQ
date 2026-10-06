@@ -26,13 +26,14 @@ class InputDelegate extends Ui.BehaviorDelegate {
 //        if (key == KEY_ENTER) {
             if (BLEBarrel.recState == BLEBarrel.stateStopRec) {
             	BLEBarrel.recState = BLEBarrel.stateStarting;
-            	mMessage = "Starting...";
+            	BLEBarrel.mMessage = "Starting...";
             	WatchUi.requestUpdate();
             	if (BLEBarrel.videoMode) {
-            		if (!BLEBarrel.currentMode.equals("DefaultV")) {
-						bleDevice.sendCMD(BLEBarrel.currentMode);
-            			bleDevice.sendCMD(BLEBarrel.cmdApply);
-					}
+            		// The camera drops a start that immediately follows a mode+apply
+            		// whose mode did not actually change (no 0x65 confirmation), which
+            		// is always the case here since currentMode is the persisted mode.
+            		// A bare start records in the camera's current (already applied)
+            		// mode - same as the working DF "Default Video" path.
             		bleDevice.sendCMD(BLEBarrel.cmdStartRec);
             	} else {
             	   	bleDevice.sendCMD(BLEBarrel.cmdApply);
@@ -111,19 +112,25 @@ class Menu2Delegate extends Ui.Menu2InputDelegate {
         Menu2InputDelegate.initialize();
     }
 
-    function onSelect(item) {
-    	var header = new [0]b;
-    	var filler = new [0]b;
-    	var temp64 = new [0]b;
-      	var info = null; 
+function onSelect(item) as Void {
+  	  	var info = null; 
     	var location = null;
 		var itemID = "";
 		var chglbl = true; 
-  	
-  		if (BLEBarrel.GPSon) {
-      		info = Position.getInfo();
-    		location = info.position.toDegrees();
-		}
+   	
+   		if (BLEBarrel.GPSon) {
+       		info = Position.getInfo();
+       		// With GPS on but no fix, getInfo() still succeeds and .position is
+       		// Null; toDegrees() on that Null raised "Unexpected Type Error".
+       		if ((info != null) && (info.position != null)) {
+        		location = info.position.toDegrees();
+        		if ((location == null) || (location.size() < 2)) {
+        			location = null;
+        		}
+        	} else {
+        		location = null;
+        		}
+   		}
 		
     	BLEBarrel.cmdStartRec = [0x12, 0, 0, 0, 0x4, 0, 0, 0x4, 0, 0x2, 0xff, 0, 0, 0x80, 0, 0, 0x8, 0x1]b;  // Start video Recording commmand
 	 	BLEBarrel.cmdStopRec =  [0x12, 0, 0, 0, 0x4, 0, 0, 0x5, 0, 0x2, 0xff, 0, 0, 0x80, 0, 0, 0x10, 0x1]b; // Stop recording command
@@ -174,21 +181,11 @@ class Menu2Delegate extends Ui.Menu2InputDelegate {
             	BLEBarrel.cmdStopRec[17] = 0x02;
             	BLEBarrel.currentMode = BLEBarrel.cmdSetBullet;
             	break;
-            case "Photo" :
-		  		if (BLEBarrel.GPSon) {
-	            	// fill GPS position before sending command.
-    	        	header = [0x3f, 0x00, 0x00, 0x00, 0x04, 0x00, 0x00, 0x03, 0x00, 0x02, 0xe3, 0x00, 0x00, 0x80, 0x00, 0x00, 0x12, 0x2d, 0x5a, 0x18]b;
-					filler = [0x6a, 0x02, 0x30, 0x01, 0x9a, 0x01, 0x00, 0xaa, 0x01, 0x00, 0xba, 0x01, 0x00, 0xd2, 0x01, 0x00, 0xe2, 0x02, 0x00]b;
-					// get GPS info for Photo mode
-					temp64 = BLEBarrel.BleDevice.toDouble(location[0]);
-					header.addAll(temp64);
-					temp64 = BLEBarrel.BleDevice.toDouble(location[1]);
-					header.addAll(temp64);
-					temp64 = BLEBarrel.BleDevice.toDouble(info.altitude);
-					header.addAll(temp64);
-					header.addAll(filler);
-					BLEBarrel.cmdSetPhoto = header;
-				}
+case "Photo" :
+if ((BLEBarrel.GPSon) && (location != null) && (info != null)) {
+    	// fill GPS position before sending command.
+				BLEBarrel.cmdSetPhoto = bleDevice.photoGpsHeader(location[0], location[1], info.altitude);
+ 			}
 				BLEBarrel.currentMode = BLEBarrel.cmdSetPhoto;
             	BLEBarrel.videoMode = false;
             	break;
@@ -215,7 +212,7 @@ class Menu2Delegate extends Ui.Menu2InputDelegate {
             	break;
 			case "GPSon" :
             	BLEBarrel.GPSon = !BLEBarrel.GPSon;
-             	Main.GPSenable(BLEBarrel.GPSon);
+             	mainApp.GPSenable(BLEBarrel.GPSon);
 				chglbl = false;
              	break;
 			case "DefaultV" :
@@ -235,7 +232,7 @@ class Menu2Delegate extends Ui.Menu2InputDelegate {
          
        	Sys.println("Menu ID + Name: " + itemID + ":" + BLEBarrel.currentLabel + " cmd : " + BLEBarrel.currentMode);
         Ui.popView(Ui.SLIDE_IMMEDIATE);
-        mMessage = BLEBarrel.currentLabel + "\n" + BLEBarrel.startMessage;
+        BLEBarrel.mMessage = BLEBarrel.currentLabel + "\n" + BLEBarrel.startMessage;
 		WatchUi.requestUpdate();
         
    }
@@ -256,7 +253,7 @@ class actionDelegate extends Ui.Menu2InputDelegate {
         switch(item.getId()) {
             case "Stop" :
             	BLEBarrel.recState = BLEBarrel.stateStopping;
-            	mMessage = "Stopping...";
+            	BLEBarrel.mMessage = "Stopping...";
               	bleDevice.sendCMD(BLEBarrel.cmdStopRec);
             	break;  
             case "Highlight" :
@@ -269,7 +266,5 @@ class actionDelegate extends Ui.Menu2InputDelegate {
         // Sys.println("[Menu] Actions" );
 		WatchUi.popView(WatchUi.SLIDE_IMMEDIATE);
         WatchUi.requestUpdate();
-        return true;
-        
    }
 }

@@ -7,8 +7,11 @@ bytes, so they cannot drift away from what actually ships on the watch.
 import os
 import re
 
+# The barrel declares these as `var cmdX as Lang.ByteArray = [...]b` now that it
+# is strictly typed, so the optional `as <type>` annotation must be tolerated
+# alongside the historical untyped form.
 ARRAY_RE = re.compile(
-    r"var\s+(cmd\w+)\s*=\s*\[([^\]]*)\]b\s*;",
+    r"var\s+(cmd\w+)\s*(?:as\s+[\w.]+\s*)?=\s*\[([^\]]*)\]b\s*;",
     re.IGNORECASE,
 )
 COMMENT_RE = re.compile(r"//(.*)$", re.MULTILINE)

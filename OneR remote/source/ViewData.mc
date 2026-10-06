@@ -1,8 +1,7 @@
 using Toybox.WatchUi;
 using Toybox.System;
 using BLEBarrel;
-var mMessage = "Starting Widget";
-const vNum = "0.9.84";
+const vNum = "0.9.91";
 
 
 class ViewData extends WatchUi.View {
@@ -31,7 +30,6 @@ class ViewData extends WatchUi.View {
         dc.setPenWidth(15);
         dc.clear();
         dc.drawCircle(centerX,centerY,radius - 20 );
-		System.println("[VIEW] onupdate GPS: " + BLEBarrel.GPSon);
 		if (BLEBarrel.GPSon) {
 			// Draw some chevrons for GPS signal Quality
         	if (BLEBarrel.GPSaccuracy == Position.QUALITY_NOT_AVAILABLE) {
@@ -46,12 +44,11 @@ class ViewData extends WatchUi.View {
         	dc.drawArc(centerX, centerY, radius - 54, Graphics.ARC_COUNTER_CLOCKWISE, 70, 110);
         }
 		// Text with Shooting status, mode and timer.
-		// mMessage = vNum + "\n" + mMessage;
        	dc.setColor(Graphics.COLOR_WHITE, Graphics.COLOR_BLACK);
-		if (mMessage.substring(0,4).equals("Scan")) {
-			dc.drawText(centerX, centerY, Graphics.FONT_SMALL, mMessage + "\n" + vNum, Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
+		if (BLEBarrel.mMessage.substring(0,4).equals("Scan")) {
+			dc.drawText(centerX, centerY, Graphics.FONT_SMALL, BLEBarrel.mMessage + "\n" + vNum, Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
 		} else {
-        	dc.drawText(centerX, centerY, Graphics.FONT_MEDIUM, BLEBarrel.deviceName + "\n" + mMessage, Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
+        	dc.drawText(centerX, centerY, Graphics.FONT_MEDIUM, BLEBarrel.deviceName + "\n" + BLEBarrel.mMessage, Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
     	}
 	}
 

@@ -1,44 +1,24 @@
 using Toybox.WatchUi as Ui;
-using Toybox.System as Sys;
+using Toybox.Lang;
+using Toybox.System;
 using Toybox.Position;
 using BLEBarrel;
 
-class InputDelegate extends Ui.BehaviorDelegate {
-//	hidden var bleDevice;
-	var photoHeader = new [0]b;
-	var photoFiller = new [0]b;
-	var nbMode = 0;
-	var maxNbMode = 0;
-
-	function initialize() {
-        BehaviorDelegate.initialize();
-		// BLEBarrel.menuLevel = 2;
-		if (BLEBarrel.menuLevel == 0) {
-			maxNbMode = 0;
-		} else {
-			maxNbMode = BLEBarrel.menuLevel + 13;
-		}
-//        bleDevice = device;
-    }
-
-	function switchMode(nb) {
-	    var header = new [0]b;
-    	var filler = new [0]b;
-    	var temp64 = new [0]b;
-//      var info = Position.getInfo();
-//    	var location = info.position.toDegrees();
-  	
+function switchMode(nb as Lang.Number) as Void {
+    //      var info = Position.getInfo();
+    //    	var location = info.position.toDegrees();
+   	
     	BLEBarrel.cmdStartRec = [0x12, 0, 0, 0, 0x4, 0, 0, 0x4, 0, 0x2, 0xff, 0, 0, 0x80, 0, 0, 0x8, 0x1]b;  // Start video Recording commmand
-	 	BLEBarrel.cmdStopRec =  [0x12, 0, 0, 0, 0x4, 0, 0, 0x5, 0, 0x2, 0xff, 0, 0, 0x80, 0, 0, 0x10, 0x1]b; // Stop recording command
+ 	BLEBarrel.cmdStopRec =  [0x12, 0, 0, 0, 0x4, 0, 0, 0x5, 0, 0x2, 0xff, 0, 0, 0x80, 0, 0, 0x10, 0x1]b; // Stop recording command
 //    	BLEBarrel.recState = BLEBarrel.stateStopRec;
     	BLEBarrel.videoMode = true;
-		
+    		
         switch(nb) {
-			case 0:
-				BLEBarrel.currentLabel = "Default Video";
-				BLEBarrel.currentMode = "DefaultV";
-				break;
-			
+		case 0:
+			BLEBarrel.currentLabel = "Default Video";
+			BLEBarrel.currentMode = "DefaultV";
+			break;
+		
             case 1 : 
             	BLEBarrel.currentLabel = "5.7k / 30";
             	BLEBarrel.currentMode = BLEBarrel.cmdSet5k30;
@@ -65,7 +45,7 @@ class InputDelegate extends Ui.BehaviorDelegate {
             	break;
             case 7 :
             	BLEBarrel.currentLabel = "Video HDR";
-				// for HDR the start & stop commands are slightly differant
+			// for HDR the start & stop commands are slightly differant
             	BLEBarrel.cmdStartRec[17] = 0x03;
             	BLEBarrel.cmdStartRec[7] = 0x04;
             	BLEBarrel.cmdStopRec[17] = 0x03;
@@ -82,7 +62,7 @@ class InputDelegate extends Ui.BehaviorDelegate {
             	break;
             case 9 :
             	BLEBarrel.currentLabel = "BulletTime";
-				// for Bullet time the start & stop commands are slightly differant
+			// for Bullet time the start & stop commands are slightly differant
             	BLEBarrel.cmdStartRec[17] = 0x02;
             	BLEBarrel.cmdStopRec[17] = 0x02;
             	BLEBarrel.currentMode = BLEBarrel.cmdSetBullet;
@@ -92,7 +72,7 @@ class InputDelegate extends Ui.BehaviorDelegate {
             	// fill GPS position before sending command.
 //            	header = [0x3f, 0x00, 0x00, 0x00, 0x04, 0x00, 0x00, 0x03, 0x00, 0x02, 0xe3, 0x00, 0x00, 0x80, 0x00, 0x00, 0x12, 0x2d, 0x5a, 0x18]b;
 //				filler = [0x6a, 0x02, 0x30, 0x01, 0x9a, 0x01, 0x00, 0xaa, 0x01, 0x00, 0xba, 0x01, 0x00, 0xd2, 0x01, 0x00, 0xe2, 0x02, 0x00]b;
-				// get GPS info for Photo mode
+			// get GPS info for Photo mode
 //				temp64 = BLEBarrel.BleDevice.toDouble(location[0]);
 //				header.addAll(temp64);
 //				temp64 = BLEBarrel.BleDevice.toDouble(location[1]);
@@ -101,7 +81,7 @@ class InputDelegate extends Ui.BehaviorDelegate {
 //				header.addAll(temp64);
 //				header.addAll(filler);
 //				BLEBarrel.cmdSetPhoto = header;
-				BLEBarrel.currentMode = BLEBarrel.cmdSetPhoto;
+			BLEBarrel.currentMode = BLEBarrel.cmdSetPhoto;
             	BLEBarrel.videoMode = false;
             	break;
             case 11 :
@@ -123,13 +103,13 @@ class InputDelegate extends Ui.BehaviorDelegate {
             	BLEBarrel.cmdStopRec[17] = 0x02;
             	BLEBarrel.cmdStopRec[16] = 0x08;
             	BLEBarrel.cmdStopRec[7] = 0x17;
-				break;
-			case 14 :
-				BLEBarrel.currentLabel = "Night Shot";
+			break;
+		case 14 :
+			BLEBarrel.currentLabel = "Night Shot";
             	BLEBarrel.currentMode = BLEBarrel.cmdSetNightShot;
             	BLEBarrel.videoMode = false;
             	break;
-			 case 15 : 
+		 case 15 : 
             	BLEBarrel.currentLabel = "8k / 30";
             	BLEBarrel.currentMode = BLEBarrel.cmdSet8k30;
             	break;  
@@ -138,14 +118,34 @@ class InputDelegate extends Ui.BehaviorDelegate {
 //       	BLEBarrel.currentLabel = item.getLabel();
 //        Sys.println("Menu Item:" + BLEBarrel.currentLabel + " cmd : " + BLEBarrel.currentMode);
 //        Ui.popView(Ui.SLIDE_IMMEDIATE);
-        mMessage = BLEBarrel.currentLabel + "\n" + "Tap Here";
-		WatchUi.requestUpdate();
+        BLEBarrel.mMessage = BLEBarrel.currentLabel + "\n" + "Tap Here";
+	Ui.requestUpdate();
         
-	
-	}
+
+}
+
+class InputDelegate extends Ui.BehaviorDelegate {
+//	hidden var bleDevice;
+	var photoHeader as Lang.ByteArray = new [0]b;
+	var photoFiller as Lang.ByteArray = new [0]b;
+	var nbMode as Lang.Number = 0;
+	var maxNbMode as Lang.Number = 0;
+
+	function initialize() {
+        BehaviorDelegate.initialize();
+		// BLEBarrel.menuLevel = 2;
+		if (BLEBarrel.menuLevel == 0) {
+			maxNbMode = 0;
+		} else {
+			maxNbMode = BLEBarrel.menuLevel + 13;
+		}
+//        bleDevice = device;
+    }
+
 	// Capture Start / Stop button event
-    function onTap(evt) {
-    	var x = evt.getCoordinates()[0];
+    function onTap(evt as Ui.ClickEvent) as Lang.Boolean {
+    	var coords = evt.getCoordinates();
+    	var x = coords[0];
 		System.println(x + " Type " + evt.getType());
 		if (x < width*0.15) {
 			// menu left
@@ -164,26 +164,34 @@ class InputDelegate extends Ui.BehaviorDelegate {
 			}
 			switchMode(nbMode);
 		} else if (BLEBarrel.recState == BLEBarrel.stateStopRec) {
-       		BLEBarrel.recState = BLEBarrel.stateStarting;
-            mMessage = "Starting...";
-            WatchUi.requestUpdate();
-            if (BLEBarrel.videoMode) {
-				if (!BLEBarrel.currentLabel.equals("Default Video")) {
-            		bleDevice.sendCMD(BLEBarrel.currentMode);
-            		bleDevice.sendCMD(BLEBarrel.cmdApply);
+			var dev = bleDevice;
+			if (dev != null) {
+        		BLEBarrel.recState = BLEBarrel.stateStarting;
+            	BLEBarrel.mMessage = "Starting...";
+            	Ui.requestUpdate();
+            	if (BLEBarrel.videoMode) {
+				if (!BLEBarrel.currentLabel.equals("Default Video") && (BLEBarrel.currentMode instanceof Lang.ByteArray)) {
+            		dev.sendCMD(BLEBarrel.currentMode as Lang.ByteArray);
 				}
-            	bleDevice.sendCMD(BLEBarrel.cmdStartRec);
-            } else {
-               	bleDevice.sendCMD(BLEBarrel.cmdApply);
-            	bleDevice.sendCMD(BLEBarrel.currentMode);
-            }
+            		dev.sendCMD(BLEBarrel.cmdApply);
+            		dev.sendCMD(BLEBarrel.cmdStartRec);
+            	} else {
+                	dev.sendCMD(BLEBarrel.cmdApply);
+					if (BLEBarrel.currentMode instanceof Lang.ByteArray) {
+						dev.sendCMD(BLEBarrel.currentMode as Lang.ByteArray);
+					}
+            	}
+        	}
         } else if (BLEBarrel.recState == BLEBarrel.stateStartRec) {
+        	var dev = bleDevice;
+        	if (dev != null) {
         		BLEBarrel.recState = BLEBarrel.stateStopping;
-            	mMessage = "Stopping...";
-            	bleDevice.sendCMD(BLEBarrel.cmdStopRec);
+            	BLEBarrel.mMessage = "Stopping...";
+            	dev.sendCMD(BLEBarrel.cmdStopRec);
+        	}
         } else {
-        		// Starting or Stopping a recording might take time. 
-        		// Do nothing until recording has started or stopped. 
+        	// Starting or Stopping a recording might take time. 
+        	// Do nothing until recording has started or stopped. 
 				// to debug allow a second time the menu to appear...
         }
         return true;
