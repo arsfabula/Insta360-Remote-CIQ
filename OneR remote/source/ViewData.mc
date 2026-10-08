@@ -1,7 +1,7 @@
 using Toybox.WatchUi;
 using Toybox.System;
 using BLEBarrel;
-const vNum = "0.9.91";
+const vNum = "0.9.93";
 
 
 class ViewData extends WatchUi.View {

@@ -78,27 +78,37 @@ class InputDelegate extends Ui.BehaviorDelegate {
 			case 2:
 				menu.addItem(new Ui.MenuItem("8K / 30","","8k30",{}));
 				menu.addItem(new Ui.MenuItem("5.7K / 30","","5k30",{}));
-        		menu.addItem(new Ui.MenuItem("5.7K / 25","","5k25",{}));
-        		menu.addItem(new Ui.MenuItem("5.7K / 24","","5k24",{}));
-        		menu.addItem(new Ui.MenuItem("4K / 50","","4k50",{}));
-        		menu.addItem(new Ui.MenuItem("4K / 30","","4k30",{}));
-        		menu.addItem(new Ui.MenuItem("HDR Video","","HDR",{}));
-        		menu.addItem(new Ui.MenuItem("Timelapse","","TimeLapse",{}));
-        		menu.addItem(new Ui.MenuItem("Bullet Time","","BulletTime",{}));
-        		menu.addItem(new Ui.MenuItem("Photo","","Photo",{}));
-        		menu.addItem(new Ui.MenuItem("Photo HDR","","PhotoHDR",{}));
-        		menu.addItem(new Ui.MenuItem("Photo Burst","","PhotoBurst",{}));
-        		menu.addItem(new Ui.MenuItem("Photo Interval","","PhotoInterval",{}));
-        		menu.addItem(new Ui.MenuItem("Night Shot","","NightShot",{}));
+        	menu.addItem(new Ui.MenuItem("5.7K / 25","","5k25",{}));
+        	menu.addItem(new Ui.MenuItem("5.7K / 24","","5k24",{}));
+        	menu.addItem(new Ui.MenuItem("4K / 50","","4k50",{}));
+        	menu.addItem(new Ui.MenuItem("4K / 30","","4k30",{}));
+        	menu.addItem(new Ui.MenuItem("HDR Video","","HDR",{}));
+        	menu.addItem(new Ui.MenuItem("Timelapse","","TimeLapse",{}));
+        	menu.addItem(new Ui.MenuItem("Bullet Time","","BulletTime",{}));
+        	menu.addItem(new Ui.MenuItem("Photo","","Photo",{}));
+        	menu.addItem(new Ui.MenuItem("Photo HDR","","PhotoHDR",{}));
+        	menu.addItem(new Ui.MenuItem("Photo Burst","","PhotoBurst",{}));
+        	menu.addItem(new Ui.MenuItem("Photo Interval","","PhotoInterval",{}));
+        	menu.addItem(new Ui.MenuItem("Night Shot","","NightShot",{}));
+			break;
+			case 3:
+				// X6 / UCD2: one entry, nothing else. The legacy envelope must
+				// not be reachable for this camera, so no resolution submenu,
+				// no GPS toggle and no "Default Video" below.
+				menu.addItem(new Ui.MenuItem("X6 Video","","X6Video",{}));
+				break;
 		}
-        
-        if (BLEBarrel.GPSon) {
-        	menu.addItem(new Ui.MenuItem("GPS OFF","","GPSon",{}));
-        } else {
-        	menu.addItem(new Ui.MenuItem("GPS ON","","GPSon",{}));
-		} 
-		menu.addItem(new Ui.MenuItem("Default Video","","DefaultV",{}));
-        
+
+		// The GPS toggle and "Default Video" belong to the legacy envelope.
+		if (BLEBarrel.menuLevel != 3) {
+			if (BLEBarrel.GPSon) {
+				menu.addItem(new Ui.MenuItem("GPS OFF","","GPSon",{}));
+			} else {
+				menu.addItem(new Ui.MenuItem("GPS ON","","GPSon",{}));
+			}
+			menu.addItem(new Ui.MenuItem("Default Video","","DefaultV",{}));
+		}
+
         Ui.pushView(menu, new Menu2Delegate(), Ui.SLIDE_IMMEDIATE);
         
         return true;
@@ -136,6 +146,9 @@ function onSelect(item) as Void {
 	 	BLEBarrel.cmdStopRec =  [0x12, 0, 0, 0, 0x4, 0, 0, 0x5, 0, 0x2, 0xff, 0, 0, 0x80, 0, 0, 0x10, 0x1]b; // Stop recording command
     	BLEBarrel.recState = BLEBarrel.stateStopRec;
     	BLEBarrel.videoMode = true;
+		// Only the X6Video entry below re-arms UCD2; any other menu selection
+		// returns the widget to the legacy envelope.
+		BLEBarrel.ucd2Armed = false;
 		
 		itemID = item.getId();
         switch(itemID) {
@@ -217,6 +230,16 @@ if ((BLEBarrel.GPSon) && (location != null) && (info != null)) {
              	break;
 			case "DefaultV" :
 				BLEBarrel.currentMode = "DefaultV";
+				break;
+			case "X6Video" :
+				// Arm the UCD2 envelope. currentMode stays at the "DefaultV"
+				// sentinel on purpose: the apply block below is guarded by it
+				// and would otherwise hand sendCMD() a String where it expects
+				// a ByteArray. The intent of the spec (no legacy frame reaches
+				// the camera while armed) is met either way.
+				BLEBarrel.ucd2Armed = true;
+				BLEBarrel.currentMode = "DefaultV";
+				BLEBarrel.currentLabel = "X6 Video";
          }
 		// Name of mode to be displayed. 
         if (chglbl) {
