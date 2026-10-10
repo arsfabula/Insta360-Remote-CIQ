@@ -1,4 +1,4 @@
-"""Generate the per-sequence UCD2 trailer tables for BLEBarrel.mc.
+"""Generate the per-sequence UCD2 trailer table for BLEBarrel.mc.
 
 The on-watch CRC loop tripped the VM watchdog ("Code Executed Too Long"), so
 the trailer must be a lookup, not a computation. Every frame this widget ever
@@ -8,9 +8,15 @@ sequence, and 256 entries cover any sequence the transmitter is allowed to
 use. The bytes written here come from insta360_ucd2.checksum, the exact
 reference the golden frames in test_golden.py are pinned to.
 
-Writes to stdout two Monkey C declarations:
-    const ucd2TrailStart = [ ... ]b;   // index = seq, one 4 byte LE trailer
-    const ucd2TrailStop  = [ ... ]b;
+Memory: BLEBarrel holds ONE table, as a hex string carried in the code
+section (const, not a heap object built at module init). The STOP trailer is
+derived at stamp time as START XOR ucd2TrailStopXor: the trailing checksum is
+linear in the frame bytes and the two frames differ only in byte 12, so the
+delta is one constant. Deriving it keeps the barrel ~1KB leaner, which matters
+on the low-memory watch that hit "Out Of Memory Error" at module load.
+
+Writes to stdout a Monkey C declaration:
+    const ucd2TrailStartHex = "<256*4 bytes as 2048 hex chars>";
 """
 
 import sys
@@ -20,39 +26,32 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import insta360_ucd2 as u
 
 
-def emit(name, op):
-    rows = []
+def start_hex():
+    chars = []
     for seq in range(256):
-        frame = u.build_file_command(seq, op, u.ucd2ReqId if hasattr(u, "ucd2ReqId") else 1)
+        frame = u.build_file_command(seq, u.CMD_START_CAPTURE, 1)
         if len(frame) != 25:
-            raise SystemExit(f"{name}: build_file_command({seq},{op}) != 25 bytes")
-        trailer = frame[-4:]
-        rows.append("0x%02x, 0x%02x, 0x%02x, 0x%02x" % tuple(trailer))
-    lines = []
-    for i in range(0, len(rows), 4):
-        lines.append("\t\t" + ", ".join(rows[i:i + 4]) + ",")
-    body = "\n".join(lines).rstrip(",")
-    print(f"const {name} = [\n{body}\n\t]b;")
+            raise SystemExit(f"build_file_command({seq},START) != 25 bytes")
+        chars.append(frame[-4:].hex())
+    return "".join(chars)
 
 
-def emit(name, op):
-    rows = []
+def stop_xor():
+    """stop = start XOR this constant, for every seq (must be exactly one set)."""
+    deltas = set()
     for seq in range(256):
-        frame = u.build_file_command(seq, op, 1)
-        if len(frame) != 25:
-            raise SystemExit(f"{name}: build_file_command({seq},{op}) != 25 bytes")
-        trailer = frame[-4:]
-        rows.append("0x%02x, 0x%02x, 0x%02x, 0x%02x" % tuple(trailer))
-    lines = []
-    for i in range(0, len(rows), 4):
-        lines.append("\t\t" + ", ".join(rows[i:i + 4]) + ",")
-    body = "\n".join(lines).rstrip(",")
-    return f"const {name} = [\n{body}\n\t]b;"
+        st = bytes(u.build_file_command(seq, u.CMD_START_CAPTURE, 1)[-4:])
+        sp = bytes(u.build_file_command(seq, u.CMD_STOP_CAPTURE, 1)[-4:])
+        deltas.add(bytes(a ^ b for a, b in zip(st, sp)))
+    if len(deltas) != 1:
+        raise SystemExit(f"expected one XOR delta, got {len(deltas)}")
+    return tuple(deltas.pop())
 
 
 if __name__ == "__main__":
-    out = [emit("ucd2TrailStart", u.CMD_START_CAPTURE), "", emit("ucd2TrailStop", u.CMD_STOP_CAPTURE)]
-    text = "\n".join(out)
+    text = f'const ucd2TrailStartHex = "{start_hex()}";\n'
+    x = stop_xor()
+    text += "const ucd2TrailStopXor = [0x%02x, 0x%02x, 0x%02x, 0x%02x]b;\n" % x
     if len(sys.argv) > 1:
         with open(sys.argv[1], "w", encoding="utf-8", newline="\n") as f:
             f.write(text)

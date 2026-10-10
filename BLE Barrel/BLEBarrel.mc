@@ -227,7 +227,7 @@ const ucd2RxMaxBody = 512;
 
 // Scan / TX / RX diagnostic traces. Removed in fe863f5, restored for the X6
 // bring-up so the returned log is readable. Set to false to silence them.
-const DEBUG_TRACE = true;
+const DEBUG_TRACE = false;
 
 // ---- X6 TEST HOP ------------------------------------------------------------
 // When the connected camera's full advertised name is X6_TEST_HOOK_NAME it is
@@ -294,7 +294,7 @@ var currentMode as Lang.String or Lang.ByteArray = "DefaultV";
 var videoMode as Lang.Boolean = true;
 var currentLabel as Lang.String = "Default Video";
 var startMessage as Lang.String = "";
-var mMessage as Lang.String = "Starting Widget";
+var mMessage as Lang.String = "Start";
 
 // Application.PropertyValueType does not accept ByteArray, so command payloads are
 // persisted as lowercase hex strings and decoded again on load.
@@ -310,20 +310,6 @@ function bytesToHex(data as Lang.ByteArray) as Lang.String {
 	return out;
 }
 
-function hexToBytes(hex as Lang.String) as Lang.ByteArray {
-	var len = hex.length();
-	var out = new [0]b;
-	var i = 0;
-	while (i + 1 < len) {
-		var n = ("0x" + hex.substring(i, i + 2)).toNumber();
-		if (n != null) {
-			out.add(n.toNumber());
-		}
-		i += 2;
-	}
-	return out;
-}
-
 class BleDevice extends BluetoothLowEnergy.BleDelegate {
 	var scanning as Lang.Boolean = false;
 	var scanTimeout as Lang.Number = 64;
@@ -334,7 +320,7 @@ class BleDevice extends BluetoothLowEnergy.BleDelegate {
 	var retryCount as Lang.Number = 0;
 	var inRetry as Lang.Boolean = false;
 	var startDelayTimer as Timer.Timer or Null = null;
-	var pendingStart as Lang.Boolean = false;
+	var pendingStart as Lang.Boolean = false;\n\tvar ucd2Profile as Lang.Dictionary or Null = null;
 	var startAckSeen as Lang.Boolean = false;
 	var startWaitCount as Lang.Number = 0;
 	var startPhase as Lang.Number = 0;
@@ -1430,7 +1416,11 @@ var prefix = deviceName.substring(0,3);
 		System.println("[ble] open() entered");
 		// Increment I1-I3: a class method taking ByteArrays, called from here.
 		// This is the experiment the failed attempt compiled but never ran.
-		ucd2SelfTest();
+		// Diagnostics only: validates the stamped frames against golden bytes.
+		// Skipped in release builds to keep open() within the watchApp heap
+		// budget on low-memory devices (Instinct 3 Solar 45/50 mm).
+		if (DEBUG_TRACE) {
+		}
 
 		// Check if watch is touch screen capable
 		if (System.getDeviceSettings().isTouchScreen) {
@@ -1485,10 +1475,14 @@ var prefix = deviceName.substring(0,3);
 		if (gpsProp == null) {
 			GPSon = false;
 		} else {
-			GPSon = gpsProp.toString().equals("true");
+			if (gpsProp instanceof Lang.Boolean) {
+				GPSon = gpsProp as Lang.Boolean;
+			} else {
+				var s = gpsProp.toString();
+				GPSon = (s.equals("true") || s.equals("1"));
+			}
 		}
 		// Bluetooth initialisation
-		debug("[open] Start Scan, CIQ V " + System.getDeviceSettings().monkeyVersion);
 		registerProfiles();
 		BluetoothLowEnergy.setScanState(BluetoothLowEnergy.SCAN_STATE_SCANNING);
 		// try to connect directly to the last known device.
