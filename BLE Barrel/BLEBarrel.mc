@@ -20,7 +20,6 @@ module BLEBarrel {
 // const DEVICE_NAME6 = "X4 ";
 // const DEVICE_NAME7 = "GO 3";
 
-
 const LBS_SERVICE = BluetoothLowEnergy.stringToUuid("0000BE80-0000-1000-8000-00805F9B34FB");    // Camera Service entry point
 const LBS_RW_CHAR = BluetoothLowEnergy.stringToUuid("0000BE81-0000-1000-8000-00805F9B34FB");    // Camera command channel
 const LBS_NOTIF_CHAR = BluetoothLowEnergy.stringToUuid("0000BE82-0000-1000-8000-00805F9B34FB"); // Camera notification channel
@@ -142,7 +141,6 @@ var GPSaccuracy as Position.Quality = Position.QUALITY_NOT_AVAILABLE;
 var connecting as Lang.Boolean = false;
 var menuLevel as Lang.Number = 1;
 var deviceName as Lang.String = "n/a";
-
 
 var SeqNo as Lang.Number = 1;
 // UCD2 session state. ucd2Armed is set from the menu (X6 Video) or
@@ -312,7 +310,6 @@ class BleDevice extends BluetoothLowEnergy.BleDelegate {
 			kind = retryKindStart;
 		}
 		if (kind == 0) {
-			debug("[ucd2] no UCD2 equivalent for this frame, dropped");
 			return;
 		}
 		var frame = ucd2Frame(op);
@@ -365,7 +362,7 @@ class BleDevice extends BluetoothLowEnergy.BleDelegate {
 				| ((value[UCD2_LEN + 1] & 0xff) << 8)
 				| ((value[UCD2_LEN + 2] & 0xff) << 16);
 			if (declared > ucd2RxMaxBody) {
-				debug("[ucd2] implausible declared length " + declared + ", dropped");
+
 				ucd2RxBuf = null;
 				ucd2RxWant = 0;
 				return false;
@@ -425,13 +422,11 @@ class BleDevice extends BluetoothLowEnergy.BleDelegate {
 	function onUcd2Frame() as Void {
 		cancelRetry();
 		if (recState == stateStarting) {
-			debug("[ucd2] reply to start, reporting Shooting");
 			mMessage = "Shooting";
 			recState = stateStartRec;
 			startRecTime = Time.now();
 			cancelPendingStart();
 		} else if (recState == stateStopping) {
-			debug("[ucd2] reply to stop, reporting Stopped");
 			applyBursts = 0;
 			mMessage = currentLabel + "\n" + startMessage;
 			recState = stateStopRec;
@@ -465,7 +460,6 @@ class BleDevice extends BluetoothLowEnergy.BleDelegate {
 		var dev = device;
 		if (dev == null) {
 			recState = stateStopRec;
-			debug("[sendCMD] No device connected, starting scan");
 			BluetoothLowEnergy.setScanState(BluetoothLowEnergy.SCAN_STATE_SCANNING);
 			return;
 		}
@@ -524,7 +518,6 @@ class BleDevice extends BluetoothLowEnergy.BleDelegate {
 		// chain once the service resolves.
 		var service = dev.getService(LBS_SERVICE);
 		if (service == null) {
-			debug("[sendCMD] service not resolved yet, deferring write");
 			discoverServices(dev);
 			return;
 		}
@@ -549,11 +542,9 @@ class BleDevice extends BluetoothLowEnergy.BleDelegate {
 			// A mode+apply pair was already emitted before this burst (menu
 			// path): the camera is primed, start as soon as this one is acked.
 			startPhase = 1;
-			debug("[start] already primed, waiting for burst ack");
 			t.start(method(:onStartDelay), START_WAIT_MS, false);
 		} else {
 			startPhase = 0;
-			debug("[start] pausing before second mode+apply burst");
 			t.start(method(:onStartDelay), START_DELAY_MS, false);
 		}
 	}
@@ -568,7 +559,6 @@ class BleDevice extends BluetoothLowEnergy.BleDelegate {
 			// second one and let its ack gate the start (menu order).
 			startPhase = 1;
 			startWaitCount = 0;
-			debug("[start] sending second mode+apply burst");
 			if (currentMode instanceof Lang.ByteArray) {
 				transmit(currentMode as Lang.ByteArray);
 			}
@@ -584,7 +574,6 @@ class BleDevice extends BluetoothLowEnergy.BleDelegate {
 		}
 		startWaitCount += 1;
 		if (startWaitCount > START_WAIT_MAX) {
-			debug("[start] no ack after second burst, sending anyway");
 			fireStart();
 			return;
 		}
@@ -602,7 +591,6 @@ class BleDevice extends BluetoothLowEnergy.BleDelegate {
 			startDelayTimer.stop();
 			startDelayTimer = null;
 		}
-		debug("[start] sending cmdStartRec");
 		transmit(cmdStartRec);
 	}
 
@@ -637,12 +625,12 @@ class BleDevice extends BluetoothLowEnergy.BleDelegate {
 			var ch = service.getCharacteristic(LBS_RW_CHAR);
 			if (ch != null) {
 				writing = true;
-				debug("[kickQueue] n=" + queue.size());
+
 				ch.requestWrite(queue[0] as Lang.ByteArray, {:writeType => BluetoothLowEnergy.WRITE_TYPE_DEFAULT});
 			}
 		} catch (ex) {
 			writing = false;
-			debug("[kickQueue] exception: " + ex.getErrorMessage());
+
 		}
 	}
 
@@ -683,7 +671,7 @@ class BleDevice extends BluetoothLowEnergy.BleDelegate {
 		}
 		retryCount += 1;
 		if (retryCount > RETRY_MAX) {
-			debug("[retry] giving up kind=" + retryKind);
+
 			var wasStart = (retryKind == retryKindStart);
 			cancelRetry();
 			// Unblock the UI: a start that never took still leaves the camera
@@ -698,7 +686,7 @@ class BleDevice extends BluetoothLowEnergy.BleDelegate {
 			WatchUi.requestUpdate();
 			return;
 		}
-		debug("[retry] resend kind=" + retryKind + " attempt=" + retryCount);
+
 		inRetry = true;
 		if (retryKind == retryKindStart) {
 			resendStart();
@@ -767,7 +755,7 @@ class BleDevice extends BluetoothLowEnergy.BleDelegate {
 		if (isRecReport and (value[17] > 0x00)) {
 			// debug("Start Shooting");
 			if (recState != stateStartRec) {
-				debug("[onChar] rec report START code=" + value[7] + " v17=" + value[17]);
+
 			}
 			cancelRetry();
 			cancelPendingStart();
@@ -779,7 +767,7 @@ class BleDevice extends BluetoothLowEnergy.BleDelegate {
 		} else 	if (isRecReport and (value[17] == 0x00)) {
 			// debug("Stop Shoot");
 			if (recState != stateStopRec) {
-				debug("[onChar] rec report STOP code=" + value[7] + " v17=" + value[17]);
+
 			}
 			cancelRetry();
 			cancelPendingStart();
@@ -799,11 +787,10 @@ class BleDevice extends BluetoothLowEnergy.BleDelegate {
 				// start; the ack of the first burst must be ignored.
 				if (pendingStart and startPhase == 1 and !startAckSeen) {
 					startAckSeen = true;
-					debug("[onChar] second burst acked, firing deferred start");
 					fireStart();
 				}
 			} else {
-				 debug("Unknown Response " + value.toString());
+
 				// mMessage = "-";
 			}
 		  }
@@ -854,9 +841,10 @@ class BleDevice extends BluetoothLowEnergy.BleDelegate {
     	return (hours.toString() + ":" + min.format("%02d") + ":" + sec.format("%02d"));
 	}
 
-
 	function onProfileRegister(uuid as BluetoothLowEnergy.Uuid, status as BluetoothLowEnergy.Status) as Void {
-		debug("registered: " + uuid.toString() + " " + status.toString());
+		if (DEBUG_TRACE) {
+			debug("registered");
+		}
 	}
 
 	// Called by open() function, part of initialization process.
@@ -878,7 +866,7 @@ function registerProfiles() as Void {
 		try {
 			BluetoothLowEnergy.registerProfile(ucd2Profile);
 		} catch (ex) {
-			debug("[sendCMD] exception: " + ex.getErrorMessage());
+
 		}
 
 	}
@@ -888,7 +876,6 @@ function registerProfiles() as Void {
 	// the link is usable instead of being torn down on the first command.
 	function discoverServices(dev as BluetoothLowEnergy.Device) as Void {
 		if (dev == null) {
-			debug("[discover] no device");
 			return;
 		}
 		try {
@@ -901,25 +888,26 @@ function registerProfiles() as Void {
 				}
 				var su = svc.getUuid();
 				if (su == null) {
-					debug("[discover] service <null uuid>");
 				} else {
-					debug("[discover] service " + su.toString());
+
 				}
 				count += 1;
 			}
 			var lbs = dev.getService(LBS_SERVICE);
-			debug("[discover] done count=" + count + " lbsResolved=" + (lbs != null));
+
 			// Commands queued while the service was unresolved are flushed here.
 			if (lbs != null) {
 				kickQueue(dev);
 			}
 		} catch (ex) {
-			debug("[discover] exception: " + ex.getErrorMessage());
+
 		}
 	}
 
 	function onScanStateChange(scanState as BluetoothLowEnergy.ScanState, status as BluetoothLowEnergy.Status) as Void {
-		debug("scanstate: " + scanState.toString() + " " + status.toString());
+		if (DEBUG_TRACE) {
+			debug("scanstate");
+		}
 
 		if (scanState == BluetoothLowEnergy.SCAN_STATE_SCANNING) {
 			scanning = true;
@@ -951,7 +939,7 @@ function registerProfiles() as Void {
 				try {
 					BluetoothLowEnergy.setScanState(BluetoothLowEnergy.SCAN_STATE_OFF);
 				} catch (ex) {
-				    debug("[onConStateChg] OFF exception: " + ex.getErrorMessage());
+
 			    }
 
 				scanning = false;
@@ -979,7 +967,7 @@ function registerProfiles() as Void {
 			BluetoothLowEnergy.setScanState(BluetoothLowEnergy.SCAN_STATE_OFF);
 			// debug("[connect] scanning OFF");
 		} catch (ex) {
-		    debug("[connect] scan OFF exception: " + ex.getErrorMessage());
+
 		}
 		try {
 			device = BluetoothLowEnergy.pairDevice(result);
@@ -993,7 +981,7 @@ function registerProfiles() as Void {
 				currentLabel = "X6 Video";
 			}
 		} catch (ex) {
-		    debug("[Connect] Pair exception: " + ex.getErrorMessage());
+
 		}
 		// debug("[connect] is Connected " + device.isConnected());
 
@@ -1092,11 +1080,10 @@ var prefix = deviceName.substring(0,3);
 			WatchUi.requestUpdate() ;
 
 			if (scanTimeout == 0) {
-				debug("[onSR] Scan timeout, scan OFF");
 				try {
 					BluetoothLowEnergy.setScanState(BluetoothLowEnergy.SCAN_STATE_OFF);
 				} catch (ex) {
-			    	debug("[onConStateChg] OFF exception: " + ex.getErrorMessage());
+
 		    	}
 			}
 		}
@@ -1176,7 +1163,6 @@ var prefix = deviceName.substring(0,3);
 		// 55-62 Heading, degrees  (double float)
 		// 63-70 Altitude Meters (double float)
 
-
 		var header = [0x47, 0x00, 0x00, 0x00, 0x04, 0x00, 0x00, 0x35, 0x00, 0x02, 0xff, 0x00, 0x00, 0x80, 0x00, 0x00, 0x0a, 0x35]b;
 		var filler = [0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x41]b;
 		var latitude = 0;
@@ -1191,7 +1177,6 @@ var prefix = deviceName.substring(0,3);
 		GPSaccuracy = info.accuracy;
 		WatchUi.requestUpdate();
 		// debug("[sendPosition] Accuracy: " + GPSaccuracy.toString());
-
 
 		if ((device == null) or (recState != stateStartRec)) { return; }
 
@@ -1265,7 +1250,6 @@ var prefix = deviceName.substring(0,3);
 			sendCMD(header);
 		}
 	}
-
 
 	function open() as Void {
 		System.println("[ble] open() entered");
@@ -1343,7 +1327,6 @@ var prefix = deviceName.substring(0,3);
 	}
 
 	function close() as Void {
-		debug("close");
 		ucd2Armed = false;
 		ucd2RxBuf = null;
 		ucd2RxWant = 0;
@@ -1365,6 +1348,5 @@ var prefix = deviceName.substring(0,3);
 		}
 	}
 }
-
 
 }
