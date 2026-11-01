@@ -1,6 +1,7 @@
 # Do not hand edit this file. To make changes right click
 # on the project and select "Configure Monkey Barrels".
 
-BLEBarrel = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\BLE Barrel-1.0.0.barrel"
-base.barrelPath = $(base.barrelPath);$(BLEBarrel)
+BLEBarrel = "C:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\monkey.jungle"
+CapacitesBarrel = "C:\Users\greg\git\Insta360-Remote-CIQ\Capacites Barrel\monkey.jungle"
+base.barrelPath = $(base.barrelPath);$(BLEBarrel);$(CapacitesBarrel)
 

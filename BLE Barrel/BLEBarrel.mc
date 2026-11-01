@@ -12,124 +12,124 @@ using Toybox.Timer;
 
 module BLEBarrel {
 
-// const DEVICE_NAME = "ONE "; // Full name is "ONE R DV6W5S";
-// const DEVICE_NAME2 = "GO2 ";
-// const DEVICE_NAME3 = "X3 "; // Full name is "X3 7MN5JB";
-// const DEVICE_NAME4 = "GO3 ";
-// const DEVICE_NAME5 = "Ace ";
-// const DEVICE_NAME6 = "X4 ";
-// const DEVICE_NAME7 = "GO 3";
 
-const LBS_SERVICE = BluetoothLowEnergy.stringToUuid("0000BE80-0000-1000-8000-00805F9B34FB");    // Camera Service entry point
-const LBS_RW_CHAR = BluetoothLowEnergy.stringToUuid("0000BE81-0000-1000-8000-00805F9B34FB");    // Camera command channel
-const LBS_NOTIF_CHAR = BluetoothLowEnergy.stringToUuid("0000BE82-0000-1000-8000-00805F9B34FB"); // Camera notification channel
+
+
+
+
+
+
+
+const LBS_SERVICE = BluetoothLowEnergy.stringToUuid("0000BE80-0000-1000-8000-00805F9B34FB");
+const LBS_RW_CHAR = BluetoothLowEnergy.stringToUuid("0000BE81-0000-1000-8000-00805F9B34FB");
+const LBS_NOTIF_CHAR = BluetoothLowEnergy.stringToUuid("0000BE82-0000-1000-8000-00805F9B34FB");
 const LBS_NOTIF_DESC = BluetoothLowEnergy.cccdUuid();
-// b after the array is for ByteArray
-const stateBusy =  0xf4; // Byte Array starts with  a "33" Error message when camera is busy
-const stateCmdErr = 34; // Byte Array starts with a "34" Error message when an invalid command is sent.
+
+const stateBusy = 0xf4;
+const stateCmdErr = 34;
 const stateStandby = [0x7, 0, 0, 0, 0x5, 0, 0]b;
-const responseSig =[0x00, 0x00, 0x04, 0x00, 0x00]b;
+const responseSig = [0x00, 0x00, 0x04, 0x00, 0x00]b;
 const stateStopRec = 0;
 const stateStartRec = 1;
 const stateStarting = 2;
 const stateStopping = 3;
-// Recording-state reports carry the command id shifted left by 4 (the high
-// nibble marks the frame as a response): cmdStartRec uses id 4, so the camera
-// answers 0x40. 0x10 is the older encoding and is still accepted.
-// The flag is byte 17: >0 means "recording", 0 means "stopped".
+
+
+
+
 const recReportCode = 0x40;
 const recReportCodeLegacy = 0x10;
 const SeqPos = 10;
-// The camera silently drops a start/stop burst that races BLE connection
-// setup, so the frame never gets a "rec report" acknowledgement. If none
-// arrives within this window the sequence is resent, up to RETRY_MAX times.
+
+
+
 const RETRY_DELAY_MS = 2500;
 const RETRY_MAX = 3;
 const retryKindStart = 1;
 const retryKindStop = 2;
-// The camera only accepts the recording start if the preceding mode+apply
-// pair has already been acknowledged; sending mode+apply+start as one burst
-// races that and the start is dropped. The mode/apply frames are queued
-// immediately, then the start waits until their acknowledgement (byte 7 ==
-// 0xC8) is observed. START_WAIT_MAX caps the wait if no ack ever arrives.
+
+
+
+
+
 const ACK_CODE = 0xC8;
-// The camera accepts a start only if it has already seen a mode+apply burst
-// that is NOT followed by a start, and then gets a second mode+apply burst
-// carrying the start. The menu path does exactly that; a single direct burst
-// gets acked but its start is ignored. So a direct start pauses, then emits
-// the second burst.
+
+
+
+
+
 const START_DELAY_MS = 1200;
 const START_WAIT_MS = 400;
 const START_WAIT_MAX = 3;
 
-// ---------------------------------------------------------------------------
-// UCD2 - the envelope an Insta360 X6 speaks. Full spec: UCD2-PROTOCOL.md.
-//
-// Constants and variables may live at module level, but every UCD2 FUNCTION is
-// a method of BleDevice below (rebuild rule 1).
-// ---------------------------------------------------------------------------
-const UCD2_HDR = 8;    // magic(4) ver(1) flags(1) type(1) seq(1)
+
+
+
+
+
+
+const UCD2_HDR = 8;
 const UCD2_FLAGS = 0x0c;
 const UCD2_TYPE = 6;
 const UCD2_SEQ = 7;
-const UCD2_LEN = 8;    // declared body length, uint32 LE
-const UCD2_PAY = 12;   // body starts here
+const UCD2_LEN = 8;
+const UCD2_PAY = 12;
 const UCD2_TAIL = 4;
 const ucd2TypeFile = 0x04;
 const ucd2OpStart = 4;
 const ucd2OpStop = 5;
 const ucd2ReqId = 1;
 const ucd2FileMarker = 0x02;
-// 0x8000 as a little-endian uint32, the constant half of a FILE body
+
 const ucd2FileFlags = [0x00, 0x80, 0x00, 0x00]b;
-// Trailer for the two 25-byte FILE frames this widget ever emits
-// (START code=4 / STOP code=5, request_id=1, flags 0x8000).
-//
-// The trailer is checksum(frame[0..20]) per tools/insta360_ucd2.py, but the
-// on-watch CRC loop tripped the VM watchdog ("Code Executed Too Long"), so it
-// is derived from constants instead of computed. Only byte 7 (seq) and byte
-// 12 (op) of the frame ever vary, and the CRC is affine over GF(2), so:
-//
-//     trailer(seq, op) = BASE[op] XOR (ucd2SeqXor[j] for each set bit j of seq)
-//
-// That is 40 bytes of module-scope data instead of the 2048 a per-sequence
-// lookup table needs. The table form WAS the Out Of Memory Error on
-// Instinct 3 Solar 45/50mm: Main.onStart calls `new BLEBarrel.BleDevice()`,
-// which forces this module to load, and module-scope constants are
-// materialised right there - reported as Main.onStart:23. Generated by
-// tools/gen_trailer_table.py; checked against insta360_ucd2.checksum for all
-// 256 sequences and both ops by tools/verify_tables.py.
-//
-// Bytewise XOR on purpose: four of the seq deltas are >= 0x80000000 and would
-// not survive being written as signed integer literals.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 const ucd2TrailStartBase = [0x5b, 0x4d, 0x4b, 0x5a]b;
 const ucd2TrailStopBase = [0x45, 0xfa, 0x0b, 0xf1]b;
-const ucd2SeqXor = [
-		0x9b, 0x7a, 0xbf, 0x64,
-		0x36, 0xf5, 0x7e, 0xc9,
-		0xdb, 0xf7, 0x3c, 0x96,
-		0x01, 0xf2, 0xb8, 0x28,
-		0x02, 0xe4, 0x71, 0x51,
-		0x04, 0xc8, 0xe3, 0xa2,
-		0xbf, 0x8d, 0x06, 0x41,
-		0x7e, 0x1b, 0x0d, 0x82
-]b;
-// A camera reply larger than this is not a frame we can hold; drop it.
+const ucd2SeqXor = [0x9b, 0x7a, 0xbf, 0x64, 0x36, 0xf5, 0x7e, 0xc9, 0xdb, 0xf7, 0x3c, 0x96, 0x01, 0xf2, 0xb8, 0x28, 0x02, 0xe4, 0x71, 0x51, 0x04, 0xc8, 0xe3, 0xa2, 0xbf, 0x8d, 0x06, 0x41, 0x7e, 0x1b, 0x0d, 0x82]b;
+
+
+
+
+
+
+
+
+
+
 const ucd2RxMaxBody = 512;
 
-// Scan / TX / RX diagnostic traces. Removed in fe863f5, restored for the X6
-// bring-up so the returned log is readable. Set to false to silence them.
+
+
 const DEBUG_TRACE = false;
 
-// ---- X6 TEST HOP ------------------------------------------------------------
-// When the connected camera's full advertised name is X6_TEST_HOOK_NAME it is
-// treated as an X6, so the UCD2 path can be exercised on hardware that has no
-// X6 in reach. Setting X6_TEST_HOOK to false makes every reference below dead
-// code. Disabled for the 0.9.39 release: a real X6 device ("X6 " prefix) still
-// auto-arms in connect() regardless.
+
+
+
+
+
+
 const X6_TEST_HOOK = false;
 const X6_TEST_HOOK_NAME = "X5 3S6GEW";
-// ---------------------------------------------------------------------------
+
 
 var recState as Lang.Number = stateStopRec;
 var startRecTime as Time.Moment = Time.now();
@@ -142,42 +142,87 @@ var connecting as Lang.Boolean = false;
 var menuLevel as Lang.Number = 1;
 var deviceName as Lang.String = "n/a";
 
+// CdC item 107, the datum of the pop depth of the resolution sub-menu. The
+// resolutions are not entries of the main menu any more: the entry Video
+// pushes a Menu2 of its own, so the view stack is one deeper while that
+// sub-menu is on the screen, and the selection of a resolution has to leave
+// two views to come back to the main one. The flag lives in this barrel and
+// not in the delegate: the delegate of the sub-menu is a new instance of the
+// same class, so it cannot carry what the delegate of the main menu set. It
+// is set at the push site and cleared at the pop site, the shape the flags of
+// the arming settled at items 68 and 93 (a barrel boolean survives a
+// re-assignment, a patched array did not).
+var resolutionSubmenuOn as Lang.Boolean = false;
+
 var SeqNo as Lang.Number = 1;
-// UCD2 session state. ucd2Armed is set from the menu (X6 Video) or
-// automatically when a real X6 connects, and cleared on every other menu
-// selection, on open() and on close().
+
+
+
 var ucd2Armed as Lang.Boolean = false;
 var ucd2SeqNo as Lang.Number = 1;
-// transmit() stamps byte 10 of a legacy frame; UCD2 owns byte 7 and its own
-// trailer, so it has to bypass that stamp. txUcd2 is only true for the duration
-// of one transmit() call.
+
+
+
 var txUcd2 as Lang.Boolean = false;
 var ucd2TxKind as Lang.Number = 0;
-// A camera reply can straddle two or more 20 byte notifications; the parts are
-// glued here until the declared total length has arrived.
+
+
 var ucd2RxBuf as Lang.ByteArray or Null = null;
 var ucd2RxWant as Lang.Number = 0;
-// Lang.Array (untyped): generic type params must be primitives/symbols.
-// Lang.ByteArray is a class, so Lang.Array<Lang.ByteArray> builds an invalid
-// runtime type descriptor -> "Illegal Access (Out of Bounds)" at module init.
+
+
+
 var queue as Lang.Array = [];
-var cmdStartRec as Lang.ByteArray = [0x12, 0, 0, 0, 0x4, 0, 0, 0x4, 0, 0x2, 0xff, 0, 0, 0x80, 0, 0, 0x8, 0x1]b;  // Start video Recording commmand
-var cmdStopRec as Lang.ByteArray =  [0x12, 0, 0, 0, 0x4, 0, 0, 0x5, 0, 0x2, 0xff, 0, 0, 0x80, 0, 0, 0x10, 0x1]b; // Stop recording command
-var cmdApply as Lang.ByteArray =    [0x10, 0, 0, 0, 0x4, 0, 0, 0xf, 0, 0x2, 0xff, 0, 0, 0x80, 0, 0]b; // Apply settings
-var cmdSet5k24 as Lang.ByteArray =  [0x1a, 0, 0, 0, 0x4, 0, 0, 0x9, 0, 0x2, 0xff, 0, 0, 0x80, 0, 0, 0xa, 0x1, 0x1f, 0x12, 0x3, 0xf8, 0x1, 0x14, 0x18, 0x7]b; // Set video mode to 5.7k 24fps
-var cmdSet5k25 as Lang.ByteArray =  [0x1a, 0, 0, 0, 0x4, 0, 0, 0x9, 0, 0x2, 0xff, 0, 0, 0x80, 0, 0, 0xa, 0x1, 0x1f, 0x12, 0x3, 0xf8, 0x1, 0x13, 0x18, 0x7]b; // Set video mode to 5.7k 25fps
-var cmdSet5k30 as Lang.ByteArray =  [0x1a, 0, 0, 0, 0x4, 0, 0, 0x9, 0, 0x2, 0xff, 0, 0, 0x80, 0, 0, 0xa, 0x1, 0x1f, 0x12, 0x3, 0xf8, 0x1, 0x0a, 0x18, 0x7]b; // Set video mode to 5.7k 30fps
-var cmdSet8k30 as Lang.ByteArray =  [0x1b, 0, 0, 0, 0x4, 0, 0, 0x9, 0, 0x2, 0xff, 0, 0, 0x80, 0, 0, 0xa, 0x1, 0x1f, 0x12, 0x4, 0xf8, 0x1, 0xa7, 0x01, 0x18, 0x7]b; // Set video mode to 8k 30fps
-var cmdSet4k30 as Lang.ByteArray =  [0x17, 0, 0, 0, 0x4, 0, 0, 0x9, 0, 0x2, 0xff, 0, 0, 0x80, 0, 0, 0xa, 0x1, 0x1f, 0x12, 0x0, 0x18, 0x7]b; // Set video mode to 4k 30fps
-var cmdSet4k50 as Lang.ByteArray =  [0x1a, 0, 0, 0, 0x4, 0, 0, 0x9, 0, 0x2, 0xff, 0, 0, 0x80, 0, 0, 0xa, 0x1, 0x1f, 0x12, 0x3, 0xf8, 0x1, 0x0c, 0x18, 0x7]b; // Set video mode to 4k 50fps
-var cmdSet3k100 as Lang.ByteArray = [0x1a, 0, 0, 0, 0x4, 0, 0, 0x9, 0, 0x2, 0xff, 0, 0, 0x80, 0, 0, 0xa, 0x1, 0x1f, 0x12, 0x3, 0xf8, 0x1, 0x0d, 0x18, 0x7]b; // Set video mode to 3k 100fps
-var cmdSetHDR as Lang.ByteArray =   [0x1a, 0, 0, 0, 0x4, 0, 0, 0x9, 0, 0x2, 0xff, 0, 0, 0x80, 0, 0, 0xa, 0x1, 0x1f, 0x12, 0x3, 0xf8, 0x1, 0x15, 0x18, 0x7]b; // Set video mode to HDR
-var cmdSetTL as Lang.ByteArray =    [0x1a, 0, 0, 0, 0x4, 0, 0, 0x9, 0, 0x2, 0xff, 0, 0, 0x80, 0, 0, 0xa, 0x1, 0x1f, 0x12, 0x3, 0xf8, 0x1, 0x0a, 0x18, 0x2]b; // Set video mode to Timelapse
-var cmdSetBullet as Lang.ByteArray = [0x1a, 0, 0, 0, 0x4, 0, 0, 0x9, 0, 0x2, 0xff, 0, 0, 0x80, 0, 0, 0xa, 0x1, 0x1f, 0x12, 0x3, 0xf8, 0x1, 0x0d, 0x18, 0x4]b; // Set video mode to Bullet time
-var cmdSetPhoto as Lang.ByteArray =      [0x3f, 0x00, 0x00, 0x00, 0x04, 0x00, 0x00, 0x03, 0x00, 0x02, 0xe3, 0x00, 0x00, 0x80, 0x00, 0x00, 0x12, 0x2d, 0x5a, 0x18, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x6a, 0x02, 0x30, 0x01, 0x9a, 0x01, 0x00, 0xaa, 0x01, 0x00, 0xba, 0x01, 0x00, 0xd2, 0x01, 0x00, 0xe2, 0x02, 0x00]b;
-var cmdSetPhotoHDR as Lang.ByteArray =   [0x46, 0x00, 0x00, 0x00, 0x04, 0x00, 0x00, 0x03, 0x00, 0x02, 0x00, 0x01, 0x00, 0x80, 0x00, 0x00, 0x08, 0x01, 0x12, 0x2d, 0x5a, 0x18, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x6a, 0x02, 0x30, 0x01, 0x9a, 0x01, 0x00, 0xaa, 0x01, 0x00, 0xba, 0x01, 0x00, 0xd2, 0x01, 0x00, 0xe2, 0x02, 0x00, 0x1a, 0x03, 0x27, 0x00, 0x4e]b;
-var cmdSetPhotoBurst as Lang.ByteArray = [0x41, 0x00, 0x00, 0x00, 0x04, 0x00, 0x00, 0x03, 0x00, 0x02, 0x0a, 0x01, 0x00, 0x80, 0x00, 0x00, 0x08, 0x03, 0x12, 0x2d, 0x5a, 0x18, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x6a, 0x02, 0x30, 0x01, 0x9a, 0x01, 0x00, 0xaa, 0x01, 0x00, 0xba, 0x01, 0x00, 0xd2, 0x01, 0x00, 0xe2, 0x02, 0x00]b;
-var cmdSetInterval as Lang.ByteArray =   [0x3f, 0x00, 0x00, 0x00, 0x04, 0x00, 0x00, 0x03, 0x00, 0x02, 0xe3, 0x00, 0x00, 0x80, 0x00, 0x00, 0x12, 0x2d, 0x5a, 0x18, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x6a, 0x02, 0x30, 0x01, 0x9a, 0x01, 0x00, 0xaa, 0x01, 0x00, 0xba, 0x01, 0x00, 0xd2, 0x01, 0x00, 0xe2, 0x02, 0x00]b;
+var cmdStartRec as Lang.ByteArray = [0x12, 0, 0, 0, 0x4, 0, 0, 0x4, 0, 0x2, 0xff, 0, 0, 0x80, 0, 0, 0x8, 0x1]b;
+var cmdStopRec as Lang.ByteArray = [0x12, 0, 0, 0, 0x4, 0, 0, 0x5, 0, 0x2, 0xff, 0, 0, 0x80, 0, 0, 0x10, 0x1]b;
+var cmdApply as Lang.ByteArray = [0x10, 0, 0, 0, 0x4, 0, 0, 0xf, 0, 0x2, 0xff, 0, 0, 0x80, 0, 0]b;
+var cmdSet5k24 as Lang.ByteArray = [0x1a, 0, 0, 0, 0x4, 0, 0, 0x9, 0, 0x2, 0xff, 0, 0, 0x80, 0, 0, 0xa, 0x1, 0x1f, 0x12, 0x3, 0xf8, 0x1, 0x14, 0x18, 0x7]b;
+var cmdSet5k25 as Lang.ByteArray = [0x1a, 0, 0, 0, 0x4, 0, 0, 0x9, 0, 0x2, 0xff, 0, 0, 0x80, 0, 0, 0xa, 0x1, 0x1f, 0x12, 0x3, 0xf8, 0x1, 0x13, 0x18, 0x7]b;
+var cmdSet5k30 as Lang.ByteArray = [0x1a, 0, 0, 0, 0x4, 0, 0, 0x9, 0, 0x2, 0xff, 0, 0, 0x80, 0, 0, 0xa, 0x1, 0x1f, 0x12, 0x3, 0xf8, 0x1, 0x0a, 0x18, 0x7]b;
+var cmdSet8k30 as Lang.ByteArray = [0x1b, 0, 0, 0, 0x4, 0, 0, 0x9, 0, 0x2, 0xff, 0, 0, 0x80, 0, 0, 0xa, 0x1, 0x1f, 0x12, 0x4, 0xf8, 0x1, 0xa7, 0x01, 0x18, 0x7]b;
+var cmdSet4k30 as Lang.ByteArray = [0x17, 0, 0, 0, 0x4, 0, 0, 0x9, 0, 0x2, 0xff, 0, 0, 0x80, 0, 0, 0xa, 0x1, 0x1f, 0x12, 0x0, 0x18, 0x7]b;
+var cmdSet4k50 as Lang.ByteArray = [0x1a, 0, 0, 0, 0x4, 0, 0, 0x9, 0, 0x2, 0xff, 0, 0, 0x80, 0, 0, 0xa, 0x1, 0x1f, 0x12, 0x3, 0xf8, 0x1, 0x0c, 0x18, 0x7]b;
+var cmdSet3k100 as Lang.ByteArray = [0x1a, 0, 0, 0, 0x4, 0, 0, 0x9, 0, 0x2, 0xff, 0, 0, 0x80, 0, 0, 0xa, 0x1, 0x1f, 0x12, 0x3, 0xf8, 0x1, 0x0d, 0x18, 0x7]b;
+var cmdSetHDR as Lang.ByteArray = [0x1a, 0, 0, 0, 0x4, 0, 0, 0x9, 0, 0x2, 0xff, 0, 0, 0x80, 0, 0, 0xa, 0x1, 0x1f, 0x12, 0x3, 0xf8, 0x1, 0x15, 0x18, 0x7]b;
+var cmdSetTL as Lang.ByteArray = [0x1a, 0, 0, 0, 0x4, 0, 0, 0x9, 0, 0x2, 0xff, 0, 0, 0x80, 0, 0, 0xa, 0x1, 0x1f, 0x12, 0x3, 0xf8, 0x1, 0x0a, 0x18, 0x2]b;
+var cmdSetBullet as Lang.ByteArray = [0x1a, 0, 0, 0, 0x4, 0, 0, 0x9, 0, 0x2, 0xff, 0, 0, 0x80, 0, 0, 0xa, 0x1, 0x1f, 0x12, 0x3, 0xf8, 0x1, 0x0d, 0x18, 0x4]b;
+var cmdSetPhoto as Lang.ByteArray = [0x10, 0, 0, 0, 0x4, 0, 0, 0x3, 0, 0x2, 0xff, 0, 0, 0x80, 0, 0]b;
+var cmdSetPhotoHDR as Lang.ByteArray = [0x46, 0x00, 0x00, 0x00, 0x04, 0x00, 0x00, 0x03, 0x00, 0x02, 0x00, 0x01, 0x00, 0x80, 0x00, 0x00, 0x08, 0x01, 0x12, 0x2d, 0x5a, 0x18, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x6a, 0x02, 0x30, 0x01, 0x9a, 0x01, 0x00, 0xaa, 0x01, 0x00, 0xba, 0x01, 0x00, 0xd2, 0x01, 0x00, 0xe2, 0x02, 0x00, 0x1a, 0x03, 0x27, 0x00, 0x4e]b;
+var cmdSetPhotoBurst as Lang.ByteArray = [0x10, 0, 0, 0, 0x4, 0, 0, 0x3, 0, 0x2, 0xff, 0, 0, 0x80, 0, 0]b;
+
+
+
+
+
+
+var cmdSetPhotoSubBurst as Lang.ByteArray = [0x17, 0, 0, 0, 0x4, 0, 0, 0x7, 0, 0x2, 0xff, 0, 0, 0x80, 0, 0, 0x8, 0x28, 0x12, 0x3, 0xc0, 0x2, 0x3]b;
+var cmdSetPhotoSubNormal as Lang.ByteArray = [0x17, 0, 0, 0, 0x4, 0, 0, 0x7, 0, 0x2, 0xff, 0, 0, 0x80, 0, 0, 0x8, 0x28, 0x12, 0x3, 0xc0, 0x2, 0x0]b;
+var photoBurstMode as Lang.Boolean = false;
+var cmdSetPhotoSubInterval as Lang.ByteArray = [0x17, 0, 0, 0, 0x4, 0, 0, 0x7, 0, 0x2, 0xff, 0, 0, 0x80, 0, 0, 0x8, 0x28, 0x12, 0x3, 0xc0, 0x2, 0x2]b;
+var photoCaptureMode as Lang.Boolean = false;
+var timelapseStopMode as Lang.Boolean = false;
+var cmdStopTimelapse as Lang.ByteArray = [0x12, 0, 0, 0, 0x4, 0, 0, 0x17, 0, 0x02, 0xff, 0, 0, 0x80, 0, 0, 0x08, 0x02]b;
+    // S-23 (CdC item 93): the start of the Timelapse command, with the TimelapseMode member
+    // that names a Starlapse (5 = TIMELAPSE_STARLAPSE_SHOOTING, an OFFICIAL word mark and
+    // never a BLE datum) in field 1 of the body. The flag is re-set on every selection and
+    // armed only by a v12 selection, the shape the stop of the p2 entry settled at item 68.
+
+    var starlapseStartMode as Lang.Boolean = false;
+    var cmdStartStarlapse as Lang.ByteArray = [0x12, 0, 0, 0, 0x4, 0, 0, 0x16, 0, 0x02, 0xff, 0, 0, 0x80, 0, 0, 0x08, 0x05]b;
+
+
+var cmdSetVideoSubNormal as Lang.ByteArray = [0x17, 0, 0, 0, 0x4, 0, 0, 0x7, 0, 0x2, 0xff, 0, 0, 0x80, 0, 0, 0x8, 0x29, 0x12, 0x3, 0xc8, 0x2, 0x0]b;
+var cmdSetVideoSubBulletTime as Lang.ByteArray = [0x17, 0, 0, 0, 0x4, 0, 0, 0x7, 0, 0x2, 0xff, 0, 0, 0x80, 0, 0, 0x8, 0x29, 0x12, 0x3, 0xc8, 0x2, 0x1]b;
+var cmdSetVideoSubTimelapse as Lang.ByteArray = [0x17, 0, 0, 0, 0x4, 0, 0, 0x7, 0, 0x2, 0xff, 0, 0, 0x80, 0, 0, 0x8, 0x29, 0x12, 0x3, 0xc8, 0x2, 0x2]b;
+var cmdSetVideoSubTimeShift as Lang.ByteArray = [0x17, 0, 0, 0, 0x4, 0, 0, 0x7, 0, 0x2, 0xff, 0, 0, 0x80, 0, 0, 0x8, 0x29, 0x12, 0x3, 0xc8, 0x2, 0x4]b;
+var cmdSetVideoSubLoop as Lang.ByteArray = [0x17, 0, 0, 0, 0x4, 0, 0, 0x7, 0, 0x2, 0xff, 0, 0, 0x80, 0, 0, 0x8, 0x29, 0x12, 0x3, 0xc8, 0x2, 0x6]b;
+var cmdSetVideoSubPure as Lang.ByteArray = [0x17, 0, 0, 0, 0x4, 0, 0, 0x7, 0, 0x2, 0xff, 0, 0, 0x80, 0, 0, 0x8, 0x29, 0x12, 0x3, 0xc8, 0x2, 0xb]b;
+var cmdSetVideoSubStarlapse as Lang.ByteArray = [0x17, 0, 0, 0, 0x4, 0, 0, 0x7, 0, 0x2, 0xff, 0, 0, 0x80, 0, 0, 0x8, 0x29, 0x12, 0x3, 0xc8, 0x2, 0xc]b;
+var cmdSetVideoSubRoad as Lang.ByteArray = [0x17, 0, 0, 0, 0x4, 0, 0, 0x7, 0, 0x2, 0xff, 0, 0, 0x80, 0, 0, 0x8, 0x29, 0x12, 0x3, 0xc8, 0x2, 0xe]b;
+var cmdSetVideoSubInstaFrame as Lang.ByteArray = [0x17, 0, 0, 0, 0x4, 0, 0, 0x7, 0, 0x2, 0xff, 0, 0, 0x80, 0, 0, 0x8, 0x29, 0x12, 0x3, 0xc8, 0x2, 0xf]b;
+
+
+var cmdSetInterval as Lang.ByteArray = [0x3f, 0x00, 0x00, 0x00, 0x04, 0x00, 0x00, 0x03, 0x00, 0x02, 0xe3, 0x00, 0x00, 0x80, 0x00, 0x00, 0x12, 0x2d, 0x5a, 0x18, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x6a, 0x02, 0x30, 0x01, 0x9a, 0x01, 0x00, 0xaa, 0x01, 0x00, 0xba, 0x01, 0x00, 0xd2, 0x01, 0x00, 0xe2, 0x02, 0x00]b;
 var cmdSetNightShot as Lang.ByteArray = [0x41, 0x00, 0x00, 0x00, 0x04, 0x00, 0x00, 0x03, 0x00, 0x02, 0x2b, 0x01, 0x00, 0x80, 0x00, 0x00, 0x08, 0x04, 0x12, 0x2d, 0x5a, 0x18, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x6a, 0x02, 0x30, 0x01, 0x9a, 0x01, 0x00, 0xaa, 0x01, 0x00, 0xba, 0x01, 0x00, 0xd2, 0x01, 0x00, 0xe2, 0x02, 0x00]b;
 var cmdHighlight as Lang.ByteArray = [0x36, 0x00, 0x00, 0x00, 0x04, 0x00, 0x00, 0x3c, 0x00, 0x02, 0x8b, 0x01, 0x00, 0x80, 0x00, 0x00, 0x08, 0xde, 0xfc, 0xd3, 0xfa, 0x05, 0x1a, 0x1e, 0x63, 0x6f, 0x6d, 0x2e, 0x69, 0x6e, 0x73, 0x74, 0x61, 0x33, 0x36, 0x30, 0x2e, 0x6b, 0x65, 0x79, 0x54, 0x69, 0x6d, 0x65, 0x2e, 0x68, 0x69, 0x67, 0x68, 0x6c, 0x69, 0x67, 0x68, 0x74]b;
 var cmdTrackThat as Lang.ByteArray = [0x36, 0x00, 0x00, 0x00, 0x04, 0x00, 0x00, 0x3c, 0x00, 0x02, 0xa8, 0x01, 0x00, 0x80, 0x00, 0x00, 0x08, 0xf8, 0xfc, 0xd3, 0xfa, 0x05, 0x1a, 0x1e, 0x63, 0x6f, 0x6d, 0x2e, 0x69, 0x6e, 0x73, 0x74, 0x61, 0x33, 0x36, 0x30, 0x2e, 0x6b, 0x65, 0x79, 0x54, 0x69, 0x6d, 0x65, 0x2e, 0x74, 0x72, 0x61, 0x63, 0x6b, 0x54, 0x68, 0x61, 0x74]b;
@@ -187,8 +232,141 @@ var currentLabel as Lang.String = "Default Video";
 var startMessage as Lang.String = "";
 var mMessage as Lang.String = "Start";
 
-// Application.PropertyValueType does not accept ByteArray, so command payloads are
-// persisted as lowercase hex strings and decoded again on load.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+const NOTIF_MIN = 0x2000;
+const X5_SUB_MODE_NOTIF = 0x2053;
+const X5_OPTIONS_NOTIF = 0x2065;
+const X5_CAPTURE_NUM_NOTIF = 0x2064;
+const X5_CAPTURE_STATUS_NOTIF = 0x2010;
+const X5_RECORD_STATE_NOTIF = 0x2040;
+
+
+const X5_STORAGE_NOTIF = 0x2006;
+const X5_STOP_PUSH_NOTIF = 0x2062;
+
+
+
+
+const X5_PERIODIC_NOTIF = 0x2017;
+const x5PhotoSubModeNotif = 1;
+const x5VideoSubModeNotif = 2;
+
+
+
+
+
+const x5FuncModeNormalVideo = 7;
+const x5SubModeNotApplicable = 100;
+const x5NotifMaxBody = 512;
+
+
+
+
+
+
+
+
+
+
+
+
+
+var x5Armed as Lang.Boolean = false;
+var x5RxBuf as Lang.ByteArray or Null = null;
+var x5RxWant as Lang.Number = 0;
+var x5RxLast as Lang.ByteArray or Null = null;
+var x5RxWasNotif as Lang.Boolean = false;
+var x5RxNewFrame as Lang.Boolean = false;
+var x5RxDeclared as Lang.Number = 0;
+var x5RxArrived as Lang.Number = 0;
+var x5RxTruncated as Lang.Boolean = false;
+var x5VarintEnd as Lang.Number = 0;
+
+
+
+
+
+
+
+
+var x5CodesSeen as Lang.Array = [];
+var x5CodeCounts as Lang.Array = [];
+
+
+
+var notifCode as Lang.Number = 0;
+var notifSeq as Lang.Number = 0;
+var notifVal1 as Lang.Number = 0;
+var notifVal2 as Lang.Number = 0;
+var notifVal3 as Lang.Number = 0;
+var notifOptTag as Lang.Number = 0;
+var notifOptVal as Lang.Number = 0;
+var notifOptTag2 as Lang.Number = 0;
+var notifOptVal2 as Lang.Number = 0;
+var notifOptCount as Lang.Number = 0;
+var notifCount as Lang.Number = 0;
+var notifHex as Lang.String = "";
+
+
+
+
+
+
+
+
+var x5SubPhoto as Lang.Number or Null = null;
+var x5SubVideo as Lang.Number or Null = null;
+var x5ResNow as Lang.Number or Null = null;
+var x5FuncMode as Lang.Number or Null = null;
+
+
+
+
+
+
+var wireTrace as Lang.Boolean = false;
+var wireEvents as Lang.Number = 0;
+
+
+
+
+
+var wireRecv as Lang.Number = 0;
+
+
+
+
+
+
+var x5Seen as Lang.Number = 0;
+
+
+
 const HEX_DIGITS = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "a", "b", "c", "d", "e", "f"] as Lang.Array<Lang.String>;
 
 function bytesToHex(data as Lang.ByteArray) as Lang.String {
@@ -199,33 +377,65 @@ function bytesToHex(data as Lang.ByteArray) as Lang.String {
 		out += HEX_DIGITS[b & 0x0f];
 	}
 	return out;
-}
-
+    }
+(:glance)
 class BleDevice extends BluetoothLowEnergy.BleDelegate {
-	var scanning as Lang.Boolean = false;
-	var scanTimeout as Lang.Number = 64;
-	var device as BluetoothLowEnergy.Device or Null = null;
-	var button as Lang.Number = 0;
-	var retryTimer as Timer.Timer or Null = null;
-	var retryKind as Lang.Number = 0;
-	var retryCount as Lang.Number = 0;
-	var inRetry as Lang.Boolean = false;
-	var startDelayTimer as Timer.Timer or Null = null;
-	var pendingStart as Lang.Boolean = false;
-	var ucd2Profile as Lang.Dictionary or Null = null;
-	var startAckSeen as Lang.Boolean = false;
-	var startWaitCount as Lang.Number = 0;
-	var startPhase as Lang.Number = 0;
-	// Number of mode+apply bursts sent since the camera was last idle. The menu
-	// path emits one from onSelect before the start path emits its own, so a
-	// start arriving with >= 2 bursts is already primed and must not pause.
-	var applyBursts as Lang.Number = 0;
-	var writing as Lang.Boolean = false;
+ var scanning as Lang.Boolean = false;
+ var scanTimeout as Lang.Number = 64;
+ var device as BluetoothLowEnergy.Device or Null = null;
+ var button as Lang.Number = 0;
+ var retryTimer as Timer.Timer or Null = null;
+ var retryKind as Lang.Number = 0;
+ var retryCount as Lang.Number = 0;
+ var inRetry as Lang.Boolean = false;
+ var startDelayTimer as Timer.Timer or Null = null;
+ var pendingStart as Lang.Boolean = false;
+ var ucd2Profile as Lang.Dictionary or Null = null;
+ var startAckSeen as Lang.Boolean = false;
+ var startWaitCount as Lang.Number = 0;
+ var startPhase as Lang.Number = 0;
 
-	hidden function debug(str as Lang.String) as Void {
+
+
+ var applyBursts as Lang.Number = 0;
+ var writing as Lang.Boolean = false;
+
+	protected function debug(str as Lang.String) as Void {
 		if (DEBUG_TRACE) {
 			System.println("[ble] " + str);
 		}
+	}
+
+
+
+
+
+
+
+	protected function wireBytes(tag as Lang.String, data as Lang.Array) as Void {
+		if (!wireTrace) {
+			return;
+		}
+		wireEvents = wireEvents + 1;
+		var s = "";
+		var k = 0;
+		while (k < data.size()) {
+			var b = data[k] as Lang.Number;
+			s = s + HEX_DIGITS[(b >> 4) & 0xf] + HEX_DIGITS[b & 0xf] + " ";
+			k = k + 1;
+		}
+		System.println("[wire] " + tag + " #" + wireEvents.toString() + " n=" + data.size().toString() + " " + s);
+	}
+
+
+
+
+	protected function wireLine(tag as Lang.String, extra as Lang.String) as Void {
+		if (!wireTrace) {
+			return;
+		}
+		wireEvents = wireEvents + 1;
+		System.println("[wire] " + tag + " #" + wireEvents.toString() + " " + extra);
 	}
 
 	function initialize() {
@@ -233,19 +443,19 @@ class BleDevice extends BluetoothLowEnergy.BleDelegate {
 		debug("initialize");
 	}
 
-	// =========================================================================
-	// UCD2 transmit side - see UCD2-PROTOCOL.md and X6-Video-SPEC.md.
-	// Every helper here is a BleDevice method on purpose (rebuild rule 1).
-	// =========================================================================
 
-	// Write the sequence into byte 7 and refresh the 4 byte trailer that
-	// covers it. This is the same value checksum() computes, reached in 8
-	// iterations of bytewise XOR instead of a 21 byte CRC loop (which tripped
-	// the VM watchdog) or a 1KB per-sequence table (which was the Out Of
-	// Memory Error - see the ucd2SeqXor note above).
+
+
+
+
+
+
+
+
+
 	function ucd2StampSeq(f as Lang.ByteArray, seq as Lang.Number) as Void {
 		f[UCD2_SEQ] = seq & 0xff;
-		var base = (f[12] == ucd2OpStop) ? ucd2TrailStopBase : ucd2TrailStartBase;
+		var base = f[12] == ucd2OpStop ? ucd2TrailStopBase : ucd2TrailStartBase;
 		var v0 = base[0];
 		var v1 = base[1];
 		var v2 = base[2];
@@ -268,9 +478,9 @@ class BleDevice extends BluetoothLowEnergy.BleDelegate {
 		f[at + 3] = v3;
 	}
 
-	// One complete FILE frame: 16 byte envelope + 9 byte body + 4 byte trailer.
-	// A fresh array on every call - transmit() stamps the sequence into it and
-	// then slices it up for the 20 byte MTU.
+
+
+
 	function ucd2Frame(op as Lang.Number) as Lang.ByteArray {
 		var f = new [25]b;
 		f[0] = 0x55;
@@ -280,17 +490,17 @@ class BleDevice extends BluetoothLowEnergy.BleDelegate {
 		f[4] = 0x01;
 		f[5] = UCD2_FLAGS;
 		f[6] = ucd2TypeFile;
-		f[7] = 0;                        // sequence, set by ucd2StampSeq below
-		f[8] = 9;                        // declared body length, LE
+		f[7] = 0;
+		f[8] = 9;
 		f[9] = 0;
 		f[10] = 0;
 		f[11] = 0;
-		f[12] = op & 0xff;               // code, LE uint16
+		f[12] = op & 0xff;
 		f[13] = (op >> 8) & 0xff;
 		f[14] = ucd2FileMarker;
-		f[15] = ucd2ReqId & 0xff;        // request_id, LE uint16
+		f[15] = ucd2ReqId & 0xff;
 		f[16] = (ucd2ReqId >> 8) & 0xff;
-		f[17] = ucd2FileFlags[0];        // 0x8000, LE uint32
+		f[17] = ucd2FileFlags[0];
 		f[18] = ucd2FileFlags[1];
 		f[19] = ucd2FileFlags[2];
 		f[20] = ucd2FileFlags[3];
@@ -298,7 +508,7 @@ class BleDevice extends BluetoothLowEnergy.BleDelegate {
 		return f;
 	}
 
-	// The armed path of sendCMD: translate, stamp, queue.
+
 	function ucd2Send(trigger as Lang.ByteArray) as Void {
 		var kind = 0;
 		var op = ucd2OpStart;
@@ -319,26 +529,26 @@ class BleDevice extends BluetoothLowEnergy.BleDelegate {
 		txUcd2 = false;
 	}
 
-	// =========================================================================
-	// UCD2 receive side.
-	// =========================================================================
 
-	// True if the notification starts with the "UCD2" magic.
+
+
+
+
 	function ucd2IsUcd2(value as Lang.ByteArray) as Lang.Boolean {
 		if (value.size() < UCD2_HDR) {
 			return false;
 		}
-		return ((value[0] & 0xff) == 0x55) && ((value[1] & 0xff) == 0x43)
-			&& ((value[2] & 0xff) == 0x44) && ((value[3] & 0xff) == 0x32);
+		return (value[0] & 0xff) == 0x55 and (value[1] & 0xff) == 0x43 and
+			(value[2] & 0xff) == 0x44 and (value[3] & 0xff) == 0x32;
 	}
 
-	// The X6 acknowledges every start/stop with a self-contained 20 byte
-	// UCD2 frame: same header layout as our TX (code at bytes 12-13, request
-	// id at 15-16), code 0x00c8 and our ucd2ReqId echoed. Because it starts
-	// with the UCD2 magic, ucd2RxFeed() restarts its 16+declared(=25) byte
-	// reassembly on it and the assembly never completes - the ack is never
-	// seen and the retry watchdog always burns out. Match it directly on the
-	// notification instead.
+
+
+
+
+
+
+
 	function ucd2IsAck(value as Lang.ByteArray) as Lang.Boolean {
 		if (value.size() < 17) {
 			return false;
@@ -346,21 +556,21 @@ class BleDevice extends BluetoothLowEnergy.BleDelegate {
 		if (!ucd2IsUcd2(value)) {
 			return false;
 		}
-		if ((value[12] & 0xff) != 0xc8 || (value[13] & 0xff) != 0x00) {
+		if ((value[12] & 0xff) != 0xc8 or (value[13] & 0xff) != 0x00) {
 			return false;
 		}
 		var reqid = (value[15] & 0xff) | ((value[16] & 0xff) << 8);
 		return reqid == ucd2ReqId;
 	}
 
-	// A reply can arrive split across notifications because the camera pushes
-	// 25 or 31 byte frames through a 20 byte MTU. Glue the pieces together and
-	// return true exactly once, when the declared total length has arrived.
+
+
+
 	function ucd2RxFeed(value as Lang.ByteArray) as Lang.Boolean {
 		if (ucd2IsUcd2(value)) {
-			var declared = (value[UCD2_LEN] & 0xff)
-				| ((value[UCD2_LEN + 1] & 0xff) << 8)
-				| ((value[UCD2_LEN + 2] & 0xff) << 16);
+
+			var declared = (value[UCD2_LEN] & 0xff) | ((value[UCD2_LEN + 1] & 0xff) << 8) |
+				((value[UCD2_LEN + 2] & 0xff) << 16);
 			if (declared > ucd2RxMaxBody) {
 
 				ucd2RxBuf = null;
@@ -382,7 +592,7 @@ class BleDevice extends BluetoothLowEnergy.BleDelegate {
 			ucd2RxBuf = buf.slice(0, ucd2RxWant);
 		}
 		buf = ucd2RxBuf;
-		if (buf == null || buf.size() < ucd2RxWant) {
+		if (buf == null or buf.size() < ucd2RxWant) {
 			return false;
 		}
 		ucd2RxBuf = null;
@@ -390,7 +600,7 @@ class BleDevice extends BluetoothLowEnergy.BleDelegate {
 		return true;
 	}
 
-	// Concatenate two ByteArrays into a fresh one (ByteArray has no append).
+
 	function ucd2Cat(a as Lang.ByteArray or Null, b as Lang.ByteArray) as Lang.ByteArray {
 		var an = 0;
 		if (a != null) {
@@ -410,15 +620,588 @@ class BleDevice extends BluetoothLowEnergy.BleDelegate {
 		return out;
 	}
 
-// A complete UCD2 frame arrived. The X6 answers every start/stop with a
-// self-contained 20 byte notification carrying code 0x00c8 and our request
-// id (UCD2-PROTOCOL.md 10.1 said the log contained no response at all, but
-// the X6 test log shows one ack per command). ucd2IsAck() claims that frame
-// directly; larger frames from other cameras still arrive here through the
-// reassembly. Either way the camera is alive and talking UCD2, which is
-// enough to stand the acknowledgement watchdog down and to take the in-flight
-// UI forward. The bytes are already dumped by the caller so the tester can
-// decode them later.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	function x5IsFrame(value as Lang.ByteArray) as Lang.Boolean {
+
+		return value.size() >= 10 && value[4] == 0x04 && value[5] == 0x00 && value[6] == 0x00;
+	}
+
+
+
+	function x5IsNotif(value as Lang.ByteArray) as Lang.Boolean {
+		return x5IsFrame(value) && (value[8] & 0xff) >= 0x20;
+	}
+
+	function x5RxFeed(value as Lang.ByteArray) as Lang.Boolean {
+
+
+		if (x5IsFrame(value)) {
+			var declared = (value[0] & 0xff) |
+			    (value[1] & 0xff) << 8 |
+			    (value[2] & 0xff) << 16 |
+			    (value[3] & 0xff) << 24;
+			if (declared > x5NotifMaxBody) {
+
+
+				x5RxBuf = null;
+				x5RxWant = 0;
+				return false;
+			}
+			x5RxWant = declared;
+			x5RxWasNotif = x5IsNotif(value);
+			x5RxNewFrame = true;
+			x5RxBuf = ucd2Cat(null, value);
+		} else if (x5RxBuf == null) {
+			return false;
+		} else if (value.size() == 7 && value[0] == 0x07 && value[4] == 0x05) {
+
+
+
+
+			x5RxBuf = null;
+			x5RxWant = 0;
+			return false;
+		} else {
+
+
+
+			x5RxNewFrame = false;
+			x5RxBuf = ucd2Cat(x5RxBuf, value);
+		}
+		var buf = x5RxBuf;
+		if (buf == null) {
+			return false;
+		}
+		if (buf.size() > x5RxWant) {
+
+
+			x5RxBuf = buf.slice(0, x5RxWant);
+			buf = x5RxBuf;
+		}
+
+
+
+		x5RxDeclared = x5RxWant;
+		x5RxArrived = buf.size();
+		x5RxTruncated = buf.size() < x5RxWant;
+		x5RxLast = buf;
+		if (x5RxTruncated) {
+
+
+			return true;
+		}
+		x5RxBuf = null;
+		return true;
+	}
+
+
+
+
+
+	function x5Varint(buf as Lang.ByteArray, i as Lang.Number, n as Lang.Number) as Lang.Number or Null {
+		var value = 0;
+		var shift = 0;
+		while (i < n) {
+			var o = buf[i] & 0xff;
+			value += (o & 0x7f)<< shift;
+			i++;
+			if ((o & 0x80) == 0) {
+				x5VarintEnd = i;
+				return value;
+			}
+			shift += 7;
+			if (shift > 28) {
+				x5VarintEnd = i;
+				return null;
+			}
+		}
+		x5VarintEnd = n;
+		return null;
+	}
+
+
+
+
+
+
+
+	function x5DecodeNotif() as Void {
+		var buf = x5RxLast;
+
+
+
+		if (buf == null || buf.size() < 16) {
+			return;
+		}
+		notifCode = (buf[7] & 0xff) | ((buf[8] & 0xff) << 8);
+		notifSeq = (buf[10] & 0xff) | ((buf[11] & 0xff) << 8) | ((buf[12] & 0xff) << 16);
+		notifHex = bytesToHex(buf);
+		notifVal1 = 0;
+		notifVal2 = 0;
+		notifVal3 = 0;
+		notifOptTag = 0;
+		notifOptVal = 0;
+		notifOptTag2 = 0;
+		notifOptVal2 = 0;
+		notifOptCount = 0;
+		var n = buf.size();
+		var i = 16;
+		while (i < n) {
+			var tag = x5Varint(buf, i, n);
+			if (tag == null) {
+				break;
+			}
+			i = x5VarintEnd;
+			var field = tag >> 3;
+			var wire = tag & 7;
+			if (wire == 0) {
+				var v = x5Varint(buf, i, n);
+				if (v == null) {
+					break;
+				}
+				i = x5VarintEnd;
+				if (field == x5PhotoSubModeNotif) {
+					notifVal1 = v;
+				} else if (field == x5VideoSubModeNotif) {
+					notifVal2 = v;
+				} else if (field == 3) {
+					notifVal3 = v;
+				}
+			} else if (wire == 2) {
+				var len = x5Varint(buf, i, n);
+				if (len == null) {
+					break;
+				}
+				i = x5VarintEnd;
+				if (i + len <= n) {
+
+
+					var j = i;
+					var k = i + len;
+					while (j < k) {
+						var inner = x5Varint(buf, j, k);
+						if (inner == null) {
+							break;
+						}
+						j = x5VarintEnd;
+						if ((inner & 7) != 0) {
+							break;
+						}
+						var iv = x5Varint(buf, j, k);
+						if (iv == null) {
+							break;
+						}
+						j = x5VarintEnd;
+						if (notifOptCount == 0) {
+							notifOptTag = inner >> 3;
+							notifOptVal = iv;
+						} else if (notifOptCount == 1) {
+							notifOptTag2 = inner >> 3;
+							notifOptVal2 = iv;
+						}
+						notifOptCount++;
+					}
+				}
+				i += len;
+			} else {
+
+
+				break;
+			}
+		}
+
+
+
+
+
+
+		if (x5RxNewFrame && x5RxWasNotif) {
+			notifCount++;
+			// S-25 (CdC item 97): the content of a notification, read once per notification
+			// received, at the site that decodes it. The observer of the delegate keeps one slot
+			// per field, so a window answers for the LAST notification only and cannot name which
+			// echo a set of fields belongs to (note 26, note 27). The print sits before the branch
+			System.println("[nf] code=" + notifCode.toString() + " f1=" + notifVal1.toString() + " f2=" + notifVal2.toString() + " f3=" + notifVal3.toString() + " opts=" + notifOptCount.toString() + " o1=" + notifOptTag.toString() + ":" + notifOptVal.toString() + " o2=" + notifOptTag2.toString() + ":" + notifOptVal2.toString() + " hex=" + notifHex);
+			var ix = x5CodeIndex(notifCode);
+			if (ix < 0) {
+				x5CodesSeen.add(notifCode);
+				x5CodeCounts.add(1);
+			} else {
+				x5CodeCounts[ix] = x5CodeCounts[ix] + 1;
+			}
+			x5Seen = x5Seen | x5NotifBit(notifCode);
+		}
+
+	}
+
+
+
+
+
+
+	function x5ApplyNotif() as Void {
+
+
+
+		if (notifCode == X5_SUB_MODE_NOTIF) {
+
+
+
+
+
+			if (notifVal1 == x5SubModeNotApplicable) {
+				x5SubPhoto = null;
+			} else {
+				x5SubPhoto = notifVal1;
+			}
+			if (notifVal2 == x5SubModeNotApplicable) {
+				x5SubVideo = null;
+			} else {
+				x5SubVideo = notifVal2;
+			}
+			return;
+		}
+		if (notifCode == X5_OPTIONS_NOTIF) {
+
+
+
+
+
+			if (notifVal3 > 0) {
+				x5FuncMode = notifVal3;
+			}
+			if (notifOptTag == 31) {
+				x5ResNow = notifOptVal;
+			}
+			return;
+		}
+		if (notifCode != X5_CAPTURE_STATUS_NOTIF && notifCode != X5_RECORD_STATE_NOTIF) {
+			return;
+		}
+		if (notifVal1 > 0) {
+			cancelRetry();
+			cancelPendingStart();
+			mMessage = "Shooting";
+
+
+			recState = stateStartRec;
+
+
+			startRecTime = Time.now();
+		} else {
+			applyBursts = 0;
+			mMessage = currentLabel + "\n" + startMessage;
+
+
+
+
+			recState = stateStopRec;
+		}
+	}
+
+
+
+
+
+
+
+
+	function lastOption(option as Lang.Number) as Lang.Number or Null {
+		var buf = x5RxLast;
+		if (buf == null) {
+			return null;
+		}
+		var n = buf.size();
+		var i = 16;
+		while (i < n) {
+			var tag = x5Varint(buf, i, n);
+			if (tag == null) {
+				break;
+			}
+			i = x5VarintEnd;
+			var field = tag >> 3;
+			var wire = tag & 7;
+			if (wire == 0) {
+				var v = x5Varint(buf, i, n);
+				if (v == null) {
+					break;
+				}
+				i = x5VarintEnd;
+				if (field == option) {
+					return v;
+				}
+			} else if (wire == 2) {
+				var len = x5Varint(buf, i, n);
+				if (len == null) {
+					break;
+				}
+				i = x5VarintEnd;
+				if (i + len > n) {
+					break;
+				}
+				var j = i;
+				var k = i + len;
+				while (j < k) {
+					var inner = x5Varint(buf, j, k);
+					if (inner == null) {
+						break;
+					}
+					j = x5VarintEnd;
+					if ((inner & 7) != 0) {
+
+						break;
+					}
+					var iv = x5Varint(buf, j, k);
+					if (iv == null) {
+						break;
+					}
+					j = x5VarintEnd;
+					if ((inner >> 3) == option) {
+						return iv;
+					}
+				}
+				i += len;
+			} else {
+
+				break;
+			}
+		}
+		return null;
+	}
+
+
+
+
+	function x5NotifBit(code as Lang.Number) as Lang.Number {
+		if (code == X5_SUB_MODE_NOTIF) {
+			return 1;
+		}
+		if (code == X5_OPTIONS_NOTIF) {
+			return 2;
+		}
+		if (code == X5_CAPTURE_NUM_NOTIF) {
+			return 4;
+		}
+		if (code == X5_CAPTURE_STATUS_NOTIF) {
+			return 8;
+		}
+		if (code == X5_RECORD_STATE_NOTIF) {
+			return 16;
+		}
+		if (code == X5_STORAGE_NOTIF) {
+			return 64;
+		}
+		if (code == X5_STOP_PUSH_NOTIF) {
+
+
+			return 128;
+		}
+		if (code == X5_PERIODIC_NOTIF) {
+
+
+
+			return 256;
+		}
+
+
+
+		return 32;
+	}
+
+
+
+
+
+	function x5CodeIndex(code as Lang.Number) as Lang.Number {
+		var i = 0;
+		while (i < x5CodesSeen.size()) {
+			if (x5CodesSeen[i] == code) {
+				return i;
+			}
+		i = i + 1;
+		}
+		return -1;
+	}
+
+
+
+
+	function x5CodeCount(code as Lang.Number) as Lang.Number {
+		var ix = x5CodeIndex(code);
+		if (ix < 0) {
+			return 0;
+		}
+		return x5CodeCounts[ix];
+	}
+
+
+
+
+
+	function armX5() as Void {
+		x5Armed = true;
+	}
+
+
+	function armWire() as Void {
+		wireTrace = true;
+		wireLine("armed", "every byte crossing the delegate is printed from now on");
+	}
+
+
+
+
+
+	function resetNotif() as Void {
+		x5RxBuf = null;
+		x5RxWant = 0;
+		x5RxWasNotif = false;
+		x5RxLast = null;
+		x5VarintEnd = 0;
+		notifCode = 0;
+		notifSeq = 0;
+		notifCount = 0;
+		notifHex = "";
+		notifVal1 = 0;
+		notifVal2 = 0;
+		notifVal3 = 0;
+		notifOptTag = 0;
+		notifOptVal = 0;
+		notifOptTag2 = 0;
+		notifOptVal2 = 0;
+		notifOptCount = 0;
+		x5Seen = 0;
+		x5CodesSeen = [];
+		x5CodeCounts = [];
+		x5RxNewFrame = false;
+		x5RxDeclared = 0;
+		x5RxArrived = 0;
+		x5RxTruncated = false;
+
+
+		x5SubPhoto = null;
+		x5SubVideo = null;
+		x5ResNow = null;
+		x5FuncMode = null;
+	}
+
+
+
+
+
+
+
+
+
+	function peekNotifCode() as Lang.Number {
+		return notifCode;
+	}
+	function peekNotifCount() as Lang.Number {
+		return notifCount;
+	}
+	function peekNotifVal1() as Lang.Number {
+		return notifVal1;
+	}
+	function peekNotifVal2() as Lang.Number {
+		return notifVal2;
+	}
+	function peekNotifHex() as Lang.String {
+		if (notifHex == null) {
+			return "";
+		}
+		return notifHex;
+	}
+	function peekX5Seen() as Lang.Number {
+		return x5Seen;
+	}
+	function peekWireEvents() as Lang.Number {
+		return wireEvents;
+	}
+
+
+	function peekWireRecv() as Lang.Number {
+		return wireRecv;
+	}
+	function peekNotifDeclared() as Lang.Number {
+		return x5RxDeclared;
+	}
+	function peekNotifArrived() as Lang.Number {
+		return x5RxArrived;
+	}
+	function peekNotifTruncated() as Lang.Boolean {
+		return x5RxTruncated;
+	}
+
+
+
+	function peekSubPhoto() as Lang.Number or Null {
+		return x5SubPhoto;
+	}
+	function peekSubVideo() as Lang.Number or Null {
+		return x5SubVideo;
+	}
+	function peekResNow() as Lang.Number or Null {
+		return x5ResNow;
+	}
+	function peekFuncMode() as Lang.Number or Null {
+		return x5FuncMode;
+	}
+	function peekSeenCodes() as Lang.Array {
+		return x5CodesSeen;
+	}
+
+
+
+	function peekCodeCount(code as Lang.Number) as Lang.Number {
+		return x5CodeCount(code);
+	}
+
+
+
+	function showValue(v as Lang.Value or Null) as Lang.String {
+		if (v == null) {
+			return "null";
+		}
+		if (v instanceof Lang.Boolean) {
+			if (v) {
+				return "true";
+			} else {
+				return "false";
+			}
+		}
+		if (v instanceof Lang.Number) {
+			return v as Lang.Number;
+		}
+		if (v instanceof Lang.String) {
+			return "\"" + v as Lang.String + "\"";
+		}
+
+
+		return v.toString();
+	}
+
+
+
+
+
+
+
+
+
+
 	function onUcd2Frame() as Void {
 		cancelRetry();
 		if (recState == stateStarting) {
@@ -434,10 +1217,10 @@ class BleDevice extends BluetoothLowEnergy.BleDelegate {
 		}
 	}
 
-	// Send command to BLE device. A recording start is deferred so the
-	// mode+apply frames get acknowledged first; everything else goes straight
-	// out. Armed for X6, the legacy arrays never reach transmit(): they are
-	// translated to UCD2 first.
+
+
+
+
 	function sendCMD(value as Lang.ByteArray) as Void {
 		if (ucd2Armed) {
 			ucd2Send(value);
@@ -449,14 +1232,14 @@ class BleDevice extends BluetoothLowEnergy.BleDelegate {
 		transmit(value);
 	}
 
-	// Queue a command and kick the write chain. No start deferral here so both
-	// the deferred-start path and the retry resend can call it directly.
+
+
 	function transmit(value as Lang.ByteArray) as Void {
-		// check that the camera is actually connected, otherwise start a scan
 		if (scanning) {
+		    System.println("[scan] press scanning=" + scanning.toString() + " deviceNull=" + (device == null).toString());
 			return;
 		}
-
+		// Press tell: the print sits after the scanning guard, so the line answers only the presses that reach the device check; a press swallowed while the widget searches answers by silence at this site.
 		var dev = device;
 		if (dev == null) {
 			recState = stateStopRec;
@@ -468,9 +1251,9 @@ class BleDevice extends BluetoothLowEnergy.BleDelegate {
 			applyBursts += 1;
 		}
 
-		// Legacy frames carry the sequence at byte 10. A UCD2 frame owns byte 7
-		// instead and its trailer checksum covers the sequence, so stamping has
-		// to be redone after it - byte 10 there is part of the declared length.
+
+
+
 		if (txUcd2) {
 			ucd2SeqNo = ucd2SeqNo + 1;
 			if (ucd2SeqNo > 254) {
@@ -485,25 +1268,30 @@ class BleDevice extends BluetoothLowEnergy.BleDelegate {
 			value[SeqPos] = SeqNo;
 		}
 
-		// max message length = 20. the message has to be split into 20 bytes parts which are put in a queue.
-		// each write operation has to been finished before the next one can occur.
-		// the dequeuing is done in the onCharacteristicWrite function
+		wireBytes("sent frame", value);
+
+
+
+
 		if (value.size() > 20) {
-			var j = (value.size()-1)/20;
+			var j = (value.size() - 1) / 20;
 			for (var i = 0; i <= j.toNumber(); i++) {
-				queue.add(value.slice(i*20,(i+1)*20));
+				var chunk = value.slice(i*20,(i + 1) * 20);
+				queue.add(chunk);
+				wireBytes("sent chunk", chunk);
 			}
 		} else {
 			queue.add(value);
+			wireBytes("sent chunk", value);
 		}
 
-		// A start/stop command arms the acknowledgement watchdog: if the camera
-		// never reports the new recording state the burst was probably lost to a
-		// connection race and is resent. inRetry blocks re-arming from the resend.
+
+
+
 		if (!inRetry) {
 			if (txUcd2) {
-				// UCD2 frames never match the legacy arrays, so name the kind
-				// that ucd2Send() worked out for us.
+
+
 				scheduleRetry(ucd2TxKind);
 			} else if (value == cmdStartRec) {
 				scheduleRetry(retryKindStart);
@@ -512,10 +1300,10 @@ class BleDevice extends BluetoothLowEnergy.BleDelegate {
 			}
 		}
 
-		// The command is already queued above: dropping it here would silently
-		// discard the first press of a session (service discovery is async).
-		// Instead leave it queued and let discoverServices() kick the write
-		// chain once the service resolves.
+
+
+
+
 		var service = dev.getService(LBS_SERVICE);
 		if (service == null) {
 			discoverServices(dev);
@@ -525,10 +1313,10 @@ class BleDevice extends BluetoothLowEnergy.BleDelegate {
 		kickQueue(dev);
 	}
 
-	// Hold a recording start back until the mode+apply frames queued just before
-// it have been acknowledged. A 700 ms poll drives the wait; the mode/apply ack
-// fires the start immediately (see onCharacteristicChanged). Re-pressing start
-// restarts the wait.
+
+
+
+
 	function deferStart() as Void {
 		pendingStart = true;
 		startAckSeen = false;
@@ -539,8 +1327,8 @@ class BleDevice extends BluetoothLowEnergy.BleDelegate {
 		var t = new Timer.Timer();
 		startDelayTimer = t;
 		if (applyBursts >= 2) {
-			// A mode+apply pair was already emitted before this burst (menu
-			// path): the camera is primed, start as soon as this one is acked.
+
+
 			startPhase = 1;
 			t.start(method(:onStartDelay), START_WAIT_MS, false);
 		} else {
@@ -555,8 +1343,8 @@ class BleDevice extends BluetoothLowEnergy.BleDelegate {
 			return;
 		}
 		if (startPhase == 0) {
-			// The first mode+apply burst is already out; after the pause emit a
-			// second one and let its ack gate the start (menu order).
+
+
 			startPhase = 1;
 			startWaitCount = 0;
 			if (currentMode instanceof Lang.ByteArray) {
@@ -605,20 +1393,23 @@ class BleDevice extends BluetoothLowEnergy.BleDelegate {
 		}
 	}
 
-	// Single-writer pump: only the first queued chunk is written, and only when
-	// no write is already in flight. onCharacteristicWrite advances to the next
-	// chunk. Issuing a second requestWrite while one is pending is rejected by
-	// the stack ("Operation already in Progress") and silently dropped the first
-	// mode frame, which is why a direct start never got its mode acknowledged.
+
+
+
+
+
 	function kickQueue(dev as BluetoothLowEnergy.Device) as Void {
 		if (writing) {
+			wireLine("write in flight", "one requestWrite is pending, this call is a no-op");
 			return;
 		}
 		if (queue.size() == 0) {
+			wireLine("queue empty", "nothing queued, nothing to write");
 			return;
 		}
 		var service = dev.getService(LBS_SERVICE);
 		if (service == null) {
+			wireLine("service missing", "getService(LBS_SERVICE) is null, write refused");
 			return;
 		}
 		try {
@@ -627,18 +1418,22 @@ class BleDevice extends BluetoothLowEnergy.BleDelegate {
 				writing = true;
 
 				ch.requestWrite(queue[0] as Lang.ByteArray, {:writeType => BluetoothLowEnergy.WRITE_TYPE_DEFAULT});
+				wireLine("requestWrite issued", "chunk in flight");
+			} else {
+				wireLine("characteristic missing", "getCharacteristic(LBS_RW_CHAR) is null, write refused");
 			}
 		} catch (ex) {
+			wireLine("requestWrite refused", "exception: " + ex.getErrorMessage());
 			writing = false;
 
 		}
 	}
 
-	// (Re)arm the acknowledgement watchdog for a start/stop attempt.
+
 	function scheduleRetry(kind as Lang.Number) as Void {
-		// Keep the attempt count when re-arming the same kind: the watchdog is
-		// re-armed each time the start is (re)sent, and resetting here would let
-		// a failing start retry forever.
+
+
+
 		if (retryKind != kind) {
 			retryCount = 0;
 		}
@@ -663,7 +1458,7 @@ class BleDevice extends BluetoothLowEnergy.BleDelegate {
 		retryTimer.start(method(:onRetry), RETRY_DELAY_MS, false);
 	}
 
-	// Fired when the camera did not acknowledge the start/stop in time.
+
 	function onRetry() as Void {
 		retryTimer = null;
 		if (retryKind == 0) {
@@ -674,13 +1469,13 @@ class BleDevice extends BluetoothLowEnergy.BleDelegate {
 
 			var wasStart = (retryKind == retryKindStart);
 			cancelRetry();
-			// Unblock the UI: a start that never took still leaves the camera
-			// idle, and a stop that never took still leaves it recording.
+
+
 			recState = wasStart ? stateStopRec : stateStartRec;
 			if (ucd2Armed) {
-				// UCD2 commands are acknowledged by the camera answering in
-				// UCD2, not by a legacy rec report, so silence really does mean
-				// the frame never landed.
+
+
+
 				mMessage = "No answer from camera";
 			}
 			WatchUi.requestUpdate();
@@ -697,106 +1492,148 @@ class BleDevice extends BluetoothLowEnergy.BleDelegate {
 		startRetryTimer();
 	}
 
-	// Resend the start command if the camera did not report a recording start.
-	// Goes through sendCMD so an armed session resends UCD2, not the legacy
-	// array; when disarmed sendCMD() reduces to the transmit() call that used
-	// to live here.
+
+
+
+
 	function resendStart() as Void {
 		sendCMD(cmdStartRec);
 	}
 
 	function onCharacteristicChanged(ch as BluetoothLowEnergy.Characteristic, value as Lang.ByteArray) as Void {
-		// UCD2 carries its own magic at byte 0, so it has to be claimed before
-		// the legacy "00 00 04 00 00" signature below (a UCD2 frame would never
-		// match it anyway, but the reverse ordering keeps the two envelopes
-		// from ever sharing a branch). Only engaged while armed, so a
-		// disarmed session runs no UCD2 code at all.
+
+
+		wireBytes("recv", value);
+		wireRecv = wireRecv + 1;
+
+
+
+
+
 		if (ucd2Armed) {
-			// The X6's ack is a complete self-contained notification, not a
-			// fragment of a 16+declared byte frame, so it must be claimed
-			// before ucd2RxFeed() starts (and each new magic notification
-			// restarts) the reassembly. Recognize it right here.
+
+
+
+
 			if (ucd2IsAck(value)) {
 				if (ucd2RxBuf != null) {
-					// A prior reassembly was in flight; the ack supersedes it.
-					ucd2RxBuf = null;
-					ucd2RxWant = 0;
+
+				ucd2RxBuf = null;
+				ucd2RxWant = 0;
+			}
+			onUcd2Frame();
+			WatchUi.requestUpdate();
+			return;
+		}
+		if (ucd2RxFeed(value)) {
+
+			onUcd2Frame();
+			WatchUi.requestUpdate();
+			return;
+		}
+		if (ucd2RxBuf != null) {
+
+
+			return;
+		}
+		}
+
+
+
+
+
+
+
+
+
+
+
+		if (x5Armed && (x5IsFrame(value) || x5RxBuf != null)) {
+			if (x5RxFeed(value)) {
+
+
+
+				x5DecodeNotif();
+
+
+
+
+				if (x5RxTruncated) {
+					wireLine("frame cut", "declared=" + x5RxDeclared.toString() + " arrived=" +
+                      x5RxArrived.toString());
 				}
-				onUcd2Frame();
-				WatchUi.requestUpdate();
-				return;
-			}
-			if (ucd2RxFeed(value)) {
-				// A complete frame. Byte-level dump already printed by the feed.
-				onUcd2Frame();
-				WatchUi.requestUpdate();
-				return;
-			}
-			if (ucd2RxBuf != null) {
-				// Middle of a reassembly: this notification is not a legacy
-				// message and must not reach the decoder below.
+				if (x5RxWasNotif) {
+					x5ApplyNotif();
+					WatchUi.requestUpdate();
+
+
+					return;
+				}
+			} else if (x5RxWasNotif) {
+
+
 				return;
 			}
 		}
 
-		// except for keep alive mesages that are 7 bytes long all others are at least 16 bytes long
-		if (value.size() >=  18) {
-		// messages are cut into 20 bytes max length (but can be shorter)
-		// The necessary info are in the first 20 bytes, the rest is ignored
-		// 2 first bytes is the length of the message (little endian).
-		// followed by 00 00 04 00 00. Check for this value
-		  if (responseSig.equals(value.slice(2,7))) {
-			// debug("[onCharChanged] " + ch.getUuid() + " " + value + " Size: " + value.size());
-// the 8th byte is the "command" code
-		// Check to see if we got a Stop or Start recording event.
-		// Command byte == 0x40 (id 4 of cmdStartRec, shifted by the response
-		// nibble) or the legacy 0x10; position 17 is >0 = start. 0=end.
-		var isRecReport = (value[7] == recReportCode) || (value[7] == recReportCodeLegacy);
-		if (isRecReport and (value[17] > 0x00)) {
-			// debug("Start Shooting");
-			if (recState != stateStartRec) {
 
-			}
-			cancelRetry();
-			cancelPendingStart();
-			mMessage = "Shooting";
-			recState = stateStartRec;
-			startRecTime = Time.now();
-//			WatchUi.pushView(new ViewData(BleDevice2), new InputDelegate(BleDevice2), WatchUi.SLIDE_IMMEDIATE);
+		if (value.size() >= 18) {
 
-		} else 	if (isRecReport and (value[17] == 0x00)) {
-			// debug("Stop Shoot");
-			if (recState != stateStopRec) {
 
-			}
-			cancelRetry();
-			cancelPendingStart();
-			applyBursts = 0;
-			mMessage = currentLabel + "\n" + startMessage;
-			recState = stateStopRec;
-} else if (value[7] == stateBusy) {
-				// sendCMD(cmdStopRec);
-				mMessage = "Busy...";
-  			} else if (value[0] == stateCmdErr) {
-				cancelRetry();
-				cancelPendingStart();
-				mMessage = currentLabel + "\n" + startMessage;
-				recState = stateStopRec;
-			} else if (value[7] == ACK_CODE) {
-				// Transport ack. Only the second burst's ack (phase 1) gates the
-				// start; the ack of the first burst must be ignored.
-				if (pendingStart and startPhase == 1 and !startAckSeen) {
-					startAckSeen = true;
-					fireStart();
+
+
+			if (responseSig.equals(value.slice(2, 7))) {
+
+
+
+
+
+				var isRecReport = (value[7] == recReportCode) || (value[7] == recReportCodeLegacy);
+				if (isRecReport && value[17] > 0x00) {
+
+					if (recState != stateStartRec) {
+
+					}
+					cancelRetry();
+					cancelPendingStart();
+					mMessage = "Shooting";
+					recState = stateStartRec;
+					startRecTime = Time.now();
+
+
+				} else if (isRecReport && value[17] == 0x00) {
+
+					if (recState != stateStopRec) {
+
+					}
+					cancelRetry();
+					cancelPendingStart();
+					applyBursts = 0;
+					mMessage = currentLabel + "\n" + startMessage;
+					recState = stateStopRec;
+				} else if (value[7] == stateBusy) {
+
+					mMessage = "Busy...";
+				} else if (value[0] == stateCmdErr) {
+					cancelRetry();
+					cancelPendingStart();
+					mMessage = currentLabel + "\n" + startMessage;
+					recState = stateStopRec;
+				} else if (value[7] == ACK_CODE) {
+
+
+					if (pendingStart && startPhase == 1 && !startAckSeen) {
+						startAckSeen = true;
+						fireStart();
+					}
+				} else {
+
+
 				}
-			} else {
-
-				// mMessage = "-";
 			}
-		  }
 		}
 
-		//second guess elapsed recording time (don't know how to decode the protbuf status)
+
 		if (recState == stateStartRec) {
 			clockTime = Time.now();
 			var diff = clockTime.subtract(startRecTime);
@@ -805,20 +1642,21 @@ class BleDevice extends BluetoothLowEnergy.BleDelegate {
 				mMessage = currentLabel + "\n" + toTimeString(elapsedRecTime.value());
 			}
 		} else {
-			// mMessage = "Stopped\n" + currentLabel + "\n" + startMessage;
+
 		}
 		WatchUi.requestUpdate();
 	}
 
 	function onCharacteristicWrite(ch as BluetoothLowEnergy.Characteristic, st as BluetoothLowEnergy.Status) as Void {
-	// we need to wait before sending the next ble message.
-	// this function is called only when the previous message has been writen to the camera (successfuly or not)
-		// The chunk just written is done: clear the in-flight flag, drop it and
-		// pump the next one. A write failure is treated the same as a success so
-		// the queue keeps draining.
+
+
+
+
+
+		wireLine("write done", "status=" + st.toString() + " leftInQueue=" + queue.size().toString());
 		writing = false;
 		if (queue.size() > 0) {
-			// Array.slice() returns Array<Object or Null>, so rebuild the typed queue.
+
 			var remaining = [] as Lang.Array;
 			for (var k = 1; k < queue.size(); k++) {
 				remaining.add(queue[k] as Lang.ByteArray);
@@ -826,54 +1664,63 @@ class BleDevice extends BluetoothLowEnergy.BleDelegate {
 			queue = remaining;
 		}
 		var dev = device;
-		if (dev != null and queue.size() > 0) {
+		if (dev != null && queue.size() > 0) {
 			kickQueue(dev);
 		} else {
-			debug ("[onCharWrite] queue empty Status " + st.toString());
+			debug("[onCharWrite] queue empty Status " + st.toString());
 		}
 	}
 
 	function toTimeString(seconds as Lang.Number) as Lang.String {
-		var hours = seconds/3600;
-    	var min = (seconds - hours*3600)/60;
-    	var sec = (seconds - hours*3600 - min*60);
+		var hours = seconds / 3600;
+		var min = (seconds - hours * 3600) / 60;
+		var sec = (seconds - hours * 3600) - min * 60;
 
-    	return (hours.toString() + ":" + min.format("%02d") + ":" + sec.format("%02d"));
+		return hours.toString() + ":" + min.format("%02d") + ":" + sec.format("%02d");
 	}
 
 	function onProfileRegister(uuid as BluetoothLowEnergy.Uuid, status as BluetoothLowEnergy.Status) as Void {
+		wireLine("profile register", uuid.toString() + " status=" + status.toString());
 		if (DEBUG_TRACE) {
 			debug("registered");
 		}
 	}
 
-	// Called by open() function, part of initialization process.
+
+
+	function onEncryptionStatus(dev as BluetoothLowEnergy.Device, status as BluetoothLowEnergy.Status) as Void {
+		wireLine("encrypt status", status.toString());
+	}
+
+
 function registerProfiles() as Void {
-		// Built once and reused. This runs from open(), where heap is the
-		// scarcest thing on a low-memory watch, and a fresh nested
-		// dictionary (plus its characteristic arrays) is not free.
+
+
+
 		if (ucd2Profile == null) {
 			ucd2Profile = {
 				:uuid => LBS_SERVICE,
-				:characteristics => [{
-					:uuid => LBS_RW_CHAR,
-				}, {
-					:uuid => LBS_NOTIF_CHAR,
-					:descriptors => [LBS_NOTIF_DESC],
-				}]
-			};
+				:characteristics => [
+					{ :uuid => LBS_RW_CHAR },
+					{
+						:uuid => LBS_NOTIF_CHAR,
+						:descriptors => [ LBS_NOTIF_DESC ]
+					}
+				] };
 		}
 		try {
 			BluetoothLowEnergy.registerProfile(ucd2Profile);
 		} catch (ex) {
 
+
+			wireLine("register refused", ex.getErrorMessage());
 		}
 
 	}
 
-	// Service discovery is lazy on this stack: getService() keeps returning
-	// null until getServices() has been walked. Force it right after pairing so
-	// the link is usable instead of being torn down on the first command.
+
+
+
 	function discoverServices(dev as BluetoothLowEnergy.Device) as Void {
 		if (dev == null) {
 			return;
@@ -888,32 +1735,42 @@ function registerProfiles() as Void {
 				}
 				var su = svc.getUuid();
 				if (su == null) {
+					wireLine("svc uuid", "null");
 				} else {
-
+					wireLine("svc uuid", su.toString());
 				}
-				count += 1;
+				count = count + 1;
 			}
 			var lbs = dev.getService(LBS_SERVICE);
 
-			// Commands queued while the service was unresolved are flushed here.
+
+			wireLine("services walked", "count=" + count.toString() + " queued=" + queue.size().toString());
+			if (lbs == null) {
+				wireLine("lbs service", "getService(LBS_SERVICE) is null");
+			} else {
+				wireLine("lbs service", "found");
+			}
+
+
 			if (lbs != null) {
 				kickQueue(dev);
 			}
 		} catch (ex) {
-
+			wireLine("walk refused", ex.getErrorMessage());
 		}
 	}
 
 	function onScanStateChange(scanState as BluetoothLowEnergy.ScanState, status as BluetoothLowEnergy.Status) as Void {
+		wireLine("scan state", scanState.toString() + " status=" + status.toString());
 		if (DEBUG_TRACE) {
 			debug("scanstate");
 		}
-
+		System.println("[scan] state=" + scanState.toString() + " status=" + status.toString() + " wasScanning=" + scanning.toString() + " deviceNull=" + (device == null).toString());
 		if (scanState == BluetoothLowEnergy.SCAN_STATE_SCANNING) {
 			scanning = true;
 			mMessage = "Scanning...\n" + scanTimeout.toString();
-			WatchUi.requestUpdate() ;
-
+			WatchUi.requestUpdate();
+			System.println("[scan] on countdown=" + scanTimeout.toString());
 		} else {
 			scanning = false;
 			scanTimeout = 64;
@@ -922,12 +1779,13 @@ function registerProfiles() as Void {
 			} else {
 				mMessage = currentLabel + "\n" + startMessage;
 			}
-			WatchUi.requestUpdate() ;
+			WatchUi.requestUpdate();
 		}
 	}
-
+	// Scan axis: the state print sits at the entry of the callback, before the branch, so a state that does not cross the branch is named by a line and never by a silence.
 	function onConnectedStateChanged(dev as BluetoothLowEnergy.Device, state as BluetoothLowEnergy.ConnectionState) as Void {
-		// debug("connected: " + dev.getName() + " " + dev.isConnected() + " " + state);
+		wireLine("connection state", state.toString());
+
 		mMessage = currentLabel + "\n" + startMessage;
 		WatchUi.requestUpdate();
 		writing = false;
@@ -940,7 +1798,7 @@ function registerProfiles() as Void {
 					BluetoothLowEnergy.setScanState(BluetoothLowEnergy.SCAN_STATE_OFF);
 				} catch (ex) {
 
-			    }
+				}
 
 				scanning = false;
 			}
@@ -951,31 +1809,47 @@ function registerProfiles() as Void {
 				scanning = true;
 				device = null;
 				open();
-//			try {
-//				BluetoothLowEnergy.setScanState(BluetoothLowEnergy.SCAN_STATE_SCANNING);
-//			} catch (ex) {
-//			    debug("[onConStateChg] On exception: " + ex.getErrorMessage());
-//		    }
+
+
+
+
+
 
 			}
 		}
 	}
 
 	private function connect(result as BluetoothLowEnergy.ScanResult) as Void {
-		// debug("[connect] " + result.getDeviceName());
+
 		try {
 			BluetoothLowEnergy.setScanState(BluetoothLowEnergy.SCAN_STATE_OFF);
-			// debug("[connect] scanning OFF");
+
 		} catch (ex) {
 
 		}
 		try {
 			device = BluetoothLowEnergy.pairDevice(result);
-			// A real X6 ("X6 " prefix, menuLevel==3) auto-arms UCD2 at pair
-			// time so the very first Start press records without a required
-			// menu step. currentMode is left at the "DefaultV" sentinel so no
-			// legacy mode/apply burst reaches the camera while armed; the menu
-			// "X6 Video" item stays as a manual re-arm.
+			if (device == null) {
+				wireLine("pair", "pairDevice returned null");
+			} else {
+				wireLine("pair", "paired");
+			}
+			if (device != null) {
+
+
+
+				var nm = device.getName();
+				if (nm == null) {
+					nm = "n/a";
+				}
+				wireLine("dev state", "connected=" + device.isConnected().toString() + " name=" +
+				              nm);
+			}
+
+
+
+
+
 			if (menuLevel == 3) {
 				ucd2Armed = true;
 				currentLabel = "X6 Video";
@@ -983,21 +1857,21 @@ function registerProfiles() as Void {
 		} catch (ex) {
 
 		}
-		// debug("[connect] is Connected " + device.isConnected());
+
 
 	}
 
-//	private function dumpUuids(iter) {
-//		for (var x = iter.next(); x != null; x = iter.next()) {
-//			debug("uuid: " + x);
-//		}
-//		return false;
-//	}
+
+
+
+
+
+
 
 	function onScanResults(scanResults as BluetoothLowEnergy.Iterator) as Void {
-//		debug("scan results");
-		// var name;
-		// var rssi;
+
+		System.println("[scan] round countdown=" + scanTimeout.toString() + " deviceNull=" + (device == null).toString());
+		// Scan axis: this print sits before the loop over the results, so the callbacks of the scan are counted apart from the results they carry, which is what grades the step of a countdown driven by rounds.
 
 		for (var rawResult = scanResults.next(); rawResult != null; rawResult = scanResults.next()) {
 			var result = rawResult as BluetoothLowEnergy.ScanResult;
@@ -1006,20 +1880,25 @@ function registerProfiles() as Void {
 			if (name != null) {
 				deviceName = name;
 			}
-			// rssi = result.getRssi();
 
-			// debug("[onScanResults] device: " + name + " rssi: " + rssi);
-//			dumpUuids(uuids);
 
-			//search for an insta360 device based on service UUID
+
+
+
+
+
+
+			System.println("[det] name=" + (name == null ? "none" : name));
+
 			for (var rawUuid = uuids.next(); rawUuid != null; rawUuid = uuids.next()) {
 				var iter = rawUuid as BluetoothLowEnergy.Uuid;
-//				debug("uuid: " + iter);
+				wireLine("scan uuid", iter.toString());
+
+
+				if ((iter.equals(LBS_SERVICE)) and (deviceName != null)) {
 				menuLevel = 0;
-				if (iter.equals(LBS_SERVICE) and (deviceName != null)) {
-					// debug("Connect " + iter);
 					if (deviceName.length() >= 3) {
-var prefix = deviceName.substring(0,3);
+					var prefix = deviceName.substring(0, 3);
 				if (prefix != null) {
 					if (prefix.equals("ONE")) {
 						menuLevel = 1;
@@ -1032,14 +1911,17 @@ var prefix = deviceName.substring(0,3);
 						menuLevel = 2;
 					}
 					if (prefix.equals("X5 ")) {
+
+
+						x5Armed = true;
 						menuLevel = 2;
 					}
 					if (prefix.equals("X6 ")) {
 						menuLevel = 3;
 					}
-					// ---- X6 TEST HOOK (remove before shipping) ----------
-					// Treat one specific non-X6 camera as an X6 so the UCD2
-					// path can be exercised on hardware with no X6 in reach.
+
+
+
 					if (X6_TEST_HOOK and deviceName.equals(X6_TEST_HOOK_NAME)) {
 						menuLevel = 3;
 					}
@@ -1050,49 +1932,49 @@ var prefix = deviceName.substring(0,3);
 				}
 			}
 
-//			if (name != null) {
-//				// debug ("device name: [" + name.substring(0,4) +"]");
-//				if (DEVICE_NAME.equals(name.substring(0,4)) or
-//					DEVICE_NAME2.equals(name.substring(0,4)) or
-//					DEVICE_NAME3.equals(name.substring(0,3)) or
-//					DEVICE_NAME4.equals(name.substring(0,4)) or
-//					DEVICE_NAME5.equals(name.substring(0,4)) or
-//					DEVICE_NAME6.equals(name.substring(0,3)) or
-//					DEVICE_NAME7.equals(name.substring(0,4))) {
-//
-//						//For Ace & Ace pro devices, only "Default Video" mode is supported.
-//						if (DEVICE_NAME5.equals(name.substring(0,4)) or
-//						    DEVICE_NAME7.equals(name.substring(0,4))) {
-//							menuLevel = 0;
-//						}
-//
-//						try {
-//							Storage.setValue("device", result);
-//						} catch (ex) {
-//			    		debug("[onScanResult] storage write exception " + ex.getErrorMessage());
-//						}
-//						connect(result);
-//					return;
-//				}
-//			}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+			// Scan axis: the countdown advances inside the loop over the scan results, so one step is one result. The print below sits after the step, at the boundary the countdown crosses.
+			// Scan axis: the print names the value of the countdown and whether it reached zero, where the scan is demanded to stop.
 			scanTimeout--;
 			mMessage = "Scanning...\n" + scanTimeout.toString();
-			WatchUi.requestUpdate() ;
-
+			WatchUi.requestUpdate();
+			System.println("[scan] tick countdown=" + scanTimeout.toString() + " stop=" + (scanTimeout == 0).toString());
 			if (scanTimeout == 0) {
 				try {
 					BluetoothLowEnergy.setScanState(BluetoothLowEnergy.SCAN_STATE_OFF);
 				} catch (ex) {
 
-		    	}
+				   }
 			}
 		}
 	}
 
 	function photoGpsHeader(lat as Lang.Number or Lang.Float or Lang.Double,
-	                        lon as Lang.Number or Lang.Float or Lang.Double,
-	                        alt as Lang.Number or Lang.Float or Lang.Double) as Lang.ByteArray {
-		// Photo mode command with the GPS fix appended.
+                         lon as Lang.Number or Lang.Float or Lang.Double,
+                         alt as Lang.Number or Lang.Float or Lang.Double) as Lang.ByteArray {
+
 		var header = [0x3f, 0x00, 0x00, 0x00, 0x04, 0x00, 0x00, 0x03, 0x00, 0x02, 0xe3, 0x00, 0x00, 0x80, 0x00, 0x00, 0x12, 0x2d, 0x5a, 0x18]b;
 		var filler = [0x6a, 0x02, 0x30, 0x01, 0x9a, 0x01, 0x00, 0xaa, 0x01, 0x00, 0xba, 0x01, 0x00, 0xd2, 0x01, 0x00, 0xe2, 0x02, 0x00]b;
 		header.addAll(toDouble(lat));
@@ -1103,7 +1985,7 @@ var prefix = deviceName.substring(0,3);
 	}
 
 	function toDouble(single as Lang.Number or Lang.Float or Lang.Double) as Lang.ByteArray {
-		// convert a 32bit float to 64-bit, signed, in a bitArray.
+
 		var double = new [0]b;
 		var d1 = new [4]b;
 		var d2 = new [4]b;
@@ -1115,53 +1997,53 @@ var prefix = deviceName.substring(0,3);
 		var te = 0l;
 		var tm = 0l;
 		var bias = 0l;
-		// Need to convert to float 64bit, but not directly supported by Connect IQ.
-		// convert back and forth from 32bit float to 32bit INT to have a "bitwise" representation
+
+
 		t32.encodeNumber(single as Lang.Number, Lang.NUMBER_FORMAT_FLOAT, {});
 		tb = t32.decodeNumber(Lang.NUMBER_FORMAT_UINT32, {}) as Lang.Long;
-		// get the sign
+
 		ts = tb & 0x80000000l;
-		// get the exponent part
+
 		te = tb & 0x7f800000l;
 		te >>= 23;
-		// new 64bit based bias
+
 		bias = te - 127 + 1023;
 		bias <<= 52;
-		// get the mantisse part and shift it
+
 		tm = tb & 0x007fffffl;
 		tm <<= 29;
-		// add the new bias to the mantis and the sign
+
 		ts <<= 32;
 		tb = ts + bias + tm;
-		// cut the new value in 2 32bit chunks
+
 		tb1 = tb;
 		tb1 >>= 32;
 		d1.encodeNumber(tb1, Lang.NUMBER_FORMAT_UINT32, {});
-		tb1 <<=32;
+		tb1 <<= 32;
 		tb2 = tb - tb1;
 		d2.encodeNumber(tb2, Lang.NUMBER_FORMAT_UINT32, {});
-		// debug ("[toDouble] " + tb.format("%x"));
-		// build the final bitArray, little endian
+
+
 		double.addAll(d2);
 		double.addAll(d1);
 		return double;
 	}
 
 	function sendPosition(info as Position.Info) as Void {
-		// Build a byte array with the following info in HEX format, all Little endian
-		// byte position - value
-		// 00-13 47 00 00 00 04 00 00 35 00 02 ff 00 00 80
-		// 14-17 00 00 0a 35 ?
-		// 18-21 UX Epoch (int 32)
-		// 22-25 00 00 00 00
-		// 26-28 00 00 41 ?
-		// 29-36 Latitude (double float)
-		// 37    N / S (ASCII)
-		// 38-45 Longitude (double float)
-		// 46    E / W (ASCII)
-		// 47-54 Speed meters per seconds (double float)
-		// 55-62 Heading, degrees  (double float)
-		// 63-70 Altitude Meters (double float)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 		var header = [0x47, 0x00, 0x00, 0x00, 0x04, 0x00, 0x00, 0x35, 0x00, 0x02, 0xff, 0x00, 0x00, 0x80, 0x00, 0x00, 0x0a, 0x35]b;
 		var filler = [0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x41]b;
@@ -1176,12 +2058,12 @@ var prefix = deviceName.substring(0,3);
 
 		GPSaccuracy = info.accuracy;
 		WatchUi.requestUpdate();
-		// debug("[sendPosition] Accuracy: " + GPSaccuracy.toString());
+
 
 		if ((device == null) or (recState != stateStartRec)) { return; }
 
-		// Each Position.Info accessor returns a nullable, so bind them to locals first:
-		// the compiler does not narrow a repeated property access.
+
+
 		var position = info.position;
 		var headingInfo = info.heading;
 		var whenInfo = info.when;
@@ -1191,7 +2073,7 @@ var prefix = deviceName.substring(0,3);
 		latitude = location[0];
 		longitude = location[1];
 
-		//heading is provided in radians, convert to degrees
+
 		heading = headingInfo * 180 / Math.PI;
 		if (heading < 0) {
 			heading = 360 + heading;
@@ -1206,47 +2088,47 @@ var prefix = deviceName.substring(0,3);
 			altitude = altitudeInfo.toNumber();
 		}
 
-		// debug ("[onPosition] " + info.when.value() + " " + latitude + " " + longitude + " " + speed + " " + heading + " " + altitude);
 
-		// Video & Photo telemetry are encoded differently.
+
+
 		if (videoMode) {
-			// encode timestamp
+
 			temp32.encodeNumber(whenInfo.value(), Lang.NUMBER_FORMAT_UINT32, {});
 			header.addAll(temp32);
 			header.addAll(filler);
-			// North or South
+
 			if (latitude >= 0) {
-				sector = 0x4e; // ASCII 'N'
+				sector = 0x4e;
 			} else {
-				sector = 0x53; // ASCII 'S'
+				sector = 0x53;
 			}
-			// encode latitude
+
 			temp64 = toDouble(latitude.abs());
 			header.addAll(temp64);
 			header.add(sector);
-			// East or West
+
 			if (longitude >= 0) {
-				sector = 0x45; // ASCII 'E'
+				sector = 0x45;
 			} else {
-				sector = 0x57; // ASCII 'W'
+				sector = 0x57;
 			}
-			// encode longitude
+
 			temp64 = toDouble(longitude.abs());
 			header.addAll(temp64);
 			header.add(sector);
-			// encode speed
+
 			temp64 = toDouble(speed.abs());
 			header.addAll(temp64);
 
-			// encode heading
+
 			temp64 = toDouble(heading);
 			header.addAll(temp64);
 
-			// encode altitude
+
 			temp64 = toDouble(altitude.abs());
 			header.addAll(temp64);
 
-			// debug ("hex " +header.size() +" "+ header.toString());
+
 			sendCMD(header);
 		}
 	}
@@ -1254,20 +2136,20 @@ var prefix = deviceName.substring(0,3);
 	function open() as Void {
 		System.println("[ble] open() entered");
 
-		// Check if watch is touch screen capable
+
 		if (System.getDeviceSettings().isTouchScreen) {
 			startMessage = "Tap Here";
 		} else {
 			startMessage = "Press Start";
 		}
-		// debug("open");
-		// Load last state of app
+
+
 		var v = App.getApp().getProperty("recState");
 		if (v == null) {
 			recState = stateStopRec;
 		} else {
-			// PropertyValueType is a union that does not expose toNumber();
-			// only the numeric members are accepted by this cast.
+
+
 			var storedState = v as Lang.Number;
 			if (storedState != null) {
 				recState = storedState;
@@ -1276,14 +2158,14 @@ var prefix = deviceName.substring(0,3);
 			}
 		}
 
-		// A start is now sent bare (no mode+apply), so the camera records in
-		// whatever mode it currently holds. The app must therefore not assume it
-		// knows that mode: always start from "Default Video" rather than the
-		// last-selected mode. The mode is only set when chosen from the menu.
+
+
+
+
 		currentMode = "DefaultV";
 		currentLabel = "Default Video";
-		// UCD2 is never armed across a session: it is re-armed by an explicit
-		// menu choice, never restored from a property (see open() note below).
+
+
 		ucd2Armed = false;
 		ucd2RxBuf = null;
 		ucd2RxWant = 0;
@@ -1298,10 +2180,10 @@ var prefix = deviceName.substring(0,3);
 			}
 		}
 
-		// cmdStartRec/cmdStopRec are deliberately NOT restored from properties:
-		// onSelect mutates them for HDR/Timelapse/Bullet/Interval modes, and a
-		// persisted mutated copy would be replayed by a direct start (the camera
-		// then ignores it). They always begin from the defaults declared above.
+
+
+
+
 
 		var gpsProp = App.getApp().getProperty("GPSon");
 		if (gpsProp == null) {
@@ -1311,26 +2193,40 @@ var prefix = deviceName.substring(0,3);
 				GPSon = gpsProp as Lang.Boolean;
 			} else {
 				var s = gpsProp.toString();
-				GPSon = (s.equals("true") || s.equals("1"));
+				GPSon =  s.equals("true") or s.equals("1");
 			}
 		}
-		// Bluetooth initialisation
+
 		registerProfiles();
 		BluetoothLowEnergy.setScanState(BluetoothLowEnergy.SCAN_STATE_SCANNING);
-		// try to connect directly to the last known device.
-//		result = Storage.getValue("device");
-//		if (result != null) {
-//			debug ("[open] direct connect");
-//			connect(result);
-//		}
+		// Scan axis: an opening arms the scan; the print names the countdown value the new scan starts from.
+		System.println("[scan] open countdown=" + scanTimeout.toString());
+
+		wireLine("connections", BluetoothLowEnergy.getAvailableConnectionCount().toString());
+
+
+
+
+
+
 
 	}
 
 	function close() as Void {
 		ucd2Armed = false;
+
+
+		x5Armed = false;
+		x5RxBuf = null;
+		x5RxWant = 0;
+		x5RxWasNotif = false;
+		x5RxLast = null;
 		ucd2RxBuf = null;
 		ucd2RxWant = 0;
-		// Save current state of app
+		notifCount = 0;
+		notifHex = "";
+		x5Seen = 0;
+
 		App.getApp().setProperty("recState", recState);
 		App.getApp().setProperty("startRecTime", startRecTime.value());
 		if (currentMode instanceof Lang.ByteArray) {
@@ -1348,5 +2244,4 @@ var prefix = deviceName.substring(0,3);
 		}
 	}
 }
-
 }

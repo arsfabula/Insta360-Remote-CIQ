@@ -23,6 +23,7 @@
             <iq:product id="edge1030plus"/>
             <iq:product id="edge1040"/>
             <iq:product id="edge1050"/>
+            <iq:product id="edge1060"/>
             <iq:product id="edge530"/>
             <iq:product id="edge540"/>
             <iq:product id="edge550"/>
@@ -31,6 +32,8 @@
             <iq:product id="edge850"/>
             <iq:product id="edgeexplore"/>
             <iq:product id="edgeexplore2"/>
+            <iq:product id="edgeexplore3"/>
+            <iq:product id="edgeexplore3plus"/>
             <iq:product id="edgemtb"/>
             <iq:product id="enduro"/>
             <iq:product id="enduro3"/>
@@ -111,6 +114,7 @@
             <iq:product id="legacysagarey"/>
             <iq:product id="marq2"/>
             <iq:product id="marq2aviator"/>
+            <iq:product id="marq3"/>
             <iq:product id="marqadventurer"/>
             <iq:product id="marqathlete"/>
             <iq:product id="marqaviator"/>
@@ -148,6 +152,7 @@
         </iq:languages>
         <iq:barrels>
             <iq:depends name="BLEBarrel" version="1.0.0"/>
+            <iq:depends name="CapacitesBarrel" version="1.0.0"/>
         </iq:barrels>
     </iq:application>
 </iq:manifest>
