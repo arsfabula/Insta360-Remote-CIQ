@@ -130,6 +130,14 @@ const DEBUG_TRACE = false;
 const X6_TEST_HOOK = false;
 const X6_TEST_HOOK_NAME = "X5 3S6GEW";
 
+// Ceiling of the writes of the test hook of the menu. The hook forces the menu
+// and the envelope of a model on a camera of ANOTHER model, so the frames of
+// the family forced reach the camera the user owns. The ceiling is the bound
+// of that: a frame of the forced family crosses only while the counter stays
+// under it, and the refusal answers with a print at the transport, never by
+// silence (criterion 14 of 11.3). The datum counts the frames that crossed.
+const HOOK_WRITE_CEILING = 3;
+
 
 var recState as Lang.Number = stateStopRec;
 var startRecTime as Time.Moment = Time.now();
@@ -141,6 +149,21 @@ var GPSaccuracy as Position.Quality = Position.QUALITY_NOT_AVAILABLE;
 var connecting as Lang.Boolean = false;
 var menuLevel as Lang.Number = 1;
 var deviceName as Lang.String = "n/a";
+// Axis model: the model of the capability matrix that the menu is built for, and
+// the model the scan detected. The two stay apart because the hook of the menu
+// forces the menu of another model on the camera the user owns: the forcing
+// overwrites capModel and menuLevel, never detectedModel and detectedLevel, so a
+// forced run says which model was detected and which one is in force (note 8 of
+// the CdC: the tell and the decision answer one datum).
+var capModel as Lang.String = "n/a";
+var detectedLevel as Lang.Number = 1;
+var detectedModel as Lang.String = "n/a";
+// The forcing of the menu, at runtime, by the entry MenuLevel. It answers the
+// model of the matrix in force and the envelope to build for it, and the datum
+// of the writes that crossed while it is on.
+var testModel as Lang.String = "";
+var testLevel as Lang.Number = -1;
+var hookSent as Lang.Number = 0;
 
 // CdC item 107, the datum of the pop depth of the resolution sub-menu. The
 // resolutions are not entries of the main menu any more: the entry Video
@@ -153,6 +176,16 @@ var deviceName as Lang.String = "n/a";
 // the arming settled at items 68 and 93 (a barrel boolean survives a
 // re-assignment, a patched array did not).
 var resolutionSubmenuOn as Lang.Boolean = false;
+	// The datum of the pop depth of the submenu of MenuLevel, the way the
+	// resolution submenu carries its own flag: the delegate of a submenu is a
+	// new instance of the same class, so it cannot carry what the delegate of
+	// the main menu set, and the depth is not a fact of the view but a fact of
+	// the navigation (CdC item 107). Two submenus, two flags, never one flag
+	// read for two submenus (note 8 of the CdC).
+	// A fresh view of the main menu re-derives the depth, so this datum needs no
+	// clearing at the re-connect: it lives with the navigation, not with the
+	// forcing of the model (CdC item 158, axis of the persistence).
+var menuLevelSubmenuOn as Lang.Boolean = false;
 
 var SeqNo as Lang.Number = 1;
 
@@ -520,6 +553,12 @@ class BleDevice extends BluetoothLowEnergy.BleDelegate {
 			kind = retryKindStart;
 		}
 		if (kind == 0) {
+			return;
+		}
+		// Axis of the ceiling: the UCD2 leg is asked the same question as the
+		// legacy one, so a forced X6 family on a camera of another model is bounded
+		// the same way and answers with the same line (criterion 14).
+		if (hookCeiling()) {
 			return;
 		}
 		var frame = ucd2Frame(op);
@@ -1221,6 +1260,50 @@ class BleDevice extends BluetoothLowEnergy.BleDelegate {
 
 
 
+
+	// Axis model, the forcing of the menu (the entry MenuLevel of the
+	// application). Three questions, three functions, each answering at its
+	// own boundary, so the forcing is never read through a write (note 8 of
+	// the CdC: the tell and the decision answer one datum).
+	//
+	// Is a run forced at all? The datum is the model of the matrix in force;
+	// an empty String answers a run that is not forced. The content test of a
+	// Lang.String is .equals(), never ==, which compares object identity and
+	// is never true on a String (note 9 of the CdC, item 14).
+	function hookForced() as Lang.Boolean {
+		// Silent on its own: the state of the forcing prints at the gate of the
+		// menu, where the run names it once, and a print per write here would bury
+		// the rungs of the ladder under a line that answers nothing (criterion 14
+		// reads an armed marker, not a flood).
+		return !testModel.equals("");
+	}
+
+	// Axis of the ceiling of the forcing, asked at the transport. A write of a
+	// family forced on another camera crosses the bond of the camera the user
+	// owns, so the forcing is bounded: the datum counts the writes that
+	// crossed while forced, and the refusal answers at the site that withholds
+	// the write, never by an absence of a line (criterion 14 of 11.3). A frame
+	// refused is not a frame the camera refused: nothing was asked of it, no
+	// reply exists for it, and an acceptance never closes on a reply (EF-22).
+	// One call per write, never one per chunk of the transport below, which
+	// chunks a frame at 20 octets (note 23's rule).
+	function hookCeiling() as Lang.Boolean {
+		if (!hookForced()) {
+			// Not a write of a forced family: the ceiling never applies, and no
+			// line prints, because a line here would answer for a write the
+			// forcing did not arm.
+			return false;
+		}
+		if (hookSent >= HOOK_WRITE_CEILING) {
+			System.println("[hook] refused ceiling=" + HOOK_WRITE_CEILING.toString() + " sent=" + hookSent.toString() + " model=" + testModel + " level=" + testLevel.toString());
+			return true;
+		}
+		hookSent = hookSent + 1;
+		var left = HOOK_WRITE_CEILING - hookSent;
+		System.println("[hook] sent n=" + hookSent.toString() + " left=" + left.toString() + " model=" + testModel + " level=" + testLevel.toString());
+		return false;
+	}
+
 	function sendCMD(value as Lang.ByteArray) as Void {
 		if (ucd2Armed) {
 			ucd2Send(value);
@@ -1228,6 +1311,14 @@ class BleDevice extends BluetoothLowEnergy.BleDelegate {
 		}
 		if (value == cmdStopRec) {
 			cancelPendingStart();
+		}
+		// Axis of the ceiling: the question is asked before the frame is handed to
+		// the transport, so a refused write never reaches the bond and the line of
+		// hookCeiling() answers for it. The frame is not filtered by content here:
+		// a write of the family forced is a write of the protocol of that family,
+		// and the datum is how many of them crossed.
+		if (hookCeiling()) {
+			return;
 		}
 		transmit(value);
 	}
@@ -1850,6 +1941,28 @@ function registerProfiles() as Void {
 
 
 
+			// A re-connect never keeps silently the family a test forced: the
+			// datum of the detection is re-written here, and the datum of the
+			// forcing is cleared. menuLevel goes back to the detected one, and
+			// the counter of the writes that crossed under the forcing goes back
+			// to nothing, so the ceiling of a fresh bond is a fresh ceiling
+			// (axis of the persistence, one datum cleared per datum armed).
+			// Axis of the persistence, one print before the decision of the
+			// guard below takes it (note 8 of the CdC).
+			// The print is armed at this site so the clearing answers by a line:
+			// an absence of a line is never a verdict (criterion 14 of 11.3).
+			menuLevel = detectedLevel;
+			capModel = detectedModel;
+			// The forcing itself: no model in force, no envelope forced, no write
+			// counted. testLevel stays at -1, which no model of the matrix answers,
+			// so the gate of the application reads a run that is not forced.
+			testModel = "";
+			testLevel = -1;
+			hookSent = 0;
+			// CdC item 158: the state of the axis model after this clearing, printed
+			// here so a re-connected run names the model in force and the model
+			// detected, and never leaves the two to be supposed.
+			System.println("[relink] model=" + capModel + " level=" + menuLevel.toString() + " forced=" + (testLevel != -1).toString() + " detectedModel=" + detectedModel + " detectedLevel=" + detectedLevel.toString());
 			if (menuLevel == 3) {
 				ucd2Armed = true;
 				currentLabel = "X6 Video";
@@ -1897,32 +2010,69 @@ function registerProfiles() as Void {
 
 				if ((iter.equals(LBS_SERVICE)) and (deviceName != null)) {
 				menuLevel = 0;
+				// Axis model. The model of the matrix the name answers, kept apart from
+				// the level: the level is the envelope of the application, the model is
+				// the entry table it builds. It starts at none, so a name that matches no
+				// branch of the chain names the model none at the print below, and never
+				// keeps the model of a previous round of the scan.
+				capModel = "none";
 					if (deviceName.length() >= 3) {
 					var prefix = deviceName.substring(0, 3);
 				if (prefix != null) {
-					if (prefix.equals("ONE")) {
+					if (prefix.equals("ONE")) { capModel = "ONE X";
 						menuLevel = 1;
 					}
-					if (prefix.equals("X3 ")) {
+					if (prefix.equals("X3 ")) { capModel = "X3";
 						menuLevel = 1;
 					}
 
-					if (prefix.equals("X4 ")) {
+					// The X2 has no branch of its own before: it belongs to the older envelope like
+					// the X3 and the ONE X, so its level is 1 and never the level 0, whose menu is
+					// empty (decision of the CdC, the X2 is pre-UCD2).
+					if (prefix.equals("X2 ")) { capModel = "X2";
+						menuLevel = 1;
+					}
+
+					// The X4 Air shares the three first characters with the X4, so the
+					// full name decides between the two, and it decides only when the
+					// name answers the seven first characters: the name of the X4 Air
+					// over the wire was never relevee, so this test reads the datum of
+					// the name and never guesses a model.
+					if (prefix.equals("X4 ")) { capModel = "X4";
+						if (deviceName.length() >= 7) {
+							if (deviceName.substring(0, 7).equals("X4 Air")) { capModel = "X4 Air"; }
+						}
 						menuLevel = 2;
 					}
-					if (prefix.equals("X5 ")) {
+					if (prefix.equals("X5 ")) { capModel = "X5";
 
 
 						x5Armed = true;
 						menuLevel = 2;
 					}
-					if (prefix.equals("X6 ")) {
+					if (prefix.equals("X6 ")) { capModel = "X6";
 						menuLevel = 3;
 					}
 
 
 
-					if (X6_TEST_HOOK and deviceName.equals(X6_TEST_HOOK_NAME)) {
+					// The datum of the detection, kept apart from the datum of the forcing: the hook
+					// of the menu overwrites menuLevel and capModel, and never touches these two, so
+					// a run forced says which model was detected and which one is in force.
+					detectedLevel = menuLevel;
+					detectedModel = capModel;
+
+					// Axis model of the scan: the classification of this round, after
+					// the chain took its decision. A name that matches no branch names
+					// the model none here, so the verdict answers by a line and never
+					// by an absence of a line (criterion 14 of 11.3).
+					System.println("[mdl] name=" + deviceName + " model=" + capModel + " level=" + menuLevel.toString() + " detectedModel=" + detectedModel + " detectedLevel=" + detectedLevel.toString());
+
+                    // The hook of the compile-time constant, whose fault was closed with
+                    // the constant at OFF (CdC item 147: the reference had `and`, the
+                    // reconstruction had `or`, which forced every named camera to the
+                    // level 3). This site stays as it is.
+                    if (X6_TEST_HOOK and deviceName.equals(X6_TEST_HOOK_NAME)) {
 						menuLevel = 3;
 					}
 				}
