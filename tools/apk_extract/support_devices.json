@@ -1,0 +1,203 @@
+{
+  "protocol_version": "1.0.0",
+  "device_list": [
+    {
+      "device_type": "Insta360 TRC RX",
+      "device_name": "Insta360 Mic Pro RX",
+      "directory": "rxTRC",
+      "alias_device_type": [],
+      "alias_device_name": []
+    },
+    {
+      "device_type": "Insta360 TRC TX",
+      "device_name": "Insta360 Mic Pro TX",
+      "directory": "txTRC",
+      "alias_device_type": [],
+      "alias_device_name": []
+    },
+    {
+      "device_type": "Insta360 TRC-T",
+      "device_name": "Insta360 Mic TX",
+      "directory": "txTRCT",
+      "alias_device_type": [],
+      "alias_device_name": []
+    },
+    {
+      "device_type": "Insta360 X6",
+      "device_name": "X6",
+      "directory": "c9",
+      "alias_device_type": [
+        "Insta360 C9"
+      ],
+      "alias_device_name": [
+        "C9"
+      ]
+    },
+    {
+      "device_type": "Insta360 Luna Pro",
+      "device_name": "Luna Pro",
+      "directory": "z05",
+      "alias_device_type": [],
+      "alias_device_name": []
+    },
+    {
+      "device_type": "Insta360 Luna Ultra",
+      "device_name": "Luna Ultra",
+      "directory": "z03",
+      "alias_device_type": [],
+      "alias_device_name": []
+    },
+    {
+      "device_type": "Insta360 X4 Air",
+      "device_name": "X4 Air",
+      "directory": "b2",
+      "alias_device_type": [],
+      "alias_device_name": []
+    },
+    {
+      "device_type": "Insta360 GO Ultra",
+      "device_name": "GO Ultra",
+      "directory": "tc4",
+      "alias_device_type": [],
+      "alias_device_name": []
+    },
+    {
+      "device_type": "Insta360 Flow 2",
+      "device_name": "Flow 2",
+      "directory": "flow2",
+      "alias_device_type": [],
+      "alias_device_name": []
+    },
+    {
+      "device_type": "Insta360 X5",
+      "device_name": "X5",
+      "directory": "a3",
+      "alias_device_type": [],
+      "alias_device_name": []
+    },
+    {
+      "device_type": "Insta360 Flow 2 Pro",
+      "device_name": "Flow 2 Pro",
+      "directory": "flow2pro",
+      "alias_device_type": [],
+      "alias_device_name": []
+    },
+    {
+      "device_type": "Insta360 Ace Pro 2",
+      "device_name": "Ace Pro 2",
+      "directory": "iac3",
+      "alias_device_type": [],
+      "alias_device_name": []
+    },
+    {
+      "device_type": "Insta360 Flow Pro",
+      "device_name": "Flow Pro",
+      "directory": "flowpro",
+      "alias_device_type": [],
+      "alias_device_name": []
+    },
+    {
+      "device_type": "Insta360 GO 3S",
+      "device_name": "GO 3S",
+      "directory": "tc2",
+      "alias_device_type": [
+        "Insta360 GO3S"
+      ],
+      "alias_device_name": [
+        "GO3S"
+      ]
+    },
+    {
+      "device_type": "Insta360 X4",
+      "device_name": "X4",
+      "directory": "dlc4",
+      "alias_device_type": [],
+      "alias_device_name": []
+    },
+    {
+      "device_type": "Insta360 Ace Pro",
+      "device_name": "Ace Pro",
+      "directory": "iac2",
+      "alias_device_type": [],
+      "alias_device_name": []
+    },
+    {
+      "device_type": "Insta360 Ace",
+      "device_name": "Ace",
+      "directory": "iac1",
+      "alias_device_type": [],
+      "alias_device_name": []
+    },
+    {
+      "device_type": "Insta360 GO 3",
+      "device_name": "GO 3",
+      "directory": "go3",
+      "alias_device_type": [
+        "Insta360 GO3"
+      ],
+      "alias_device_name": [
+        "GO3"
+      ]
+    },
+    {
+      "device_type": "Insta360 Flow",
+      "device_name": "Flow",
+      "directory": "flow",
+      "alias_device_type": [],
+      "alias_device_name": []
+    },
+    {
+      "device_type": "Insta360 X3",
+      "device_name": "X3",
+      "directory": "x3",
+      "alias_device_type": [],
+      "alias_device_name": []
+    },
+    {
+      "device_type": "Insta360 Sphere",
+      "device_name": "Sphere",
+      "directory": "sphere",
+      "alias_device_type": [],
+      "alias_device_name": []
+    },
+    {
+      "device_type": "Insta360 OneRS",
+      "device_name": "ONE RS",
+      "directory": "oners",
+      "alias_device_type": [],
+      "alias_device_name": []
+    },
+    {
+      "device_type": "Insta360 OneR",
+      "device_name": "ONE R",
+      "directory": "oner",
+      "alias_device_type": [],
+      "alias_device_name": []
+    },
+    {
+      "device_type": "Insta360 ONE X2",
+      "device_name": "ONE X2",
+      "directory": "onex2",
+      "alias_device_type": [],
+      "alias_device_name": []
+    },
+    {
+      "device_type": "Insta360 One2",
+      "device_name": "ONE X",
+      "directory": "onex",
+      "alias_device_type": [],
+      "alias_device_name": []
+    },
+    {
+      "device_type": "Insta360 GO 2",
+      "device_name": "GO 2",
+      "directory": "go2",
+      "alias_device_type": [
+        "Insta360 GO2"
+      ],
+      "alias_device_name": [
+        "GO2"
+      ]
+    }
+  ]
+}

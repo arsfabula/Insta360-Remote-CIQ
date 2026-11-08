@@ -1,0 +1,30 @@
+# Supported camera/accessory models in Insta360_v2.34.5_526204.apk
+# Source: assets/ins_config_files/phoneApp/support_devices.json
+# Format: device_type | device_name | directory
+
+Insta360 TRC RX | Insta360 Mic Pro RX | rxTRC
+Insta360 TRC TX | Insta360 Mic Pro TX | txTRC
+Insta360 TRC-T | Insta360 Mic TX | txTRCT
+Insta360 X6 | X6 | c9 (alias: Insta360 C9)
+Insta360 Luna Pro | Luna Pro | z05
+Insta360 Luna Ultra | Luna Ultra | z03
+Insta360 X4 Air | X4 Air | b2
+Insta360 GO Ultra | GO Ultra | tc4
+Insta360 Flow 2 | Flow 2 | flow2
+Insta360 X5 | X5 | a3
+Insta360 Flow 2 Pro | Flow 2 Pro | flow2pro
+Insta360 Ace Pro 2 | Ace Pro 2 | iac3
+Insta360 Flow Pro | Flow Pro | flowpro
+Insta360 GO 3S | GO 3S | tc2 (alias: Insta360 GO3S)
+Insta360 X4 | X4 | dlc4
+Insta360 Ace Pro | Ace Pro | iac2
+Insta360 Ace | Ace | iac1
+Insta360 GO 3 | GO 3 | go3 (alias: Insta360 GO3)
+Insta360 Flow | Flow | flow
+Insta360 X3 | X3 | x3
+Insta360 Sphere | Sphere | sphere
+Insta360 OneRS | ONE RS | oners
+Insta360 OneR | ONE R | oner
+Insta360 ONE X2 | ONE X2 | onex2
+Insta360 One2 | ONE X | onex
+Insta360 GO 2 | GO 2 | go2 (alias: Insta360 GO2)

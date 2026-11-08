@@ -1,0 +1,7 @@
+# Cameras using the UCD2 protocol envelope (instead of the 16-byte envelope)
+# Source: assets/ins_config_files/phoneApp/<dir>/basic/business.json  -> "ucd2": true
+# Determined by: DeviceConfigManager.getBasicConfig(cameraType).ucd2
+
+Insta360 X6 (directory: c9)
+Insta360 Luna Ultra (directory: z03)
+Insta360 Luna Pro (directory: z05)
