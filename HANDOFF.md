@@ -42,18 +42,23 @@ single source of truth for continuing.
 > at `BLE Barrel/BLEBarrel.mc:2583` today, seven characters against six) and the opener of a resolution
 > submenu of a model of the matrix stays keyed on the X5 datum `v0` (delegate :1217, the call at :1230) —
 > no measured datum says that such a menu opens one. **What is still owed is a paste of the simulator the user
-> starts, ONE session per tell**: the first `[hook] sent n=1 left=9` of the family of a model forced read after
-> a reset of the submenu (S-35, S-34), the entry whose key is `PhotoBurst` and its own press (S-37), the choice
-> `forceoff` with ONE entry of the X5 and ONE press (S-36), a forced session kept past the bound then ONE re-connect
-> (S-32), and the two other faces of S-37 (the stop of an Interval at the key `PhotoInterval`, the refusal face of
-> the Starlapse cell). Item **165** of that file draws the protocol of those sessions — the setup is made OUTSIDE
+> starts, ONE session per tell**: the entry of a cell whose key is `PhotoBurst` and its own press (S-37), the
+> refusal face of the Starlapse cell (S-37), the choice `forceoff` with ONE entry of the X5 and ONE press (S-36),
+> and a forced session kept past the bound then ONE re-connect (S-32). The rung S-35 **closes at its tell** and
+> two faces of the row S-37 answer at the interval session of the ONE X (items 168 and 169): the first `[hook]
+> sent n=1 left=9` of the family of a model forced read after a reset of the submenu answers there, and the press
+> of stop arms the stop of an Interval **by the key** of its cell (`[stop] cmd=23 declared=18 body=2` beside the
+> `[stop2]` bytes of the library's stop of a Timelapse; the arming sits at delegate :938 and the site that picks the frame at :1306…:1309. Item **165** of that file draws the protocol of those
+> sessions — the setup is made OUTSIDE the graded session (note 30), ONE selection is graded per session (note 33), an absence never grades (criterion 14)
 > the graded session (note 30), ONE selection is graded per session (note 33), an absence never grades (criterion 14)
 > and a refusal re-runs rather than being read; the pin of a screen is the paste of its build log, item 164's rule —;
-> the items **166** and **167**
-> read two pastes of it: S-29 is **Green at its tell** (the gate answers a model of the level 1 — the X3 — and the
-> level-2 face of the X4 Air answers on the artefact of the axis), and the SECOND visit of the submenu of `MenuLevel`
-> carries a fresh ceiling and takes another model (S-35, whose half of the first `sent=1` of a family forced stays
-> owed). The decisions of this axis sit at **items 160…167** of
+> the items **166**, **167**, **168** and **169**
+> read four pastes of it: S-29 is **Green at its tell** (the gate answers a model of the level 1 — the X3 — and
+> the level-2 face of the X4 Air answers on the artefact of the axis), the second and third visits of the submenu
+> of `MenuLevel` carry a fresh ceiling and take another model, the ONE X answers the 9 entries of its row of the
+> matrix, and the interval session of that model gives the first `sent n=1` of a family forced after such a reset
+> and the stop armed by the key — **S-35 closes at its tell**. The decisions of this axis sit at **items 160
+> …169** of
 > `…\Documents\Default Project\Insta360 Remote\Cahier-des-charges-CIQ-decisions-20261108.md`; the ladder
 > of §11.4 of `Cahier-des-charges-CIQ.md` keeps **38 rows, S-0…S-37**, and adds none. Out of scope by
 > design: the X6/UCD2 hardware leg (no camera of that model on this bench) and the `0b` keepalive fork.
