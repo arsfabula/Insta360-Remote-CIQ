@@ -927,7 +927,15 @@ function onSelect(item) as Void {
             // The old patch also moved the start frame of p2 (cmdStartRec[7] = 0x16):
             // the start of the Interval stays the capture of the press (S-14), the
             // frame of the resolver, untouched.
-			BLEBarrel.timelapseStopMode = itemID.equals("p2");
+				// Item 162 (the arming S-37 owed): the id of an entry of a model of the matrix
+				// names no protocol number (rea/11), so the id face of this test is the datum of
+				// the X5 only, and the second face answers the ROLE of the entry of the row in
+				// force, the key of the cell the matrix names as the Interval, PhotoInterval.
+				// Both faces are .equals() on a String (note 9: == is identity, never content),
+				// and selKey answers the empty String for an X5 id, for a cell that carries no
+				// key, and for a model the tables do not know (mi = -1 answers rowIds, then entry
+				// at -1, then the empty key), so an unknown model arms nothing.
+						BLEBarrel.timelapseStopMode = itemID.equals("p2") or selKey.equals("PhotoInterval");
                         // CdC item 93, axis S-23 (the second reading of that tell): the start
                         // of the Timelapse command, 12 ... 16 ... 08 02, crossed once and the window
                         // answered n8208=0 n8256=0 again. The body carried 2, the enum member that
@@ -938,7 +946,12 @@ function onSelect(item) as Void {
                         // The test is .equals(), the content test of note 9, never == on a String.
                         // CdC item 100: the entry that would arm it is no longer offered, so this
                         // flag stays false and the press keeps the leg item 95 named for it.
-                        BLEBarrel.starlapseStartMode = itemID.equals("v12");
+                        	// Item 162, kept at the id on purpose: an entry of the Starlapse cell of a model
+                        	// of the matrix is official, its selection answers [refused] id=... tier=official
+                        	// and writes nothing, so no press of that selection exists and a key face of this
+                        	// arming could never pay (EF-22: no acceptance of this axis closes on a reply).
+                        	// v12 stays the datum of the Starlapse entry of the X5 itself.
+                        				BLEBarrel.starlapseStartMode = itemID.equals("v12");
 			// Axis model, the single site that answers the frame of the entry selected.
 			// An id of the generated menu of the X5 reads the resolver above, whose
 			// ids are values of the protocol of this camera (the datum of the rungs of
@@ -1024,7 +1037,12 @@ function onSelect(item) as Void {
 				// the capture frame belongs to the start press. The datum is set
 				// here, printed at the site that reads it (:219). The legacy ids
 				// never touch this flag: their own axis stays out of reach.
-				BLEBarrel.photoBurstMode = itemID.equals("p3");
+					// Item 162 (the arming S-37 owed), the same shape: the cell the matrix names as
+					// the Burst carries the key PhotoBurst, so an entry of that cell of a model of
+					// the matrix arms the mode, while the id face stays the datum of the X5. An
+					// official cell of that row answers [refused] at the tier boundary and writes
+					// nothing, so its own press never reaches this arming (EF-22).
+								BLEBarrel.photoBurstMode = itemID.equals("p3") or selKey.equals("PhotoBurst");
 				// CdC item 57, axis S-12: the arming of the capture at the press is the
 				// whole photo family of the generated entries, not the p3 entry alone. Set
 				// with the family write of the S-7 just above, read at the press of start.
