@@ -554,6 +554,15 @@ class InputDelegate extends Ui.BehaviorDelegate {
 		// a verdict (criterion 14 of 11.3).
 		Sys.println("[lvl] menuLevel=" + BLEBarrel.menuLevel.toString() + " model=" + BLEBarrel.capModel + " detectedModel=" + BLEBarrel.detectedModel + " detectedLevel=" + BLEBarrel.detectedLevel.toString());
 		var mi = CapacitesBarrel.modelIndexOfName(BLEBarrel.capModel);
+		// The gate of the menu answers whatever the level takes, not only the level 2:
+		// this datum is decided and printed once, above the switch, so a run at any
+		// level says whether the model has ever been releved over BLE, which is the
+		// datum the armings of the entries owe (CdC item 160: S-29 owed the print of
+		// this boolean at the level 2 only, which made a run at the level 1 silent).
+		// An index the tables do not know answers -1 and the measurement answers false:
+		// an absence of a model is a refusal, never an empty menu (criterion 14 of 11.3).
+		var measuredNow = CapacitesBarrel.modelMeasured(mi);
+		Sys.println("[gate] model=" + BLEBarrel.capModel + " mi=" + mi.toString() + " measured=" + measuredNow.toString());
 		switch (BLEBarrel.menuLevel) {
 			case 0:
 				break;
@@ -587,11 +596,9 @@ class InputDelegate extends Ui.BehaviorDelegate {
 				// X5), and a model never releved answers the tables of the matrix by
 				// id, label and tier, never a protocol number (rea/11: an official
 				// cell gives a label, never a protocol value, and the numbering is
-				// not a scale across models). One boolean, printed before the branch
-				// reads it (note 8 of the CdC: the tell and the decision answer one
-				// datum).
-				var measuredNow = CapacitesBarrel.modelMeasured(mi);
-				Sys.println("[gate] model=" + BLEBarrel.capModel + " mi=" + mi.toString() + " measured=" + measuredNow.toString());
+				// not a scale across models). The boolean is decided and printed once
+				// above the switch (note 8 of the CdC: the tell and the decision answer
+				// one datum), and this branch only reads it.
 				if (measuredNow) {
 					addX5Items(menu);
 				} else {
