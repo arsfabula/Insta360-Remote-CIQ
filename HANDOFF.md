@@ -6,6 +6,16 @@ tests must be done with the PC's raw BLE adapter (no Garmin SDK). Final
 reintegration (step 4) happens on a separate Windows PC. This document is the
 single source of truth for continuing.
 
+> **Update 2026-11-08** — branch `feature/x6-ace-go`. The `BLE Probe` app was
+> removed from the repo (commit `1cf039d`) and the `Framing Probe` bench
+> artifacts likewise: both are archived dead ends in the scratch area
+> (`...\Documents\Default Project\Insta360 Remote\Archive\Probes-20261108\`,
+> see its README for the verdict). The framing question — can a >20-byte
+> camera answer reach the watch leg — is answered NO by the v10 run:
+> continuation bytes arrive as separate text pushes, never as the tail of the
+> head; battery and storage stay out of reach through the options. Do not
+> rebuild either probe.
+
 ## 1. Goal
 
 Reverse-engineer the **watch <-> Insta360 camera BLE protocol** used by the
@@ -29,8 +39,9 @@ tools/ciq_arrays.py              # parses cmd* arrays out of BLEBarrel.mc
 tools/test_golden.py             # golden byte tests
 tools/prg_dump.py                # NEW: .prg container parser (CIQ 3/4/5)
 Capacites Barrel/                # per-camera capability model (provenance tags)
-BLE Probe/source/Probe.mc        # protocol test ladder (PASS/FAIL/NO EVIDENCE)
 OneR remote/, OneR remote DF/    # shipped widget + datafield
+# BLE Probe and Framing Probe are no longer in the repo: archived dead ends
+# in the scratch area (Archive\Probes-20261108), see the update note above.
 ```
 
 ## 3. How to obtain the official app's .prg
@@ -175,8 +186,9 @@ New findings from the official .prg (this work):
 - Insta360 LBS uses NoBonding/NoEncryption -> a passive BLE sniffer (nRF52 dongle
   + Wireshark) captures the full plaintext traffic between the official app and
   the camera. Validate each statically discovered command against real captures.
-- Alternatively, replay commands with the existing `BLE Probe` ladder (ported to
-  run without the SDK, or run on the Windows PC).
+- Alternatively, replay commands with the archived `BLE Probe` ladder
+  (`Archive\Probes-20261108` in the scratch area) — for replay of proven
+  commands only; the framing rungs it chased are a dead end.
 - Rule from Probe.mc: a reply (code 0xC8) proves the camera holds a value; only a
   pushed notification (0x8275/0x8293/0x8208/0x8256) proves it acted.
 
@@ -185,7 +197,7 @@ New findings from the official .prg (this work):
   `tools/insta360_proto.py` / `insta360_ucd2.py`.
 - Add golden tests in `tools/test_golden.py` (must reproduce byte-for-byte).
 - Update `Capacites Barrel` with OFFICIAL-tagged values (provenance per its README).
-- Extend `BLE Probe` ladder with new commands.
+- The `BLE Probe` ladder is archived: not extended, not rebuilt.
 - Update `tools/README.md` and `BLE Barrel/README.md`.
 - Run `tools/audit_commands.py` and `tools/verify_tables.py`.
 
@@ -271,8 +283,7 @@ python tools/prg_dump.py insta360-epixpro51.prg --containers
 # dump everything to a folder
 python tools/prg_dump.py insta360-epixpro51.prg --out ./prgdump
 ```
-EOF
-echo "written"
+
 ## 11. Decompilation attempt (Ghidra + GhidraGarminApp)
 
 ### Setup status

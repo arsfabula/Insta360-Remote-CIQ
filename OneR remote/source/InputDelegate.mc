@@ -159,18 +159,23 @@ function addCameraItems(menu, mi) as Void {
     // every family, so the menu stays empty and the walk below says so, because
     // the absence of a line is never a verdict (criterion 14 of 11.3).
     // families an entry of the main menu of a model the bond never releved
-    // belongs to are the video modes, the photo modes and the resolutions: the
-    // resolutions of such a model answer the main menu, and not a submenu of
-    // their own, because the entry that opens the resolution submenu is the Video
-    // entry of the X5 menu (the id v0, CdC item 107), and no measured datum says
-    // that the menu of a model the bond never releved opens such a submenu. The
-    // id of an entry of another model says nothing about the ids of the X5 (the
-    // numbering is not a scale across models, rea/11), so the site that opens a
-    // submenu stays keyed on the datum of the X5 and nothing else. The walk the
-    // application prints after the build answers how many items the menu holds,
-    // so the size of a menu of a model of the matrix is a reading of the run and
-    // never a limit supposed here (note 14: the documented limit of Ui.Menu is
-    // another class, printed as a reference).
+    // belongs to are the video modes and the photo modes: the resolutions of
+    // such a model answer a resolution submenu of their own, the way the X5
+    // gives them (CdC item 107), opened by the Video entry of the model in
+    // force. That the menu of a model the bond never releved opens such a
+    // submenu is a decision of the axis of the test and never a reading: the
+    // measured datum is the opener of the X5, keyed on its own id v0, and no
+    // run has ever read the menu of another model (rea/11: the numbering is not
+    // a scale across models), so the generated opener answers the entry at the
+    // same place of the video family of the model in force, o + the index of
+    // the model + v0, the first video entry of every model of the matrix. The
+    // entries of that submenu carry the tier of their cell, so an official cell
+    // answers [refused] and writes nothing. The walk the application prints after
+    // the build answers how many items the menu holds, so the size of a menu of
+    // a model of the matrix is a reading of the run and never a limit supposed
+    // here (note 14: the documented limit of Ui.Menu is another class, printed
+    // as a reference, and the flat menu of the X3 answered 24 items against that
+    // 16 before this edit).
     var ids = CapacitesBarrel.rowIds(0, mi);
     var labels = CapacitesBarrel.rowLabels(0, mi);
     var k = 0;
@@ -185,17 +190,13 @@ function addCameraItems(menu, mi) as Void {
         menu.addItem(new Ui.MenuItem(labels2[k], "", ids2[k], {}));
         k += 1;
     }
-    var ids3 = CapacitesBarrel.rowIds(2, mi);
-    var labels3 = CapacitesBarrel.rowLabels(2, mi);
-    k = 0;
-    while (k < ids3.size()) {
-        menu.addItem(new Ui.MenuItem(labels3[k], "", ids3[k], {}));
-        k += 1;
-    }
 }
 
 function addCameraResItems(menu, mi) as Void {
-    // The resolutions of a model, the third family of the same datum.
+    // The resolutions of a model, the third family of the same datum. CdC item 159
+    // builds the resolution submenu of a model of the matrix, reached when the Video
+    // entry of that model is selected: the tier of an entry of this family decides
+    // whether a selection writes, never the submenu it sits in.
     var ids = CapacitesBarrel.rowIds(2, mi);
     var labels = CapacitesBarrel.rowLabels(2, mi);
     var k = 0;
@@ -796,6 +797,28 @@ function onSelect(item) as Void {
 			// currentMode stays a Lang.String, which the apply reads as no frame (CdC
 			// item 55, the datum of the apply).
 			BLEBarrel.currentMode = "DefaultV";
+			if (forcedModel.equals(BLEBarrel.detectedModel)) {
+				// The model forced is the model the bond named (the choice off, or a
+				// choice that names the camera the user owns): no frame of another
+				// protocol reaches this camera, so the ceiling of the axis never
+				// applies and the forcing answers disarmed, which is the state a run
+				// of the X5 lives in. The menu still answers the pair of the model,
+				// which the gate reads apart from the forcing (note 8 of the CdC).
+				BLEBarrel.testModel = "";
+				BLEBarrel.testLevel = -1;
+			}
+		}
+		// CdC item 159, the ceiling of a visit of the axis: a fresh visit of the
+		// submenu of MenuLevel is a fresh ceiling, the way a fresh bond is a fresh
+		// ceiling (axis of the persistence). The selection of the entry that opens
+		// that submenu ends one visit and takes the counter of the forcing back, so
+		// the bound answers at the transport for the family the next visit arms. The
+		// reset prints at the site that decides it (criterion 14 of 11.3), never by
+		// the absence of a count, and the line below names the state in force for the
+		// rest of this selection.
+		if (itemID.equals("MenuLevel")) {
+		    BLEBarrel.hookSent = 0;
+		    Sys.println("[hook] reset sent=0");
 		}
 		// CdC item 158, the answer of the axis of the model, printed once per
 		// selection and after any forcing this selection applied, so the line names
@@ -1142,13 +1165,33 @@ if ((BLEBarrel.GPSon) && (location != null) && (info != null)) {
         // before the branch reads either, so the tell of the axis and the decision
         // answer one datum, and an absence of a line is never a verdict (criterion
         // 14 of 11.3).
-        Sys.println("[sub] push=" + (itemID.equals("v0") || itemID.equals("MenuLevel")).toString()
+        // CdC item 159: the resolutions of a model of the matrix answer a submenu of
+        // their own too, so the opener answers the Video entry of the model in force.
+        // The measured datum is the opener of the X5, keyed on its own id v0 (CdC item
+        // 107); the generated menu answers the entry at the same place of the video
+        // family of the model in force, o + the index of the model + v0, which is the
+        // first video entry of every model of the matrix. That the menu of a model the
+        // bond never releved opens such a submenu is a decision of the axis of the test
+        // and never a reading, so the entries of that submenu still carry the tier of
+        // their cell and an official cell answers [refused] and writes nothing. The
+        // print answers the three decisions before any branch reads one of them (note
+        // 8 of the CdC: the tell and the decision answer one datum).
+        var openMi = CapacitesBarrel.modelIndexOfName(BLEBarrel.capModel);
+        var resOpen = itemID.equals("v0");
+        if (openMi >= 0) {
+            resOpen = resOpen || itemID.equals("o" + openMi.toString() + "v0");
+        }
+        Sys.println("[sub] res=" + resOpen.toString() + " push=" + (resOpen || itemID.equals("MenuLevel")).toString()
             + " depth=" + BLEBarrel.resolutionSubmenuOn.toString()
             + " forcedepth=" + BLEBarrel.menuLevelSubmenuOn.toString());
-        if (itemID.equals("v0")) {
+        if (resOpen) {
             BLEBarrel.resolutionSubmenuOn = true;
             var resMenu = new Ui.Menu2({:title=>"Resolution"});
-            addX5ResItems(resMenu);
+            if (CapacitesBarrel.modelMeasured(openMi)) {
+                addX5ResItems(resMenu);
+            } else {
+                addCameraResItems(resMenu, openMi);
+            }
             Ui.pushView(resMenu, new Menu2Delegate(), Ui.SLIDE_IMMEDIATE);
         } else if (itemID.equals("MenuLevel")) {
             // CdC item 158, the submenu of MenuLevel: the same shape the Video entry

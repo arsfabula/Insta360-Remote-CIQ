@@ -28,7 +28,6 @@ const LBS_NOTIF_DESC = BluetoothLowEnergy.cccdUuid();
 const stateBusy = 0xf4;
 const stateCmdErr = 34;
 const stateStandby = [0x7, 0, 0, 0, 0x5, 0, 0]b;
-const responseSig = [0x00, 0x00, 0x04, 0x00, 0x00]b;
 const stateStopRec = 0;
 const stateStartRec = 1;
 const stateStarting = 2;
@@ -130,13 +129,21 @@ const DEBUG_TRACE = false;
 const X6_TEST_HOOK = false;
 const X6_TEST_HOOK_NAME = "X5 3S6GEW";
 
-// Ceiling of the writes of the test hook of the menu. The hook forces the menu
-// and the envelope of a model on a camera of ANOTHER model, so the frames of
-// the family forced reach the camera the user owns. The ceiling is the bound
 // of that: a frame of the forced family crosses only while the counter stays
 // under it, and the refusal answers with a print at the transport, never by
 // silence (criterion 14 of 11.3). The datum counts the frames that crossed.
-const HOOK_WRITE_CEILING = 3;
+// The bound counts the writes of the run of a family forced, not the writes
+// of one entry: a video session of a family forced answers its start and its
+// stop among them, so the bound has to leave room for a session, and the
+// axis moved it from 3 to 10 on 2026-11-01 at the request of the user (CdC
+// item 159). The datum a run answers stays the line [hook] refused beside the
+// count of the writes that reached, never a reply of the camera (EF-22).
+// The counter is taken back at two sites: the clearing of the forcing at a
+// re-connect, and the selection of the entry MenuLevel, which ends one visit
+// of the axis and opens the next (a fresh visit is a fresh ceiling, CdC item
+// 159). The value is a decision of the axis of safety, never a reading of a
+// rung: a camera never asked for a frame never refuses it.
+const HOOK_WRITE_CEILING = 10;
 
 
 var recState as Lang.Number = stateStopRec;
@@ -259,6 +266,14 @@ var cmdSetInterval as Lang.ByteArray = [0x3f, 0x00, 0x00, 0x00, 0x04, 0x00, 0x00
 var cmdSetNightShot as Lang.ByteArray = [0x41, 0x00, 0x00, 0x00, 0x04, 0x00, 0x00, 0x03, 0x00, 0x02, 0x2b, 0x01, 0x00, 0x80, 0x00, 0x00, 0x08, 0x04, 0x12, 0x2d, 0x5a, 0x18, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x6a, 0x02, 0x30, 0x01, 0x9a, 0x01, 0x00, 0xaa, 0x01, 0x00, 0xba, 0x01, 0x00, 0xd2, 0x01, 0x00, 0xe2, 0x02, 0x00]b;
 var cmdHighlight as Lang.ByteArray = [0x36, 0x00, 0x00, 0x00, 0x04, 0x00, 0x00, 0x3c, 0x00, 0x02, 0x8b, 0x01, 0x00, 0x80, 0x00, 0x00, 0x08, 0xde, 0xfc, 0xd3, 0xfa, 0x05, 0x1a, 0x1e, 0x63, 0x6f, 0x6d, 0x2e, 0x69, 0x6e, 0x73, 0x74, 0x61, 0x33, 0x36, 0x30, 0x2e, 0x6b, 0x65, 0x79, 0x54, 0x69, 0x6d, 0x65, 0x2e, 0x68, 0x69, 0x67, 0x68, 0x6c, 0x69, 0x67, 0x68, 0x74]b;
 var cmdTrackThat as Lang.ByteArray = [0x36, 0x00, 0x00, 0x00, 0x04, 0x00, 0x00, 0x3c, 0x00, 0x02, 0xa8, 0x01, 0x00, 0x80, 0x00, 0x00, 0x08, 0xf8, 0xfc, 0xd3, 0xfa, 0x05, 0x1a, 0x1e, 0x63, 0x6f, 0x6d, 0x2e, 0x69, 0x6e, 0x73, 0x74, 0x61, 0x33, 0x36, 0x30, 0x2e, 0x6b, 0x65, 0x79, 0x54, 0x69, 0x6d, 0x65, 0x2e, 0x74, 0x72, 0x61, 0x63, 0x6b, 0x54, 0x68, 0x61, 0x74]b;
+
+// Battery of the X5 on demand: GET_OPTIONS (code 8) with the packed option
+// list asking option 11 (battery) and option 20 (storage state), the two that
+// carry the cell. The request frame is 20 octets, one write chunk at the
+// 20-octet ceiling; the answer may be wider than that ceiling, and the
+// declared/arrived pair answers what crossed. Verified on the live X5 under
+// code 8; the bench's getFrame runs code 10, another GET of the family.
+var cmdGetBattery as Lang.ByteArray = [0x14, 0x00, 0x00, 0x00, 0x04, 0x00, 0x00, 0x08, 0x00, 0x02, 0xff, 0x00, 0x00, 0x80, 0x00, 0x00, 0x0a, 0x02, 0x0b, 0x14]b;
 var currentMode as Lang.String or Lang.ByteArray = "DefaultV";
 var videoMode as Lang.Boolean = true;
 var currentLabel as Lang.String = "Default Video";
@@ -302,6 +317,47 @@ const X5_RECORD_STATE_NOTIF = 0x2040;
 const X5_STORAGE_NOTIF = 0x2006;
 const X5_STOP_PUSH_NOTIF = 0x2062;
 
+// Battery of the X5. The camera pushes 0x2003 (8195, the message code map names
+// it CAMERA_NOTIFICATION_BATTERY_UPDATE) whenever the power source changes: the
+// charger in, the charger out, and nothing else was seen moving it. 0x2004
+// (8196) is the low-battery alarm of the same family. The body is a protobuf:
+// one nested status block at field 1, holding field 1 the power source (0 runs
+// on the cell, 1 sits on the adapter), field 2 the level in percent, the scale
+// never sent.
+// The watch measurement (BLE Probe run of 2026-11-04): the delegate negotiates
+// ATT MTU 23, its notifications top out at 20 octets, and the camera truncates
+// an oversized frame instead of continuing it. The push declares 24 and crosses
+// as 20, which still carries the power type at the twentieth octet but leaves
+// the level past the cut; the GET_OPTIONS reply of the same datum (51 octets,
+// and no smaller shape is defined) can never carry it on that link at all.
+const X5_BATTERY_NOTIF = 0x2003;
+const X5_BATTERY_LOW_NOTIF = 0x2004;
+
+// Option id 11 of the GET_OPTIONS reply carries the same battery, nested one
+// block deeper, next to option 20 for the storage state.
+const X5_OPT_BATTERY = 11;
+const X5_OPT_STORAGE_STATE = 20;
+
+// Command 15 in the same envelope, PHONE_COMMAND_GET_CURRENT_CAPTURE_STATUS in
+// the APK map. It is the only request measured on this link that puts a state
+// byte under the 20-octet notification ceiling: the camera answers code 200
+// with body 0a 06 08 <state> 10 <seconds> 50 <n> and the watch leg keeps
+// 0a 06 08 <state>, because the state sits at frame octet 19, one octet inside
+// the cut, while the seconds sit at 21 and 22, outside it. Measured at rest and
+// while recording on the bench of 2026-11-05 (PROTOCOL_APK.md 15.21, 15.24 and
+// 15.27): 0 is at rest, 1 is recording. cmdApply further down is this command
+// with an empty body; the start sequence reads its code-200 answer as the ACK
+// of the mode write, and the very same frame is read here for the state.
+// The seconds, the option 11 battery level and the option 20 free bytes all
+// start at octet 21 or later and have never crossed this link, so this is also
+// the whole of what a connect-time read can learn about the camera.
+const X5_GET_CAPTURE_STATUS = 15;
+const X5_STATE_AT_REST = 0;
+const X5_STATE_RECORDING = 1;
+const STATUS_ASK_MS = 1500;
+const STATUS_RETRY_MS = 6000;
+const STATUS_RETRY_MAX = 2;
+
 
 
 
@@ -340,6 +396,15 @@ var x5RxArrived as Lang.Number = 0;
 var x5RxTruncated as Lang.Boolean = false;
 var x5VarintEnd as Lang.Number = 0;
 
+// How much of a frame the first notification carried. The transport cuts a
+// frame that is bigger than the notification budget, and the pieces that come
+// after such a cut are not the missing middle - the bench run of 2026-11-05
+// caught them at some two hundred octets into the answer (PROTOCOL_APK.md
+// 15.27). They are counted, never glued back onto the frame.
+var x5RxHeadSize as Lang.Number = 0;
+var x5RxFrag as Lang.Number = 0;
+var x5RxFragCount as Lang.Number = 0;
+
 
 
 
@@ -376,6 +441,27 @@ var x5SubPhoto as Lang.Number or Null = null;
 var x5SubVideo as Lang.Number or Null = null;
 var x5ResNow as Lang.Number or Null = null;
 var x5FuncMode as Lang.Number or Null = null;
+
+var x5BatteryLevel as Lang.Number or Null = null;
+var x5BatteryPowerType as Lang.Number = 0;
+var x5BatteryArrived as Lang.Boolean = false;
+var x5BatteryLow as Lang.Boolean = false;
+
+// What the connect-time read of the camera answered (X5_STATE_AT_REST /
+// X5_STATE_RECORDING), null while no answer has been read. Deliberately kept
+// apart from recState: recState is what the user asked the camera to do, this
+// is what the camera says it is doing.
+var x5CamState as Lang.Number or Null = null;
+var x5StatusAsked as Lang.Boolean = false;
+var x5StatusTries as Lang.Number = 0;
+var x5StatusTimer as Timer.Timer or Null = null;
+
+// The 0x2006 storage push, two small flags. The push carries no sizes: the free
+// and total byte counts live in option 20 and in the 0x2062 push, past octet 20
+// (PROTOCOL_APK.md 15.27), so nothing here holds a free-space figure and the
+// app must show that as unknown, not as zero.
+var x5StorageState as Lang.Number or Null = null;
+var x5StorageMode as Lang.Number or Null = null;
 
 
 
@@ -445,7 +531,9 @@ class BleDevice extends BluetoothLowEnergy.BleDelegate {
 
 
 
-	protected function wireBytes(tag as Lang.String, data as Lang.Array) as Void {
+	// A byte array is an array of numbers at runtime, but the compiler wants the
+	// exact type, so the hex walk takes a ByteArray: every caller hands it one.
+	protected function wireBytes(tag as Lang.String, data as Lang.ByteArray) as Void {
 		if (!wireTrace) {
 			return;
 		}
@@ -697,28 +785,56 @@ class BleDevice extends BluetoothLowEnergy.BleDelegate {
 
 				x5RxBuf = null;
 				x5RxWant = 0;
+				// The flag follows the frame it was set for: leaving the old one
+				// set would make the swallow below answer for frames that were
+				// never the notification's.
+				x5RxWasNotif = false;
 				return false;
 			}
 			x5RxWant = declared;
 			x5RxWasNotif = x5IsNotif(value);
 			x5RxNewFrame = true;
+			x5RxHeadSize = value.size();
 			x5RxBuf = ucd2Cat(null, value);
 		} else if (x5RxBuf == null) {
 			return false;
 		} else if (value.size() == 7 && value[0] == 0x07 && value[4] == 0x05) {
 
 
-
+			// The beat closes the frame it arrives in: what crossed is kept,
+			// the rest is abandoned. The flag goes with the frame.
 
 			x5RxBuf = null;
 			x5RxWant = 0;
+			x5RxWasNotif = false;
 			return false;
 		} else {
 
 
 
 			x5RxNewFrame = false;
-			x5RxBuf = ucd2Cat(x5RxBuf, value);
+			// A notification with no envelope. On this link a frame bigger than the
+			// budget is cut, never continued: the pieces that follow a cut frame come
+			// from the middle of the answer, not from where the cut left it, and they
+			// carry no option boundary (PROTOCOL_APK.md 15.27, three runs and the
+			// S12-S15 controls of 15.14). Gluing them would let the decoder read the
+			// camera's own option text as varint fields and invent a battery level or
+			// a free-space figure out of ASCII. So only what could still be this
+			// frame's first notification is taken; the rest is counted. A link with a
+			// bigger budget is not affected: its first notification is bigger, and a
+			// real continuation of a split frame stays inside that size.
+			var head = x5RxHeadSize;
+			var have = x5RxBuf.size();
+			if (have >= head) {
+				x5RxFrag = x5RxFrag + value.size();
+				x5RxFragCount = x5RxFragCount + 1;
+			} else if (have + value.size() <= head) {
+				x5RxBuf = ucd2Cat(x5RxBuf, value);
+			} else {
+				x5RxBuf = ucd2Cat(x5RxBuf, value.slice(0, head - have));
+				x5RxFrag = x5RxFrag + (have + value.size() - head);
+				x5RxFragCount = x5RxFragCount + 1;
+			}
 		}
 		var buf = x5RxBuf;
 		if (buf == null) {
@@ -796,6 +912,76 @@ class BleDevice extends BluetoothLowEnergy.BleDelegate {
 		notifOptTag2 = 0;
 		notifOptVal2 = 0;
 		notifOptCount = 0;
+
+		// Battery reads enter at this site because every whole frame passes
+		// through it, the 0x2003 push as much as the code 200 answer to a GET
+		// (that answer is not a notification, its high code byte is 00, so
+		// x5ApplyNotif never sees one). The recording runs first so a push
+		// still moves the seen-map and the per-code count before the return;
+		// the walk below reads the flat option list only and must not chew a
+		// battery body: its nested block would be met as an unknown wire and
+		// break the walk, which is how the old battery attempt lost the value.
+		if (notifCode == 200) {
+			var optLevel = x5ParseOptionsBattery(buf);
+			if (optLevel != null) {
+				x5BatteryLevel = optLevel;
+				x5BatteryArrived = true;
+				wireLine("battery", optLevel.toString() + "% from the code 200 reply");
+			}
+		}
+		if (notifCode == X5_BATTERY_LOW_NOTIF) {
+			x5BatteryLow = true;
+			x5RecordNotif();
+			wireLine("battery", "low battery alarm (0x2004)");
+			return;
+		}
+		if (notifCode == X5_STORAGE_NOTIF) {
+			// 8198 STORAGE_UPDATE. Its frame is 20 octets, so it is one of the few
+			// pushes that cross this link whole - and what crosses names no sizes:
+			// two small flags, taken here as they come. The free and total byte
+			// counts of the same storage sit in option 20 and in the 0x2062 push,
+			// past octet 20, and no run has ever brought them over (15.27).
+			var bs = buf.size();
+			var st = x5ParseVarintField(buf, 16, bs, 1);
+			var md = x5ParseVarintField(buf, 16, bs, 2);
+			if (st != null) {
+				x5StorageState = st;
+			}
+			if (md != null) {
+				x5StorageMode = md;
+			}
+			x5RecordNotif();
+			wireLine("storage", "0x2006 f1=" + showValue(st) + " f2=" + showValue(md) +
+				" (no sizes in this push; the sizes stay unknown)");
+			return;
+		}
+		if (notifCode == X5_BATTERY_NOTIF) {
+			x5RecordNotif();
+			var power = x5ParseBatteryPower(buf);
+			var level = x5ParseBatteryLevel(buf);
+			if (level != null) {
+				x5BatteryLevel = level;
+				x5BatteryArrived = true;
+			}
+			// The power source stands on its own: at the watch ceiling it is
+			// the half of the push that crosses, and charger in/out is a real
+			// datum even while the level sits past the cut.
+			if (power != null) {
+				x5BatteryPowerType = power;
+				x5BatteryArrived = true;
+			}
+			if (level != null) {
+				wireLine("battery", level.toString() + "% power_type=" +
+					power.toString());
+			} else if (power != null) {
+				wireLine("battery", "power_type=" + power.toString() +
+					" off the cut push, the level past the cut stays unknown");
+			} else {
+				wireLine("battery", "0x2003 arrived, nothing readable in its body");
+			}
+			return;
+		}
+
 		var n = buf.size();
 		var i = 16;
 		while (i < n) {
@@ -867,6 +1053,13 @@ class BleDevice extends BluetoothLowEnergy.BleDelegate {
 
 
 
+		x5RecordNotif();
+	}
+
+	// The observer's bookkeeping, once per notification frame: the count, the
+	// per-code tally, the seen-map. Pulled out of the decode so the battery
+	// branches, which answer before the walk, still move it.
+	function x5RecordNotif() as Void {
 		if (x5RxNewFrame && x5RxWasNotif) {
 			notifCount++;
 			// S-25 (CdC item 97): the content of a notification, read once per notification
@@ -883,7 +1076,6 @@ class BleDevice extends BluetoothLowEnergy.BleDelegate {
 			}
 			x5Seen = x5Seen | x5NotifBit(notifCode);
 		}
-
 	}
 
 
@@ -948,6 +1140,144 @@ class BleDevice extends BluetoothLowEnergy.BleDelegate {
 
 
 			recState = stateStopRec;
+		}
+	}
+
+	// The response side of the legacy machine, moved out of the raw scan the old
+	// responseSig block used to run on every notification. It sees the ASSEMBLED
+	// frame, so it answers whether the camera sent the response in one
+	// notification or spread it over continuations, and it only ever runs for a
+	// frame x5RxFeed has completed or delivered as cut. The recording report
+	// (code 0x40, and 0x10 on older firmware) names start and stop with the flag
+	// at octet 17; busy speaks for itself; the command error ends the start
+	// sequence; and the ACK of the start sequence is what lets fireStart go.
+	function x5ApplyResponse(buf as Lang.ByteArray) as Void {
+		if (buf == null || buf.size() < 18) {
+			return;
+		}
+		var code = (buf[7] & 0xff) | ((buf[8] & 0xff) << 8);
+		var isRecReport = code == recReportCode || code == recReportCodeLegacy;
+		if (isRecReport && buf[17] > 0x00) {
+			cancelRetry();
+			cancelPendingStart();
+			mMessage = "Shooting";
+			recState = stateStartRec;
+			startRecTime = Time.now();
+		} else if (isRecReport && buf[17] == 0x00) {
+			cancelRetry();
+			cancelPendingStart();
+			applyBursts = 0;
+			mMessage = currentLabel + "\n" + startMessage;
+			recState = stateStopRec;
+		} else if (code == stateBusy) {
+			mMessage = "Busy...";
+		} else if (buf[0] == stateCmdErr) {
+			cancelRetry();
+			cancelPendingStart();
+			mMessage = currentLabel + "\n" + startMessage;
+			recState = stateStopRec;
+		} else if (code == ACK_CODE) {
+			// One frame, two jobs. The code-200 answer to command 15 is also the ACK
+			// the start sequence waits for, so the state read runs first and does not
+			// consume the ACK: both are taken from the same assembled frame.
+			applyCamState(buf);
+			if (pendingStart && startPhase == 1 && !startAckSeen) {
+				startAckSeen = true;
+				fireStart();
+			}
+		}
+	}
+
+	// The capture-state answer of command 15, read where it lands. Shape first,
+	// then the one byte: the frame declares 24 and arrives as 20, so the state is
+	// the last octet that survives the cut, at index 19. An empty code-200 ack, an
+	// 18-octet id echo or any other answer does not match and gives null.
+	function x5ParseCaptureState(buf as Lang.ByteArray) as Lang.Number or Null {
+		if (buf == null || buf.size() < 20) {
+			return null;
+		}
+		if (buf[16] != 0x0a || buf[17] != 0x06 || buf[18] != 0x08) {
+			return null;
+		}
+		return buf[19] & 0xff;
+	}
+
+	// What the state read is for. The value is kept for the app beside recState,
+	// which is the delegate's own idea of what it asked the camera to do; the two
+	// only disagree when the camera was already recording before the watch connected.
+	// Moving recState is what starts the on-screen clock, and it is done only while
+	// no start or stop sequence is in flight. The seconds field of the answer sits
+	// past the cut, so a recording found at connect is timed from the connect.
+	function applyCamState(buf as Lang.ByteArray) as Void {
+		var st = x5ParseCaptureState(buf);
+		if (st == null) {
+			return;
+		}
+		x5CamState = st;
+		x5StatusAsked = false;
+		x5StatusTries = 0;
+		cancelStatusTimer();
+		wireLine("cam state", "state=" + st.toString() + " " +
+			(st == X5_STATE_RECORDING ? "recording" : "at rest") +
+			" arrived=" + x5RxArrived.toString() + " of " + x5RxDeclared.toString());
+		if (st == X5_STATE_RECORDING && !pendingStart && recState != stateStartRec) {
+			recState = stateStartRec;
+			startRecTime = Time.now();
+			mMessage = "Shooting";
+		} else if (st == X5_STATE_AT_REST && !pendingStart && recState == stateStartRec) {
+			recState = stateStopRec;
+			applyBursts = 0;
+			mMessage = currentLabel + "\n" + startMessage;
+		}
+		WatchUi.requestUpdate();
+	}
+
+	// Asks the camera what it is doing. Command 15 with an empty body, which is
+	// cmdApply: the one request whose answer puts a state byte inside the
+	// notification ceiling (see X5_GET_CAPTURE_STATUS above). The answer also
+	// carries the elapsed seconds, the battery level and the free bytes, and all
+	// three sit past the cut - they stay unknown, which is why this asks for the
+	// state and nothing pretends to know the rest.
+	function askCamStatus() as Void {
+		if (x5StatusAsked || device == null) {
+			return;
+		}
+		x5StatusAsked = true;
+		x5StatusTries = x5StatusTries + 1;
+		transmit(cmdApply);
+		wireLine("cam state", "asked command 15, try " + x5StatusTries.toString());
+		if (x5StatusTries <= STATUS_RETRY_MAX) {
+			scheduleStatusTimer(STATUS_RETRY_MS);
+		}
+	}
+
+	// First ask after the notify profile is up: the camera answers an ask 0.6 to
+	// 3.9 s later on this link, and an ask written before the descriptor settles
+	// is answered into a closed window.
+	function scheduleCamStatusAsk() as Void {
+		if (x5StatusTimer != null || x5StatusAsked) {
+			return;
+		}
+		x5StatusTries = 0;
+		scheduleStatusTimer(STATUS_ASK_MS);
+	}
+
+	function scheduleStatusTimer(ms as Lang.Number) as Void {
+		cancelStatusTimer();
+		var t = new Timer.Timer();
+		x5StatusTimer = t;
+		t.start(method(:onStatusAsk), ms, false);
+	}
+
+	function onStatusAsk() as Void {
+		x5StatusTimer = null;
+		askCamStatus();
+	}
+
+	function cancelStatusTimer() as Void {
+		if (x5StatusTimer != null) {
+			x5StatusTimer.stop();
+			x5StatusTimer = null;
 		}
 	}
 
@@ -1022,6 +1352,189 @@ class BleDevice extends BluetoothLowEnergy.BleDelegate {
 	}
 
 
+	// One varint field read straight out of a protobuf body, from a known offset
+	// to a known end. The 0x2003 body is short and fixed in shape, so it needs
+	// no general walk: walk it would only be a chance to lose the field.
+	function x5ParseVarintField(buf as Lang.ByteArray, start as Lang.Number,
+                             end as Lang.Number, field as Lang.Number) as Lang.Number or Null {
+		var i = start;
+		while (i < end) {
+			var tag = x5Varint(buf, i, end);
+			if (tag == null) {
+				return null;
+			}
+			i = x5VarintEnd;
+			if ((tag & 7) != 0) {
+				return null;
+			}
+			var v = x5Varint(buf, i, end);
+			if (v == null) {
+				return null;
+			}
+			i = x5VarintEnd;
+			if ((tag >> 3) == field) {
+				return v;
+			}
+		}
+		return null;
+	}
+
+	function x5ParseBatteryPower(buf as Lang.ByteArray) as Lang.Number or Null {
+		// The observed push nests its status block at field 1 (0a 06 08 01 10 39
+		// 20 00): power type and level live inside it. A flat field 1 varint at
+		// the top level is read first, so a firmware that ever sends the datum
+		// loose is still read right.
+		return x5ParseBatteryField(buf, 1);
+	}
+
+	function x5ParseBatteryLevel(buf as Lang.ByteArray) as Lang.Number or Null {
+		return x5ParseBatteryField(buf, 2);
+	}
+
+	function x5ParseBatteryField(buf as Lang.ByteArray, field as Lang.Number) as Lang.Number or Null {
+		var n = buf.size();
+		if (n <= 16) {
+			return null;
+		}
+		var i = 16;
+		while (i < n) {
+			var tag = x5Varint(buf, i, n);
+			if (tag == null) {
+				return null;
+			}
+			i = x5VarintEnd;
+			var wire = tag & 7;
+			if (wire == 0) {
+				var v = x5Varint(buf, i, n);
+				if (v == null) {
+					return null;
+				}
+				i = x5VarintEnd;
+				if ((tag >> 3) == field) {
+					return v;
+				}
+				continue;
+			}
+			if (wire != 2) {
+				return null;
+			}
+			var len = x5Varint(buf, i, n);
+			if (len == null) {
+				return null;
+			}
+			i = x5VarintEnd;
+			if ((tag >> 3) == 1) {
+				// The watch ceiling cuts this block mid-body (declared 24, 20
+				// cross). The bytes that did cross are the camera's own datum:
+				// scan only up to what arrived, so a wire-0 field wholly inside
+				// them reads true. The observed cut ends after 0a 06 08 01, so
+				// the power type reads off the fragment and the level, sitting
+				// past the cut, stays unreported rather than guessed.
+				var blockEnd = i + len;
+				if (blockEnd > n) {
+					blockEnd = n;
+				}
+				if (blockEnd <= i) {
+					return null;
+				}
+				return x5ParseVarintField(buf, i, blockEnd, field);
+			}
+			if (i + len > n) {
+				return null;
+			}
+			i += len;
+		}
+		return null;
+	}
+
+	// The battery inside the GET_OPTIONS reply (code 200): the result block at
+	// field 1, the option list at field 2, and each option a block of its own,
+	// so the battery of option 11 sits two blocks deep where lastOption only
+	// walks one. The walk below goes the two levels, and stops on any shape it
+	// does not know: a wrong read of a battery is worse than no read.
+	function x5ParseOptionsBattery(buf as Lang.ByteArray) as Lang.Number or Null {
+		var n = buf.size();
+		if (n <= 16) {
+			return null;
+		}
+		var i = 16;
+		while (i < n) {
+			var tag = x5Varint(buf, i, n);
+			if (tag == null) {
+				return null;
+			}
+			i = x5VarintEnd;
+			var wire = tag & 7;
+			if (wire == 0) {
+				var v = x5Varint(buf, i, n);
+				if (v == null) {
+					return null;
+				}
+				i = x5VarintEnd;
+				continue;
+			}
+			if (wire != 2) {
+				return null;
+			}
+			var len = x5Varint(buf, i, n);
+			if (len == null) {
+				return null;
+			}
+			i = x5VarintEnd;
+			if (i + len > n) {
+				return null;
+			}
+			if ((tag >> 3) == 2) {
+				var level = x5ParseOptionBlockBattery(buf, i, i + len);
+				if (level != null) {
+					return level;
+				}
+			}
+			i += len;
+		}
+		return null;
+	}
+
+	// One pass over the Options block: each option is a field-2 block holding
+	// its type first, and the battery block lives inside the option 11.
+	function x5ParseOptionBlockBattery(buf as Lang.ByteArray, from as Lang.Number,
+                                     to as Lang.Number) as Lang.Number or Null {
+		var i = from;
+		while (i < to) {
+			var tag = x5Varint(buf, i, to);
+			if (tag == null) {
+				return null;
+			}
+			i = x5VarintEnd;
+			var wire = tag & 7;
+			if (wire == 0) {
+				var v = x5Varint(buf, i, to);
+				if (v == null) {
+					return null;
+				}
+				i = x5VarintEnd;
+				continue;
+			}
+			if (wire != 2) {
+				return null;
+			}
+			var len = x5Varint(buf, i, to);
+			if (len == null) {
+				return null;
+			}
+			i = x5VarintEnd;
+			if (i + len > to) {
+				return null;
+			}
+			if ((tag >> 3) == 11) {
+				return x5ParseVarintField(buf, i, i + len, 2);
+			}
+			i += len;
+		}
+		return null;
+	}
+
+
 
 
 	function x5NotifBit(code as Lang.Number) as Lang.Number {
@@ -1053,6 +1566,12 @@ class BleDevice extends BluetoothLowEnergy.BleDelegate {
 
 
 			return 256;
+		}
+		if (code == X5_BATTERY_NOTIF) {
+			return 512;
+		}
+		if (code == X5_BATTERY_LOW_NOTIF) {
+			return 1024;
 		}
 
 
@@ -1129,6 +1648,9 @@ class BleDevice extends BluetoothLowEnergy.BleDelegate {
 		x5RxDeclared = 0;
 		x5RxArrived = 0;
 		x5RxTruncated = false;
+		x5RxHeadSize = 0;
+		x5RxFrag = 0;
+		x5RxFragCount = 0;
 
 
 		x5SubPhoto = null;
@@ -1183,6 +1705,55 @@ class BleDevice extends BluetoothLowEnergy.BleDelegate {
 	function peekNotifTruncated() as Lang.Boolean {
 		return x5RxTruncated;
 	}
+	function peekBatteryLevel() as Lang.Number or Null {
+		return x5BatteryLevel;
+	}
+	function peekBatteryPowerType() as Lang.Number {
+		return x5BatteryPowerType;
+	}
+	function peekBatteryArrived() as Lang.Boolean {
+		return x5BatteryArrived;
+	}
+	function peekBatteryLow() as Lang.Boolean {
+		return x5BatteryLow;
+	}
+
+
+	// What the camera said about itself at connect: X5_STATE_AT_REST,
+	// X5_STATE_RECORDING, or null while no answer has been read. null is a real
+	// answer to the app - it means unknown, and the screen must not turn it into
+	// "at rest".
+	function peekCamState() as Lang.Number or Null {
+		return x5CamState;
+	}
+	function peekCamRecording() as Lang.Boolean {
+		return x5CamState != null && x5CamState == X5_STATE_RECORDING;
+	}
+
+	// The two flags of the 0x2006 storage push, and the free space, which is not
+	// there to be had: the option 20 entry and the 0x2062 varints both begin at
+	// octet 21 or later of their frame and have never crossed this link, so this
+	// accessor answers null until a run brings the bytes over, and the app shows
+	// "unknown" rather than a number.
+	function peekStorageState() as Lang.Number or Null {
+		return x5StorageState;
+	}
+	function peekStorageMode() as Lang.Number or Null {
+		return x5StorageMode;
+	}
+	function peekStorageFreeBytes() as Lang.Number or Null {
+		return null;
+	}
+
+	// Octets, and pieces, that arrived after a frame was cut and were not glued to
+	// it. Non-zero values are the expected shape of this link (15.27); they are
+	// counted so a bench run can see them, not so they can be used.
+	function peekRxFragments() as Lang.Number {
+		return x5RxFrag;
+	}
+	function peekRxFragCount() as Lang.Number {
+		return x5RxFragCount;
+	}
 
 
 
@@ -1227,9 +1798,13 @@ class BleDevice extends BluetoothLowEnergy.BleDelegate {
 		if (v instanceof Lang.String) {
 			return "\"" + v as Lang.String + "\"";
 		}
+		if (v instanceof Lang.ByteArray) {
+			return bytesToHex(v as Lang.ByteArray);
+		}
 
 
-		return v.toString();
+		// Lang.Value has no toString and no getType; anything else gets a label.
+		return "<other>";
 	}
 
 
@@ -1639,7 +2214,18 @@ class BleDevice extends BluetoothLowEnergy.BleDelegate {
 
 
 
-		if (x5Armed && (x5IsFrame(value) || x5RxBuf != null)) {
+		// One machine reads the legacy envelope now. Every notification either
+		// opens a frame (a header), extends one (a continuation), or closes one
+		// (the beat), and x5RxFeed says when a frame is ready, whole or cut.
+		// There is no second reader of the raw notification below this point:
+		// the old responseSig block that scanned raw notifications for the
+		// recording report's signature is gone, its branches live in
+		// x5ApplyResponse, which runs on the assembled frame instead.
+		// The x5Armed gate is gone too: the bench (X5-fw-legacy-v2) showed the
+		// camera pushing 0x2010, 0x2040 and 0x2006 on its own, with no request
+		// from the watch, so the request state must not decide whether a push
+		// is read.
+		if (x5IsFrame(value) || x5RxBuf != null) {
 			if (x5RxFeed(value)) {
 
 
@@ -1660,67 +2246,11 @@ class BleDevice extends BluetoothLowEnergy.BleDelegate {
 
 					return;
 				}
+				x5ApplyResponse(x5RxLast);
 			} else if (x5RxWasNotif) {
 
 
 				return;
-			}
-		}
-
-
-		if (value.size() >= 18) {
-
-
-
-
-			if (responseSig.equals(value.slice(2, 7))) {
-
-
-
-
-
-				var isRecReport = (value[7] == recReportCode) || (value[7] == recReportCodeLegacy);
-				if (isRecReport && value[17] > 0x00) {
-
-					if (recState != stateStartRec) {
-
-					}
-					cancelRetry();
-					cancelPendingStart();
-					mMessage = "Shooting";
-					recState = stateStartRec;
-					startRecTime = Time.now();
-
-
-				} else if (isRecReport && value[17] == 0x00) {
-
-					if (recState != stateStopRec) {
-
-					}
-					cancelRetry();
-					cancelPendingStart();
-					applyBursts = 0;
-					mMessage = currentLabel + "\n" + startMessage;
-					recState = stateStopRec;
-				} else if (value[7] == stateBusy) {
-
-					mMessage = "Busy...";
-				} else if (value[0] == stateCmdErr) {
-					cancelRetry();
-					cancelPendingStart();
-					mMessage = currentLabel + "\n" + startMessage;
-					recState = stateStopRec;
-				} else if (value[7] == ACK_CODE) {
-
-
-					if (pendingStart && startPhase == 1 && !startAckSeen) {
-						startAckSeen = true;
-						fireStart();
-					}
-				} else {
-
-
-				}
 			}
 		}
 
@@ -1775,6 +2305,10 @@ class BleDevice extends BluetoothLowEnergy.BleDelegate {
 		if (DEBUG_TRACE) {
 			debug("registered");
 		}
+		// The notify path is open from here, so this is the earliest point at which a
+		// question can be answered. What the camera is doing is asked once per
+		// connect, before the user asks for anything.
+		scheduleCamStatusAsk();
 	}
 
 
@@ -1899,6 +2433,12 @@ function registerProfiles() as Void {
 			if (!scanning) {
 				scanning = true;
 				device = null;
+				// The link is gone: forget that a state ask was outstanding so the
+				// next connect asks again, and stop the timer that would ask into a
+				// dead link.
+				cancelStatusTimer();
+				x5StatusAsked = false;
+				x5StatusTries = 0;
 				open();
 
 
