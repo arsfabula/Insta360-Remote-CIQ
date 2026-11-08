@@ -41,36 +41,44 @@ single source of truth for continuing.
 > fixes**: the classification of the bond can never name the X4 Air (`deviceName.substring(0, 7).equals("X4 Air")`
 > at `BLE Barrel/BLEBarrel.mc:2583` today, seven characters against six) and the opener of a resolution
 > submenu of a model of the matrix stays keyed on the X5 datum `v0` (delegate :1217, the call at :1230) —
-> no measured datum says that such a menu opens one. **What is still owed is a paste of the simulator the user
-> starts, ONE session per tell**: the refusal face of a cell whose tier is `official` (S-37, the walk naming `o1p2
-> label=Starlapse` at the X4 Air and the tier answering `official` at `capEntryTiersPhoto` :256 with its key at the
-> empty String at :265; the ONE X's row carries no such cell, so the session sits at a model of the level 2), the
-> choice `forceoff` with ONE entry of the X5 and ONE press (S-36), and a forced session kept past the bound then
-> ONE re-connect (S-32). The rung S-35 **closes at its tell** and **two of the three faces of the row S-37 answer
-> at their tell**: the Interval session of the ONE X (items 168 and 169) gives the first `[hook] sent n=1 left=9`
-> of the family of a model forced after a reset of the submenu and arms the stop of an Interval **by the key** of
-> its cell (`[stop] cmd=23 declared=18 body=2` beside the `[stop2]` bytes of the library's stop of a Timelapse, the
-> arming at delegate :938 and the pick site at :1306…:1309); the Burst session of the X4 Air (items 170 and 171)
-> answers the tier, the key and the shape at the selection and then the press of start at the site that picks the
-> frame, `[cap] photo=true burst=true slp=false frame=16` beside `[shape] o1p4 cmd=3 declared=16 body=0`, which
-> pins that paste at the tree of item 162 and reaches the cell by `selKey.equals("PhotoBurst")` at delegate :1045.
-> The wording of the tell of the row S-37 moved on the bytes of the barrel, not on a decision of the test:
-> the frames `cmdSetPhoto` and `cmdSetPhotoBurst` are the SAME 16 octets (`BLE Barrel/BLEBarrel.mc:229`
-> and :231, command 3, empty body), so the flag names the arming and no size of a frame does. Item **165**
-> of that file draws the protocol of those sessions — the setup is made OUTSIDE the graded session (note
-> 30), ONE selection is graded per session (note 33), an absence never grades (criterion 14) and a refusal
-> re-runs rather than being read; the pin of a screen is the paste of its build log, item 164's rule. The
-> items **166**, **167**, **168**, **169**, **170** and **171** read six pastes of it: S-29 is **Green at
-> its tell** (the gate answers a model of the level 1 — the X3 — and the level-2 face of the X4 Air
-> answers on the artefact of the axis), the second and third visits of the submenu of `MenuLevel` carry a
-> fresh ceiling and take another model, the ONE X answers the 9 entries of its row of the matrix, and the
+> no measured datum says that such a menu opens one. **What is still owed is a paste of the simulator the
+> user starts, ONE session per tell**: the choice `forceoff` of the axis with ONE entry of the X5 and ONE
+> press of start (S-36, the state print answering `[hook] forced=false model= level=-1 sent=0` and then no
+> `[hook] sent` of that press and no refusal at all), and a forced session kept past the bound then ONE
+> re-connect (S-32, the line `[relink]` answering with the model and the level it detects and the count of
+> the family at nothing). **All three sessions of the row S-37 have now been made** and its three faces
+> answer at their tell while its verdict stays owed: the Interval session of the ONE X (items 168 and 169)
+> gives the first `[hook] sent n=1 left=9` of the family of a model forced after a reset of the submenu
+> and arms the stop of an Interval **by the key** of its cell (`[stop] cmd=23 declared=18 body=2` beside
+> the `[stop2]` bytes of the library's stop of a Timelapse, the arming at delegate :938 and the pick site
+> at :1306…:1309); the Burst session of the X4 Air (items 170 and 171) answers the tier, the key and the
+> shape at the selection and then the press of start at the site that picks the frame, `[cap] photo=true
+> burst=true slp=false frame=16` beside `[shape] o1p4 cmd=3 declared=16 body=0`, which pins that paste at
+> the tree of item 162 and reaches the cell by `selKey.equals("PhotoBurst")` at delegate :1045; and the
+> Starlapse session of the X4 Air (item 172) answers the refusal face, `[tier] id=o1p2 model=X4 Air
+> tier=official key=` with the key answering the empty String beside `[refused] id=o1p2 tier=official
+> model=X4 Air`, so that refusal costs the family nothing and the press of that entry never existed to
+> arm. The row keeps its verdict owed to the receipt at a camera of a model of the matrix over BLE (the
+> finding of item 47) and to the attribution of one report of a new opening to one frame of such a model.
+> Two wordings of that tell moved on the bytes of the artefact, never on a decision of the test:
+> `cmdSetPhoto` and `cmdSetPhotoBurst` are the SAME 16 octets (`BLE Barrel/BLEBarrel.mc:229` and :231,
+> command 3, empty body), so the flag names the arming and no size of a frame does (item 171); and NO
+> `[st]` line exists anywhere in the tree, the thirteen modules of the repository answering none at HEAD,
+> so the stop rule of that tell reads the `[stop]`/`[stop2]` pair beside the `[obs]` family of the bond
+> (item 172). Item **165** of that file draws the protocol of those sessions — the setup is made OUTSIDE
+> the graded session (note 30), ONE selection is graded per session (note 33), an absence never grades
+> (criterion 14) and a refusal re-runs rather than being read; the pin of a screen is the paste of its
+> build log, item 164's rule. The items **166**…**172** read seven pastes of it: S-29 is **Green at its
+> tell** (the gate answers a model of the level 1 — the X3 — and the level-2 face of the X4 Air answers on
+> the artefact of the axis), the second and third visits of the submenu of `MenuLevel` carry a fresh
+> ceiling and take another model, the ONE X answers the 9 entries of its row of the matrix, and the
 > interval session of that model gives the first `sent n=1` of a family forced after such a reset and the
 > stop armed by the key. S-35's verdict moved once, at the interval session of the ONE X, and no other
 > reading of the axis re-marks a rung (item 106, note 21). The decisions of this axis sit at **items
-> 160…171** of
-> `…\Documents\Default Project\Insta360 Remote\Cahier-des-charges-CIQ-decisions-20261108.md`; the ladder
-> of §11.4 of `Cahier-des-charges-CIQ.md` keeps **38 rows, S-0…S-37**, and adds none. Out of scope by
-> design: the X6/UCD2 hardware leg (no camera of that model on this bench) and the `0b` keepalive fork.
+> 160…172** of
+> `…\Documents\Default Project\Insta360 Remote\Cahier-des-charges-CIQ-decisions-20261108.md`; the ladder of §11.4 of `Cahier-des-charges-CIQ.md` keeps **38 rows, S-0…S-37**, and
+> adds none. Out of scope by design: the X6/UCD2 hardware leg (no camera of that model on this bench) and the
+> `0b` keepalive fork.
 >
 > **Update 2026-11-08** — the branch `feature/x6-ace-go` was finished and
 > merged into `main` (fast-forward, pushed); the branch is deleted both locally
