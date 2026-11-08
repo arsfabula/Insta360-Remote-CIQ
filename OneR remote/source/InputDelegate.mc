@@ -1112,6 +1112,18 @@ if ((BLEBarrel.GPSon) && (location != null) && (info != null)) {
              	mainApp.GPSenable(BLEBarrel.GPSon);
 				chglbl = false;
              	break;
+			case "MenuLevel" :
+				// Item 161 (the finding item 159 named on the artefact): the switch of the
+				// ids held no case naming the entry of the axis, so the selection of MenuLevel
+				// changed no mode at all, and the apply below is guarded on the MODE and never
+				// on the id, so it re-sent what the PREVIOUS selection had armed: the second visit
+				// of the axis answered [apply] MenuLevel frame=true and crossed two writes of the
+				// family in force before its new choice armed. A visit of the entry of the axis is
+				// to the family what a choice is: it gives back the value that names no frame,
+				// the way the choice site does, so the visit costs no write of the family forced
+				// and the bound of a family answers the writes of that family, not the visit.
+				BLEBarrel.currentMode = "DefaultV";
+				break;
 			case "DefaultV" :
 				BLEBarrel.currentMode = "DefaultV";
 				break;
