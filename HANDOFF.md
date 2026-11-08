@@ -6,7 +6,10 @@ tests must be done with the PC's raw BLE adapter (no Garmin SDK). Final
 reintegration (step 4) happens on a separate Windows PC. This document is the
 single source of truth for continuing.
 
-> **Update 2026-11-08** — branch `feature/x6-ace-go`. The `BLE Probe` app was
+> **Update 2026-11-08** — the branch `feature/x6-ace-go` was finished and
+> merged into `main` (fast-forward, pushed); the branch is deleted both locally
+> and on GitHub. `main` is the only branch, at the work described below. The
+> `BLE Probe` app was
 > removed from the repo (commit `1cf039d`) and the `Framing Probe` bench
 > artifacts likewise: both are archived dead ends in the scratch area
 > (`...\Documents\Default Project\Insta360 Remote\Archive\Probes-20261108\`,
