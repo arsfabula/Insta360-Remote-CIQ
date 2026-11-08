@@ -1,5 +1,0 @@
-# BLE ladder probe. The barrel is the shipping transport: the probe drives the
-# same code the product app links, so a rung that passes here exercises the
-# path that runs on the watch.
-BLEBarrel = "c:\Users\greg\git\Insta360-Remote-CIQ\BLE Barrel\BLE Barrel-1.0.0.barrel"
-base.barrelPath = $(base.barrelPath);$(BLEBarrel)
