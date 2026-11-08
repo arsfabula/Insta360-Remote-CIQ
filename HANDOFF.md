@@ -27,7 +27,15 @@ single source of truth for continuing.
 > (128/128 braces, 656/656 parentheses; the CRLF working copy answers 78 434 o). Unchanged by this
 > work: `BLE Barrel/BLEBarrel.mc` at 2938 lines / 78 808 o / sha1 `538d4972077aca8dbda055514ac7024dadff88f0`
 > and `Capacites Barrel/source/Capacites.mc` at 579 lines / 22 252 o / sha1 `b0cede5f…`, the emitter
-> still answering **18 controls** and regenerating the module byte-for-byte. The bound of a family
+> still answering **18 controls** and regenerating the module byte-for-byte. The **gate of this axis is the
+> `monkeyc.bat` of the SDK 9.1.0** (`connectiq-sdk-win-9.1.0-2026-03-09-6a872a80b`, `-d epix2pro51mm` for the host
+> gate, `-d epix2pro51mm_sim -w` for the simulator device): the bench stays on that SDK with the s132 5.1.0 dongle
+> firmware and the newer SDKs carry the problem of the nRF52840 dongle of this bench, so the 9.3.0 route answers the
+> workstation only and grades no rung (item 164); the two routes carry the same program, **Data 16 793 o + Code 28 850
+> o = 45 643 o** on both, the totals of a `.prg` not being comparable (note 51). Their VS Code program `OneR remote\bin\OneRremote.prg`
+> answers **Code 28 771 o**, 79 o under the tree of the axis, at an mtime of 17:16 against the 18:40 of the gate's artefacts —
+> **it predates the three fixes and owes a rebuild before any paste**: a tell pasted on that program answers an older
+> artefact and grades no rung of this axis (item 106, note 21). The bound of a family
 > forced is `const HOOK_WRITE_CEILING = 10;` at `BLE Barrel/BLEBarrel.mc:146`, asked at the two send
 > sites of that artefact, the counter back at nothing at a fresh bond. Two sites stay **findings, not
 > fixes**: the classification of the bond can never name the X4 Air (`deviceName.substring(0, 7).equals("X4 Air")`
@@ -36,7 +44,10 @@ single source of truth for continuing.
 > no measured datum says that such a menu opens one. What is still owed is a paste of the simulator the
 > user starts, ONE session per tell (S-29's half of the models of the level 1, the visit of the entry
 > `MenuLevel` for S-34/S-35, the choice `forceoff` for S-36, a re-connect past the ceiling for S-32, the
-> Interval and the Starlapse faces for S-37). The decisions of this axis sit at items 160…163 of
+> the Burst with its own press, the stop of an Interval and the face of the Starlapse refusal for S-37). Item **165**
+> of that file draws the protocol of those five sessions: the setup is made OUTSIDE the graded session (note 30),
+> ONE selection is graded per session (note 33), an absence never grades (criterion 14) and a refusal re-runs rather
+> than being read. The decisions of this axis sit at **items 160…165** of
 > `…\Documents\Default Project\Insta360 Remote\Cahier-des-charges-CIQ-decisions-20261108.md`; the ladder
 > of §11.4 of `Cahier-des-charges-CIQ.md` keeps **38 rows, S-0…S-37**, and adds none. Out of scope by
 > design: the X6/UCD2 hardware leg (no camera of that model on this bench) and the `0b` keepalive fork.
