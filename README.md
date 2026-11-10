@@ -1,6 +1,8 @@
 # Insta360-Remote-CIQ
 Garmin Connect IQ Remote for Insta360 Cameras
 
+**Insta360 X5:** see [`X5 remote/`](X5%20remote/) — a widget for the X5 (new protocol, per-mode settings, new UI), with the X5 protocol notes in [`X5 remote/docs/`](X5%20remote/docs/).
+
 This is a very early, in progress, under development widget to Remote Control via Bluetooth the Insta360 One R Modular camera. Don't expect this widget to work ;) 
 
 The 'BLE Barrel' directory contrains a Garmin CIQ Barrel (library) with the main code for interacting with the camera.

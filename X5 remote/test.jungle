@@ -1,0 +1,3 @@
+project.manifest = manifest-demo.xml
+base.sourcePath = source;source-demo;test
+base.excludeAnnotations = noDemo
