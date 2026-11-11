@@ -23,9 +23,9 @@ From the Connect IQ simulator demo (made-up camera name, no camera connected). T
 
 | | | | |
 |:---:|:---:|:---:|:---:|
-| ![Video: resolution, EV and lens](docs/screenshots/video.png) | ![Photo Burst with the BURST row focused](docs/screenshots/burst.png) | ![Photo Interval: long titles wrap, one word per row](docs/screenshots/interval.png) | ![Timelapse with the EVERY row focused](docs/screenshots/timelapse.png) |
+| <img src="docs/screenshots/video.png" width="180" alt="Video: resolution, EV and lens"> | <img src="docs/screenshots/burst.png" width="180" alt="Photo Burst with the BURST row focused"> | <img src="docs/screenshots/interval.png" width="180" alt="Photo Interval: long titles wrap, one word per row"> | <img src="docs/screenshots/timelapse.png" width="180" alt="Timelapse with the EVERY row focused"> |
 | Video | Photo Burst, row focused | Photo Interval | Timelapse |
-| ![Settings page: sound, power off, exit](docs/screenshots/settings.png) | ![Recording: timer, highlight and Track That cues](docs/screenshots/recording.png) | ![Searching for the camera](docs/screenshots/searching.png) | ![Camera not found](docs/screenshots/notfound.png) |
+| <img src="docs/screenshots/settings.png" width="180" alt="Settings page: sound, power off, exit"> | <img src="docs/screenshots/recording.png" width="180" alt="Recording: timer, highlight and Track That cues"> | <img src="docs/screenshots/searching.png" width="180" alt="Searching for the camera"> | <img src="docs/screenshots/notfound.png" width="180" alt="Camera not found"> |
 | Settings page | Recording | Searching | Camera not found |
 
 ## Maintenance — please read
