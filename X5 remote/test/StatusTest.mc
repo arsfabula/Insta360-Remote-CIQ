@@ -171,3 +171,42 @@ function settingsFramesMatchCamera(logger) {
 	logger.debug("burst " + bodyHex(b[0]) + " " + bodyHex(b[1]));
 	return ok;
 }
+
+// Camera goes to standby: the link drops, possibly several times. A disconnect must not
+// re-run the app start-up (no second profile registration: Connect IQ allows only a few,
+// then every reconnect fails; no reload of the recording state saved at the last close).
+(:test)
+function disconnectDoesNotReinit(logger) {
+	var d = new BLEBarrel.BleDevice();
+	BLEBarrel.deviceName = "X5 1ABCDE";
+	Toybox.Application.Storage.setValue("recState", BLEBarrel.stateStartRec);   // stale saved state
+	BLEBarrel.recState = BLEBarrel.stateStopRec;
+	var before = BLEBarrel.profileRegs;
+	d.onConnectedStateChanged(null, Toybox.BluetoothLowEnergy.CONNECTION_STATE_DISCONNECTED);
+	d.scanning = false;
+	d.onConnectedStateChanged(null, Toybox.BluetoothLowEnergy.CONNECTION_STATE_DISCONNECTED);
+	Toybox.Application.Storage.deleteValue("recState");
+	logger.debug("regs " + before + "->" + BLEBarrel.profileRegs + " rec=" + BLEBarrel.recState);
+	return BLEBarrel.profileRegs == before && BLEBarrel.recState == BLEBarrel.stateStopRec;
+}
+
+// Real watch log: after STOP the X5 keeps pushing 0x2010 capture status (08 18 = state 24 while it
+// finishes the file). The legacy start/stop check (command byte 0x10) read it as "recording
+// started": the watch went back to recording and the timer restarted at 0.
+(:test)
+function captureStatusPushDoesNotRestartRecording(logger) {
+	var d = new BLEBarrel.BleDevice();
+	BLEBarrel.deviceName = "X5 1ABCDE";
+	BLEBarrel.videoMode = true; BLEBarrel.photoSeq = -1; BLEBarrel.lapseSeq = -1;
+	var push = [0x14, 0, 0, 0, 0x04, 0, 0, 0x10, 0x20, 0x02, 0xff, 0, 0, 0x80, 0, 0, 0x08, 0x18, 0x10, 0x06]b;
+	BLEBarrel.recState = BLEBarrel.stateStopping;
+	d.onCharacteristicChanged(null, push);
+	var afterStop = BLEBarrel.recState;
+	// while recording, the same push must not reset the start time
+	BLEBarrel.recState = BLEBarrel.stateStartRec;
+	var t0 = new Toybox.Time.Moment(Toybox.Time.now().value() - 60);
+	BLEBarrel.startRecTime = t0;
+	d.onCharacteristicChanged(null, push);
+	logger.debug("afterStop=" + afterStop + " start moved=" + (BLEBarrel.startRecTime.value() != t0.value()));
+	return afterStop != BLEBarrel.stateStartRec && BLEBarrel.startRecTime.value() == t0.value();
+}

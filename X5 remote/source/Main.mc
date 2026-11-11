@@ -25,7 +25,20 @@ class Main extends Application.AppBase {
 		bleDevice = new BLEBarrel.BleDevice();
 		BluetoothLowEnergy.setDelegate(bleDevice);
 		bleDevice.open();
-		GPSenable(BLEBarrel.GPSon);
+	}
+
+	// GPS overlay: location events only while the option is on AND the camera is a legacy one.
+	// The X5 path never uses the position, so a saved GPSon = true must not run the watch's GPS.
+	// The camera type is known once the scan has named it, so this is re-checked every tick.
+	hidden var gpsActive = false;
+
+	function gpsSync() {
+		var want = BLEBarrel.GPSon && !BLEBarrel.isX5() && BLEBarrel.deviceName != null
+			&& !BLEBarrel.deviceName.equals("n/a");
+		if (want != gpsActive) {
+			gpsActive = want;
+			GPSenable(want);
+		}
 	}
 
 	function GPSenable(on) {

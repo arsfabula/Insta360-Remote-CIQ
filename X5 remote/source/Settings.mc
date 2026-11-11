@@ -12,7 +12,18 @@ module Settings {
 	var acked = {};     // value key -> true once the camera answered 200
 	var hitX0 = 0;      // touch areas of the drawn column (set by the view)
 	var hitYs = null;   // row centre y: [title, row 1, ...]
+	var hitHs = null;   // row height for each entry (the title is taller, and can be two lines)
 	var hitH = 0;
+
+	// Index of the entry under a tap (0 = title, n = settings row n), -1 = none.
+	function rowAt(x, y) {
+		if (hitYs == null || x < hitX0) { return -1; }
+		for (var i = 0; i < hitYs.size(); i++) {
+			var h = (hitHs != null && i < hitHs.size()) ? hitHs[i] : hitH;
+			if ((y - hitYs[i]).abs() <= h / 2) { return i; }
+		}
+		return -1;
+	}
 
 	// row: [key, field name, value labels, kind, mode, values, option type, start index]
 	//   kind :opt   SET_PHOTOGRAPHY_OPTIONS(function mode, option type, value)
@@ -116,12 +127,19 @@ module Settings {
 
 	// Step the focused row's value; returns the frames to send (in order).
 	// From the unknown state the first press moves one step from the camera's default.
+	// Lists wrap at both ends, except EV, which stops at its ends.
 	function step(id, row, dir) {
 		var k = key(id, row);
 		var n = row[2].size();
 		var i = vals[k];
 		if (i == null) { i = row[7]; }
-		i = (i + dir + n) % n;
+		if (row[3] == :ev) {
+			// EV stops at -4.0 / +4.0: wrapping would jump 8 stops with one press
+			i += dir;
+			if (i < 0) { i = 0; } else if (i > n - 1) { i = n - 1; }
+		} else {
+			i = (i + dir + n) % n;
+		}
 		vals[k] = i;
 		acked[k] = false;
 		return frames(row, row[5][i]);

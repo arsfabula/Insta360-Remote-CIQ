@@ -18,16 +18,41 @@ class RemoteDelegate extends Ui.BehaviorDelegate {
 	hidden var sendTimer;
 	hidden var pendingSend = false;
 	hidden var setTimer;
+	hidden var tapTimer;
+	hidden var startKeyAt = null;   // time of the last START key press (onKeyPressed), null = none pending
+	hidden var tapPending = false;
 
 	function initialize(device) {
 		BehaviorDelegate.initialize();
 		dev = device;
 		sendTimer = new Timer.Timer();
 		setTimer = new Timer.Timer();
+		tapTimer = new Timer.Timer();
 	}
 
-	// START button (or tap): one press = one action, no menus.
+	// Connect IQ turns a screen tap into the SELECT behaviour first and only calls onTap when
+	// onSelect returns false. A START press always reaches onKeyPressed (KEY_ENTER) before
+	// onSelect, a tap never does. So onSelect without a fresh START key press is a tap: hand it
+	// to onTap (which knows where the finger was). If no onTap follows, the fallback timer runs
+	// START anyway, so a press is never lost.
 	function onSelect() {
+		var key = startKeyAt != null && Sys.getTimer() - startKeyAt < 2000;
+		startKeyAt = null;
+		if (!key) {
+			tapPending = true;
+			tapTimer.stop();
+			tapTimer.start(method(:onTapTimeout), 150, false);
+			return false;
+		}
+		return runStart();
+	}
+
+	function onTapTimeout() as Void {
+		if (tapPending) { tapPending = false; runStart(); }
+	}
+
+	// START button (or a tap outside the rows): one press = one action, no menus.
+	function runStart() {
 		var s = uiState(dev);
 		if (s == UI_SEARCHING) {
 			return true;
@@ -61,9 +86,7 @@ class RemoteDelegate extends Ui.BehaviorDelegate {
 			if (Settings.focus > 0 && Settings.focus <= rows.size()) {
 				var k = rows[Settings.focus - 1][3];
 				if (k == :exit) { Sys.exit(); }
-				if (k == :power) {
-					Ui.pushView(new Ui.Confirmation("Power off camera?"), new PowerOffDelegate(dev), Ui.SLIDE_UP);
-				}
+				if (k == :power) { confirmPowerOff(dev); }
 			}
 			return true;
 		}
@@ -95,8 +118,10 @@ class RemoteDelegate extends Ui.BehaviorDelegate {
 	// Touch: tap / hold a settings row to focus it; tap elsewhere = START. Swipes arrive as
 	// onPreviousPage / onNextPage, so swiping up / down changes the focused value.
 	function onTap(evt) {
+		tapPending = false;
+		tapTimer.stop();
 		if (focusRowAt(evt)) { return true; }
-		return onSelect();
+		return runStart();
 	}
 
 	function onHold(evt) {
@@ -106,21 +131,17 @@ class RemoteDelegate extends Ui.BehaviorDelegate {
 	hidden function focusRowAt(evt) {
 		if (uiState(dev) != UI_READY || Settings.hitYs == null) { return false; }
 		var xy = evt.getCoordinates();
-		if (xy[0] < Settings.hitX0) { return false; }
-		for (var i = 0; i < Settings.hitYs.size(); i++) {
-			if ((xy[1] - Settings.hitYs[i]).abs() <= Settings.hitH / 2) {
-				// a second tap on a focused action row (Power off / Exit) runs it, like START
-				if (i == Settings.focus && i > 0 && BLEBarrel.inSettings()) {
-					var k = Settings.rows(BLEBarrel.currentMode)[i - 1][3];
-					if (k == :exit || k == :power) { return onSelect(); }
-				}
-				Settings.focus = i;
-				buzz(20);
-				Ui.requestUpdate();
-				return true;
-			}
+		var i = Settings.rowAt(xy[0], xy[1]);
+		if (i < 0) { return false; }
+		// a second tap on a focused action row (Power off / Exit) runs it, like START
+		if (i == Settings.focus && i > 0 && BLEBarrel.inSettings()) {
+			var k = Settings.rows(BLEBarrel.currentMode)[i - 1][3];
+			if (k == :exit || k == :power) { return runStart(); }
 		}
-		return false;
+		Settings.focus = i;
+		buzz(20);
+		Ui.requestUpdate();
+		return true;
 	}
 
 	// BACK: move the focus Mode -> setting rows -> Mode; in a mode without settings it exits.
@@ -130,6 +151,7 @@ class RemoteDelegate extends Ui.BehaviorDelegate {
 		var kmsg = "[key] pressed " + evt.getKey() + (evt.getKey() == Ui.KEY_LIGHT ? " (LIGHT)" : "");
 		Sys.println(kmsg);
 		BLEBarrel.logLine(kmsg);
+		if (evt.getKey() == Ui.KEY_ENTER) { startKeyAt = Sys.getTimer(); }
 		return false;
 	}
 
@@ -232,7 +254,10 @@ class RemoteDelegate extends Ui.BehaviorDelegate {
 			if (cur) { focus = i; }
 			menu.addItem(new Ui.MenuItem(items[i][0], cur ? "current" : null, items[i][1], {}));
 		}
-		menu.addItem(new Ui.MenuItem("GPS overlay", BLEBarrel.GPSon ? "on" : "off", "GPSon", {}));
+		// GPS overlay only feeds the legacy cameras' photo command; the X5 path never uses it
+		if (!BLEBarrel.isX5()) {
+			menu.addItem(new Ui.MenuItem("GPS overlay", BLEBarrel.GPSon ? "on" : "off", "GPSon", {}));
+		}
 		menu.addItem(new Ui.MenuItem("Exit app", null, "exit", {}));
 		menu.setFocus(focus);
 		Ui.pushView(menu, new ModeDelegate(dev), Ui.SLIDE_UP);
@@ -379,7 +404,7 @@ class ModeDelegate extends Ui.Menu2InputDelegate {
 		if (id.equals("exit")) { Sys.exit(); }
 		if (id.equals("GPSon")) {
 			BLEBarrel.GPSon = !BLEBarrel.GPSon;
-			Application.getApp().GPSenable(BLEBarrel.GPSon);
+			Application.getApp().gpsSync();
 			item.setSubLabel(BLEBarrel.GPSon ? "on" : "off");
 			return;
 		}
@@ -390,15 +415,25 @@ class ModeDelegate extends Ui.Menu2InputDelegate {
 }
 
 // "Power off camera?" -> SET_SHUTDOWN. The camera then drops the link; the app keeps scanning.
-class PowerOffDelegate extends Ui.ConfirmationDelegate {
+// A menu, not Ui.Confirmation: on the Mk3i the native confirmation has no visible focus and a
+// second START press confirms it. Here "No" is the first, focused item, so START twice = No.
+function confirmPowerOff(dev) {
+	var menu = new Ui.Menu2({:title => "Power off camera?"});
+	menu.addItem(new Ui.MenuItem("No", "keep it on", :no, {}));
+	menu.addItem(new Ui.MenuItem("Yes, power off", null, :yes, {}));
+	menu.setFocus(0);
+	Ui.pushView(menu, new PowerOffDelegate(dev), Ui.SLIDE_UP);
+}
+
+class PowerOffDelegate extends Ui.Menu2InputDelegate {
 	hidden var dev;
-	function initialize(device) { ConfirmationDelegate.initialize(); dev = device; }
-	function onResponse(response) {
-		if (response == Ui.CONFIRM_YES) {
+	function initialize(device) { Menu2InputDelegate.initialize(); dev = device; }
+	function onSelect(item) {
+		Ui.popView(Ui.SLIDE_DOWN);
+		if (item.getId() == :yes) {
 			if (demoState == null) { dev.sendCMD(BLEBarrel.shutdownX5()); }
 			buzz(150);
 			toast("Camera powering off");
 		}
-		return true;
 	}
 }

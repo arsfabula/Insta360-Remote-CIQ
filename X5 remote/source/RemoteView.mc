@@ -1,4 +1,5 @@
 using Toybox.WatchUi;
+using Toybox.Application;
 using Toybox.Graphics as Gfx;
 using Toybox.Position;
 using Toybox.System;
@@ -33,6 +34,7 @@ const C_AMBER = 0xFFB020;
 const C_RED = 0xFF3B30;
 const C_BATT = 0x00E5FF;  // battery widget (bright cyan)
 const C_CARD = 0xFF4FE0;  // storage widget (bright magenta)
+const C_TOAST_BG = 0x8A1C14;  // toast pill (dark red, white text)
 
 // Layout tokens for the two-column screens (fractions of the screen radius r, or pixels)
 const L_ROW = 0.15;     // row pitch in the right column
@@ -57,10 +59,22 @@ function uiState(dev) {
 // True when the link dropped while recording (e.g. underwater): the camera keeps going.
 var recLinkLost = false;
 
+// Short message drawn by RemoteView at the bottom of the screen, over the camera name.
+// Not WatchUi.showToast: the native toast swallows the next button press (it only dismisses
+// itself), so START to stop a recording right after "Highlight added" was lost. This one takes
+// no input; every press acts at once.
+const TOAST_MS = 3000;
+var toastMsg = null;
+var toastUntil = 0;
+
 function toast(msg) {
-	if (WatchUi has :showToast) {
-		WatchUi.showToast(msg, null);
-	}
+	toastMsg = msg;
+	toastUntil = System.getTimer() + TOAST_MS;
+	WatchUi.requestUpdate();
+}
+
+function toastActive() {
+	return toastMsg != null && System.getTimer() < toastUntil;
 }
 
 // [[intensity, ms], ...]
@@ -111,6 +125,8 @@ class RemoteView extends WatchUi.View {
 
 	function onTick() as Void {
 		tick++;
+		if (toastMsg != null && !toastActive()) { toastMsg = null; WatchUi.requestUpdate(); }
+		Application.getApp().gpsSync();
 		var s = uiState(dev);
 		if (s == UI_NOT_FOUND && demoState == null) {
 			lostTicks++;
@@ -224,8 +240,8 @@ class RemoteView extends WatchUi.View {
 		var cy = h / 2;
 		var r = (w < h ? w : h) / 2;
 		if (demoName != null && !demoInit) { demoInit = true; BLEBarrel.deviceName = demoName; BLEBarrel.currentLabel = demoLabel; BLEBarrel.menuLevel = 2;
-			BLEBarrel.camBattery = 72; BLEBarrel.camShots = 312; BLEBarrel.camRecSecs = 6000; BLEBarrel.camCard = 0;
-			BLEBarrel.camFree = 80000000000l; BLEBarrel.camTotal = 128000000000l;
+			// what a real X5 gets over Connect IQ: power source and card state, no level / space
+			BLEBarrel.camPowerKnown = true; BLEBarrel.camOnPower = false; BLEBarrel.camCard = 0; lastPower = false; lastCard = 0;
 			var ml = modeListX5();
 			for (var i = 0; i < ml.size(); i++) {
 				if (ml[i][0].equals(demoLabel)) { BLEBarrel.currentMode = ml[i][1]; BLEBarrel.videoMode = ml[i][1].substring(0, 1).equals("v"); }
@@ -240,7 +256,7 @@ class RemoteView extends WatchUi.View {
 
 		drawRing(dc, cx, cy, r - 10, s);
 		if (s != UI_SEARCHING && s != UI_NOT_FOUND) { drawWidgets(dc, cx, cy, r - 10); }
-		if (BLEBarrel.GPSon) { drawGps(dc, cx, cy, r - 10); }
+		if (BLEBarrel.GPSon && !BLEBarrel.isX5()) { drawGps(dc, cx, cy, r - 10); }
 
 		var inner = r - 28; // usable radius inside the ring
 		var rr = r - 10;    // ring radius
@@ -359,6 +375,24 @@ class RemoteView extends WatchUi.View {
 		if (startCue != null) {
 			drawStartCue(dc, cx, cy, rr, startCue, s == UI_RECORDING);
 		}
+		if (toastActive()) { drawToast(dc, cx, cy, rr); }
+	}
+
+	// Toast pill at the bottom, over the camera name: the title, the START cue and the top arcs
+	// stay visible.
+	hidden function drawToast(dc, cx, cy, rr) {
+		var f = (nameFont != null) ? nameFont : Gfx.FONT_XTINY;
+		var tw = dc.getTextWidthInPixels(toastMsg, f);
+		var th = dc.getFontHeight(f);
+		var y = cy + rr * 0.74;
+		var w = tw + 2 * L_PAD + 8;
+		var h = th + 8;
+		var maxW = 2 * Math.sqrt(rr * rr - (y + h / 2 - cy) * (y + h / 2 - cy)) - 8;
+		if (w > maxW) { w = maxW; }
+		dc.setColor(C_TOAST_BG, Gfx.COLOR_TRANSPARENT);
+		dc.fillRoundedRectangle(cx - w / 2, y - h / 2, w, h, h / 2);
+		dc.setColor(C_TEXT, Gfx.COLOR_TRANSPARENT);
+		dc.drawText(cx, y, f, toastMsg, Gfx.TEXT_JUSTIFY_CENTER | Gfx.TEXT_JUSTIFY_VCENTER);
 	}
 
 
@@ -473,7 +507,11 @@ class RemoteView extends WatchUi.View {
 		var titleBottom = top + oneH;
 		var y0 = titleBottom - titleH + lineH / 2;   // first title line centre
 
-		if (hits) { Settings.hitX0 = x0; Settings.hitH = rowH; Settings.hitYs = [titleBottom - titleH / 2]; }
+		if (hits) {
+			// the title's tap area is its full drawn height (one or more lines), not one row
+			Settings.hitX0 = x0; Settings.hitH = rowH;
+			Settings.hitYs = [titleBottom - titleH / 2]; Settings.hitHs = [titleH];
+		}
 		if (titleFocused) {
 			var tw = 0;
 			for (var i = 0; i < lines.size(); i++) {
@@ -503,7 +541,7 @@ class RemoteView extends WatchUi.View {
 			var x = (label.length() > 0) ? vx : x0 + L_PAD;
 			var f = vf;
 			if (x + dc.getTextWidthInPixels(v, f) > xMax) { f = colFonts[2]; }
-			if (hits) { Settings.hitYs.add(y); }
+			if (hits) { Settings.hitYs.add(y); Settings.hitHs.add(rowH); }
 			if (focused) { pill(dc, x0, y, x - x0 + dc.getTextWidthInPixels(v, f) + L_PAD, rowH - 4); }
 			if (label.length() > 0) {
 				// superscript: the label's top aligned with the value's top

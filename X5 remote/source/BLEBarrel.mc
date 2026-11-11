@@ -249,6 +249,10 @@ var currentMode = "DefaultV";
 // user browses or a request is in flight, only the echo of the latest request counts.
 var modeReq = null;      // last mode id sent to the camera
 var camMode = null;      // the camera's mode while the watch shows its Settings page
+// Per-frame log lines (rx / frame / adverts). Off: the watch keeps only ~5 KB of log, and frames
+// pushed connection events out within seconds.
+const LOG_FRAMES = false;
+var profileRegs = 0;     // BLE profile registrations (Connect IQ allows only a few per app run)
 function inSettings() { return currentMode instanceof Toybox.Lang.String && currentMode.equals("set"); }
 var modeHoldUntil = 0;   // System.getTimer() ms until which other 0x2053 values are not adopted
 
@@ -456,7 +460,7 @@ class BleDevice extends BluetoothLowEnergy.BleDelegate {
 		var code = f[7] | (f[8] << 8);
 		var body = f.slice(16, f.size());
 		var total = f[0] | (f[1] << 8);
-		debug("[frame] code=" + code.format("%04x") + " seq=" + f[10] + " total=" + total + " got=" + f.size() + " body=" + hex(body, 8));
+		if (LOG_FRAMES) { debug("[frame] code=" + code.format("%04x") + " seq=" + f[10] + " total=" + total + " got=" + f.size() + " body=" + hex(body, 8)); }
 		if (authSeq >= 0 && f[10] == authSeq && code < 0x1000) {
 			// CheckAuthorizationResp {1: status}: 0 AUTHORIZED (field omitted), 1 UNAUTHORIZED, 2 BUSY,
 			// 3/4/5/6 connected by another phone/watch/cyclocomputer/remote, 7 sleeping
@@ -545,6 +549,23 @@ class BleDevice extends BluetoothLowEnergy.BleDelegate {
 				startRecTime = Time.now();
 				lapseSeq = -1;
 			} else if (st == 0 && recState == stateStopping) {
+				recState = stateStopRec;
+				lapseSeq = -1;
+			}
+		} else if (code == 0x2010) {
+			// CAPTURE_STATUS push {1: state}: confirms a pending start / stop, never restarts one
+			var t = pbFields(body);
+			var st = -1;
+			for (var i = 0; i < t.size(); i++) {
+				if (t[i][0] == 1 && t[i][1] == 0) { st = t[i][2].toNumber(); }
+			}
+			if (st < 0 && body.size() == 0) { st = 0; }   // empty body = field 1 is 0 (idle)
+			debug("[cap] push state=" + st + " rec=" + recState);
+			if (st > 0 && recState == stateStarting && photoSeq < 0) {
+				recState = stateStartRec;
+				startRecTime = Time.now();
+				lapseSeq = -1;
+			} else if (st == 0 && recState == stateStopping && photoSeq < 0) {
 				recState = stateStopRec;
 				lapseSeq = -1;
 			}
@@ -651,7 +672,7 @@ class BleDevice extends BluetoothLowEnergy.BleDelegate {
 
 	function onCharacteristicChanged(ch, value) {
 		if (isX5()) { reassembleX5(value); }
-		if (value.size() != 7) { debug("[rx] " + value.size() + "b " + hex(value, 40)); } // skip 1 Hz keep-alives
+		if (LOG_FRAMES && value.size() != 7) { debug("[rx] " + value.size() + "b " + hex(value, 40)); } // skip 1 Hz keep-alives
 		// X5 response: [len u32][04 00 00][code u16][02][seq u24][80|f4][00 00]
 		if (value.size() >= 16 && value[4] == 0x04 && photoSeq >= 0 && value[10] == photoSeq) {
 			var code = value[7] | (value[8] << 8);
@@ -688,14 +709,17 @@ class BleDevice extends BluetoothLowEnergy.BleDelegate {
 			// the 8th byte is the "command" code
 			// Check to see if we got a Stop or Start recording event. 
 			// Command byte == 0x10 position 17 is >0 = start. 0=end.
-			if ((value[7] == 0x10) and (value[17] > 0x00) and (videoMode || (isX5() && isTimedPhotoX5()))) {
+			// Legacy cameras only: on the X5 the code is 16 bits and 0x2010 (capture status push,
+			// sent again while the camera finishes a file) matched this low-byte check and
+			// restarted the recording timer. X5 frames are handled in onFrameX5.
+			if (!isX5() and (value[7] == 0x10) and (value[17] > 0x00) and videoMode) {
 				// debug("Start Shooting");
 				mMessage = "Shooting";
 				recState = stateStartRec;
 				startRecTime = Time.now();
 //				WatchUi.pushView(new ViewData(BleDevice2), new InputDelegate(BleDevice2), WatchUi.SLIDE_IMMEDIATE);
 				
-			} else 	if ((value[7] == 0x10) and (value[17] == 0x00) and photoSeq < 0 and lapseSeq < 0) {
+			} else 	if (!isX5() and (value[7] == 0x10) and (value[17] == 0x00) and photoSeq < 0 and lapseSeq < 0) {
 				// debug("Stop Shoot");
 				mMessage = currentLabel + "\n" + startMessage;
 				recState = stateStopRec;
@@ -706,7 +730,7 @@ class BleDevice extends BluetoothLowEnergy.BleDelegate {
 				mMessage = currentLabel + "\n" + startMessage;
 				recState = stateStopRec;
 			} else {
-				 debug("Unknown Response " + value);
+				 if (LOG_FRAMES) { debug("Unknown Response " + value); }
 				// mMessage = "-";
 			}
 		  }
@@ -760,7 +784,9 @@ class BleDevice extends BluetoothLowEnergy.BleDelegate {
 				:descriptors => [LBS_NOTIF_DESC],
 			}]
 		};
+		if (profileRegs > 0) { return; }   // once per app run: a second registration fails later
 		try {
+			profileRegs++;
 			BluetoothLowEnergy.registerProfile(profile);
 		} catch (ex) {
 			    debug("[sendCMD] exception: " + ex.getErrorMessage());
@@ -793,6 +819,7 @@ class BleDevice extends BluetoothLowEnergy.BleDelegate {
 		mMessage = currentLabel + "\n" + startMessage;
 		WatchUi.requestUpdate();
 		if (state == BluetoothLowEnergy.CONNECTION_STATE_CONNECTED) {
+			debug("[link] connected");
 			connecting = false;
 			debug("[onCSC] scanning OFF");
 			if (scanning) {
@@ -808,17 +835,24 @@ class BleDevice extends BluetoothLowEnergy.BleDelegate {
 			resetLink();
 			enableNotifications();
 		} else {
+			// Link lost (camera standby, out of range). Do NOT re-run open(): that registered the
+			// profile again (Connect IQ refuses it after a few times, then no reconnect works) and
+			// reloaded the recording state saved at the last close. Release the old pairing, so
+			// the system does not reconnect it while we scan and pair again, then scan.
+			debug("[link] disconnected");
 			resetLink();
+			if (device != null) {
+				try { BluetoothLowEnergy.unpairDevice(device); } catch (ex) { debug("[link] unpair: " + ex.getErrorMessage()); }
+			}
+			device = null;
+			connecting = false;
 			if (!scanning) {
 				scanning = true;
-				device = null;
-			open();
-//			try {
-//				BluetoothLowEnergy.setScanState(BluetoothLowEnergy.SCAN_STATE_SCANNING);
-//			} catch (ex) {
-//			    debug("[onConStateChg] On exception: " + ex.getErrorMessage());
-//		    }
-			
+				try {
+					BluetoothLowEnergy.setScanState(BluetoothLowEnergy.SCAN_STATE_SCANNING);
+				} catch (ex) {
+					debug("[link] scan: " + ex.getErrorMessage());
+				}
 			}
 		}
 	}
@@ -928,6 +962,7 @@ class BleDevice extends BluetoothLowEnergy.BleDelegate {
 		} catch (ex) {
 		    debug("[connect] scan OFF exception: " + ex.getErrorMessage());
 		}
+		debug("[link] pairing, rssi " + result.getRssi());
 		try {
 			device = BluetoothLowEnergy.pairDevice(result);
 		} catch (ex) {
@@ -956,7 +991,7 @@ class BleDevice extends BluetoothLowEnergy.BleDelegate {
 			deviceName = result.getDeviceName();
 			if (deviceName != null && deviceName.length() >= 3 && deviceName.substring(0, 3).equals("X5 ")) {
 				var raw = result.getRawData();
-				if (raw != null) { debug("[adv] " + hex(raw, 40)); }
+				if (LOG_FRAMES && raw != null) { debug("[adv] " + hex(raw, 40)); }
 			}
 			// rssi = result.getRssi();
 
