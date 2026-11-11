@@ -256,6 +256,12 @@ var profileRegs = 0;     // BLE profile registrations (Connect IQ allows only a 
 function inSettings() { return currentMode instanceof Toybox.Lang.String && currentMode.equals("set"); }
 var modeHoldUntil = 0;   // System.getTimer() ms until which other 0x2053 values are not adopted
 
+// A setting may be sent once the last mode change is confirmed by the camera's 0x2053 echo, or
+// once the hold ran out (the camera refuses settings while it is still switching modes: 400).
+function settingMayGo() {
+	return modeReq == null || System.getTimer() >= modeHoldUntil;
+}
+
 function holdMode(ms) {
 	var t = System.getTimer() + ms;
 	if (t > modeHoldUntil) { modeHoldUntil = t; }

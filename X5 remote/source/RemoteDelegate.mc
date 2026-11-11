@@ -13,6 +13,12 @@ function buzz(ms) {
 	}
 }
 
+// Input events in the watch log (Apps/LOGS/INSTAREM.TXT): which path triggered START.
+function inLog(msg) {
+	Sys.println("[in] " + msg);
+	BLEBarrel.logLine("[in] " + msg);
+}
+
 class RemoteDelegate extends Ui.BehaviorDelegate {
 	hidden var dev;
 	hidden var sendTimer;
@@ -37,6 +43,7 @@ class RemoteDelegate extends Ui.BehaviorDelegate {
 	// START anyway, so a press is never lost.
 	function onSelect() {
 		var key = startKeyAt != null && Sys.getTimer() - startKeyAt < 2000;
+		inLog("select key=" + key);
 		startKeyAt = null;
 		if (!key) {
 			tapPending = true;
@@ -48,12 +55,13 @@ class RemoteDelegate extends Ui.BehaviorDelegate {
 	}
 
 	function onTapTimeout() as Void {
-		if (tapPending) { tapPending = false; runStart(); }
+		if (tapPending) { tapPending = false; inLog("fallback START (no tap followed)"); runStart(); }
 	}
 
 	// START button (or a tap outside the rows): one press = one action, no menus.
 	function runStart() {
 		var s = uiState(dev);
+		inLog("START state=" + s + " mode=" + BLEBarrel.currentMode + " focus=" + Settings.focus);
 		if (s == UI_SEARCHING) {
 			return true;
 		}
@@ -132,6 +140,7 @@ class RemoteDelegate extends Ui.BehaviorDelegate {
 		if (uiState(dev) != UI_READY || Settings.hitYs == null) { return false; }
 		var xy = evt.getCoordinates();
 		var i = Settings.rowAt(xy[0], xy[1]);
+		inLog("tap " + xy[0] + "," + xy[1] + " -> entry " + i);
 		if (i < 0) { return false; }
 		// a second tap on a focused action row (Power off / Exit) runs it, like START
 		if (i == Settings.focus && i > 0 && BLEBarrel.inSettings()) {
@@ -183,6 +192,11 @@ class RemoteDelegate extends Ui.BehaviorDelegate {
 
 	function flushSetting() as Void {
 		if (pendingSetFrame == null) { return; }
+		if (demoState == null && !BLEBarrel.settingMayGo()) {
+			// the camera is still switching modes: try again shortly
+			setTimer.start(method(:flushSetting), 300, false);
+			return;
+		}
 		if (demoState != null) {
 			Settings.acked[pendingSetKey] = true;   // simulator demo: pretend the camera acked
 		} else {

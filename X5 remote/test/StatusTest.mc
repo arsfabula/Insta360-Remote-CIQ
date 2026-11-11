@@ -210,3 +210,20 @@ function captureStatusPushDoesNotRestartRecording(logger) {
 	logger.debug("afterStop=" + afterStop + " start moved=" + (BLEBarrel.startRecTime.value() != t0.value()));
 	return afterStop != BLEBarrel.stateStartRec && BLEBarrel.startRecTime.value() == t0.value();
 }
+
+// Watch log: RES sent right after the app switched the camera to Video was refused (400); the same
+// frame a few seconds later was accepted. A setting waits while a mode change is unconfirmed,
+// but never longer than the mode hold (a camera that never echoes must not block settings).
+(:test)
+function settingWaitsForModeChange(logger) {
+	var now = Toybox.System.getTimer();
+	BLEBarrel.modeReq = "v0"; BLEBarrel.modeHoldUntil = now + 3000;
+	var pending = BLEBarrel.settingMayGo();
+	BLEBarrel.modeReq = null;
+	var confirmed = BLEBarrel.settingMayGo();
+	BLEBarrel.modeReq = "v0"; BLEBarrel.modeHoldUntil = now - 1;
+	var expired = BLEBarrel.settingMayGo();
+	BLEBarrel.modeReq = null; BLEBarrel.modeHoldUntil = 0;
+	logger.debug("pending=" + pending + " confirmed=" + confirmed + " expired=" + expired);
+	return !pending && confirmed && expired;
+}

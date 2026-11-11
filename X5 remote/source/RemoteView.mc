@@ -110,7 +110,7 @@ class RemoteView extends WatchUi.View {
 
 	function onShow() {
 		timer.start(method(:onTick), 125, true);
-		if (demoToast != null) { toast(demoToast); }
+		if (demoToast != null) { toast(demoToast); toastUntil = System.getTimer() + 600000; }   // demo: keep it for screenshots
 	}
 
 	function onHide() {
@@ -378,13 +378,13 @@ class RemoteView extends WatchUi.View {
 		if (toastActive()) { drawToast(dc, cx, cy, rr); }
 	}
 
-	// Toast pill at the bottom, over the camera name: the title, the START cue and the top arcs
+	// Toast pill in the free band above the camera name: the title, the START cue, the name and the top arcs
 	// stay visible.
 	hidden function drawToast(dc, cx, cy, rr) {
 		var f = (nameFont != null) ? nameFont : Gfx.FONT_XTINY;
 		var tw = dc.getTextWidthInPixels(toastMsg, f);
 		var th = dc.getFontHeight(f);
-		var y = cy + rr * 0.74;
+		var y = cy + rr * 0.58;   // between the last settings row and the camera name
 		var w = tw + 2 * L_PAD + 8;
 		var h = th + 8;
 		var maxW = 2 * Math.sqrt(rr * rr - (y + h / 2 - cy) * (y + h / 2 - cy)) - 8;
