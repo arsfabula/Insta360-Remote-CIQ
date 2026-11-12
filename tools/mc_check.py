@@ -138,7 +138,7 @@ entryTierOfId equals format getApp getAvailableConnectionCount
 getCharacteristic getCoordinates getDeviceName getDeviceSettings
 getErrorMessage getFontAscent getFontDescent getFontHeight getHeight getId
 getInfo getItem getLabel getName getProperty getService getServiceUuids
-getServices getType getUuid getWidth initialize isConnected labelPhoto
+getServices getTimer getType getUuid getWidth initialize isConnected labelPhoto
 labelRes labelVideo lastOption length menuLevelOfName modelIndexOfName
 modelMeasured next now open pairDevice peekBatteryLevel
 peekBatteryPowerType peekCodeCount peekFuncMode peekNotifArrived
@@ -149,7 +149,7 @@ photoGpsHeader popView println pushView registerProfile requestUpdate
 requestWrite resetNotif rowIds rowLabels sendCMD sendPosition setAntiAlias
 setColor setDelegate setPenWidth setProperty setScanState setTitle sin size
 slice start stop stringToUuid substring subtract toDegrees toNumber
-toString unpairDevice value
+toString toUtf8Array unpairDevice value
 """.split())
 
 

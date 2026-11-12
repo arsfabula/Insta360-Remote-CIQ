@@ -472,6 +472,16 @@ var modeReqId as Lang.String or Null = null;
 var modeHoldUntil as Lang.Number = 0;
 var camModeId as Lang.String or Null = null;
 
+// The invalidation bookkeeping of the option rows. 0x2065 (WATCH_RES) is the
+// camera naming the options that moved: its body carries the option ids as a
+// repeated field 1, inside the 20-octet window (the survey records ids 30 and
+// 40 at octets 17 to 20), while the values sit in the nested map past octet
+// 21, in frames declared 26 to 30 that this bond cuts and the camera never
+// continues. So this push invalidates a row, it never fills one, and nothing
+// re-asks the option: a GET meets the same wall. x5StaleOptions holds one
+// entry per named id until a write of the option itself clears it.
+var x5StaleOptions as Lang.Array = [];
+
 var x5BatteryLevel as Lang.Number or Null = null;
 var x5BatteryPowerType as Lang.Number = 0;
 var x5BatteryArrived as Lang.Boolean = false;
@@ -1021,6 +1031,21 @@ class BleDevice extends BluetoothLowEnergy.BleDelegate {
 			}
 			return;
 		}
+		if (notifCode == X5_OPTIONS_NOTIF) {
+			// WATCH_RES, answered here rather than by the walk below, and not
+			// returned to: the ids are read from the raw window, the values are
+			// not asked for. What crosses of this frame is the repeated field 1
+			// of its body, the list of option ids (the survey names [30, 40] at
+			// octets 17 to 20); the map that would carry their values sits past
+			// octet 21 and no run on either bench has ever brought it over. The
+			// rows the camera names become untrusted here, and the app's cache
+			// reads that through optionIsStale; the reading of a value comes
+			// only from a write this watch made and the camera confirmed.
+			x5RecordNotif();
+			var named = x5CollectOptionIds(buf);
+			wireLine("options", "0x2065 invalidated options=" + named + " (values past the cut, never re-asked)");
+			return;
+		}
 
 		var n = buf.size();
 		var i = 16;
@@ -1123,6 +1148,64 @@ class BleDevice extends BluetoothLowEnergy.BleDelegate {
 
 
 
+	// A named option id joins the stale list once; the list answers the app's
+	// cache, which decides what an untrusted row means on screen. The scan is
+	// explicit on purpose: the array family is where the SDK API is the most
+	// treacherous (the note of tools/mc_check.py), and an index walk answers
+	// on every API level this project targets.
+	function x5StaleIndex(opt as Lang.Number) as Lang.Number {
+		var i = 0;
+		while (i < x5StaleOptions.size()) {
+			if (x5StaleOptions[i] == opt) {
+				return i;
+			}
+			i++;
+		}
+		return -1;
+	}
+
+	function x5MarkOptionStale(opt as Lang.Number) as Void {
+		if (x5StaleIndex(opt) < 0) {
+			x5StaleOptions.add(opt);
+		}
+	}
+
+	// The option ids of a WATCH_RES body: the repeated varint field 1 from
+	// octet 16 up to wherever the bond cut the frame. The walk's shape, kept
+	// separate on purpose - it stops at the first nested field (the value map,
+	// whose ids are not the window's) and at the cut, and it says what it
+	// named, for the wire line.
+	function x5CollectOptionIds(buf as Lang.ByteArray) as Lang.String {
+		var found = "";
+		var n = buf.size();
+		var i = 16;
+		while (i < n) {
+			var tag = x5Varint(buf, i, n);
+			if (tag == null) {
+				break;
+			}
+			i = x5VarintEnd;
+			var field = tag >> 3;
+			var wire = tag & 7;
+			if (wire != 0) {
+				break;
+			}
+			var v = x5Varint(buf, i, n);
+			if (v == null) {
+				break;
+			}
+			i = x5VarintEnd;
+			if (field == x5PhotoSubModeNotif) {
+				x5MarkOptionStale(v);
+				if (found.length() > 0) {
+					found += ",";
+				}
+				found += v.toString();
+			}
+		}
+		return found;
+	}
+
 	// The mode id named by a 0x2053 pair: the half that is not 100 names the
 	// mode, "p" for the photo half, "v" for the video half — the same names
 	// the app's menu entries carry. Two halves at 100, or both set, answer
@@ -1191,17 +1274,13 @@ class BleDevice extends BluetoothLowEnergy.BleDelegate {
 			return;
 		}
 		if (notifCode == X5_OPTIONS_NOTIF) {
-
-
-
-
-
-			if (notifVal3 > 0) {
-				x5FuncMode = notifVal3;
-			}
-			if (notifOptTag == 31) {
-				x5ResNow = notifOptVal;
-			}
+			// The reads that used to sit here (field 3 read as a family, the
+			// option 31 value out of the nested map) answer on bytes this bond
+			// never delivers - every 0x2065 is declared 26 to 30 and cut at
+			// octet 20 - and the frame site now answers the push before the
+			// walk ever sees it. The invalidation is the whole reading;
+			// peekResNow and peekFuncMode still answer, and on this link their
+			// null is the truth of the wall.
 			return;
 		}
 		if (notifCode != X5_CAPTURE_STATUS_NOTIF && notifCode != X5_RECORD_STATE_NOTIF) {
@@ -1825,6 +1904,7 @@ class BleDevice extends BluetoothLowEnergy.BleDelegate {
 		modeReqId = null;
 		modeHoldUntil = 0;
 		camModeId = null;
+		x5StaleOptions = [];
 	}
 
 
@@ -1971,6 +2051,32 @@ class BleDevice extends BluetoothLowEnergy.BleDelegate {
 	// do with it is the app's decision, never this reader's.
 	function peekCamMode() as Lang.String or Null {
 		return camModeId;
+	}
+
+	// The rows a WATCH_RES named since the last link reset: the cache of the
+	// app asks here whether a remembered option value still stands. The mark
+	// clears only on a confirmation this watch drove - a write of the option
+	// the camera answers 200 - never on a re-ask, which would meet the same
+	// wall the value never crossed.
+	function optionIsStale(opt as Lang.Number) as Lang.Boolean {
+		return x5StaleIndex(opt) >= 0;
+	}
+	function peekStaleOptions() as Lang.Array {
+		return x5StaleOptions;
+	}
+	function clearOptionStale(opt as Lang.Number) as Void {
+		if (x5StaleIndex(opt) < 0) {
+			return;
+		}
+		var keep = [];
+		var i = 0;
+		while (i < x5StaleOptions.size()) {
+			if (x5StaleOptions[i] != opt) {
+				keep.add(x5StaleOptions[i]);
+			}
+			i++;
+		}
+		x5StaleOptions = keep;
 	}
 	function peekSeenCodes() as Lang.Array {
 		return x5CodesSeen;
