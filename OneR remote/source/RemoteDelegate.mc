@@ -1,0 +1,532 @@
+using Toybox.WatchUi as Ui;
+using Toybox.Application;
+using Toybox.Attention;
+using Toybox.BluetoothLowEnergy;
+using Toybox.Position;
+using Toybox.System as Sys;
+using Toybox.Timer;
+using Toybox.Lang;
+using BLEBarrel;
+
+// The delegate of the ported RemoteView (phase 4 of the PR #2 integration). It is the
+// PR's RemoteDelegate, re-welded to this app's verified machinery: the rows answer to
+// Levels, the frame of an entry to entryFrame(), the write to sendCMD with the apply
+// ask of the mainline flow, and the shot's answer to armPhotoAck. The PR's own
+// mode-list, mode-command switch, lapseX5 half and settingMayGo gate are replaced here
+// by their mainline equivalents; what stays from the PR is the interaction model -
+// BACK moves the focus, UP/DOWN step the focused row, one press is one action.
+
+function buzz(ms) {
+	if (Attention has :vibrate) {
+		Attention.vibrate([new Attention.VibeProfile(60, ms)]);
+	}
+}
+
+// Input events in the watch log, the PR's [in] tell. The Sys.println of the app lands
+// in the same file the barrel's log lines reach; no second sink.
+function inLog(msg) {
+	Sys.println("[in] " + msg);
+}
+
+// The Settings page is an app-side id, never a camera mode. The mainline barrel has no
+// inSettings() - the PR's barrel did - so the question is asked where the id lives.
+function inSettingsUI() {
+	var m = BLEBarrel.currentMode;
+	return m instanceof Lang.String && m.equals("set");
+}
+
+// The mode remembered when the Settings page was opened, so returning from it lands on
+// the mode the camera was left in. The PR kept this in its barrel (camMode); here it
+// cannot share the name - BLEBarrel.camModeId is the camera's own reported mode, a
+// different datum, read nowhere in this file.
+var setReturnMode = null;
+var setReturnLabel = null;
+
+// The id of the mode the watch is showing, kept beside currentMode (which is a frame in
+// this app, not an id). The echo gate is armed with the id, never the frame.
+var currentModeId = "DefaultV";
+
+// The mode wheel and the Mode menu answer the chain, not a hand-written list: the rows
+// of the level in force, [label, id] pairs in the order of the table, plus the
+// Settings entry on the levels that have option rows. The ucd2 sentinel row of the
+// replacing level stays where the table put it (its selection arms the envelope).
+function modeList() {
+	var out = [];
+	var rows = Levels.rowsMain(BLEBarrel.menuLevel);
+	var i = 0;
+	while (i < rows.size()) {
+		out.add([rows[i][Levels.RLB], rows[i][Levels.RID]]);
+		i += 1;
+	}
+	if (BLEBarrel.menuLevel >= 2) {
+		out.add(["Settings", "set"]);
+	}
+	return out;
+}
+
+// Settings writes cross only once the camera is settled in its mode: the echo gate's
+// hold of the barrel answers when a mode write is still in flight. The PR asked its own
+// barrel (settingMayGo); the same two datums live here as module fields.
+function settingMayGo() {
+	if (BLEBarrel.modeReqId != null) { return false; }
+	return Sys.getTimer() >= BLEBarrel.modeHoldUntil;
+}
+
+class RemoteDelegate extends Ui.BehaviorDelegate {
+	hidden var dev;
+	hidden var sendTimer;
+	hidden var pendingSend = false;
+	hidden var setTimer;
+	hidden var tapTimer;
+	hidden var startKeyAt = null;   // time of the last START key press (onKeyPressed), null = none pending
+	hidden var tapPending = false;
+	hidden var pendingSetFrames = null;
+	hidden var pendingSetKey = null;
+
+	function initialize(device) {
+		BehaviorDelegate.initialize();
+		dev = device;
+		sendTimer = new Timer.Timer();
+		setTimer = new Timer.Timer();
+		tapTimer = new Timer.Timer();
+	}
+
+	// Connect IQ turns a screen tap into the SELECT behaviour first and only calls onTap when
+	// onSelect returns false. A START press always reaches onKeyPressed (KEY_ENTER) before
+	// onSelect, a tap never does. So onSelect without a fresh START key press is a tap: hand it
+	// to onTap (which knows where the finger was). If no onTap follows, the fallback timer runs
+	// START anyway, so a press is never lost.
+	function onSelect() {
+		var key = startKeyAt != null && Sys.getTimer() - startKeyAt < 2000;
+		inLog("select key=" + key);
+		startKeyAt = null;
+		if (!key) {
+			tapPending = true;
+			tapTimer.stop();
+			tapTimer.start(method(:onTapTimeout), 150, false);
+			return false;
+		}
+		return runStart();
+	}
+
+	function onTapTimeout() as Void {
+		if (tapPending) { tapPending = false; inLog("fallback START (no tap followed)"); runStart(); }
+	}
+
+	// START (or a tap outside the rows): one press, one action, no menus. The rungs are
+	// this app's verified capture flow, not the PR's: the mode frame was written at the
+	// selection (flushMode), so the press only ever sends the start, the stop, or the
+	// capture pair (cmdApply then the capture frame), and the capture pair arms its
+	// answer (armPhotoAck). The PR's timed-photo half (lapseX5, the PR's own START /
+	// STOP_TIMELAPSE pair) is not taken: this app runs interval and starlapse on the
+	// 0x03 / 0x04 pair the bench verified, so a recording ends with cmdStopRec like any
+	// other recording.
+	function runStart() {
+		var s = uiState(dev);
+		inLog("START state=" + s + " mode=" + currentModeId + " focus=" + Settings.focus);
+		if (s == UI_SEARCHING) {
+			// the barrel rescans on its own; the press answers by the state line alone
+			return true;
+		}
+		if (s == UI_RECORDING) {
+			BLEBarrel.recState = BLEBarrel.stateStopping;
+			dev.sendCMD(BLEBarrel.cmdStopRec);
+			buzz(80);
+			Ui.requestUpdate();
+			return true;
+		}
+		if (s == UI_STARTING || s == UI_STOPPING || s == UI_BUSY) {
+			// Camera never confirmed: drop back to ready so the next press retries.
+			BLEBarrel.recState = BLEBarrel.stateStopRec;
+			BLEBarrel.mMessage = BLEBarrel.currentLabel + "\n" + BLEBarrel.startMessage;
+			Ui.requestUpdate();
+			return true;
+		}
+		// Settings page: START runs the focused action (Exit, Power off), never the shutter
+		if (inSettingsUI()) {
+			var rows = Settings.rows("set");
+			if (Settings.focus > 0 && Settings.focus <= rows.size()) {
+				var k = rows[Settings.focus - 1][3];
+				if (k == :exit) { Sys.exit(); }
+				if (k == :power) { confirmPowerOff(dev); }
+			}
+			return true;
+		}
+		// READY: start recording / take the shot
+		sendTimer.stop();
+		flushMode();
+		BLEBarrel.recState = BLEBarrel.stateStarting;
+		if (BLEBarrel.photoCaptureMode) {
+			var captureFrame = BLEBarrel.cmdSetPhoto;
+			if (BLEBarrel.photoBurstMode) {
+				captureFrame = BLEBarrel.cmdSetPhotoBurst;
+			}
+			Sys.println("[cap] " + currentModeId + " burst=" + BLEBarrel.photoBurstMode.toString());
+			dev.sendCMD(BLEBarrel.cmdApply);
+			dev.sendCMD(captureFrame);
+			dev.armPhotoAck();
+		} else {
+			Sys.println("[start] " + currentModeId);
+			dev.sendCMD(BLEBarrel.cmdStartRec);
+		}
+		buzz(150);
+		Ui.requestUpdate();
+		return true;
+	}
+
+	// Touch: tap / hold a settings row to focus it; tap elsewhere = START. Swipes arrive as
+	// onPreviousPage / onNextPage, so swiping up / down changes the focused value.
+	function onTap(evt) {
+		tapPending = false;
+		tapTimer.stop();
+		if (focusRowAt(evt)) { return true; }
+		return runStart();
+	}
+
+	function onHold(evt) {
+		return focusRowAt(evt);
+	}
+
+	hidden function focusRowAt(evt) {
+		if (uiState(dev) != UI_READY || Settings.hitYs == null) { return false; }
+		var xy = evt.getCoordinates();
+		var i = Settings.rowAt(xy[0], xy[1]);
+		inLog("tap " + xy[0] + "," + xy[1] + " -> entry " + i);
+		if (i < 0) { return false; }
+		// a second tap on a focused action row (Power off / Exit) runs it, like START
+		if (i == Settings.focus && i > 0 && inSettingsUI()) {
+			var k = Settings.rows("set")[i - 1][3];
+			if (k == :exit || k == :power) { return runStart(); }
+		}
+		Settings.focus = i;
+		buzz(20);
+		Ui.requestUpdate();
+		return true;
+	}
+
+	// START key timestamp for the tap discrimination (see onSelect).
+	function onKeyPressed(evt) {
+		if (evt.getKey() == Ui.KEY_ENTER) { startKeyAt = Sys.getTimer(); }
+		return false;
+	}
+
+	// BACK: move the focus Mode -> setting rows -> Mode; in a mode without settings it exits.
+	// Long-press BACK belongs to the OS: "Exit app" is in the hold-UP menu.
+	function onBack() {
+		var n = Settings.rows(currentModeId).size();
+		if (uiState(dev) != UI_READY || n == 0) { return false; }
+		Settings.focus = (Settings.focus + 1) % (n + 1);
+		buzz(20);
+		Ui.requestUpdate();
+		return true;
+	}
+
+	// UP / DOWN in ready state: change the focused row (the mode, or a setting).
+	hidden function stepFocused(dir) {
+		if (Settings.focus == 0) { stepMode(dir); return; }
+		var rows = Settings.rows(currentModeId);
+		if (Settings.focus > rows.size()) { Settings.focus = 0; stepMode(dir); return; }
+		var row = rows[Settings.focus - 1];
+		if (row[3] == :exit || row[3] == :power) { return; }
+		pendingSetFrames = Settings.step(currentModeId, row, dir);
+		pendingSetKey = Settings.key(currentModeId, row);
+		setTimer.stop();
+		setTimer.start(method(:flushSetting), 800, false);
+		Ui.requestUpdate();
+	}
+
+	function flushSetting() as Void {
+		if (pendingSetFrames == null) { return; }
+		if (!settingMayGo()) {
+			// the camera is still switching modes: try again shortly
+			setTimer.start(method(:flushSetting), 300, false);
+			return;
+		}
+		var frames = pendingSetFrames;
+		pendingSetFrames = null;
+		var i = 0;
+		while (i < frames.size()) {
+			dev.sendCMD(frames[i]);
+			i += 1;
+		}
+		// the last frame's answer decides the row's ok / refused mark (the PR's
+		// sendSettingX5 discipline, on this app's armWriteAck witness)
+		dev.armWriteAck(pendingSetKey);
+		Ui.requestUpdate();
+	}
+
+	// UP: highlight while recording, otherwise previous mode (-)
+	function onPreviousPage() {
+		var s = uiState(dev);
+		if (s == UI_RECORDING) {
+			dev.sendCMD(BLEBarrel.cmdHighlight);
+			buzz(40);
+			toast("Highlight added");
+			return true;
+		}
+		if (s == UI_READY) { stepFocused(-1); return true; }
+		return false;
+	}
+
+	// DOWN: Track That while recording, otherwise next mode (+)
+	function onNextPage() {
+		var s = uiState(dev);
+		if (s == UI_RECORDING) {
+			dev.sendCMD(BLEBarrel.cmdTrackThat);
+			buzz(40);
+			toast("Track That");
+			return true;
+		}
+		if (s == UI_READY) { stepFocused(1); return true; }
+		return false;
+	}
+
+	// Change the shown mode at once; tell the camera only once the user settles.
+	hidden function stepMode(dir) {
+		var items = modeList();
+		var idx = 0;
+		var i = 0;
+		while (i < items.size()) {
+			if (items[i][0].equals(BLEBarrel.currentLabel)) { idx = i; break; }
+			i += 1;
+		}
+		idx = (idx + dir + items.size()) % items.size();
+		applyMode(dev, items[idx][1], items[idx][0], false);
+		BLEBarrel.modeHoldUntil = Sys.getTimer() + 3800;   // browsing: don't let late camera echoes move the cursor
+		pendingSend = true;
+		sendTimer.stop();
+		sendTimer.start(method(:flushMode), 800, false);
+		Ui.requestUpdate();
+	}
+
+	function flushMode() as Void {
+		if (pendingSend) {
+			pendingSend = false;
+			sendCurrentMode(dev);
+		}
+	}
+
+	function onMenu() {
+		if (uiState(dev) == UI_RECORDING) {
+			return true; // don't change mode mid-recording
+		}
+		var items = modeList();
+		var menu = new Ui.Menu2({:title => "Mode"});
+		var focus = 0;
+		var i = 0;
+		while (i < items.size()) {
+			var cur = items[i][0].equals(BLEBarrel.currentLabel);
+			if (cur) { focus = i; }
+			menu.addItem(new Ui.MenuItem(items[i][0], cur ? "current" : null, items[i][1], {}));
+			i += 1;
+		}
+		// GPS overlay only feeds the legacy cameras' photo command; the X5 line never uses it
+		if (BLEBarrel.menuLevel < 2) {
+			menu.addItem(new Ui.MenuItem("GPS overlay", BLEBarrel.GPSon ? "on" : "off", "GPSon", {}));
+		}
+		// the bench axis of the level chain: forcing a model, the same choices as the
+		// mainline menu, so the Phase 5 runs keep their forcing entry in the new UI too
+		menu.addItem(new Ui.MenuItem("Force model", null, "forceopen", {}));
+		menu.addItem(new Ui.MenuItem("Exit app", null, "exit", {}));
+		menu.setFocus(focus);
+		Ui.pushView(menu, new ModeDelegate(dev), Ui.SLIDE_UP);
+		return true;
+	}
+}
+
+// Select a mode: this app's own selection flow - the row of the chain answers the
+// family and the key (one datum, no second list), entryFrame() answers the frame, and
+// a row the chain never measured over BLE is refused here and writes nothing. The
+// start/stop patches of the reference-app rungs (HDR video, Timelapse, Interval) are
+// the mainline's, kept for the levels whose entries ride those rungs.
+function applyMode(dev, id, label, send) {
+	// Reset start/stop commands; some rungs patch them below (the PR's reset, the same
+	// arrays the mainline's selection flow reassigns at its own top).
+	BLEBarrel.cmdStartRec = [0x12, 0, 0, 0, 0x4, 0, 0, 0x4, 0, 0x2, 0xff, 0, 0, 0x80, 0, 0, 0x8, 0x1]b;
+	BLEBarrel.cmdStopRec = [0x12, 0, 0, 0, 0x4, 0, 0, 0x5, 0, 0x2, 0xff, 0, 0, 0x80, 0, 0, 0x10, 0x1]b;
+	BLEBarrel.recState = BLEBarrel.stateStopRec;
+
+	if (id.equals("set")) {
+		// Settings page: the camera keeps its mode (remembered for the return)
+		if (!inSettingsUI()) {
+			setReturnMode = currentModeId;
+			setReturnLabel = BLEBarrel.currentLabel;
+		}
+		currentModeId = "set";
+		BLEBarrel.currentMode = "set";
+		BLEBarrel.currentLabel = label;
+		BLEBarrel.mMessage = label + "\n" + BLEBarrel.startMessage;
+		return;
+	}
+	if (setReturnMode != null && !id.equals(setReturnMode)) { setReturnMode = null; setReturnLabel = null; }
+
+	if (id.equals("X6Video")) {
+		// Arm the UCD2 envelope (the mainline's case: currentMode stays at the "DefaultV"
+		// sentinel, the apply block would else hand sendCMD a String).
+		BLEBarrel.ucd2Armed = true;
+		currentModeId = "DefaultV";
+		BLEBarrel.currentMode = "DefaultV";
+		BLEBarrel.currentLabel = "X6 Video";
+		BLEBarrel.mMessage = BLEBarrel.currentLabel + "\n" + BLEBarrel.startMessage;
+		return;
+	}
+
+	// GPS photo of the legacy lines (the mainline's measured path, case p0 and case
+	// Photo): the fix is written into the photo header before the mode. The radio is
+	// never enabled on the X5 line - the app's own gpsSync keeps it off there - so
+	// this only ever runs on the levels where it was verified at the bench.
+	if ((id.equals("p0") || id.equals("Photo")) && BLEBarrel.GPSon) {
+		var ginfo = Position.getInfo();
+		if (ginfo != null && ginfo.position != null) {
+			var gloc = ginfo.position.toDegrees();
+			if (gloc != null && gloc.size() >= 2) {
+				BLEBarrel.cmdSetPhoto = dev.photoGpsHeader(gloc[0], gloc[1], ginfo.altitude);
+			}
+		}
+	}
+
+	var row = Levels.rowOfId(BLEBarrel.menuLevel, id);
+	var fam = "v";
+	var key = id;
+	if (row != null) {
+		fam = row[Levels.RFAM];
+		key = row[Levels.RKEY];
+	}
+	var frame = entryFrame(id);
+	if (frame == null) {
+		// A doc row, or an id this barrel has no verified frame for: the entry is shown
+		// and refused at its selection, and writes nothing (the chain's rule, kept from
+		// the mainline's menu - the mode the camera holds stays).
+		Sys.println("[refused] " + id + " writes nothing, the mode stays " + BLEBarrel.currentLabel);
+		return;
+	}
+
+	var photoFam = fam.equals("p");
+	BLEBarrel.videoMode = !photoFam;
+	BLEBarrel.photoBurstMode = id.equals("p3") || key.equals("PhotoBurst");
+	BLEBarrel.photoCaptureMode = photoFam;
+	Sys.println("[vw] " + id + " photoFam=" + photoFam.toString() + " after=" + BLEBarrel.videoMode.toString());
+
+	// The reference-app rungs of the levels below the X5 line: HDR video, Timelapse and
+	// Interval ride patched start/stop commands (the mainline's switch, case for case).
+	if (id.equals("HDR") || id.equals("HDRVideo")) {
+		BLEBarrel.cmdStartRec[17] = 0x03; BLEBarrel.cmdStartRec[7] = 0x04;
+		BLEBarrel.cmdStopRec[17] = 0x03; BLEBarrel.cmdStopRec[7] = 0x05;
+	} else if (id.equals("TimeLapse")) {
+		BLEBarrel.cmdStartRec[7] = 0x16;
+		BLEBarrel.cmdStopRec[16] = 0x08; BLEBarrel.cmdStopRec[7] = 0x17;
+	} else if (id.equals("BulletTime")) {
+		BLEBarrel.cmdStartRec[17] = 0x02; BLEBarrel.cmdStopRec[17] = 0x02;
+	} else if (id.equals("PhotoInterval")) {
+		BLEBarrel.currentMode = frame;
+		BLEBarrel.cmdStartRec[17] = 0x02; BLEBarrel.cmdStartRec[7] = 0x16;
+		BLEBarrel.cmdStopRec[17] = 0x02; BLEBarrel.cmdStopRec[16] = 0x08; BLEBarrel.cmdStopRec[7] = 0x17;
+		BLEBarrel.currentLabel = label;
+		currentModeId = id;
+		BLEBarrel.mMessage = label + "\n" + BLEBarrel.startMessage;
+		if (send) { sendCurrentMode(dev); }
+		return;
+	}
+
+	currentModeId = id;
+	BLEBarrel.currentMode = frame;
+	BLEBarrel.currentLabel = label;
+	BLEBarrel.mMessage = label + "\n" + BLEBarrel.startMessage;
+	Sys.println("[mode] " + id + " -> " + label + " frame=" + frame.size().toString() + " o");
+	if (send) { sendCurrentMode(dev); }
+}
+
+// Write the mode the watch settled on: the mainline's verified apply pair (the frame,
+// then the state ask), armed at the barrel's echo gate with the id - the gate the
+// mainline built in phase 3, fed here as the PR fed its own modeReq.
+function sendCurrentMode(dev) {
+	if (inSettingsUI()) { return; }
+	if (currentModeId.equals("DefaultV")) { return; }
+	var m = BLEBarrel.currentMode;
+	if (!(m instanceof Lang.ByteArray)) { return; }
+	BLEBarrel.modeReqId = currentModeId;
+	BLEBarrel.modeHoldUntil = Sys.getTimer() + 3000;
+	Sys.println("[apply] " + currentModeId + " frame=" + m.size().toString());
+	dev.sendCMD(m);
+	dev.sendCMD(BLEBarrel.cmdApply);
+}
+
+class ModeDelegate extends Ui.Menu2InputDelegate {
+	hidden var dev;
+
+	function initialize(device) {
+		Menu2InputDelegate.initialize();
+		dev = device;
+	}
+
+	function onSelect(item) {
+		var id = item.getId() as Lang.String;
+		if (id.equals("exit")) { Sys.exit(); }
+		if (id.equals("forceopen")) {
+			var menu = new Ui.Menu2({:title => "Force model"});
+			addMenuLevelItems(menu);
+			Ui.pushView(menu, new ForceModelDelegate(), Ui.SLIDE_IMMEDIATE);
+			return;
+		}
+		if (id.equals("GPSon")) {
+			BLEBarrel.GPSon = !BLEBarrel.GPSon;
+			mainApp.gpsSync();
+			item.setSubLabel(BLEBarrel.GPSon ? "on" : "off");
+			return;
+		}
+		applyMode(dev, id, item.getLabel(), true);
+		Ui.popView(Ui.SLIDE_DOWN);
+		Ui.requestUpdate();
+	}
+}
+
+// The forcing choices of the level chain (the mainline's addMenuLevelItems list:
+// force<model> / forceoff). Same datums the mainline's Menu2Delegate sets: the forcing
+// lands at the selection of the choice, where the datum of the run changes.
+class ForceModelDelegate extends Ui.Menu2InputDelegate {
+	function initialize() {
+		Menu2InputDelegate.initialize();
+	}
+
+	function onSelect(item) {
+		var id = item.getId() as Lang.String;
+		if (id.equals("forceoff")) {
+			BLEBarrel.testModel = "";
+			BLEBarrel.testLevel = -1;
+			Sys.println("[force] off, the detected model answers again");
+		} else {
+			var name = id.substring(5, id.length());
+			BLEBarrel.testModel = name;
+			BLEBarrel.testLevel = Levels.levelOfName(name);
+			Sys.println("[force] " + name + " level=" + BLEBarrel.testLevel.toString());
+		}
+		bleDevice.noteConfirmedLevel();
+		Ui.popView(Ui.SLIDE_IMMEDIATE);
+		Ui.popView(Ui.SLIDE_IMMEDIATE);
+		Ui.requestUpdate();
+	}
+}
+
+// "Power off camera?" -> SET_SHUTDOWN. The camera then drops the link; the app keeps scanning.
+// A menu, not Ui.Confirmation: on the Mk3i the native confirmation has no visible focus and a
+// second START press confirms it. Here "No" is the first, focused item, so START twice = No.
+function confirmPowerOff(dev) {
+	var menu = new Ui.Menu2({:title => "Power off camera?"});
+	menu.addItem(new Ui.MenuItem("No", "keep it on", :no, {}));
+	menu.addItem(new Ui.MenuItem("Yes, power off", null, :yes, {}));
+	menu.setFocus(0);
+	Ui.pushView(menu, new PowerOffDelegate(dev), Ui.SLIDE_UP);
+}
+
+class PowerOffDelegate extends Ui.Menu2InputDelegate {
+	hidden var dev;
+	function initialize(device) { Menu2InputDelegate.initialize(); dev = device; }
+	function onSelect(item) {
+		Ui.popView(Ui.SLIDE_DOWN);
+		if (item.getId() == :yes) {
+			dev.sendCMD(BLEBarrel.cmdShutdownX5);
+			buzz(150);
+			toast("Camera powering off");
+		}
+	}
+}

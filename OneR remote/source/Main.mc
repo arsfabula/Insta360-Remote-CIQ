@@ -95,7 +95,10 @@ class Main extends Application.AppBase {
 	}
 
 	function getInitialView() {
-		return [new ViewData(bleDevice), new InputDelegate(bleDevice)];
+		// Phase 4: the ported PR #2 UI (RemoteView / RemoteDelegate). The old ViewData /
+// InputDelegate pair stays in the tree, unreferenced, as the bench fallback until the
+// new pair passes the Phase 5 physical session; one line here switches back.
+return [new RemoteView(bleDevice), new RemoteDelegate(bleDevice)];
 	}
 
 	function onStop(state) as Void {
