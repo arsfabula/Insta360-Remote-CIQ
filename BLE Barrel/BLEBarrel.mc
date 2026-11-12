@@ -359,6 +359,13 @@ const STATUS_ASK_MS = 1500;
 const STATUS_RETRY_MS = 6000;
 const STATUS_RETRY_MAX = 2;
 
+// The bound of the mode echo gate: the camera's confirmation of a mode write
+// was seen 0.3 to 0.5 s after it on both benches, so 3 s covers the answer
+// with room, and the gate opens by itself if the answer never comes. The PR
+// holds the same value (holdMode(3000)); its browsing hold of 800+3000 is an
+// app decision, not a protocol one, and sits with the app.
+const MODE_ECHO_HOLD_MS = 3000;
+
 // The authorization handshake, part of every connect on a legacy-framed link:
 // CHECK_AUTHORIZATION (39) as a WATCH_GARMINOS client, 500 ms after the notify
 // profile opens. The camera only pushes to a client that completed this handshake
@@ -451,6 +458,19 @@ var x5SubPhoto as Lang.Number or Null = null;
 var x5SubVideo as Lang.Number or Null = null;
 var x5ResNow as Lang.Number or Null = null;
 var x5FuncMode as Lang.Number or Null = null;
+
+// The mode echo gate, ported from PR #2 (settingMayGo), where the author
+// measured what both benches confirm: the camera answers a mode SET with a
+// 0x2053 push 0.3 to 0.5 s after the write, and refuses option writes while
+// it is still switching modes (error 400). modeReqId is the mode id of the
+// last mode this watch wrote, in the entry vocabulary the app itself uses
+// ("p3", "v7"), null while nothing is in flight; modeHoldUntil is the
+// System.getTimer() ms past which the gate reopens on its own, because the
+// gate never closes forever; camModeId is the mode the camera last said it
+// is in, from the same 0x2053 fields, null while that reading is not trusted.
+var modeReqId as Lang.String or Null = null;
+var modeHoldUntil as Lang.Number = 0;
+var camModeId as Lang.String or Null = null;
 
 var x5BatteryLevel as Lang.Number or Null = null;
 var x5BatteryPowerType as Lang.Number = 0;
@@ -1103,6 +1123,21 @@ class BleDevice extends BluetoothLowEnergy.BleDelegate {
 
 
 
+	// The mode id named by a 0x2053 pair: the half that is not 100 names the
+	// mode, "p" for the photo half, "v" for the video half — the same names
+	// the app's menu entries carry. Two halves at 100, or both set, answer
+	// null: neither has ever been seen on either bench, one half is always
+	// the none flag (docs/x5-protocol.md §3.1).
+	function x5ModeIdOf(photo as Lang.Number, video as Lang.Number) as Lang.String or Null {
+		if (photo != x5SubModeNotApplicable && video == x5SubModeNotApplicable) {
+			return "p" + photo.toString();
+		}
+		if (video != x5SubModeNotApplicable && photo == x5SubModeNotApplicable) {
+			return "v" + video.toString();
+		}
+		return null;
+	}
+
 	function x5ApplyNotif() as Void {
 		if (notifCode == X5_AUTH_RESULT_NOTIF) {
 			// AUTHORIZATION_RESULT: the camera says the user answered its Allow
@@ -1132,6 +1167,26 @@ class BleDevice extends BluetoothLowEnergy.BleDelegate {
 				x5SubVideo = null;
 			} else {
 				x5SubVideo = notifVal2;
+			}
+			// The mode echo gate (ported from PR #2, measured on both benches).
+			// The id of this push names the mode the camera says it is in; the
+			// half that is 100 says "not this family". The reading is recorded
+			// first, the decision of what to do with it belongs to the app.
+			var id = x5ModeIdOf(notifVal1, notifVal2);
+			if (id != null) {
+				camModeId = id;
+			}
+			if (id != null && modeReqId != null && id.equals(modeReqId)) {
+				// The echo of this watch's own mode write: the gate opens here,
+				// the hold runs out by itself.
+				modeReqId = null;
+				System.println("[mode] echo confirmed id=" + id);
+			} else if (modeReqId != null && System.getTimer() < modeHoldUntil) {
+				// An echo that is not the one in flight while a request is in
+				// flight: not trusted, the PR's guard, kept verbatim in purpose.
+				// A late echo of the previous mode would otherwise move the app
+				// off the mode the user just asked for.
+				System.println("[mode] stale echo ignored id=" + (id == null ? "?" : id) + " waiting=" + modeReqId);
 			}
 			return;
 		}
@@ -1767,6 +1822,9 @@ class BleDevice extends BluetoothLowEnergy.BleDelegate {
 		x5SubVideo = null;
 		x5ResNow = null;
 		x5FuncMode = null;
+		modeReqId = null;
+		modeHoldUntil = 0;
+		camModeId = null;
 	}
 
 
@@ -1878,6 +1936,41 @@ class BleDevice extends BluetoothLowEnergy.BleDelegate {
 	}
 	function peekFuncMode() as Lang.Number or Null {
 		return x5FuncMode;
+	}
+
+	// The mode echo gate, asked at the app's write sites (the shape PR #2 put
+	// on its delegate, and measured there): noteModeWrite is asked just before
+	// a mode write, with the id of the entry the user picked, the same name
+	// the menu carries. An option write may then cross once its echo has been
+	// seen, or once the hold ran out — never before, the camera answers 400
+	// while it is still switching modes.
+	function noteModeWrite(id as Lang.String) as Void {
+		modeReqId = id;
+		var t = System.getTimer() + MODE_ECHO_HOLD_MS;
+		if (t > modeHoldUntil) {
+			modeHoldUntil = t;
+		}
+		System.println("[mode] gate armed id=" + id);
+	}
+
+	// Extends the hold without arming a request: the app asks it while the
+	// user browses, so a late echo of the camera cannot move a cursor.
+	function holdMode(ms as Lang.Number) as Void {
+		var t = System.getTimer() + ms;
+		if (t > modeHoldUntil) {
+			modeHoldUntil = t;
+		}
+	}
+
+	function settingMayGo() as Lang.Boolean {
+		return modeReqId == null || System.getTimer() >= modeHoldUntil;
+	}
+
+	// The mode the camera last said it is in (its own screen moves it, both
+	// benches measured it), null while no trusted reading exists yet. What to
+	// do with it is the app's decision, never this reader's.
+	function peekCamMode() as Lang.String or Null {
+		return camModeId;
 	}
 	function peekSeenCodes() as Lang.Array {
 		return x5CodesSeen;
