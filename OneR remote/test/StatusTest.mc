@@ -375,8 +375,12 @@ function disconnectRearmsAsksKeepsOneScan(logger) {
 // 0, level 0 carries no mode row and no v*/p* id resolves there, level 1
 // answers with its own keys - and those keys reach this app's frame resolver,
 // which is how the legacy envelope's start/stop rungs keep being patched at
-// the selection. A confirmed level is kept by name for the next bond, and a
-// known name never lets it override the table.
+// the selection. From REPLACE_FROM up a level replaces the chain - the bench
+// of 12 nov. chose that path (the real X5 acquitted the stacked legacy frames
+// without moving, and their no-frame rows blocked the wheel): no level-1 row
+// resolves through the X5 line, its measured ids do, and the X6 level answers
+// its own rows alone. A confirmed level is kept by name for the next bond,
+// and a known name never lets it override the table.
 (:test)
 function levelsChainTableFallbackAndConfirm(logger) {
 	var d = freshLink();
@@ -393,6 +397,15 @@ function levelsChainTableFallbackAndConfirm(logger) {
 	ok = ok && Levels.rowOfId(0, "v0") == null;
 	var r2 = Levels.rowOfId(2, "v0");
 	ok = ok && r2 != null && r2[Levels.RID].equals("v0");
+	// L2 replaces: the legacy ids of L1 answer nothing at L2, and the measured
+	// ids answer their own row. The frame resolver still knows the legacy keys
+	// (they belong to L1 cameras); it is the menu that no longer offers them.
+	ok = ok && Levels.rowOfId(2, "TimeLapse") == null;
+	ok = ok && Levels.rowOfId(2, "PhotoHDR") == null;
+	var p0 = Levels.rowOfId(2, "p0");
+	ok = ok && p0 != null && p0[Levels.RKEY].equals("p0") && entryFrame("p0") != null;
+	// L3 answers its own rows alone, like every replacing level.
+	ok = ok && Levels.rowOfId(3, "v0") == null;
 	var r1 = Levels.rowOfId(1, "TimeLapse");
 	ok = ok && r1 != null && r1[Levels.RKEY].equals("TimeLapse") && entryFrame("TimeLapse") != null;
 	ok = ok && entryFrame("PhotoHDR") != null;

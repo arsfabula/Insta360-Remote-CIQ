@@ -4,9 +4,18 @@
 // A level is a delta on the level below it. The menu of a level is the base
 // (Level 0) plus every delta up to that level, assembled by rowsMain() and
 // rowsRes() below — never a table copied per model. Similar generations share
-// a level; a real jump of functions opens a new one. A camera the chain does
-// not name stays at Level 0, the universal fallback: Level 0 holds no mode
-// list and no option value, only what is proven to cross the 20-octet wall on
+// a level; a real jump of functions opens a new one. A level that REPLACES the
+// chain (REPLACE_FROM, today levels 2 and 3) answers with its own rows alone:
+// rows documented for an older envelope are not offered to a newer camera.
+// That is the bench of 12 nov. speaking (real X5 fw 1.13.21, bench-run
+// logs): it ACQUITTED the legacy mode frames of the stacked level-1 rows and
+// did nothing - zero push, zero change on its own screen, while the watch
+// displayed the new mode (a screen lie) - and its no-frame rows (Video,
+// Starlapse) blocked the wheel where a measured ladder waited behind them.
+// a replacing level is therefore a complete menu, and this is what its section
+// says it measured. A camera the chain does not name stays at Level 0, the
+// universal fallback: Level 0 holds no mode list and no
+// option value, only what is proven to cross the 20-octet wall on
 // every known format (the Default Video entry, the start/stop of the main
 // view, the state pushes 0x2010/0x2040, the card push 0x2006).
 //
@@ -42,6 +51,11 @@ using Toybox.Lang;
 module Levels {
 
 const MAX_LEVEL = 3;
+
+// The first level that replaces the chain instead of adding to it. Chosen at
+// the bench of 12 nov. on the real X5 (see the header): a camera of a newer
+// line is served the menu of its own line, nothing else.
+const REPLACE_FROM = 2;
 
 // Index of a row (the row format above).
 const RID = 0;
@@ -98,6 +112,8 @@ const rowsResL0 = [];
 // level is a row of the level, and a row whose key answers no frame is
 // refused at the selection, never hidden. The ids are the keys themselves —
 // the numbering of the protocol exists over BLE on the X5 only (rea/11).
+// These rows reach level 1 alone: from REPLACE_FROM up the chain is replaced,
+// so none of them is offered to the newer lines (bench of 12 nov., header).
 const rowsMainL1 = [
     ["Video",         "Video",       "",             "v", 1],  // doc: opens the res submenu; no frame names this mode of the older envelope
     ["TimeLapse",     "Timelapse",   "TimeLapse",    "v", 0],  // doc: column X3/X2/ONE X; the reference app wrote cmdSetTL for it
@@ -130,6 +146,12 @@ const rowsResL1 = [
 // id from a frame of the wire. Starlapse (12) stays out of the table: the app
 // offers no Starlapse entry (decision of the bench, CdC item 100); the frame
 // stays declared in the barrel as the datum of the rungs S-17 and S-23.
+// This level replaces the chain (REPLACE_FROM): it IS the menu of the X5 line,
+// and the bench of 12 nov. is why — with the level-1 rows stacked under it,
+// the X5 acquitted their frames without moving and the no-frame rows blocked
+// the wheel. X4 Air and X4 map to this level on the documentation ("the X5
+// line before the X5"); only the X5 has ever been walked at a bench, so for
+// those two this menu is doc, not mesure.
 const rowsMainL2 = [
     ["v0",  "Video",          "v0",  "v", 1],  // mesure: cmdSetVideoSubNormal, opens the res submenu (record_resolution is pilotable inside VIDEO_NORMAL only, rea/11 §5.3)
     ["v1",  "Bullet Time",    "v1",  "v", 0],  // mesure: cmdSetVideoSubBulletTime
@@ -172,10 +194,11 @@ const rowsResL3 = [];
 const chainMain = [rowsMainL0, rowsMainL1, rowsMainL2, rowsMainL3];
 const chainRes = [rowsResL0, rowsResL1, rowsResL2, rowsResL3];
 
-// The rows of a level: the base plus every delta up to that level. A level
-// that replaces the chain (the UCD2 level, the only one whose rows carry the
-// "x" family and none of the legacy rows) answers its own rows alone — the
-// chain below it describes envelopes that camera never speaks.
+// The rows of a level. Below REPLACE_FROM the menu is the base plus every
+// delta up to that level. At REPLACE_FROM and above, the level IS the menu:
+// the chain stops at it (REPLACE_FROM names the bench evidence, and the L3
+// envelope argument it always carried). The walk is by index; Lang.Array.find
+// answers on no target.
 function rowsOfLevel(chain, level) {
     var out = [];
     if (level > MAX_LEVEL) {
@@ -184,8 +207,8 @@ function rowsOfLevel(chain, level) {
     if (level < 0) {
         return out;
     }
-    if (level == MAX_LEVEL) {
-        return chain[MAX_LEVEL];
+    if (level >= REPLACE_FROM) {
+        return chain[level];
     }
     var i = 0;
     while (i <= level) {
