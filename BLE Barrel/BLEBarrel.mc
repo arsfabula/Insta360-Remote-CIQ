@@ -502,6 +502,18 @@ var camModeId as Lang.String or Null = null;
 // entry per named id until a write of the option itself clears it.
 var x5StaleOptions as Lang.Array = [];
 
+// The degraded-axis. Entries this camera, named by the name it carries on air,
+// was seen refusing a user command: one set per camera name, kept across
+// links and across runs. It is fed by failures of user commands - the code
+// 400 answer named by its sequence, below, and the application's own write
+// pages when they run - never by a probe: the three asks this barrel sends
+// at connect (auth, status, card) name a state, never a menu, and that is
+// the point of the level chain (no probing frames; the phase-5 test counts
+// them). lastCmdSeq is the stamped sequence of the last legacy frame this
+// watch sent, which is the sequence a refusal of it answers by.
+var x5Degraded as Lang.Array = [];
+var lastCmdSeq as Lang.Number = -1;
+
 var x5BatteryLevel as Lang.Number or Null = null;
 var x5BatteryPowerType as Lang.Number = 0;
 var x5BatteryArrived as Lang.Boolean = false;
@@ -1410,6 +1422,27 @@ class BleDevice extends BluetoothLowEnergy.BleDelegate {
 			// answer, and for the same reason runs ahead of the ACK branch:
 			// its code 200 shape would else be met as a capture-state answer.
 			applyStorageAsk(buf);
+		} else if (code == 0x190 && lastCmdSeq >= 0 && buf[10] == lastCmdSeq) {
+			// The camera refused the write this watch just made, named by its
+			// sequence (0x190 = 400, the same shape the PR matched with its
+			// setSeq). When that write was a mode write, the id its page named
+			// before the send - modeReqId, in the app's entry vocabulary of
+			// the echo gate - is exactly the entry this camera is known not to
+			// take: the entry takes the degraded mark, kept by camera name
+			// across links and runs, and the write cycle closes (the hold of
+			// the gate runs out by itself, as ever). A refusal whose writer
+			// named no id gets the line and nothing else: what a refusal was
+			// about is not guessed here.
+			var refused = modeReqId;
+			var refusedSeq = lastCmdSeq;
+			lastCmdSeq = -1;
+			if (refused != null) {
+				modeReqId = null;
+				noteDegraded(refused);
+				wireLine("write refused", "400 on seq " + refusedSeq.toString() + " entry=" + refused + " marked degraded");
+			} else {
+				wireLine("write refused", "400 on seq " + refusedSeq.toString() + " no id known, nothing marked");
+			}
 		} else if (code == ACK_CODE) {
 			// One frame, two jobs. The code-200 answer to command 15 is also the ACK
 			// the start sequence waits for, so the state read runs first and does not
@@ -2031,6 +2064,7 @@ class BleDevice extends BluetoothLowEnergy.BleDelegate {
 		modeHoldUntil = 0;
 		camModeId = null;
 		x5StaleOptions = [];
+		lastCmdSeq = -1;
 	}
 
 
@@ -2271,6 +2305,112 @@ class BleDevice extends BluetoothLowEnergy.BleDelegate {
 
 
 
+	// The confirmed-level axis of the menu. The chain at the scan answers by
+	// the name the camera carries on air; the entry MenuLevel of the app
+	// answers by what the user confirmed when the name matched no model. Both
+	// confirmations are kept by the name on air, so a later bond with that
+	// name resumes there; the fallback when neither answers is level 0, the
+	// universal one. Nothing here is ever verified by asking the camera -
+	// this barrel sends three asks at connect (auth, status, card), none of
+	// them asks a menu.
+	function noteConfirmedLevel(name as Lang.String, level as Lang.Number) as Void {
+		if (name == null || name.equals("n/a") || level < 0) {
+			System.println("[lvl] confirm refused name=" + (name == null ? "none" : name) + " level=" + level.toString());
+			return;
+		}
+		App.getApp().setProperty("lvl." + name, level);
+		System.println("[lvl] confirmed name=" + name + " level=" + level.toString() + " (kept for the next bond with this name)");
+	}
+
+	// The degraded axis: three questions and one note, per camera name. The
+	// note comes from a failed user command - the 400 branch above, or the
+	// app's own write pages when they run - never from a probe. The set
+	// belongs to the camera name on air and crosses links and runs: an entry
+	// this camera refused once stays named, and the menu decides what a named
+	// entry means.
+	function noteDegraded(id as Lang.String) as Void {
+		if (id == null || id.length() == 0) {
+			return;
+		}
+		if (isEntryDegraded(id)) {
+			// Already kept: one line for one fact (criterion 14).
+			System.println("[degr] noted again id=" + id + " (already kept)");
+			return;
+		}
+		x5Degraded.add(id);
+		keepDegraded();
+		System.println("[degr] noted id=" + id + " kept=" + x5Degraded.size().toString());
+	}
+
+	function isEntryDegraded(id as Lang.String) as Lang.Boolean {
+		var i = 0;
+		while (i < x5Degraded.size()) {
+			if ((x5Degraded[i] as Lang.String).equals(id)) {
+				return true;
+			}
+			i++;
+		}
+		return false;
+	}
+
+	function peekDegraded() as Lang.Array {
+		return x5Degraded;
+	}
+
+	// One comma-joined string per camera name. The tokenizer is the manual
+	// scan on purpose: the string family of the SDK is where the API is the
+	// most treacherous (the note of tools/mc_check.py), and a scan on indexOf
+	// runs on every API level this project targets.
+	function keepDegraded() as Void {
+		if (deviceName == null || deviceName.equals("n/a")) {
+			System.println("[degr] kept refused: no name to key the set on");
+			return;
+		}
+		var s = "";
+		var i = 0;
+		while (i < x5Degraded.size()) {
+			if (i > 0) {
+				s += ",";
+			}
+			s += x5Degraded[i].toString();
+			i++;
+		}
+		App.getApp().setProperty("degr." + deviceName, s);
+	}
+
+	// The set for a name, loaded at the classification that named this bond,
+	// before any menu entry is reachable. The load starts a fresh set every
+	// bond: a later camera of another name never inherits this one's facts.
+	function loadDegradedForName() as Void {
+		x5Degraded = [];
+		if (deviceName == null || deviceName.equals("n/a")) {
+			return;
+		}
+		var v = App.getApp().getProperty("degr." + deviceName);
+		if (v == null) {
+			System.println("[degr] name=" + deviceName + " nothing kept");
+			return;
+		}
+		var s = v as Lang.String;
+		if (s == null || s.length() == 0) {
+			System.println("[degr] name=" + deviceName + " kept set empty");
+			return;
+		}
+		var i = 0;
+		while (i < s.length()) {
+			var j = i;
+			while (j < s.length() && !s.substring(j, j + 1).equals(",")) {
+				j++;
+			}
+			var item = s.substring(i, j);
+			if (item.length() > 0) {
+				x5Degraded.add(item);
+			}
+			i = j + 1;
+		}
+		System.println("[degr] name=" + deviceName + " loaded kept=" + x5Degraded.size().toString());
+	}
+
 	// Axis model, the forcing of the menu (the entry MenuLevel of the
 	// application). Three questions, three functions, each answering at its
 	// own boundary, so the forcing is never read through a write (note 8 of
@@ -2367,6 +2507,9 @@ class BleDevice extends BluetoothLowEnergy.BleDelegate {
 				SeqNo = 1;
 			}
 			value[SeqPos] = SeqNo;
+			// The sequence a refusal of this frame answers by (the 0x190
+			// branch of x5ApplyResponse matches against this).
+			lastCmdSeq = SeqNo;
 		}
 
 		wireBytes("sent frame", value);
@@ -3095,6 +3238,34 @@ function registerProfiles() as Void {
 					// the model none here, so the verdict answers by a line and never
 					// by an absence of a line (criterion 14 of 11.3).
 					System.println("[mdl] name=" + deviceName + " model=" + capModel + " level=" + menuLevel.toString() + " detectedModel=" + detectedModel + " detectedLevel=" + detectedLevel.toString());
+
+					// The confirmed level, kept and restored by the name on air.
+					// The chain above decides by that name; nothing here asks the
+					// camera its menu (no probing frame is ever emitted at connect,
+					// the phase-5 gate counts the frames to prove it). When the
+					// chain answered a model, that level is kept for this name.
+					// When the chain answered none, the kept level is tried before
+					// the fallback, and the fallback is the level 0 the chain left
+					// standing. The key is the name, the unit the user owns; the
+					// datum of the detection above stays untouched, the restored
+					// level is a level in force, named as such at its print.
+					if (capModel.equals("none")) {
+						var kept = App.getApp().getProperty("lvl." + deviceName);
+						var keptLevel = kept as Lang.Number;
+						if (keptLevel != null && keptLevel >= 0) {
+							menuLevel = keptLevel;
+							System.println("[lvl] restored name=" + deviceName + " level=" + menuLevel.toString() + " no model in the chain, this is the level kept");
+						} else {
+							System.println("[lvl] name=" + deviceName + " no model, nothing kept, level 0 stands");
+						}
+					} else {
+						App.getApp().setProperty("lvl." + deviceName, menuLevel);
+						System.println("[lvl] kept name=" + deviceName + " level=" + menuLevel.toString());
+					}
+
+					// The degradations kept for this name, loaded before any entry
+					// of the menu is reachable, fresh per bond of a new name.
+					loadDegradedForName();
 
                     // The hook of the compile-time constant, whose fault was closed with
                     // the constant at OFF (CdC item 147: the reference had `and`, the

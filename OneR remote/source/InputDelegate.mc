@@ -798,6 +798,13 @@ function onSelect(item) as Void {
 				// way a connection does, and never the level of a gate.
 				BLEBarrel.x5Armed = forcedModel.equals("X5");
 			}
+			// The user's confirmation of a model and level is kept by the name
+			// on air, beside the chain's answer (item 7 of the integration,
+			// the confirmed-level axis of the barrel): a future bond whose name
+			// the chain does not know resumes at this level. A name the chain
+			// does know keeps answering the table first - the kept level is the
+			// fallback of the resolution, never its override.
+			bleDevice.noteConfirmedLevel(BLEBarrel.deviceName, forcedLevel);
 			// A choice applies nothing of itself: the datum of the family goes to the
 			// value that names no frame, so the apply below writes no frame for a choice
 			// of the submenu, and the next selection writes inside the family forced.
