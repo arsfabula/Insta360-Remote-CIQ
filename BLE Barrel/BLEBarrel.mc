@@ -1286,23 +1286,35 @@ class BleDevice extends BluetoothLowEnergy.BleDelegate {
 		if (notifCode != X5_CAPTURE_STATUS_NOTIF && notifCode != X5_RECORD_STATE_NOTIF) {
 			return;
 		}
+		// The capture-state push confirms, it never re-starts. The PR's author
+		// found it on his own camera and the bench agrees: the camera pushes
+		// 0x2010 again while it finalizes a file, and read here as a fresh
+		// start that push moved startRecTime - the on-screen recording clock
+		// began again in the middle of a recording. So the push only moves the
+		// machine on an edge of the watch's own state, the same discipline
+		// onUcd2Frame keeps for this on the ucd2 envelope: state>0 from
+		// anything but stateStartRec (the app's pending start - it writes
+		// stateStarting at the press, InputDelegate - or the camera's own
+		// button from rest, which both benches proved arrives unprompted),
+		// never while the watch already shows recording. A repeat push
+		// answers with a wire line and leaves the clock put.
 		if (notifVal1 > 0) {
-			cancelRetry();
-			cancelPendingStart();
-			mMessage = "Shooting";
-
-
-			recState = stateStartRec;
-
-
-			startRecTime = Time.now();
+			if (recState == stateStartRec) {
+				wireLine("capture", "push state=" + notifVal1.toString() + " while already recording, the clock stays put");
+			} else {
+				cancelRetry();
+				cancelPendingStart();
+				mMessage = "Shooting";
+				recState = stateStartRec;
+				startRecTime = Time.now();
+			}
 		} else {
+			// State 0 is idempotent at rest (the message and the burst count
+			// reset to what they already are), and while a stop is pending -
+			// the app's stateStopping from the press - this is exactly the
+			// confirmation of it, which is what recState becomes anyway.
 			applyBursts = 0;
 			mMessage = currentLabel + "\n" + startMessage;
-
-
-
-
 			recState = stateStopRec;
 		}
 	}
@@ -1311,7 +1323,14 @@ class BleDevice extends BluetoothLowEnergy.BleDelegate {
 	// responseSig block used to run on every notification. It sees the ASSEMBLED
 	// frame, so it answers whether the camera sent the response in one
 	// notification or spread it over continuations, and it only ever runs for a
-	// frame x5RxFeed has completed or delivered as cut. The recording report
+	// frame x5RxFeed has completed or delivered as cut. The low-byte trap the
+	// PR met stays closed by construction here: that camera re-pushed 0x2010
+	// while finalizing a file, the old raw scan read octet 7 alone as the
+	// command - and 0x2010 is 0x10 at that octet - so the capture push looked
+	// like a legacy start and moved the clock again. Here the code is read as
+	// 16 bits, and x5IsNotif sends every frame with octet 8 at 0x20 or above
+	// to the notification side, so this function never sees one; keep both if
+	// this region is ever edited again. The recording report
 	// (code 0x40, and 0x10 on older firmware) names start and stop with the flag
 	// at octet 17; busy speaks for itself; the command error ends the start
 	// sequence; and the ACK of the start sequence is what lets fireStart go.
