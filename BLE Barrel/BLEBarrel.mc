@@ -700,15 +700,14 @@ const HEX_DIGITS = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "a", "b", 
 function bytesToHex(data as Lang.ByteArray) as Lang.String {
 	var out = "";
 	for (var i = 0; i < data.size(); i++) {
-		// Masked like every octet this file reads - the decode sites carry
-		// the & 0xff idiom everywhere else, this was the one that did not.
-		// An octet above 0x7f read unmasked makes b >> 4 a negative index of
-		// HEX_DIGITS: the bench of 12 nov. 17:59 died there, Illegal Access
-		// (Out of Bounds) named at the hex witness line of x5DecodeNotif,
-		// on the first link its camera ever made here (see the replay
-		// vector firstLinkBeatsThenCode200Answers for the stream). The mask
-		// makes the witness answer the same digits whatever the engine calls
-		// a byte; it changes no reading, only the printing of one.
+		// Masked because every other octet read in this file is masked; this
+		// was the one that was not. The mask names no cause - the unit vector
+		// hexWitnessPrintsHighOctets asked the engine what it hands back for
+		// 0xc8 and 0xff and it answers 200 and 255, so the unmasked b >> 4 was
+		// never a negative index of HEX_DIGITS, and the two bench deaths of
+		// 12 nov. at this printer are explained elsewhere (x5DecodeNotif now
+		// builds its witness inlined, without a call, for that reason). The
+		// digits themselves are pinned by that same vector: c8 80 ff 7f 00.
 		var b = data[i] & 0xff;
 		out += HEX_DIGITS[b >> 4];
 		out += HEX_DIGITS[b & 0x0f];
@@ -1154,7 +1153,23 @@ class BleDevice extends BluetoothLowEnergy.BleDelegate {
 		}
 		notifCode = (buf[7] & 0xff) | ((buf[8] & 0xff) << 8);
 		notifSeq = (buf[10] & 0xff) | ((buf[11] & 0xff) << 8) | ((buf[12] & 0xff) << 16);
-		notifHex = bytesToHex(buf);
+		// The hex witness, inlined. A call to bytesToHex here killed two bench
+		// sessions of 12 nov. (Illegal Access (Out of Bounds), Failed invoking
+		// <symbol>, both x5DecodeNotif frames named at that one call site,
+		// before and after the & 0xff mask went in). Nothing in the protocol is
+		// read out of this string - it only names frames in the log - so it has
+		// no business ending a link, and the same digits are built without a
+		// call two functions above, in wireLine. Octets masked the way every
+		// reading of this file masks them; compact form, as the [nf] line
+		// prints it. bytesToHex keeps its own mask for the other two callers
+		// (the mode reader and the currentMode property).
+		notifHex = "";
+		var hx = 0;
+		while (hx < buf.size()) {
+			var hb = buf[hx] & 0xff;
+			notifHex += HEX_DIGITS[(hb >> 4) & 0x0f] + HEX_DIGITS[hb & 0x0f];
+			hx += 1;
+		}
 		notifVal1 = 0;
 		notifVal2 = 0;
 		notifVal3 = 0;

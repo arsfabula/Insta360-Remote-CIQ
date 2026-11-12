@@ -151,6 +151,21 @@ function firstLinkBeatsThenCode200Answers(logger) {
 	return auth == 0 && cam == 0 && card == 0;
 }
 
+// The witness's own alphabet, at the octets the bench died on. Two sessions of
+// 12 nov. lost the link inside the hex printer of x5DecodeNotif (Illegal Access,
+// Out of Bounds) - on the same bytes that decode cleanly in the unit binary. The
+// mask hypothesis says a ByteArray element above 0x7f reaches the printer as a
+// negative number, which makes b >> 4 a negative index of HEX_DIGITS. This names
+// what the engine really hands back (the debug line prints the raw element) and
+// pins the digits owed for 0xc8, the code-200 answer the dead frames carried,
+// and 0xff / 0x8a, which every 0x2017 push carries.
+(:test)
+function hexWitnessPrintsHighOctets(logger) {
+	var hi = [0xc8, 0x80, 0xff, 0x7f, 0x00]b;
+	logger.debug("raw0=" + hi[0].toString() + " raw2=" + hi[2].toString() + " hex=" + BLEBarrel.bytesToHex(hi));
+	return BLEBarrel.bytesToHex(hi).equals("c880ff7f00");
+}
+
 // No request in flight, no browsing: a mode change made on the camera is read
 // as a reading (peekCamMode names v2). The PR's barrel also moved its own
 // cursor here; this one separates the reading from the decision (criterion:
