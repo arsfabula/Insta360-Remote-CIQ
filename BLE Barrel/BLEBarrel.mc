@@ -2411,6 +2411,17 @@ class BleDevice extends BluetoothLowEnergy.BleDelegate {
 		return x5CamState != null && x5CamState == X5_STATE_RECORDING;
 	}
 
+	// The answer of the authorization probe (39): -1 while no answer has come,
+	// else the status the camera gave - 0 the link is open, 1 the camera is
+	// showing its own Allow prompt, 2 busy, 3..6 a client of that kind is
+	// already connected, 7 sleeping; authStatusName below words them. When the
+	// user answers the prompt on the camera, its 0x2011 push moves this to 0 in
+	// x5ApplyNotif, so a screen that reads the edge is following the camera, not
+	// a guess. -1 is a real answer to the app: it means not yet known.
+	function peekAuthStatus() as Lang.Number {
+		return authProbeStatus;
+	}
+
 	// The two flags of the 0x2006 storage push, and the free space, which is not
 	// there to be had: the option 20 entry and the 0x2062 varints both begin at
 	// octet 21 or later of their frame and have never crossed this link, so this

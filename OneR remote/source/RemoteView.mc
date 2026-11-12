@@ -135,6 +135,7 @@ class RemoteView extends WatchUi.View {
 		mainApp.gpsSync();
 		var s = uiState(dev);
 		onTransition(s);
+		noteAuth();
 		var r = dev.photoResultTaken();
 		if (r != null) {
 			if (r == :ok) {
@@ -168,6 +169,33 @@ class RemoteView extends WatchUi.View {
 		if (s == UI_SEARCHING || s == UI_STARTING || s == UI_STOPPING || (s == UI_RECORDING && tick % 4 == 0) || tick % 8 == 0) {
 			WatchUi.requestUpdate();
 		}
+	}
+
+	// The two edges of the link's authorization, named noteAuth so a vector can
+	// watch the same verdict the screen shows. This is the half the port had
+	// lost: lastAuth was carried across while the code that read it was not, and
+	// with the wire trace off a link waiting on the camera says nothing at all.
+	// The barrel answers -1 while the probe has no answer - never an edge, and
+	// never turned into "authorized". The camera's words for the two edges are
+	// the PR author's, kept as he wrote them. The other statuses the probe can
+	// answer (2 busy, 3..6 a client of that kind already connected, 7 sleeping)
+	// are remembered and unnamed: the PR named only these two edges and this
+	// port does not invent a screen line he did not draw; naming them is a
+	// decision for the physical session, where "a client is already connected"
+	// is the one that would actually explain a dead-looking link.
+	function noteAuth() {
+		var a = dev.peekAuthStatus();
+		if (a < 0 || a == lastAuth) { return :none; }
+		var edge = :none;
+		if (a == 1) {
+			toast("Allow on camera"); vibe([[60, 200]]);
+			edge = :ask;
+		} else if (a == 0 && lastAuth == 1) {
+			toast("Camera allowed");
+			edge = :allowed;
+		}
+		lastAuth = a;
+		return edge;
 	}
 
 	// State-change side effects: native toasts + vibes on connect/disconnect,

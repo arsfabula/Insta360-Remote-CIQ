@@ -162,6 +162,38 @@ function linkScheduleKeepsNearestDate(logger) {
 		nearestStillProbe && cardStillBooked && nearerWins;
 }
 
+// The authorization edge the port had lost: the PR's screen named it, and the
+// port carried lastAuth without the code that read it. The datum is the camera's
+// own answer of the authorization probe - the field 1 mark 0x08 then the status,
+// the octets applyAuthProbe reads at 17-18 of a frame declared 20 - pushed
+// through that parser and then watched from the screen's side. The screen names
+// two edges: the camera asking its user (status 1) and the link opening after an
+// ask (1 -> 0). Nothing else is an edge: "no answer yet" (-1) is not one, a
+// status seen twice is not one, and 3..6 (a client already connected) is
+// remembered without a word, exactly as the port draws it. Routing that answer
+// by sequence is the protocol half's own territory; the question here is what
+// the app makes of an answered status.
+(:test)
+function authSurfaceNamesTheCameraEdges(logger) {
+	var dev = uiLink();
+	var view = new RemoteView(dev);
+	var quiet = view.noteAuth();           // no answer yet: -1
+	var askAgain0 = view.noteAuth();
+	dev.applyAuthProbe(frame(20, 0x27, 0x00, 0x41, [0x08, 0x01]b));
+	var ask = view.noteAuth();
+	var repeat = view.noteAuth();          // same status a second time
+	dev.applyAuthProbe(frame(20, 0x27, 0x00, 0x41, [0x08, 0x00]b));
+	var open = view.noteAuth();
+	dev.applyAuthProbe(frame(20, 0x27, 0x00, 0x41, [0x08, 0x03]b));
+	var client = view.noteAuth();
+	dev.applyAuthProbe(frame(20, 0x27, 0x00, 0x41, [0x08, 0x01]b));
+	var askAgain = view.noteAuth();
+	logger.debug("quiet=" + quiet + " ask=" + ask + " repeat=" + repeat + " open=" + open +
+		" client=" + client + " thenAskAgain=" + askAgain + " status=" + dev.peekAuthStatus().toString());
+	return quiet == :none && askAgain0 == :none && ask == :ask && repeat == :none &&
+		open == :allowed && client == :none && askAgain == :ask;
+}
+
 // Real watch: tapping anywhere on a two-line title (PHOTO / BURST) must
 // focus the title, not fall through to START. The title's tap area is its
 // full drawn height, rows keep theirs. (PR vector, verbatim.)
