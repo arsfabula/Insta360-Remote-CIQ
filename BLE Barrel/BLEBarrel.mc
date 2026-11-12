@@ -61,6 +61,14 @@ const START_DELAY_MS = 1200;
 const START_WAIT_MS = 400;
 const START_WAIT_MAX = 3;
 
+// Pump watchdog. The queue only moves on a requestWrite and its write callback;
+// when the stack keeps refusing writes, nothing here recovers on its own - no
+// timer re-kicks the pump, the next kick is whatever the user does next. After
+// this many consecutive refused writes the bond is declared dead: the unpair
+// and the teardown of the disconnect path (linkGone) run, and the normal
+// re-scan brings a fresh bond.
+const WEDGE_REFUSALS_MAX = 4;
+
 
 
 
@@ -568,6 +576,10 @@ class BleDevice extends BluetoothLowEnergy.BleDelegate {
 
  var applyBursts as Lang.Number = 0;
  var writing as Lang.Boolean = false;
+ // The pump's consecutive refused writes (the exception branch of kickQueue
+ // only). Cleared when a chunk is issued, and when the bond changes; at
+ // WEDGE_REFUSALS_MAX the bond is declared dead.
+ var wedgeCount as Lang.Number = 0;
 
 	protected function debug(str as Lang.String) as Void {
 		if (DEBUG_TRACE) {
@@ -2412,14 +2424,41 @@ class BleDevice extends BluetoothLowEnergy.BleDelegate {
 				writing = true;
 
 				ch.requestWrite(queue[0] as Lang.ByteArray, {:writeType => BluetoothLowEnergy.WRITE_TYPE_DEFAULT});
+				// An issued write answers that the stack takes writes again: the
+				// dead-bond count clears here.
+				wedgeCount = 0;
 				wireLine("requestWrite issued", "chunk in flight");
 			} else {
+				// Not counted as a refused write: this is a pre-discovery state,
+				// and the service walk re-kicks the queue when it finds the
+				// characteristic (the kick at the end of discoverServices).
 				wireLine("characteristic missing", "getCharacteristic(LBS_RW_CHAR) is null, write refused");
 			}
 		} catch (ex) {
-			wireLine("requestWrite refused", "exception: " + ex.getErrorMessage());
+			wireLine("requestWrite refused", "exception: " + ex.getErrorMessage() + " count=" + (wedgeCount + 1).toString());
 			writing = false;
-
+			// The pump is the only writer, and no timer re-kicks it: if the
+			// stack keeps refusing, the wedge outlives the app's own retries
+			// (which work on responses, not on writes). Past the ceiling the
+			// bond is declared dead, below.
+			wedgeCount += 1;
+			if (wedgeCount >= WEDGE_REFUSALS_MAX) {
+				// Declare the bond dead. unpairDevice is the counterpart of
+				// the pairDevice that made this bond - the same teardown the
+				// app's own close() runs, Device has no close() on this API -
+				// and the teardown after it is the one a real disconnect runs,
+				// extracted into linkGone so both reach the same code. The
+				// queue keeps its chunks exactly as the disconnect path
+				// leaves them: a service walk on the new bond kicks it again.
+				wireLine("pump wedge", "close the bond after " + wedgeCount.toString() + " refused writes");
+				wedgeCount = 0;
+				try {
+					BluetoothLowEnergy.unpairDevice(dev);
+				} catch (ex2) {
+					wireLine("pump wedge unpair refused", ex2.getErrorMessage());
+				}
+				linkGone();
+			}
 		}
 	}
 
@@ -2745,6 +2784,9 @@ function registerProfiles() as Void {
 		mMessage = currentLabel + "\n" + startMessage;
 		WatchUi.requestUpdate();
 		writing = false;
+		// The bond changes (this branch runs for connected as for disconnected):
+		// a fresh bond starts with a fresh pump count.
+		wedgeCount = 0;
 		if (state == BluetoothLowEnergy.CONNECTION_STATE_CONNECTED) {
 			connecting = false;
 			applyBursts = 0;
@@ -2761,26 +2803,36 @@ function registerProfiles() as Void {
 			device = dev;
 			discoverServices(dev);
 		} else {
-			if (!scanning) {
-				scanning = true;
-				device = null;
-				// The link is gone: forget that a state ask was outstanding so the
-				// next connect asks again, and stop the timer that would ask into a
-				// dead link.
-				cancelStatusTimer();
-				x5StatusAsked = false;
-				x5StatusTries = 0;
-				authProbeAsked = false;
-				authProbeSeq = -1;
-				authProbeStatus = -1;
-				open();
+			linkGone();
+		}
+	}
+
+	// The normal teardown of a dead link: null the device, re-open the scan,
+	// keep nothing that supposes the old bond was still answering. Two sites
+	// reach it when the bond is declared dead: the real disconnect the stack
+	// reports, and the pump's watchdog after WEDGE_REFUSALS_MAX refused
+	// writes. The guard is part of the pattern - a scan already open is not
+	// opened a second time.
+	private function linkGone() as Void {
+		if (!scanning) {
+			scanning = true;
+			device = null;
+			// The link is gone: forget that a state ask was outstanding so the
+			// next connect asks again, and stop the timer that would ask into a
+			// dead link.
+			cancelStatusTimer();
+			x5StatusAsked = false;
+			x5StatusTries = 0;
+			authProbeAsked = false;
+			authProbeSeq = -1;
+			authProbeStatus = -1;
+			open();
 
 
 
 
 
 
-			}
 		}
 	}
 
