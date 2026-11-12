@@ -700,7 +700,16 @@ const HEX_DIGITS = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "a", "b", 
 function bytesToHex(data as Lang.ByteArray) as Lang.String {
 	var out = "";
 	for (var i = 0; i < data.size(); i++) {
-		var b = data[i];
+		// Masked like every octet this file reads - the decode sites carry
+		// the & 0xff idiom everywhere else, this was the one that did not.
+		// An octet above 0x7f read unmasked makes b >> 4 a negative index of
+		// HEX_DIGITS: the bench of 12 nov. 17:59 died there, Illegal Access
+		// (Out of Bounds) named at the hex witness line of x5DecodeNotif,
+		// on the first link its camera ever made here (see the replay
+		// vector firstLinkBeatsThenCode200Answers for the stream). The mask
+		// makes the witness answer the same digits whatever the engine calls
+		// a byte; it changes no reading, only the printing of one.
+		var b = data[i] & 0xff;
 		out += HEX_DIGITS[b >> 4];
 		out += HEX_DIGITS[b & 0x0f];
 	}

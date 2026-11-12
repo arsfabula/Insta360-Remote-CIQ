@@ -123,6 +123,34 @@ function connectSyncIdleKeepsWatchMode(logger) {
 	return BLEBarrel.recState == BLEBarrel.stateStopRec && d.peekCamState() == 0 && BLEBarrel.currentMode.equals("p3");
 }
 
+// The first link of the bench of 12 nov. 17:59, octets verbatim from the wire
+// log: that camera pushed no 0x2017 at all - the first frame of 16 octets or
+// more across the wall was the code-200 auth answer, with nothing before it
+// but 7-octet keepalive beats, then the cut state and card answers back to
+// back. The app died on exactly that stream (Illegal Access, Out of Bounds,
+// at the hex witness of x5DecodeNotif) and the suite had never fed a beat
+// ahead of a first frame - the whole first-connection order was an untested
+// leg. Here the three answers are read by their sequences and the beat closes
+// nothing that was not open: the verdict is the stream surviving end to end.
+(:test)
+function firstLinkBeatsThenCode200Answers(logger) {
+	var d = freshLink();
+	var beat = [0x07, 0x00, 0x00, 0x00, 0x05, 0x00, 0x00]b;
+	d.onCharacteristicChanged(null, beat);
+	d.onCharacteristicChanged(null, beat);
+	d.onCharacteristicChanged(null, beat);
+	BLEBarrel.authProbeSeq = 2;
+	d.onCharacteristicChanged(null, frame(18, 0xc8, 0x00, 0x02, [0x08, 0x00]b));
+	var auth = BLEBarrel.authProbeStatus;
+	d.onCharacteristicChanged(null, frame(24, 0xc8, 0x00, 0x03, [0x0a, 0x06, 0x08, 0x00]b));
+	var cam = d.peekCamState();
+	BLEBarrel.x5StorageAskSeq = 4;
+	d.onCharacteristicChanged(null, frame(36, 0xc8, 0x00, 0x04, [0x0a, 0x12, 0x08, 0x00]b));
+	var card = d.peekStorageState();
+	logger.debug("auth=" + show(auth) + " cam=" + show(cam) + " card=" + show(card));
+	return auth == 0 && cam == 0 && card == 0;
+}
+
 // No request in flight, no browsing: a mode change made on the camera is read
 // as a reading (peekCamMode names v2). The PR's barrel also moved its own
 // cursor here; this one separates the reading from the decision (criterion:
