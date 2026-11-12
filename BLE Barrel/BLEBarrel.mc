@@ -383,6 +383,18 @@ const MODE_ECHO_HOLD_MS = 3000;
 const AUTH_CMD = 0x27;
 const AUTH_PROBE_MS = 500;
 
+// The card-state ask at connect, third in the ladder. The 0x2006 push names
+// the card only when it moves, never when the bond opens, so until something
+// moves the card state would stay unknown. GET_STORAGE (166) with body
+// {1: location 0} is the phone app's ask; its answer is one of the shapes
+// the docs name readable on this link - card_state inside the 20 octets, the
+// sizes past the cut and unknown as everywhere here (docs §10 of
+// x5-protocol.md; the PR's bench answered this frame, storSeq line of its
+// barrel). Asked once per link, 2500 ms, after the auth and status asks so
+// it never slips between them.
+const STORAGE_CMD = 0xA6;
+const STORAGE_ASK_MS = 2500;
+
 
 
 
@@ -513,6 +525,14 @@ var authProbeStatus as Lang.Number = -1;
 var authProbeSeq as Lang.Number = -1;
 var authProbeAsked as Lang.Boolean = false;
 var authProbeTimer as Timer.Timer or Null = null;
+
+// The card-state ask: asked once per link, the seq picks its answer out of
+// the responses (-1 when nothing is in flight), the same rule as the auth
+// probe just above. The state it answers is the one slot the 0x2006 push
+// also owns; the sizes are not in either half and stay unknown.
+var x5StorageAsked as Lang.Boolean = false;
+var x5StorageAskSeq as Lang.Number = -1;
+var x5StorageAskTimer as Timer.Timer or Null = null;
 
 // The 0x2006 storage push, two small flags. The push carries no sizes: the free
 // and total byte counts live in option 20 and in the 0x2062 push, past octet 20
@@ -1031,6 +1051,14 @@ class BleDevice extends BluetoothLowEnergy.BleDelegate {
 			if (power != null) {
 				x5BatteryPowerType = power;
 				x5BatteryArrived = true;
+				// The 0x2004 low-battery alarm goes stale the moment the
+				// camera says it runs on external power (power_type 1): the
+				// rule the PR's reader applies on its side too. The alarm
+				// stays a fact of the wire log; the standing flag clears.
+				if (power == 1 && x5BatteryLow) {
+					x5BatteryLow = false;
+					wireLine("battery", "0x2004 alarm cleared: the camera is on external power");
+				}
 			}
 			if (level != null) {
 				wireLine("battery", level.toString() + "% power_type=" +
@@ -1377,6 +1405,11 @@ class BleDevice extends BluetoothLowEnergy.BleDelegate {
 			// branch on purpose: the same code 200 shape would otherwise be
 			// parsed as a capture-state answer to command 15.
 			applyAuthProbe(buf);
+		} else if (x5StorageAskSeq >= 0 && buf[10] == x5StorageAskSeq && code < 0x1000) {
+			// The card ask's answer goes by its sequence, like the auth
+			// answer, and for the same reason runs ahead of the ACK branch:
+			// its code 200 shape would else be met as a capture-state answer.
+			applyStorageAsk(buf);
 		} else if (code == ACK_CODE) {
 			// One frame, two jobs. The code-200 answer to command 15 is also the ACK
 			// the start sequence waits for, so the state read runs first and does not
@@ -1554,6 +1587,68 @@ class BleDevice extends BluetoothLowEnergy.BleDelegate {
 			return "sleeping";
 		}
 		return "unknown status";
+	}
+
+	// The card-state ask, once per link at 2500 ms: after the auth probe and
+	// the status ask, so it never slips between them. GET_STORAGE (166) with
+	// body {1: location 0} asks the SD-card state, the one card datum this
+	// link can get asked: the state is readable, the free and total bytes sit
+	// past the cut (docs §10). Later changes belong to the 0x2006 push as
+	// ever - this ask only answers the state at connect, which no push brings
+	// until the card moves.
+	function scheduleStorageAsk() as Void {
+		if (x5StorageAskTimer != null || x5StorageAsked || ucd2Armed) {
+			return;
+		}
+		var t = new Timer.Timer();
+		x5StorageAskTimer = t;
+		t.start(method(:onStorageAsk), STORAGE_ASK_MS, false);
+	}
+
+	function onStorageAsk() as Void {
+		x5StorageAskTimer = null;
+		askStorageState();
+	}
+
+	function askStorageState() as Void {
+		if (x5StorageAsked || device == null || ucd2Armed) {
+			return;
+		}
+		x5StorageAsked = true;
+		// The frame the PR's bench proved: header, then body 08 00 = field 1,
+		// location 0.
+		transmit([0x12, 0, 0, 0, 0x04, 0, 0, STORAGE_CMD, 0x00, 0x02, 0, 0, 0, 0x80, 0, 0, 0x08, 0x00]b);
+		x5StorageAskSeq = SeqNo;
+		wireLine("storage", "asked command 166, seq=" + x5StorageAskSeq.toString());
+	}
+
+	function cancelStorageAskTimer() as Void {
+		if (x5StorageAskTimer != null) {
+			x5StorageAskTimer.stop();
+			x5StorageAskTimer = null;
+		}
+	}
+
+	// The card answer, taken by its sequence like the auth answer above.
+	// Shape first, like everywhere else: the body opens 0a (the nested
+	// storage block), and the first inner field is 08 - the state octet is
+	// the one that survives the cut of this 41-byte answer. An empty ack or
+	// any other answer with this sequence gives null, writes nothing, and
+	// names itself in the log.
+	function x5ParseStorageAnswer(buf as Lang.ByteArray) as Lang.Number or Null {
+		if (buf == null || buf.size() < 20 || buf[16] != 0x0a || buf[18] != 0x08) {
+			return null;
+		}
+		return buf[19] & 0xff;
+	}
+
+	function applyStorageAsk(buf as Lang.ByteArray) as Void {
+		x5StorageAskSeq = -1;
+		var st = x5ParseStorageAnswer(buf);
+		if (st != null) {
+			x5StorageState = st;
+		}
+		wireLine("storage", "166 answer state=" + showValue(st) + " (the sizes past the cut, unknown here too)");
 	}
 
 
@@ -2679,6 +2774,10 @@ class BleDevice extends BluetoothLowEnergy.BleDelegate {
 		// camera has already named authorized or not.
 		scheduleAuthProbe();
 		scheduleCamStatusAsk();
+		// The card ask follows at 2500 ms, behind both, and changes no UI
+		// state: it fills the same card slot the 0x2006 push owns, only
+		// earlier than any card move would.
+		scheduleStorageAsk();
 	}
 
 
@@ -2826,6 +2925,9 @@ function registerProfiles() as Void {
 			authProbeAsked = false;
 			authProbeSeq = -1;
 			authProbeStatus = -1;
+			x5StorageAsked = false;
+			x5StorageAskSeq = -1;
+			cancelStorageAskTimer();
 			open();
 
 
