@@ -1479,6 +1479,15 @@ class BleDevice extends BluetoothLowEnergy.BleDelegate {
 		if (notifVal1 > 0) {
 			if (recState == stateStartRec) {
 				wireLine("capture", "push state=" + notifVal1.toString() + " while already recording, the clock stays put");
+			} else if (recState == stateStopping) {
+				// A state>0 push while a stop is pending is the same finalization
+				// push the comment above names: read as a start it would undo the
+				// user's stop and move the clock again, exactly the fault PR #2's
+				// vector captureStatusPushDoesNotRestartRecording met on its bench
+				// and the one this branch was written against. The stop stands; the
+				// state-0 answer below is what confirms it, and the stop's own
+				// retry path still owns it if that answer never comes.
+				wireLine("capture", "push state=" + notifVal1.toString() + " while a stop is pending, the stop stands");
 			} else {
 				cancelRetry();
 				cancelPendingStart();
@@ -1513,11 +1522,18 @@ class BleDevice extends BluetoothLowEnergy.BleDelegate {
 	// at octet 17; busy speaks for itself; the command error ends the start
 	// sequence; and the ACK of the start sequence is what lets fireStart go.
 	function x5ApplyResponse(buf as Lang.ByteArray) as Void {
-		if (buf == null || buf.size() < 18) {
+		// The floor is a whole frame header, 16 octets, and not 18: a code-200
+		// answer with no body is a frame of exactly 16 (4 804 of them in the
+		// corpus, PROTOCOL_APK 15.27), and that short frame is what carries two
+		// verdicts this function must answer - the shot's :noShot (the capture
+		// command's empty ack, the PR's three-way reading) and the start
+		// sequence's ACK. The branches that read past octet 17 say so at their
+		// own condition; the rest read only the header, which this floor names.
+		if (buf == null || buf.size() < 16) {
 			return;
 		}
 		var code = (buf[7] & 0xff) | ((buf[8] & 0xff) << 8);
-		var isRecReport = code == recReportCode || code == recReportCodeLegacy;
+		var isRecReport = (code == recReportCode || code == recReportCodeLegacy) && buf.size() >= 18;
 		if (isRecReport && buf[17] > 0x00) {
 			cancelRetry();
 			cancelPendingStart();
