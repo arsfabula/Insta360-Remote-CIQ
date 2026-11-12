@@ -74,6 +74,94 @@ function tapIsNotStartButKeyIs(logger) {
 	return tap == false && key == true;
 }
 
+// The crash the user's own simulator run named, held as a vector. At the moment
+// the notify profile opens, the link books three delayed asks (the authorization
+// probe at 500 ms, the camera state at 1500 ms, the card at 2500 ms) and the
+// opened app's view then starts its 125 ms tick. One process, one timer pool:
+// Toybox.Timer documents it - "The number of available timers (default 3) ...
+// An error will occur if too many timers are set" - and a widget pays that
+// budget once for the glance session and the opened app together. Four starts is
+// the "Too Many Timers" the opened widget took at RemoteView.onShow, while the
+// same startup passed in the older shape of this app, which owned no view timer
+// and sat exactly at the ceiling. So this vector arms the link's schedule the
+// way onProfileRegister does and then drives the very line the crash named.
+// Green means the link's asks and the view's tick fit one pool; against a barrel
+// that keeps a Timer object per ask, this is the vector that takes the crash.
+// The refusal of the host is not a catchable Lang exception: a probe of the same
+// shape on this target (descentmk351mm, 9.1.0) ended the run with
+//    Error: Too Many Timers Error / Failed invoking <symbol>
+// exactly as the widget session does. So nothing here catches it - the vector is
+// green only while the count fits.
+(:test)
+function startupWithLinkAsksArmed(logger) {
+	var dev = uiLink();
+	dev.scheduleAuthProbe();
+	dev.scheduleCamStatusAsk();
+	dev.scheduleStorageAsk();
+	var alarm = BLEBarrel.linkAlarm;
+	if (alarm == null) {
+		logger.debug("the link booked no alarm: its schedule is not armed");
+		return false;
+	}
+	var app = Application.getApp();
+	var pair = app.getInitialView();
+	if (pair == null || pair.size() != 2) {
+		logger.debug("getInitialView answered nothing");
+		return false;
+	}
+	try {
+		// onShow directly, not pushView: this is the line of the crash report
+		// (RemoteView.onShow, timer.start of the tick) and the pool is what is
+		// under test, so the call is made once, by name, with the asks armed.
+		pair[0].onShow();
+		Ui.requestUpdate();
+		pair[0].onHide();
+	} catch (e) {
+		logger.debug("the view could not start its tick over the armed link: " + e);
+		return false;
+	}
+	// One object carried all three asks; no second Timer was made on the way.
+	var single = BLEBarrel.linkAlarm == alarm;
+	logger.debug("asks=" + BLEBarrel.authProbeDue.toString() + "/" + BLEBarrel.x5StatusDue.toString() +
+		"/" + BLEBarrel.x5StorageAskDue.toString() + " one alarm object=" + single);
+	return single;
+}
+
+// The schedule of the link keeps the nearest date and one object. The five
+// delayed actions of the link (auth probe, state ask, card ask, write retry,
+// start delay) live in dates, not Timer objects; the alarm is armed for the
+// nearest of them, and taking one date down leaves the others booked.
+(:test)
+function linkScheduleKeepsNearestDate(logger) {
+	var dev = uiLink();
+	dev.scheduleAuthProbe();
+	dev.scheduleCamStatusAsk();
+	dev.scheduleStorageAsk();
+	var nearest = dev.earliestAskDue();
+	var bookedAuth = BLEBarrel.authProbeDue != null;
+	var bookedState = BLEBarrel.x5StatusDue != null;
+	var bookedCard = BLEBarrel.x5StorageAskDue != null;
+	// The delays of onProfileRegister are 500 / 1500 / 2500 ms, so the probe is
+	// the nearest date and the alarm must be armed for it.
+	var nearestIsProbe = nearest == BLEBarrel.authProbeDue;
+	// Taking one date down leaves the others booked: the state ask is dropped,
+	// the probe stays the nearest date and the card ask stays booked behind it.
+	dev.cancelStatusTimer();
+	var stateGone = BLEBarrel.x5StatusDue == null;
+	var nearestStillProbe = dev.earliestAskDue() == BLEBarrel.authProbeDue;
+	var cardStillBooked = BLEBarrel.x5StorageAskDue != null && BLEBarrel.x5StorageAskDue > BLEBarrel.authProbeDue;
+	// A nearer booking wins the alarm: a start delay booked one millisecond out
+	// is what the alarm is armed for from then on.
+	dev.armStartDelay(1);
+	var nearerWins = dev.earliestAskDue() == dev.startDelayDue;
+	logger.debug("auth=" + bookedAuth + " state=" + bookedState + " card=" + bookedCard +
+		" nearest=probe " + nearestIsProbe + " state dropped=" + stateGone +
+		" probe still nearest=" + nearestStillProbe + " card kept=" + cardStillBooked +
+		" nearer wins=" + nearerWins);
+	return bookedAuth && bookedState && bookedCard && nearestIsProbe && stateGone &&
+		nearestStillProbe && cardStillBooked && nearerWins;
+}
+
 // Real watch: tapping anywhere on a two-line title (PHOTO / BURST) must
 // focus the title, not fall through to START. The title's tap area is its
 // full drawn height, rows keep theirs. (PR vector, verbatim.)

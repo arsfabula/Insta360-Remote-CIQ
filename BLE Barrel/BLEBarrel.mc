@@ -617,7 +617,9 @@ var x5BatteryLow as Lang.Boolean = false;
 var x5CamState as Lang.Number or Null = null;
 var x5StatusAsked as Lang.Boolean = false;
 var x5StatusTries as Lang.Number = 0;
-var x5StatusTimer as Timer.Timer or Null = null;
+// The date the state ask is due at, in the System.getTimer() domain. Not a
+// Timer object: see the schedule note above armLinkAlarm.
+var x5StatusDue as Lang.Number or Null = null;
 
 // The authorization probe's bookkeeping. authProbeSeq is the stamped sequence
 // of the request, used to pick its answer out of the responses, -1 when no
@@ -627,7 +629,7 @@ var x5StatusTimer as Timer.Timer or Null = null;
 var authProbeStatus as Lang.Number = -1;
 var authProbeSeq as Lang.Number = -1;
 var authProbeAsked as Lang.Boolean = false;
-var authProbeTimer as Timer.Timer or Null = null;
+var authProbeDue as Lang.Number or Null = null;
 
 // The card-state ask: asked once per link, the seq picks its answer out of
 // the responses (-1 when nothing is in flight), the same rule as the auth
@@ -635,7 +637,7 @@ var authProbeTimer as Timer.Timer or Null = null;
 // also owns; the sizes are not in either half and stay unknown.
 var x5StorageAsked as Lang.Boolean = false;
 var x5StorageAskSeq as Lang.Number = -1;
-var x5StorageAskTimer as Timer.Timer or Null = null;
+var x5StorageAskDue as Lang.Number or Null = null;
 
 // The 0x2006 storage push, two small flags. The push carries no sizes: the free
 // and total byte counts live in option 20 and in the 0x2062 push, past octet 20
@@ -699,17 +701,42 @@ function bytesToHex(data as Lang.ByteArray) as Lang.String {
 	}
 	return out;
     }
+// ---- the schedule of the link's delayed actions: ONE Timer object ----
+// Toybox.Timer states the budget in its own documentation: "The number of
+// available timers (default 3) and the minimum time value (default 50 ms)
+// depends on the host system. An error will occur if too many timers are set."
+// That budget belongs to the process, and a widget pays it once for everything
+// the process runs - the glance session and the opened app are one process, one
+// pool. The app's own view keeps a repeating timer (the tick that repaints the
+// screen), so the five delayed actions of this link - the authorization probe,
+// the camera state ask, the card ask, the write retry, the start delay - cannot
+// own a Timer object each. This is not a theoretical limit: at the moment the
+// notify profile opens, three of them are armed at once (500, 1500 and 2500 ms
+// from the same callback), and the view's tick was the fourth - the "Too Many
+// Timers" crash a widget run took at RemoteView.onShow, while the same app in
+// the older shape, which owned no view timer, sat exactly at the ceiling.
+// So a delayed action of the link is booked as a date in the System.getTimer()
+// domain, the same domain the mode-echo gate books its hold in (modeHoldUntil),
+// and the link owns one Timer object, linkAlarm, armed for the earliest date.
+// When it fires, every action whose date has come runs, and the alarm is armed
+// again for the earliest date still in the future. Nothing is lost, nothing
+// needs a second object.
+const ASK_NONE = 0x7FFFFFFF;
+const ASK_MIN_MS = 50;
+
+var linkAlarm as Timer.Timer or Null = null;
+
 (:glance)
 class BleDevice extends BluetoothLowEnergy.BleDelegate {
  var scanning as Lang.Boolean = false;
  var scanTimeout as Lang.Number = 64;
  var device as BluetoothLowEnergy.Device or Null = null;
  var button as Lang.Number = 0;
- var retryTimer as Timer.Timer or Null = null;
+ var retryDue as Lang.Number or Null = null;
  var retryKind as Lang.Number = 0;
  var retryCount as Lang.Number = 0;
  var inRetry as Lang.Boolean = false;
- var startDelayTimer as Timer.Timer or Null = null;
+ var startDelayDue as Lang.Number or Null = null;
  var pendingStart as Lang.Boolean = false;
  var ucd2Profile as Lang.Dictionary or Null = null;
  var startAckSeen as Lang.Boolean = false;
@@ -1691,11 +1718,82 @@ class BleDevice extends BluetoothLowEnergy.BleDelegate {
 		}
 	}
 
+	// The one alarm of the link, armed for the earliest date still in the
+	// future. Every schedule* and cancel* function below ends by calling this,
+	// and so does the pump: the alarm is never armed for anything but the
+	// nearest date, which is what lets five delayed actions live in one object.
+	function armLinkAlarm() as Void {
+		var next = earliestAskDue();
+		if (linkAlarm == null) {
+			if (next == ASK_NONE) {
+				return;
+			}
+			linkAlarm = new Timer.Timer();
+		}
+		linkAlarm.stop();
+		if (next == ASK_NONE) {
+			return;
+		}
+		var waitms = next - System.getTimer();
+		if (waitms < ASK_MIN_MS) {
+			// The date came due while this was being written. The host's own
+			// minimum (50 ms, the same sentence of the Timer documentation) is
+			// the shortest honest hop: the next callback reaches it.
+			waitms = ASK_MIN_MS;
+		}
+		linkAlarm.start(method(:onLinkAlarm), waitms, false);
+	}
+
+	// The nearest date of the five, ASK_NONE when none is booked. Written as a
+	// chain of pairwise choices so every local stays a plain Number - the
+	// nullable-number locals this file otherwise uses are module vars, and the
+	// type check of the app is at its default level, not off.
+	function earliestAskDue() as Lang.Number {
+		var next = ASK_NONE;
+		if (authProbeDue != null && authProbeDue < next) { next = authProbeDue; }
+		if (x5StatusDue != null && x5StatusDue < next) { next = x5StatusDue; }
+		if (x5StorageAskDue != null && x5StorageAskDue < next) { next = x5StorageAskDue; }
+		if (retryDue != null && retryDue < next) { next = retryDue; }
+		if (startDelayDue != null && startDelayDue < next) { next = startDelayDue; }
+		return next;
+	}
+
+	// The single callback: run every action whose date has come, in the order
+	// the delays were armed (the authorization probe, then the state ask, then
+	// the card ask, then the write retry, then the start delay), and arm the
+	// alarm again for whatever is left. An action that re-books itself, like
+	// the state ask's retry or the start delay's next wait, is reached by that
+	// re-arm, never twice in one pass.
+	function onLinkAlarm() as Void {
+		var now = System.getTimer();
+		if (authProbeDue != null && now >= authProbeDue) {
+			authProbeDue = null;
+			onAuthProbe();
+		}
+		if (x5StatusDue != null && now >= x5StatusDue) {
+			x5StatusDue = null;
+			onStatusAsk();
+		}
+		if (x5StorageAskDue != null && now >= x5StorageAskDue) {
+			x5StorageAskDue = null;
+			onStorageAsk();
+		}
+		if (retryDue != null && now >= retryDue) {
+			retryDue = null;
+			onRetry();
+		}
+		if (startDelayDue != null && now >= startDelayDue) {
+			startDelayDue = null;
+			onStartDelay();
+		}
+		armLinkAlarm();
+	}
+
 	// First ask after the notify profile is up: the camera answers an ask 0.6 to
 	// 3.9 s later on this link, and an ask written before the descriptor settles
 	// is answered into a closed window.
 	function scheduleCamStatusAsk() as Void {
-		if (x5StatusTimer != null || x5StatusAsked) {
+		if (x5StatusDue != null || x5StatusAsked) {
 			return;
 		}
 		x5StatusTries = 0;
@@ -1704,21 +1802,18 @@ class BleDevice extends BluetoothLowEnergy.BleDelegate {
 
 	function scheduleStatusTimer(ms as Lang.Number) as Void {
 		cancelStatusTimer();
-		var t = new Timer.Timer();
-		x5StatusTimer = t;
-		t.start(method(:onStatusAsk), ms, false);
+		x5StatusDue = System.getTimer() + ms;
+		armLinkAlarm();
 	}
 
 	function onStatusAsk() as Void {
-		x5StatusTimer = null;
+		x5StatusDue = null;
 		askCamStatus();
 	}
 
 	function cancelStatusTimer() as Void {
-		if (x5StatusTimer != null) {
-			x5StatusTimer.stop();
-			x5StatusTimer = null;
-		}
+		x5StatusDue = null;
+		armLinkAlarm();
 	}
 
 	// The authorization handshake, asked once per link, 500 ms after the notify
@@ -1729,16 +1824,15 @@ class BleDevice extends BluetoothLowEnergy.BleDelegate {
 	// camera answers. This is X5 legacy framing only: a UCD2 link is a
 	// different protocol and stays untouched.
 	function scheduleAuthProbe() as Void {
-		if (authProbeTimer != null || authProbeAsked || ucd2Armed) {
+		if (authProbeDue != null || authProbeAsked || ucd2Armed) {
 			return;
 		}
-		var t = new Timer.Timer();
-		authProbeTimer = t;
-		t.start(method(:onAuthProbe), AUTH_PROBE_MS, false);
+		authProbeDue = System.getTimer() + AUTH_PROBE_MS;
+		armLinkAlarm();
 	}
 
 	function onAuthProbe() as Void {
-		authProbeTimer = null;
+		authProbeDue = null;
 		askAuthProbe();
 	}
 
@@ -1803,16 +1897,15 @@ class BleDevice extends BluetoothLowEnergy.BleDelegate {
 	// ever - this ask only answers the state at connect, which no push brings
 	// until the card moves.
 	function scheduleStorageAsk() as Void {
-		if (x5StorageAskTimer != null || x5StorageAsked || ucd2Armed) {
+		if (x5StorageAskDue != null || x5StorageAsked || ucd2Armed) {
 			return;
 		}
-		var t = new Timer.Timer();
-		x5StorageAskTimer = t;
-		t.start(method(:onStorageAsk), STORAGE_ASK_MS, false);
+		x5StorageAskDue = System.getTimer() + STORAGE_ASK_MS;
+		armLinkAlarm();
 	}
 
 	function onStorageAsk() as Void {
-		x5StorageAskTimer = null;
+		x5StorageAskDue = null;
 		askStorageState();
 	}
 
@@ -1829,10 +1922,8 @@ class BleDevice extends BluetoothLowEnergy.BleDelegate {
 	}
 
 	function cancelStorageAskTimer() as Void {
-		if (x5StorageAskTimer != null) {
-			x5StorageAskTimer.stop();
-			x5StorageAskTimer = null;
-		}
+		x5StorageAskDue = null;
+		armLinkAlarm();
 	}
 
 	// The card answer, taken by its sequence like the auth answer above.
@@ -2781,24 +2872,24 @@ class BleDevice extends BluetoothLowEnergy.BleDelegate {
 		pendingStart = true;
 		startAckSeen = false;
 		startWaitCount = 0;
-		if (startDelayTimer != null) {
-			startDelayTimer.stop();
-		}
-		var t = new Timer.Timer();
-		startDelayTimer = t;
 		if (applyBursts >= 2) {
-
-
 			startPhase = 1;
-			t.start(method(:onStartDelay), START_WAIT_MS, false);
+			armStartDelay(START_WAIT_MS);
 		} else {
 			startPhase = 0;
-			t.start(method(:onStartDelay), START_DELAY_MS, false);
+			armStartDelay(START_DELAY_MS);
 		}
 	}
 
+	// One wait of the start sequence, booked as a date like every other delayed
+	// action of the link (see armLinkAlarm).
+	function armStartDelay(ms as Lang.Number) as Void {
+		startDelayDue = System.getTimer() + ms;
+		armLinkAlarm();
+	}
+
 	function onStartDelay() as Void {
-		startDelayTimer = null;
+		startDelayDue = null;
 		if (!pendingStart) {
 			return;
 		}
@@ -2811,9 +2902,7 @@ class BleDevice extends BluetoothLowEnergy.BleDelegate {
 				transmit(currentMode as Lang.ByteArray);
 			}
 			transmit(cmdApply);
-			var t = new Timer.Timer();
-			startDelayTimer = t;
-			t.start(method(:onStartDelay), START_WAIT_MS, false);
+			armStartDelay(START_WAIT_MS);
 			return;
 		}
 		if (startAckSeen) {
@@ -2825,9 +2914,7 @@ class BleDevice extends BluetoothLowEnergy.BleDelegate {
 			fireStart();
 			return;
 		}
-		var t = new Timer.Timer();
-		startDelayTimer = t;
-		t.start(method(:onStartDelay), START_WAIT_MS, false);
+		armStartDelay(START_WAIT_MS);
 	}
 
 	function fireStart() as Void {
@@ -2835,10 +2922,8 @@ class BleDevice extends BluetoothLowEnergy.BleDelegate {
 		startAckSeen = false;
 		startWaitCount = 0;
 		startPhase = 0;
-		if (startDelayTimer != null) {
-			startDelayTimer.stop();
-			startDelayTimer = null;
-		}
+		startDelayDue = null;
+		armLinkAlarm();
 		transmit(cmdStartRec);
 	}
 
@@ -2847,10 +2932,8 @@ class BleDevice extends BluetoothLowEnergy.BleDelegate {
 		startAckSeen = false;
 		startWaitCount = 0;
 		startPhase = 0;
-		if (startDelayTimer != null) {
-			startDelayTimer.stop();
-			startDelayTimer = null;
-		}
+		startDelayDue = null;
+		armLinkAlarm();
 	}
 
 
@@ -2925,29 +3008,25 @@ class BleDevice extends BluetoothLowEnergy.BleDelegate {
 			retryCount = 0;
 		}
 		retryKind = kind;
-		startRetryTimer();
+		armRetry();
 	}
 
 	function cancelRetry() as Void {
 		retryKind = 0;
 		retryCount = 0;
-		if (retryTimer != null) {
-			retryTimer.stop();
-			retryTimer = null;
-		}
+		retryDue = null;
+		armLinkAlarm();
 	}
 
-	function startRetryTimer() as Void {
-		if (retryTimer != null) {
-			retryTimer.stop();
-		}
-		retryTimer = new Timer.Timer();
-		retryTimer.start(method(:onRetry), RETRY_DELAY_MS, false);
+	// The write retry, booked as a date like the rest of the schedule.
+	function armRetry() as Void {
+		retryDue = System.getTimer() + RETRY_DELAY_MS;
+		armLinkAlarm();
 	}
 
 
 	function onRetry() as Void {
-		retryTimer = null;
+		retryDue = null;
 		if (retryKind == 0) {
 			return;
 		}
@@ -2976,7 +3055,7 @@ class BleDevice extends BluetoothLowEnergy.BleDelegate {
 			sendCMD(cmdStopRec);
 		}
 		inRetry = false;
-		startRetryTimer();
+		armRetry();
 	}
 
 
@@ -3791,6 +3870,20 @@ function registerProfiles() as Void {
 		notifCount = 0;
 		notifHex = "";
 		x5Seen = 0;
+
+		// The link is over, so the schedule goes with it: every date is dropped
+		// and the one Timer object the link owned is taken down. A session that
+		// ends leaves no alarm armed, and the process's timer pool is free for
+		// whatever starts next.
+		authProbeDue = null;
+		x5StatusDue = null;
+		x5StorageAskDue = null;
+		retryDue = null;
+		startDelayDue = null;
+		if (linkAlarm != null) {
+			linkAlarm.stop();
+			linkAlarm = null;
+		}
 
 		App.getApp().setProperty("recState", recState);
 		App.getApp().setProperty("startRecTime", startRecTime.value());
