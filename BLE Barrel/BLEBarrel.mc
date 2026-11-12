@@ -3213,9 +3213,35 @@ class BleDevice extends BluetoothLowEnergy.BleDelegate {
 			return;
 		}
 		if (ucd2RxBuf != null) {
-
-
-			return;
+			// A frame of the other envelope is a frontier. The X6 corpora are what
+			// makes this reachable, not a hypothesis: a pushed UCD2 frame declares
+			// 25, only 20 octets cross the link, and the next notification is a new
+			// head - 68 of them, with no continuation anywhere (PROTOCOL_APK 15,
+			// L402-404) - so an open UCD2 frame stays open until something closes
+			// it. And the same measurement states the requirement the guard below
+			// used to break: an X6 answers an ask of the old envelope with a frame
+			// of the new one and both envelopes cross one stream, so the engine
+			// must read both, not one per connection (L409-412). Returning here
+			// swallowed that answer - a lost decision, not a lost byte.
+			// The open frame is therefore abandoned at the frontier and named: the
+			// only reading the UCD2 leg makes is the answer path above, which
+			// already closes on its first 20 octets, and the trailer of a frame
+			// this long never arrives to be checked anyway. What is not abandoned
+			// is a beat or a headless fragment of the old envelope: the same bytes
+			// the legacy reader would judge, left to it below (the box of the one
+			// frontier engine, named at the end of test/Ucd2Test.mc).
+			var cut = ucd2RxBuf;
+			if (cut == null) {
+				return;
+			}
+			if (x5IsFrame(value)) {
+				wireLine("ucd2 frame dropped at the other envelope", "want=" + ucd2RxWant.toString() +
+					" arrived=" + cut.size().toString());
+				ucd2RxBuf = null;
+				ucd2RxWant = 0;
+			} else {
+				return;
+			}
 		}
 		}
 
