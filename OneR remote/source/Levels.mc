@@ -259,4 +259,33 @@ function rowOfId(level, id) {
     return null;
 }
 
+// The row the screen must hold when the level in force answers nothing under
+// the mode in force. The rule is one datum, not an inference: the menu and the
+// mode are the same chain, so a level change (a detection, a forced model)
+// leaves a pose that no row carries, and the screen would name a mode that
+// does not exist - the bench of 12 nov. watched "DEFAULT VIDEO" over the
+// eleven dots of the X5 line, a name open() poses and no level lists.
+//
+// The decision, in the order the user chose at that bench (12 nov.): the mode
+// this camera last CONFIRMED, kept under its name by the barrel at its echo;
+// else the first row of the level, which is the normal video of that line;
+// else nothing to pose - no rows (level 0, the legacy pose of the app) or the
+// mode already answers a row of this menu (browsing, a resolution submenu).
+// The kept id is only asked through this level's rows: an id of another level
+// never comes back, that is what rowOfId() means.
+function poseFor(level, keptId, currentId) {
+    var rows = rowsMain(level);
+    if (rows.size() == 0) {
+        return null;
+    }
+    if (rowOfId(level, currentId) != null) {
+        return null;
+    }
+    var kept = rowOfId(level, keptId);
+    if (kept != null) {
+        return kept;
+    }
+    return rows[0];
+}
+
 }

@@ -418,6 +418,61 @@ function levelsChainTableFallbackAndConfirm(logger) {
 	return ok;
 }
 
+// The mode axis: the keep is the camera's own confirmation, the load is per
+// name, and the pose that the screen takes is one decision (Levels.poseFor).
+// The pose exists because the bench of 12 nov. showed a screen naming a mode no
+// row carries - "Default Video", the pose open() leaves, over the eleven dots of
+// the X5 line, with an empty Settings row list. The order is the user's rule of
+// that bench: the last mode this camera confirmed, else the normal video of the
+// level; a mode the level in force already answers is never moved (browsing,
+// the resolution legs); a level with no rows (0) keeps the app's legacy pose.
+(:test)
+function modeKeepLoadAndPoseForTheLevel(logger) {
+	var d = freshLink();          // freshLink names the bond: deviceName = "X5 1ABCDE"
+	var ok = true;
+
+	// The keep answers only a confirmed echo, and only under a name.
+	d.noteConfirmedMode(null);
+	d.noteConfirmedMode("");
+	var keptNone = Application.getApp().getProperty("mode.X5 1ABCDE");
+	d.noteConfirmedMode("p0");
+	var stored = Application.getApp().getProperty("mode.X5 1ABCDE");
+	ok = ok && stored != null && stored.equals("p0");
+	// A name of its own keeps its own mode: the second camera inherits nothing.
+	BLEBarrel.deviceName = "Q1 0000ZZ";
+	d.loadKeptMode();
+	ok = ok && d.peekKeptModeId() == null;
+	BLEBarrel.deviceName = "X5 1ABCDE";
+	d.loadKeptMode();
+	var loaded = d.peekKeptModeId();
+	ok = ok && loaded != null && loaded.equals("p0");
+	logger.debug("kept=" + show(stored) + " loaded=" + show(loaded) + " before=" + show(keptNone));
+
+	// The pose, at the level the X5 line answers: the start pose of open() is
+	// not a row, so a pose is due, and the kept id wins.
+	var poseKept = Levels.poseFor(2, "p0", "DefaultV");
+	ok = ok && poseKept != null && poseKept[Levels.RID].equals("p0");
+	// Nothing kept: the first row of the level, the normal video of that line.
+	var first = Levels.poseFor(2, null, "DefaultV");
+	ok = ok && first != null && first[Levels.RID].equals("v0") && first[Levels.RLB].equals("Video");
+	// An id of another level never comes back through this level's rows.
+	var fb = Levels.poseFor(2, "TimeLapse", "DefaultV");
+	ok = ok && fb != null && fb[Levels.RID].equals("v0");
+	// The mode in force already answers a row: no pose, the wheel stays where
+	// the user left it. Same for a resolution row of the level.
+	ok = ok && Levels.poseFor(2, "p0", "v6") == null;
+	ok = ok && Levels.poseFor(2, "p0", "r167") == null;
+	// The level the user forced to: the kept id of the X5 line is not a row of
+	// the UCD2 level, so that level's own first row answers.
+	var l3 = Levels.poseFor(3, "p0", "v6");
+	ok = ok && l3 != null && Levels.rowOfId(3, l3[Levels.RID]) != null;
+	// No rows: nothing to pose, the app's legacy pose stays (level 0).
+	ok = ok && Levels.poseFor(0, "p0", "DefaultV") == null;
+	ok = ok && Levels.poseFor(0, null, null) == null;
+	logger.debug("pose crossed");
+	return ok;
+}
+
 // The trigger of the three first asks, corrected by the bench of 12 nov. (real
 // X5 fw 1.13.21 over the PC Bluetooth, trace lifted by int-x5-build\benchbuild.ps1):
 // the profile-register callback runs at OPEN, right after the scan turns on and

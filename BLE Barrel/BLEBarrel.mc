@@ -582,6 +582,11 @@ var x5FuncMode as Lang.Number or Null = null;
 var modeReqId as Lang.String or Null = null;
 var modeHoldUntil as Lang.Number = 0;
 var camModeId as Lang.String or Null = null;
+// The mode kept for the name on air, loaded at the classification by
+// loadKeptMode(): the last mode this camera CONFIRMED holding, a datum of the
+// next bond. No decision lives here - the application chooses with the rows of
+// the level in force (Levels.poseFor), which is the only place that owns them.
+var keptModeId as Lang.String or Null = null;
 
 // The invalidation bookkeeping of the option rows. 0x2065 (WATCH_RES) is the
 // camera naming the options that moved: its body carries the option ids as a
@@ -1466,9 +1471,12 @@ class BleDevice extends BluetoothLowEnergy.BleDelegate {
 			}
 			if (id != null && modeReqId != null && id.equals(modeReqId)) {
 				// The echo of this watch's own mode write: the gate opens here,
-				// the hold runs out by itself.
+				// the hold runs out by itself. This is also the one moment the
+				// camera proved which mode it holds, so the id is kept under the
+				// name for the next bond (noteConfirmedMode names the rule).
 				modeReqId = null;
 				System.println("[mode] echo confirmed id=" + id);
+				noteConfirmedMode(id);
 			} else if (modeReqId != null && System.getTimer() < modeHoldUntil) {
 				// An echo that is not the one in flight while a request is in
 				// flight: not trusted, the PR's guard, kept verbatim in purpose.
@@ -2661,6 +2669,47 @@ class BleDevice extends BluetoothLowEnergy.BleDelegate {
 		System.println("[lvl] confirmed name=" + name + " level=" + level.toString() + " (kept for the next bond with this name)");
 	}
 
+	// The mode axis, kept by the same name on air as the level above. Only a
+	// CONFIRMED echo writes it (the echo branch of the mode gate): a mode this
+	// watch asked and the camera never echoed is not kept, because the camera
+	// never said it holds it. The app reads the kept id at its own level site
+	// and decides through the rows of the level in force (Levels.poseFor) -
+	// this barrel keeps a datum, it never chooses a menu entry.
+	function noteConfirmedMode(id as Lang.String or Null) as Void {
+		if (id == null || id.length() == 0) {
+			return;
+		}
+		if (deviceName == null || deviceName.equals("n/a") || deviceName.length() == 0) {
+			System.println("[mode] keep refused: no name to key the mode on, id=" + id);
+			return;
+		}
+		App.getApp().setProperty("mode." + deviceName, id);
+	}
+
+	// The load of that datum, at the same classification that loads the level:
+	// fresh every bond, so a later camera of another name never inherits this
+	// one's mode. The absence answers by a line, never by a silence.
+	function loadKeptMode() as Void {
+		keptModeId = null;
+		if (deviceName == null || deviceName.equals("n/a") || deviceName.length() == 0) {
+			System.println("[mode] kept name=none nothing to load");
+			return;
+		}
+		var v = App.getApp().getProperty("mode." + deviceName);
+		var s = v as Lang.String;
+		if (s != null && s.length() > 0) {
+			keptModeId = s;
+			System.println("[mode] kept name=" + deviceName + " id=" + s + " (the last mode this camera confirmed)");
+		} else {
+			System.println("[mode] kept name=" + deviceName + " none (no confirmed mode for this name)");
+		}
+	}
+
+	// The kept id as a fact, for the application's pose decision.
+	function peekKeptModeId() as Lang.String or Null {
+		return keptModeId;
+	}
+
 	// The degraded axis: three questions and one note, per camera name. The
 	// note comes from a failed user command - the 400 branch above, or the
 	// app's own write pages when they run - never from a probe. The set
@@ -3589,6 +3638,13 @@ function registerProfiles() as Void {
 						App.getApp().setProperty("lvl." + deviceName, menuLevel);
 						System.println("[lvl] kept name=" + deviceName + " level=" + menuLevel.toString());
 					}
+
+					// The mode kept for this name, loaded beside the level: the
+					// pose the app takes at the first menu of this level reads it
+					// (Levels.poseFor names the rule). Loaded here, at the same
+					// classification, because a mode is only ever usable through
+					// the rows of the level it belongs to.
+					loadKeptMode();
 
 					// The degradations kept for this name, loaded before any entry
 					// of the menu is reachable, fresh per bond of a new name.
