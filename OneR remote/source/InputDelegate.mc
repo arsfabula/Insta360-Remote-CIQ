@@ -3,7 +3,7 @@ using Toybox.System as Sys;
 using Toybox.Position;
 using Toybox.Lang;
 using BLEBarrel;
-using CapacitesBarrel;
+using Levels;
 
 // What the application knows of the camera is what the camera reported
 // (bleDevice.peek*, the accessors live in the class BleDevice), never what
@@ -62,6 +62,29 @@ function entryFrame(id as Lang.String) as Lang.ByteArray or Null {
         case "p0": f = BLEBarrel.cmdSetPhotoSubNormal; break; // CdC item 54: the p0 selection poses the MODE (photo sub-mode Normal), the capture belongs to the start press (the mixup of the item 48, half p0)
         case "p2": f = BLEBarrel.cmdSetPhotoSubInterval; break; // CdC item 60: the p2 selection poses the MODE (photo sub-mode Interval); the legacy cmdSetInterval, a 63-byte frame of command 3, was refused by the camera (no change on the screen). The capture of this entry belongs to the press, and the Timelapse patch of cmdStartRec and cmdStopRec stays with that press half, not with the mode write.
         case "p3": f = BLEBarrel.cmdSetPhotoSubBurst; break;
+        // The keys of the level chain (Levels.mc): an entry of a level the
+        // chain never measured over BLE is named by its key, never by a
+        // protocol number (rea/11: the numbering of a cell is not a protocol
+        // value, and the numbering is not a scale across models). This
+        // function is the single site that turns an id or a key into a frame:
+        // the ids of the X5 line and the keys of the levels below answer
+        // here, never at two resolvers that could disagree (note 8 of the
+        // CdC: one datum, one site).
+        case "TimeLapse": f = BLEBarrel.cmdSetTL; break;
+        case "BulletTime": f = BLEBarrel.cmdSetBullet; break;
+        case "Photo": f = BLEBarrel.cmdSetPhoto; break;
+        case "PhotoHDR": f = BLEBarrel.cmdSetPhotoHDR; break;
+        case "PhotoInterval": f = BLEBarrel.cmdSetInterval; break;
+        case "PhotoBurst": f = BLEBarrel.cmdSetPhotoBurst; break;
+        case "NightShot": f = BLEBarrel.cmdSetNightShot; break;
+        case "HDRVideo": f = BLEBarrel.cmdSetHDR; break;
+        case "3k100": f = BLEBarrel.cmdSet3k100; break;
+        case "8k30": f = BLEBarrel.cmdSet8k30; break;
+        case "5k30": f = BLEBarrel.cmdSet5k30; break;
+        case "5k25": f = BLEBarrel.cmdSet5k25; break;
+        case "5k24": f = BLEBarrel.cmdSet5k24; break;
+        case "4k30": f = BLEBarrel.cmdSet4k30; break;
+        case "4k50": f = BLEBarrel.cmdSet4k50; break;
         default:
             // Timelapse and Bullet Time ride function_mode 2 and 4, TimeShift,
             // Loop, PureVideo, Starlapse, Road Mode and InstaFrame have no
@@ -119,133 +142,31 @@ function codesText() as Lang.String {
     return out;
 }
 
-function refFrame(key as Lang.String) as Lang.ByteArray or Null {
-    // Axis model, the single site that turns the key of an entry into the frame
-    // of that entry. The key is the semantic name the reference app speaks
-    // (TimeLapse, BulletTime, 5k30), never a protocol number: rea/11 says the
-    // numbering of a cell of another model is not a protocol value, and that
-    // the numbering is not a scale across models. So an entry of a model the
-    // matrix knows only by its libel carries a key, and that key answers the
-    // frame the reference app would write, which this barrel already holds
-    // (provenance: salvaged/BLEBarrel-1004.mc, :1012, :1022). A key no entry
-    // carries answers Null, so the caller refuses and prints.
-    var f = null;
-    switch (key) {
-        case "TimeLapse": f = BLEBarrel.cmdSetTL; break;
-        case "BulletTime": f = BLEBarrel.cmdSetBullet; break;
-        case "Photo": f = BLEBarrel.cmdSetPhoto; break;
-        case "PhotoHDR": f = BLEBarrel.cmdSetPhotoHDR; break;
-        case "PhotoInterval": f = BLEBarrel.cmdSetInterval; break;
-        case "PhotoBurst": f = BLEBarrel.cmdSetPhotoBurst; break;
-        case "NightShot": f = BLEBarrel.cmdSetNightShot; break;
-        case "HDRVideo": f = BLEBarrel.cmdSetHDR; break;
-        case "3k100": f = BLEBarrel.cmdSet3k100; break;
-        case "8k30": f = BLEBarrel.cmdSet8k30; break;
-        case "5k30": f = BLEBarrel.cmdSet5k30; break;
-        case "5k25": f = BLEBarrel.cmdSet5k25; break;
-        case "5k24": f = BLEBarrel.cmdSet5k24; break;
-        case "4k30": f = BLEBarrel.cmdSet4k30; break;
-        case "4k50": f = BLEBarrel.cmdSet4k50; break;
-        default: f = null; break;
-    }
-    return f;
-}
+// The resolver entryFrame() above answers the ids of the X5 line and the keys
+// of the level chain at one site. refFrame() used to be a second switch of
+// frames for the keys of the capability tables; the chain of Levels.mc names a
+// doc entry by its key and the same resolver answers it, so no second table of
+// frames can disagree with the first (note 8 of the CdC). The keys are the
+// semantic names the reference app speaks (TimeLapse, BulletTime, 5k30), never
+// a protocol number (rea/11: the numbering is not a scale across models;
+// provenance of the frames: salvaged/BLEBarrel-1004.mc, :1012, :1022).
 
-function addCameraItems(menu, mi) as Void {
-    // Axis model, the menu of a model read from the tables the generator emits.
-    // The id, the label and the tier of an entry answer one datum, the four
-    // views of one family (CdC item 157), so no libel and no id is hand-written
-    // here. A model the matrix does not know (mi < 0) answers an empty Array for
-    // every family, so the menu stays empty and the walk below says so, because
-    // the absence of a line is never a verdict (criterion 14 of 11.3).
-    // families an entry of the main menu of a model the bond never releved
-    // belongs to are the video modes and the photo modes: the resolutions of
-    // such a model answer a resolution submenu of their own, the way the X5
-    // gives them (CdC item 107), opened by the Video entry of the model in
-    // force. That the menu of a model the bond never releved opens such a
-    // submenu is a decision of the axis of the test and never a reading: the
-    // measured datum is the opener of the X5, keyed on its own id v0, and no
-    // run has ever read the menu of another model (rea/11: the numbering is not
-    // a scale across models), so the generated opener answers the entry at the
-    // same place of the video family of the model in force, o + the index of
-    // the model + v0, the first video entry of every model of the matrix. The
-    // entries of that submenu carry the tier of their cell, so an official cell
-    // answers [refused] and writes nothing. The walk the application prints after
-    // the build answers how many items the menu holds, so the size of a menu of
-    // a model of the matrix is a reading of the run and never a limit supposed
-    // here (note 14: the documented limit of Ui.Menu is another class, printed
-    // as a reference, and the flat menu of the X3 answered 24 items against that
-    // 16 before this edit).
-    var ids = CapacitesBarrel.rowIds(0, mi);
-    var labels = CapacitesBarrel.rowLabels(0, mi);
-    var k = 0;
-    while (k < ids.size()) {
-        menu.addItem(new Ui.MenuItem(labels[k], "", ids[k], {}));
-        k += 1;
-    }
-    var ids2 = CapacitesBarrel.rowIds(1, mi);
-    var labels2 = CapacitesBarrel.rowLabels(1, mi);
-    k = 0;
-    while (k < ids2.size()) {
-        menu.addItem(new Ui.MenuItem(labels2[k], "", ids2[k], {}));
-        k += 1;
-    }
-}
-
-function addCameraResItems(menu, mi) as Void {
-    // The resolutions of a model, the third family of the same datum. CdC item 159
-    // builds the resolution submenu of a model of the matrix, reached when the Video
-    // entry of that model is selected: the tier of an entry of this family decides
-    // whether a selection writes, never the submenu it sits in.
-    var ids = CapacitesBarrel.rowIds(2, mi);
-    var labels = CapacitesBarrel.rowLabels(2, mi);
-    var k = 0;
-    while (k < ids.size()) {
-        menu.addItem(new Ui.MenuItem(labels[k], "", ids[k], {}));
-        k += 1;
-    }
-}
-
-function addMenuLevelItems(menu) as Void {
-    // Axis model, the choices of the submenu of MenuLevel: one choice per model
-    // the matrix holds, plus the off choice that gives the detected model back.
-    // The choice carries a model name and a level, never a frame: the forcing
-    // is applied at the selection of the choice, which is where the datum of
-    // the run changes.
-    var n = 0;
-    while (n < CapacitesBarrel.capModels.size()) {
-        menu.addItem(new Ui.MenuItem(CapacitesBarrel.capModels[n], "", "force" + CapacitesBarrel.capModels[n], {}));
-        n += 1;
-    }
-    menu.addItem(new Ui.MenuItem("off", "", "forceoff", {}));
-}
-// The settings menu of the camera whose capabilities are modelled (X5). The
-// mask of the capability model generates the entries, the official libel of
-// the same model is what an item prints, and entryFrame() decides whether an
-// entry exists at all. No libel is hand-written here, and a menu whose entry
-// has no measured frame simply stays shorter.
-function addX5Items(menu) as Void {
-    // An Array answers size(), a String answers length(). Both words exist on
-    // opposite sides of the model: capVideoValues is an Array, itemID is a String.
-    // The compilation passes with the wrong one, the crash arrive at runtime.
-    var values = CapacitesBarrel.capVideoValues;
-    var values2 = CapacitesBarrel.capPhotoValues;
-    var i = 0;
-    var v = 0;
-    var id = "";
-    var label = "";
-
-    // CdC item 107: the resolutions moved to a sub-menu of their own (addX5ResItems),
-    // so the gate that used to offer them only when the family read on the camera was
-    // Normal Video is gone from this build. The measured rule stays where it belongs:
-    // record_resolution is pilotable inside VIDEO_NORMAL only (rea/11 §5.3, the eight
-    // other sub-modes read with the field fixed on a dead value), and the entry Video
-    // writes that family and applies it BEFORE the sub-menu is pushed, so a resolution
-    // read from the sub-menu always lands inside VIDEO_NORMAL whatever the camera was
-    // doing before. Nothing is hidden because of a state read (EF-26): the mask and
-    // the measured frame decide an entry, never the current family.
-    // The peek stays as the datum of the family at the build site: a mask generates a
-    // menu, it never filters the state read on the camera (EF-23, EF-25).
+function addLevelItems(menu, level) as Void {
+    // The menu of the level in force: the rows of the chain of Levels.mc,
+    // added in the order of the table. No mask, no model index, no measured
+    // face: the chain is the menu of the level, and a doc row is added like a
+    // measured row — its frame is answered, or refused, at the selection.
+    // Nothing here filters on a state read on the camera (EF-23, EF-25): the
+    // peek stays as the datum of the family at the build site, never as a gate.
+    //
+    // The arrangement is the decision of the table, "mode first, definition
+    // under" (CdC item 74): the resolutions left the main menu for a Menu2 of
+    // their own (CdC item 107), opened by the selection of the row whose sub
+    // flag answers 1, and the write of the family lands before the submenu is
+    // pushed. The measured rule behind the place: record_resolution is
+    // pilotable inside VIDEO_NORMAL only (rea/11 §5.3, the eight other
+    // sub-modes were read with the field fixed), so the submenu hangs under
+    // that entry and only there.
     var fam = bleDevice.peekFuncMode();
 
     // Axis S-0 of the single-axis protocol (CdC 11.4): what the build of the menu
@@ -255,7 +176,7 @@ function addX5Items(menu) as Void {
     var addedRes = 0;
     var addedPhoto = 0;
     var addedVideo = 0;
-    Sys.println("[fam] level=" + BLEBarrel.menuLevel.toString() + " mode=" + obsText(fam));
+    Sys.println("[fam] level=" + obsText(level) + " mode=" + obsText(fam));
     // Axis S-6, arrival window at the build site. The build of the menu runs at
     // every opening of the menu, and not only after a completed selection, so the
     // opening that follows a write gives that write its arrival window without
@@ -282,144 +203,55 @@ function addX5Items(menu) as Void {
 // separates one reply per write from one reply for the whole burst.
 Sys.println("[obs5] x5seen=" + bleDevice.peekX5Seen().toString());
 
-    // CdC item 74, the arrangement of the X5 menu for the video family. The design the
-    // user set is "mode first, definition under": one entry per video sub-mode, and the
-    // resolutions kept under Normal Video only. The measured fact behind the second half
-    // is rea/11 §5.3: outside VIDEO_NORMAL the record_resolution field never moves (the
-    // eight other sub-modes were read with the field fixed), so a resolution offered
-    // beside them would be an entry whose write has no effect (EF-26).
-    // The arrangement is written in the order the entries are added, because the gate
-    // cannot nest: the SDK API of WatchUi.Menu2 offers addItem(MenuItem) only, whatever
-    // the level of the application. The reference "limit=16" the walk prints comes from
-    // Ui.Menu of ANOTHER class, so it is a reference, never a measurement of this menu
-    // (note 14 of the CdC: a reference is not a datum).
-    // So the arrangement of item 74 is no longer adjacency plus the gate: the resolutions
-    // left the main menu (CdC item 107) and live in a Menu2 of their own, built by addX5ResItems
-    // and pushed by the selection of the entry Video. What cannot nest stays the same fact:
-    // the SDK API of WatchUi.Menu2 offers addItem(MenuItem) only, whatever the level of the
-    // application, so the nesting is a pushView and one more view on the stack, never an
-    // item that holds items.
-    // The order of the main menu is the order of item 74 without them: the entry of Normal
-    // Video first, then the other sub-modes, then photo. The counter addedRes stays and
-    // answers 0 here, and the line "[menu] ... res=0" is the datum of the move: an absence
-    // of a line is never a verdict (note 13 of the CdC, criterion 14 of 11.3).
-    values = CapacitesBarrel.capVideoValues;
-    for (i = 0; i < values.size(); i += 1) {
-        v = values[i];
-        if (v == 0 && CapacitesBarrel.capBit(CapacitesBarrel.capMaskVideo, v)) {
-            id = "v" + v.toString();
-            label = CapacitesBarrel.labelVideo(v);
-            if (label != "" && entryFrame(id) != null) {
-                Sys.println("[add] video " + id + " " + label);
-                addedVideo += 1;
-                menu.addItem(new Ui.MenuItem(label, "", id, {}));
-            }
-        }
-    }
-
-    for (i = 0; i < values.size(); i += 1) {
-        v = values[i];
-        if (v != 0 && CapacitesBarrel.capBit(CapacitesBarrel.capMaskVideo, v)) {
-            id = "v" + v.toString();
-            label = CapacitesBarrel.labelVideo(v);
-            if (label != "" && entryFrame(id) != null) {
-                Sys.println("[add] video " + id + " " + label);
-                addedVideo += 1;
-                menu.addItem(new Ui.MenuItem(label, "", id, {}));
-            }
-        }
-    }
-
-    values2 = CapacitesBarrel.capPhotoValues;
-    for (i = 0; i < values2.size(); i += 1) {
-        v = values2[i];
-        if (CapacitesBarrel.capBit(CapacitesBarrel.capMaskPhoto, v)) {
-            id = "p" + v.toString();
-            label = CapacitesBarrel.labelPhoto(v);
-            if (label != "" && entryFrame(id) != null) {
-                Sys.println("[add] photo " + id + " " + label);
-                addedPhoto += 1;
-                menu.addItem(new Ui.MenuItem(label, "", id, {}));
-            }
-        }
-    }
-    Sys.println("[menu] video=" + addedVideo.toString() + " res=" + addedRes.toString() + " photo=" + addedPhoto.toString());
-}
-
-// CdC item 107, the second half of the arrangement the user asked for: the
-// resolutions of a Normal Video are not entries of the main menu any more,
-// they live in a sub-menu of their own, a Menu2 pushed under the entry Video.
-// The entries are the same as before: the mask capMaskRes decides what can be
-// offered, labelRes is what an item shows, entryFrame decides that the entry
-// exists at all, and the id stays r<value>, so the resolver, the frame, the
-// write and the apply of a resolution entry keep their own rungs untouched by
-// this move. Nothing here writes anything: a build only builds.
-// The order is high pixel class to low, and it is a decision of the app, so it
-// lives here and not in the capability model. It has to: the numbers of the
-// field record_resolution carry no order at all (0 is 4K 30, 167 is 8K 30, 12
-// is 4K 50), and the repo holds no official pixel size for the 5.7K+ tier, so
-// a rank built from a pixel size would be partly invented. This list is an
-// ORDERING only: membership stays with the mask and the measured frame, so a
-// value the mask offers and this list misses is appended below, never hidden.
-// 167 8K 30 > 10 5.7K 30 > 19 5.7K 25 > 20 5.7K 24 > 12 4K 50 > 0 4K 30.
-const resOrderHiLo = [167, 10, 19, 20, 12, 0];
-
-// Membership of an Array of Int. size(), never length(): an Array answers
-// size(), a String answers length(), and the wrong one compiles and crashes
-// at runtime (note 9 of the CdC).
-function orderHas(v as Lang.Int) as Lang.Boolean {
-    var i = 0;
-    while (i < resOrderHiLo.size()) {
-        if (resOrderHiLo[i] == v) {
-            return true;
-        }
-        i += 1;
-    }
-    return false;
-}
-
-function addX5ResItems(menu) as Void {
-    var addedRes = 0;
-    var i = 0;
-    var v = 0;
+    var rows = Levels.rowsMain(level);
+    var row = null;
     var id = "";
     var label = "";
-
-    // The ordered pass, then the pass of the mask for a value the list misses:
-    // the mask generates, the list never filters (EF-23, EF-25). The tag of the
-    // adds is [add2], so the adds of the sub-menu and the adds of the main menu
-    // answer apart at the same boundary.
-    for (i = 0; i < resOrderHiLo.size(); i += 1) {
-        v = resOrderHiLo[i];
-        if (CapacitesBarrel.capBit(CapacitesBarrel.capMaskRes, v)) {
-            id = "r" + v.toString();
-            label = CapacitesBarrel.labelRes(v);
-            if (label != "" && entryFrame(id) != null) {
-                Sys.println("[add2] res " + id + " " + label);
-                addedRes += 1;
-                menu.addItem(new Ui.MenuItem(label, "", id, {}));
-            }
+    var i = 0;
+    while (i < rows.size()) {
+        row = rows[i];
+        id = row[Levels.RID];
+        label = row[Levels.RLB];
+        if (row[Levels.RFAM].equals("v")) {
+            Sys.println("[add] video " + id + " " + label);
+            addedVideo += 1;
+        } else if (row[Levels.RFAM].equals("p")) {
+            Sys.println("[add] photo " + id + " " + label);
+            addedPhoto += 1;
+        } else {
+            // The UCD2 sentinel row of the replacing level: the write is not a
+            // frame of the chain, the switch of ids arms the envelope.
+            Sys.println("[add] ucd2 " + id + " " + label);
         }
+        menu.addItem(new Ui.MenuItem(label, "", id, {}));
+        i += 1;
     }
-    for (i = 0; i < CapacitesBarrel.capResValues.size(); i += 1) {
-        v = CapacitesBarrel.capResValues[i];
-        if (!orderHas(v) && CapacitesBarrel.capBit(CapacitesBarrel.capMaskRes, v)) {
-            id = "r" + v.toString();
-            label = CapacitesBarrel.labelRes(v);
-            if (label != "" && entryFrame(id) != null) {
-                Sys.println("[add2] res " + id + " " + label);
-                addedRes += 1;
-                menu.addItem(new Ui.MenuItem(label, "", id, {}));
-            }
-        }
+    Sys.println("[menu] video=" + obsText(addedVideo) + " res=" + obsText(addedRes) + " photo=" + obsText(addedPhoto));
+}
+
+function addLevelResItems(menu, level) as Void {
+    // The resolution submenu of the level: the rows of the res chain, in the
+    // order of the table — the order is a decision of the app (the protocol
+    // numbers of the res rows carry no order: 0 is 4K 30, 167 is 8K 30), and
+    // the table is where that decision lives now. The tag of the adds stays
+    // [add2], so the adds of the sub-menu and the adds of the main menu
+    // answer apart at the same boundary.
+    var rows = Levels.rowsRes(level);
+    var row = null;
+    var i = 0;
+    var addedRes = 0;
+    while (i < rows.size()) {
+        row = rows[i];
+        Sys.println("[add2] res " + row[Levels.RID] + " " + row[Levels.RLB]);
+        addedRes += 1;
+        menu.addItem(new Ui.MenuItem(row[Levels.RLB], "", row[Levels.RID], {}));
+        i += 1;
     }
 
     // The shape tell of the sub-menu, one line per entry, in the order the entries
-    // are handed to it: this walk answers the sort, the walk of the main menu answers
-    // the move, and both answer in the same run. A Menu2 answers no item count and
-    // documents no limit, so the walk stops at the first Null and 40 is the bound of
-    // the walk alone; Ui.Menu.MAX_SIZE belongs to another class and is a reference,
-    // never a measurement of this menu (note 14 of the CdC).
+    // are handed to it. A Menu2 answers no item count and documents no limit, so
+    // the walk stops at the first Null and 40 is the bound of the walk alone
+    // (note 14 of the CdC: a reference is not a datum).
     var walk = 0;
     var entry = null;
     while (walk < 40) {
@@ -430,8 +262,26 @@ function addX5ResItems(menu) as Void {
         Sys.println("[sub] " + walk + " id=" + obsText(entry.getId()) + " label=" + obsText(entry.getLabel()));
         walk += 1;
     }
-    Sys.println("[sub] n=" + walk.toString() + " res=" + addedRes.toString());
+    Sys.println("[sub] n=" + obsText(walk) + " res=" + obsText(addedRes));
 }
+
+function addMenuLevelItems(menu) as Void {
+    // Axis model, the choices of the submenu of MenuLevel: one choice per model
+    // of the level chain, plus the off choice that gives the detected model back.
+    // The choice carries a model name, never a frame and never a level number:
+    // the forcing is applied at the selection of the choice, which is where the
+    // datum of the run changes, and the level of a model answers the table of
+    // the chain at the index of its name, one datum.
+    var n = 0;
+    while (n < Levels.models.size()) {
+        menu.addItem(new Ui.MenuItem(Levels.models[n], "", "force" + Levels.models[n], {}));
+        n += 1;
+    }
+    menu.addItem(new Ui.MenuItem("off", "", "forceoff", {}));
+}
+
+
+
 
 class InputDelegate extends Ui.BehaviorDelegate {
 //	hidden var bleDevice;
@@ -552,72 +402,30 @@ class InputDelegate extends Ui.BehaviorDelegate {
 		// and every view of such a model answers an empty Array: the menu stays
 		// empty and the walk below says so, because an absence of a line is never
 		// a verdict (criterion 14 of 11.3).
-		Sys.println("[lvl] menuLevel=" + BLEBarrel.menuLevel.toString() + " model=" + BLEBarrel.capModel + " detectedModel=" + BLEBarrel.detectedModel + " detectedLevel=" + BLEBarrel.detectedLevel.toString());
-		var mi = CapacitesBarrel.modelIndexOfName(BLEBarrel.capModel);
-		// The gate of the menu answers whatever the level takes, not only the level 2:
-		// this datum is decided and printed once, above the switch, so a run at any
-		// level says whether the model has ever been releved over BLE, which is the
-		// datum the armings of the entries owe (CdC item 160: S-29 owed the print of
-		// this boolean at the level 2 only, which made a run at the level 1 silent).
-		// An index the tables do not know answers -1 and the measurement answers false:
-		// an absence of a model is a refusal, never an empty menu (criterion 14 of 11.3).
-		var measuredNow = CapacitesBarrel.modelMeasured(mi);
-		Sys.println("[gate] model=" + BLEBarrel.capModel + " mi=" + mi.toString() + " measured=" + measuredNow.toString());
+		Sys.println("[lvl] menuLevel=" + obsText(BLEBarrel.menuLevel) + " model=" + BLEBarrel.capModel + " detectedModel=" + BLEBarrel.detectedModel + " detectedLevel=" + obsText(BLEBarrel.detectedLevel));
+// The gate of the menu answers for any level, and prints the state of the
+		// run before any branch reads it (note 8 of the CdC). The mi/measured pair
+		// of the capability module is gone: the chain of Levels.mc answers rows by
+		// level, never by a model index, and the rows handed to the menu are
+		// printed and counted by the [add] and [menu] lines of the build. A forced
+		// run names the choice in force beside the detection, so the two datums of
+		// the persistence axis stay apart on one line (note 8).
+		Sys.println("[gate] model=" + BLEBarrel.capModel + " level=" + obsText(BLEBarrel.menuLevel)
+			+ " forcedModel=" + BLEBarrel.testModel + " forcedLevel=" + obsText(BLEBarrel.testLevel));
 		// The menu gate is where the app reads the family in force, so it is the
 		// site where the position axis re-syncs to it (Main.gpsSync, item 8 of the
 		// integration): a bond that completed while the main view sat untouched
 		// finds its verdict here, before any entry this build offers is reachable.
 		// The decision is edge-guarded, so opening the menu is never a poll.
 		mainApp.gpsSync();
-		switch (BLEBarrel.menuLevel) {
-			case 0:
-				break;
-			case 1:
-				// Axis model, the older envelope the reference application offers.
-				// The entries answer the tables the generator emits (id, label and
-				// tier, CdC item 157), never the items hand-written here before. An
-				// entry of a model the bond has never releved over BLE carries a
-				// label-keyed id, never a protocol number: the numbering of the
-				// protocol exists over BLE on the X5 only, and the numbering is not
-				// a scale across models (rea/11), so the X5-numbered ids below stay
-				// the datum of the rungs of the older envelope, reachable through
-				// their own switch, and a generated entry reaches the same frames
-				// through refFrame(), the single site that turns a key into a frame.
-				addCameraItems(menu, mi);
-				break;
-			case 2:
-				// X5: generated from the capability model, never hand-written. See
-				// addX5Items(): the mask of the model decides what can be offered,
-				// the official libel is what the item shows, and entryFrame() gives
-				// an entry only when the protocol barrel holds a frame measured on
-				// this camera. A mode with no verified frame (Timelapse, Bullet
-				// Time, HDR Video, 3K 100, Night Shot) stays absent from the menu
-				// because the application cannot write it, not because the camera
-				// was told it cannot do it.
-				// Axis model, the two builders of the same gate. The model of the
-				// matrix decides which one answers, and the datum of that decision
-				// is the cell of the module that says whether the model has ever been
-				// releved over BLE: a measured model answers its masks and the frames
-				// measured on this camera (addX5Items, the datum of the rungs of the
-				// X5), and a model never releved answers the tables of the matrix by
-				// id, label and tier, never a protocol number (rea/11: an official
-				// cell gives a label, never a protocol value, and the numbering is
-				// not a scale across models). The boolean is decided and printed once
-				// above the switch (note 8 of the CdC: the tell and the decision answer
-				// one datum), and this branch only reads it.
-				if (measuredNow) {
-					addX5Items(menu);
-				} else {
-					addCameraItems(menu, mi);
-				}
-				break;
-			case 3:
-				// X6 / UCD2: one entry, nothing else. The legacy envelope must
-				// not be reachable for this camera, so no resolution submenu,
-				// no GPS toggle and no "Default Video" below.
-				menu.addItem(new Ui.MenuItem("X6 Video","","X6Video",{}));
-				break;
-		}
+// The chain of levels answers the menu in one builder: the Level 0 base
+		// names no mode row (a camera the chain does not name gets the app of
+		// start, stop and state), every level adds its delta, and the UCD2 level
+		// replaces the chain with its own rows — the legacy envelope is
+		// unreachable there because its rows are not in that chain, and the GPS
+		// toggle and the Default Video entry below stay gated off it (the
+		// measured decision of the X6 run: no legacy frame reaches that camera).
+		addLevelItems(menu, BLEBarrel.menuLevel);
 
 		// CdC item 158, the entry MenuLevel: the entry that forces the menu and
 		// the family of another model, so the widget stays testable on the one
@@ -625,7 +433,7 @@ class InputDelegate extends Ui.BehaviorDelegate {
 		// to the envelope of a camera, so it is offered whatever the level the
 		// scan named. The choice of that submenu carries a model name and a
 		// level, never a frame and never a protocol number: the frame arrives at
-		// the selection of a choice, where refFrame() is the single site that
+		// the selection of a choice, where entryFrame() is the single site that
 		// turns a key into a frame (rea/11). A forced family writes frames of
 		// another protocol on the camera the user owns, so the ceiling of the
 		// barrel bounds what crosses and answers [hook] refused (CdC note 52).
@@ -646,9 +454,9 @@ class InputDelegate extends Ui.BehaviorDelegate {
         // walk stops at the first Null, and 40 is only the bound of the walk:
         // the X5 menu can hold at most the 8 generated entries of item 107 plus
         // the 2 legacy ones, the 6 resolutions being in the sub-menu now and not
-        // here (they answer at [sub]). Ui.Menu.MAX_SIZE is 16 in the API of the
-        // SDK, the documented limit of Ui.Menu, another class, so it is printed
-        // as a reference and not as a measurement of this menu (note 14). One line per entry: the id the selection must
+        // here (they answer at [sub]). MAX_SIZE stays out of the print: it belongs to another class, and
+        // the walk below answers the count of this menu (note 14: a reference
+        // is not a datum). One line per entry: the id the selection must
         // bring back, and the label the screen must show.
         var walk = 0;
         var entry = null;
@@ -660,7 +468,7 @@ class InputDelegate extends Ui.BehaviorDelegate {
             Sys.println("[menu] " + walk + " id=" + obsText(entry.getId()) + " label=" + obsText(entry.getLabel()));
             walk += 1;
         }
-        Sys.println("[menu] n=" + walk.toString() + " limit=" + Ui.Menu.MAX_SIZE.toString());
+        Sys.println("[menu] n=" + obsText(walk));
 
         Ui.pushView(menu, new Menu2Delegate(), Ui.SLIDE_IMMEDIATE);
         
@@ -737,7 +545,7 @@ function onSelect(item) as Void {
 		// returns the widget to the legacy envelope.
 		BLEBarrel.ucd2Armed = false;
 		
-		itemID = item.getId();
+		itemID = item.getId() as Lang.String;
 		// Axis S-1: the id of the item the user selected, and the character that
 		// routes it. One print, one question, before any decision. It also proves
 		// the build on the watch carries the ids of the generated menu.
@@ -764,21 +572,22 @@ function onSelect(item) as Void {
 		var forcedLevel = -1;
 		var forcedModel = "";
 		var ch = 0;
-		while (ch < CapacitesBarrel.capModels.size()) {
-			if (itemID.equals("force" + CapacitesBarrel.capModels[ch])) {
-				// The level of a model answers the table of the module at the same index
-				// as its name, the same datum (CdC item 157).
-				forcedModel = CapacitesBarrel.capModels[ch];
-				forcedLevel = CapacitesBarrel.capMenuLevel[ch];
+		while (ch < Levels.models.size()) {
+			if (itemID.equals("force" + Levels.models[ch])) {
+				// The level of a model answers the table of the chain at the same
+				// index as its name, the same datum.
+				forcedModel = Levels.models[ch];
+				forcedLevel = Levels.modelLevels[ch];
 			}
 			ch += 1;
 		}
 		if (itemID.equals("forceoff")) {
-			// The choice of off gives the detected model back: the model in force goes
-			// to the model the bond named, and the level answers the table of the module
-			// at the index of that name, so off cannot disagree with a detection.
+			// The choice of off gives the detected model back: the model in force
+			// goes to the model the bond named, and the level answers the table of
+			// the chain at the index of that name, so off cannot disagree with a
+			// detection.
 			forcedModel = BLEBarrel.detectedModel;
-			forcedLevel = CapacitesBarrel.menuLevelOfName(forcedModel);
+			forcedLevel = Levels.levelOfName(forcedModel);
 		}
 		if (forcedLevel != -1) {
 			// The forcing, applied at the selection of the choice: the datum of the
@@ -857,7 +666,7 @@ function onSelect(item) as Void {
 			    + " model=" + BLEBarrel.testModel + " level=" + BLEBarrel.testLevel.toString()
 			    + " sent=" + BLEBarrel.hookSent.toString()
 			    + " detectedModel=" + BLEBarrel.detectedModel
-			    + " detectedLevel=" + BLEBarrel.detectedLevel.toString());
+			    + " detectedLevel=" + obsText(BLEBarrel.detectedLevel));
 		// An id of the generated menu (r<value>, p<value>) resolves through the
 		// resolver above. The legacy ids below belong to the cameras of the
 		// older envelope and keep their own switch: the capability model covers
@@ -890,46 +699,42 @@ function onSelect(item) as Void {
 		// the model + the letter of the family + the index of the entry), never X5-
 		// numbered ones, because the numbering of the protocol exists over BLE on
 		// the X5 only and the numbering is not a scale across models (rea/11). Such
-		// an entry answers its frame through its key, at refFrame() only.
+		// an entry answers its frame through its key, at entryFrame() only.
 		// The tier of the entry answers the authority of the cell of the matrix, so
 		// the answer prints at the site that decides and never through the label of
-		// the item, which is a String the screen shows. One scan of the row of the
-		// model in force answers the tier and the key of the entry selected, so the
-		// print, the refusal and the frame cannot disagree about that entry (note 8
-		// of the CdC: the tell and the decision answer one datum). An id that is not
-		// an entry of the row of the model in force answers the empty tier, and the
-		// refusal says so: an id never reads through the row of another model, which
-		// would pair an id with the frame of that other model, the sin of a numbering
-		// that is not a scale. An entry of the official tier hands no frame and the
-		// selection answers by a refusal, because an official cell gives a label,
-		// never a protocol value (rea/11). The refusal prints at the site that withholds
-		// the frame, because an absence of a line is never a verdict (criterion 14 of
-		// 11.3), and it is never read as a refusal of the camera: nothing was asked of
-		// it and no reply exists for it (EF-22). No ternary: the trap of the repo notes.
-		var oRoute = itemID.length() > 2 && itemID.substring(0, 1).equals("o");
-		// The content test of a String is .equals(), never == (note 9 of the CdC).
-		var selModel = BLEBarrel.capModel;
-		var selMi = CapacitesBarrel.modelIndexOfName(selModel);
-		var selTier = CapacitesBarrel.entryTierOfId(selMi, itemID);
-		var selKey = CapacitesBarrel.entryKeyOfId(selMi, itemID);
-		if (oRoute) {
-			// The answer of the axis of the entry: the id, the model of the matrix
-			// in force, the tier of the cell and the key of the entry. Printed
-			// before the branch below takes its decision, so the tell of the axis
-			// and the decision answer one datum (note 8 of the CdC).
-			Sys.println("[tier] id=" + itemID + " model=" + selModel + " tier=" + selTier + " key=" + selKey);
-			if (selTier.equals("official") || selTier.equals("")) {
-				// The entry exists in the menu, the selection answers its id, and the
-				// cell of the matrix documents a label only: nothing crosses the bond.
-				// The line is the answer, never an absence of one (criterion 14 of 11.3),
-				// and the refusal is not a frame the camera refused (EF-22).
-				Sys.println("[refused] id=" + itemID + " tier=" + selTier + " model=" + selModel);
-			}
+		// the item, which is a String the screen shows. The row of the chain in
+		// the level in force (Levels.mc) answers id, label, key and family at one
+		// position of one chain, so the print, the refusal and the frame cannot
+		// disagree about that entry (note 8 of the CdC). An id the level does not
+		// answer is plumbing (DefaultV, GPSon, MenuLevel, the force choices) or
+		// nothing, and no id ever reads through the rows of another level: ids are
+		// scoped by the level, as the numbering of the X5 protocol was never a
+		// scale across models (rea/11). An entry of the chain that names a label
+		// only (a doc row) answers a Null key, and the selection answers by a
+		// refusal printed at the site that withholds the frame (criterion 14 of
+		// 11.3); the refusal is not a frame the camera refused (EF-22). No
+		// ternary: the trap of the repo notes. The content test of a String is
+		// .equals(), never == (note 9 of the CdC).
+		var selRow = Levels.rowOfId(BLEBarrel.menuLevel, itemID);
+		var selKey = "";
+		var selFam = "";
+		if (selRow != null) {
+			selKey = selRow[Levels.RKEY];
+			selFam = selRow[Levels.RFAM];
 		}
-		var genRoute = itemID.length() > 1 && (itemID.substring(0, 1).equals("r") || itemID.substring(0, 1).equals("p") || itemID.substring(0, 1).equals("v") || oRoute);
-		Sys.println("[route] " + itemID + " gen=" + genRoute.toString());
+		var genRoute = false;
+		if (selRow != null) {
+			genRoute = selFam.equals("v") || selFam.equals("p") || selFam.equals("r");
+		}
+		// Tell of the axis of the entry: the id, the level in force, the family
+		// and the key of the row, printed before the branch below decides.
+		Sys.println("[route] " + itemID + " gen=" + genRoute.toString()
+			+ " level=" + obsText(BLEBarrel.menuLevel) + " fam=" + selFam + " key=" + selKey);
+		if (genRoute && selKey.equals("")) {
+			Sys.println("[refused] id=" + itemID + " key=none level=" + obsText(BLEBarrel.menuLevel));
+		}
 		if (genRoute) {
-			if (itemID == "p0" && BLEBarrel.GPSon && location != null && info != null) {
+			if (itemID.equals("p0") && BLEBarrel.GPSon && location != null && info != null) {
 				// GPS photo: the fix is written in the header before the mode.
 				BLEBarrel.cmdSetPhoto = bleDevice.photoGpsHeader(location[0], location[1], info.altitude);
 			}
@@ -970,22 +775,14 @@ function onSelect(item) as Void {
                         	// arming could never pay (EF-22: no acceptance of this axis closes on a reply).
                         	// v12 stays the datum of the Starlapse entry of the X5 itself.
                         				BLEBarrel.starlapseStartMode = itemID.equals("v12");
-			// Axis model, the single site that answers the frame of the entry selected.
-			// An id of the generated menu of the X5 reads the resolver above, whose
-			// ids are values of the protocol of this camera (the datum of the rungs of
-			// the single-axis protocol); an id of the generated menu of another model
-			// reads the key of that entry at refFrame(), because the numbering of the
-			// protocol exists over BLE on the X5 only and the numbering is not a scale
-			// across models (rea/11). The tier of an official entry answers an empty
-			// key, hence a Null frame: the refusal printed just above is the answer,
-			// and the write below is not reached, so no frame is ever supposed from a
-			// label of a document.
-			var frame = null;
-			if (oRoute) {
-				frame = refFrame(selKey);
-			} else {
-				frame = entryFrame(itemID);
-			}
+			// The chain names the entry selected by its key: the key of a measured
+			// row of the X5 line IS its protocol id (the numbering exists over
+			// BLE on the X5 only, rea/11), and the key of a doc row is the
+			// semantic name the reference app speaks. entryFrame() above answers
+			// both at the single site; a key that answers no frame leaves the
+			// write below unreached, so no frame is ever supposed from a label
+			// of a document.
+			var frame = entryFrame(selKey);
 			// Axis S-2, at the call site of the selection. The tell of an axis lives at
 			// the boundary that axis crosses (note 8 of the CdC): the print inside the
 			// resolver says what the local variable holds, never the value the call site
@@ -1033,23 +830,11 @@ function onSelect(item) as Void {
 				// the write answer the same datum (note 8). The top of onSelect
                 // assigns videoMode = true for each selection, and this write comes
                 // later, so the family of a generated id is decided here alone.
-					// Axis model, the family of the entry selected. The ids of the X5 keep
-					// the letter they have at their head, the datum of the rungs of the
-					// single-axis protocol; the ids of another model answer their letter
-					// inside the id, at the third character, because the id of the
-					// generated menu of a model is o + the index of the model + the letter
-					// of the family + the index of the entry, and the numbering of the
-					// ids of one model says nothing about the ids of another: the
-					// numbering is not a scale across models (rea/11). The letter is a
-					// datum of the row of the model in force, so the family of an entry
-					// and the row that answers its tier and its key cannot disagree.
-					var famLetter = itemID.substring(0, 1);
-					if (oRoute) {
-						// The content test of a String is .equals(), never == (note 9).
-						// No ternary: the trap of the repo notes.
-						famLetter = itemID.substring(2, 3);
-					}
-					var photoFam = famLetter.equals("p");
+					// Axis chain: the family of the entry answers the row of the level in
+					// force, not a letter of the id — the row that answers the
+					// family is the row that answers the key and the frame, one
+					// datum that cannot be paired wrong (note 8 of the CdC).
+					var photoFam = selFam.equals("p");
 				BLEBarrel.videoMode = !photoFam;
 				// Axis of the separation (item 48): a p3 selection arms the mode only;
 				// the capture frame belongs to the start press. The datum is set
@@ -1228,19 +1013,17 @@ if ((BLEBarrel.GPSon) && (location != null) && (info != null)) {
         // 14 of 11.3).
         // CdC item 159: the resolutions of a model of the matrix answer a submenu of
         // their own too, so the opener answers the Video entry of the model in force.
-        // The measured datum is the opener of the X5, keyed on its own id v0 (CdC item
-        // 107); the generated menu answers the entry at the same place of the video
-        // family of the model in force, o + the index of the model + v0, which is the
-        // first video entry of every model of the matrix. That the menu of a model the
-        // bond never releved opens such a submenu is a decision of the axis of the test
-        // and never a reading, so the entries of that submenu still carry the tier of
-        // their cell and an official cell answers [refused] and writes nothing. The
-        // print answers the three decisions before any branch reads one of them (note
-        // 8 of the CdC: the tell and the decision answer one datum).
-        var openMi = CapacitesBarrel.modelIndexOfName(BLEBarrel.capModel);
-        var resOpen = itemID.equals("v0");
-        if (openMi >= 0) {
-            resOpen = resOpen || itemID.equals("o" + openMi.toString() + "v0");
+        // The measured opener of the X5 was its own entry v0 (CdC item 107);
+        // the chain of Levels.mc answers the opener as the sub flag of the row of
+        // the level in force, at the same position that answers the id, the label
+        // and the key of that row — one datum, no hand-written second list
+        // (note 8 of the CdC). The rows of the submenu keep the rule of the
+        // chain: a doc row answers [refused] at its selection and writes nothing.
+        // The print answers the decisions before any branch reads one of them
+        // (note 8 of the CdC: the tell and the decision answer one datum).
+        var resOpen = false;
+        if (selRow != null) {
+            resOpen = selRow[Levels.RSUB] == 1;
         }
         Sys.println("[sub] res=" + resOpen.toString() + " push=" + (resOpen || itemID.equals("MenuLevel")).toString()
             + " depth=" + BLEBarrel.resolutionSubmenuOn.toString()
@@ -1248,11 +1031,7 @@ if ((BLEBarrel.GPSon) && (location != null) && (info != null)) {
         if (resOpen) {
             BLEBarrel.resolutionSubmenuOn = true;
             var resMenu = new Ui.Menu2({:title=>"Resolution"});
-            if (CapacitesBarrel.modelMeasured(openMi)) {
-                addX5ResItems(resMenu);
-            } else {
-                addCameraResItems(resMenu, openMi);
-            }
+            addLevelResItems(resMenu, BLEBarrel.menuLevel);
             Ui.pushView(resMenu, new Menu2Delegate(), Ui.SLIDE_IMMEDIATE);
         } else if (itemID.equals("MenuLevel")) {
             // CdC item 158, the submenu of MenuLevel: the same shape the Video entry
@@ -1262,7 +1041,7 @@ if ((BLEBarrel.GPSon) && (location != null) && (info != null)) {
             // answer the models of the matrix (addMenuLevelItems above), plus the
             // choice off that gives the detected model back. A choice carries a model
             // name and a level, never a frame and never a protocol number: the frame
-            // of an entry arrives at refFrame(), the single site that turns a key into
+            // of an entry arrives at entryFrame(), the single site that turns a key into
             // a frame, and the ceiling of the barrel bounds what reaches the camera the
             // user owns (CdC note 52).
             BLEBarrel.menuLevelSubmenuOn = true;
