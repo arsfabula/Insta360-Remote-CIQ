@@ -259,26 +259,30 @@ function rowOfId(level, id) {
     return null;
 }
 
-// The row the screen must hold when the level in force answers nothing under
-// the mode in force. The rule is one datum, not an inference: the menu and the
-// mode are the same chain, so a level change (a detection, a forced model)
-// leaves a pose that no row carries, and the screen would name a mode that
-// does not exist - the bench of 12 nov. watched "DEFAULT VIDEO" over the
-// eleven dots of the X5 line, a name open() poses and no level lists.
+// The row the screen must hold when its two data no longer name one row of
+// the level in force. The screen is drawn from two data at once: the title
+// from the barrel (currentLabel, which the barrel re-poses at its open()) and
+// the option rows from the application's own mode id (Settings.rows(currentModeId)).
+// They cross a boundary, so they can disagree: the bench of 12 nov. (second
+// session, the real X5 power-cycled) watched the title DEFAULT VIDEO over the
+// TIMER/SIZE/EV/LENS rows of the photo row - and before the pose existed, the
+// same title over the eleven dots of the X5 line, an empty row list.
 //
-// The decision, in the order the user chose at that bench (12 nov.): the mode
-// this camera last CONFIRMED, kept under its name by the barrel at its echo;
-// else the first row of the level, which is the normal video of that line;
-// else nothing to pose - no rows (level 0, the legacy pose of the app) or the
-// mode already answers a row of this menu (browsing, a resolution submenu).
-// The kept id is only asked through this level's rows: an id of another level
-// never comes back, that is what rowOfId() means.
-function poseFor(level, keptId, currentId) {
+// The rule is one datum: a coherent screen is a row whose id resolves in this
+// level AND whose label is the title being carried. Anything else is due for a
+// pose, and the order of the choice is the user's rule of that bench: the mode
+// this camera last CONFIRMED, kept under its name by the barrel at that echo;
+// else the first row of the level, which is the normal video of that line.
+// A level with no rows (0) answers nothing - the app's legacy pose stays. The
+// kept id is only asked through this level's rows: an id of another level never
+// comes back, that is what rowOfId() means.
+function poseFor(level, keptId, currentId, currentLabel) {
     var rows = rowsMain(level);
     if (rows.size() == 0) {
         return null;
     }
-    if (rowOfId(level, currentId) != null) {
+    var cur = rowOfId(level, currentId);
+    if (cur != null && currentLabel != null && cur[RLB].equals(currentLabel)) {
         return null;
     }
     var kept = rowOfId(level, keptId);

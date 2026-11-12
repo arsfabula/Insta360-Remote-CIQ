@@ -2683,6 +2683,16 @@ class BleDevice extends BluetoothLowEnergy.BleDelegate {
 			System.println("[mode] keep refused: no name to key the mode on, id=" + id);
 			return;
 		}
+		// The datum lives twice, at the same moment: in the property under the
+		// name (the next process reads it at its classification), and in this
+		// memory (keptModeId, the answer of peekKeptModeId). The bench of 12
+		// nov., third session, named why the memory is needed: the camera was
+		// power-cycled, the stack reconnected the paired device on its own, no
+		// scan round ever classified a name again - loadKeptMode never ran, and
+		// the only datum that knew the photo mode had been confirmed here was
+		// this field. Confirmed now, kept now: the property alone answered too
+		// late for a link that comes back without a scan.
+		keptModeId = id;
 		App.getApp().setProperty("mode." + deviceName, id);
 	}
 

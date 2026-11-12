@@ -96,10 +96,11 @@ class RemoteDelegate extends Ui.BehaviorDelegate {
 	hidden var tapPending = false;
 	hidden var pendingSetFrames = null;
 	hidden var pendingSetKey = null;
-	// The level the mode pose was last taken for. The pose is a decision of this
-	// application about its own screen (Levels.poseFor names the rule); it runs
-	// once per level, from the pump below, never from a draw.
-	hidden var posedLevel = -1;
+	// One datum of the pose below: the row this session already posed and could
+	// not apply (a doc row, no frame) or has no frame to write (the sentinel of
+	// a replacing level). Asked a second time it answers the same absence, and
+	// the pump would print that refusal every 125 ms.
+	hidden var poseHeld = null;
 
 	function initialize(device) {
 		BehaviorDelegate.initialize();
@@ -338,9 +339,9 @@ class RemoteDelegate extends Ui.BehaviorDelegate {
 	// a settled state - the same order the PR's three one-shot timers reached
 	// their callbacks, without owning three Timer objects.
 	function pumpDue() as Void {
-		// The pose first: it is a due of the same kind as the three below (a
-		// level became due), and it owns no frame of its own - it arms the
-		// mode write through pendingSend/dueSend below.
+		// The pose first: it is a due of the same kind as the three below (the
+		// screen's own pair of data became incoherent), and it owns no frame of
+		// its own - it arms the mode write through pendingSend/dueSend below.
 		poseMode();
 		var now = Sys.getTimer();
 		if (dueSend != null && now >= dueSend) {
@@ -357,18 +358,20 @@ class RemoteDelegate extends Ui.BehaviorDelegate {
 		}
 	}
 
-	// The pose of the mode when the menu in force answers nothing under it.
-	// The rule and its order live in one place, Levels.poseFor: the mode this
-	// camera last CONFIRMED holding (the barrel kept it under the name at that
-	// echo), else the first row of the level - the normal video of that line.
-	// This is the screen's truth, not a guess about the camera: the X5 never
-	// names its mode at a connect (the 0x2017 push is the periodic ack, a
-	// 0x2053 echo only follows OUR write, GET_OPTIONS is cut at octet 20 - the
-	// bench of 12 nov. re-reads all three), so no read could fill this screen.
-	// Without the pose the screen named a mode no row carries: open() poses
-	// "Default Video", and the chain replaced at level 2 lists eleven entries
-	// that do not contain it (observed at that bench: the title over the dots
-	// of the measured ladder, an empty Settings row list, START armed).
+	// The pose of the mode when the screen's two data no longer name one row of
+	// the level in force. The rule and its order live in one place,
+	// Levels.poseFor: the mode this camera last CONFIRMED holding (the barrel
+	// kept it under the name at that echo), else the first row of the level -
+	// the normal video of that line. This is the screen's truth, not a guess
+	// about the camera: the X5 never names its mode at a connect (the 0x2017
+	// push is the periodic ack, a 0x2053 echo only follows OUR write,
+	// GET_OPTIONS is cut at octet 20 - the bench of 12 nov. re-reads all three),
+	// so no read could fill this screen. Two observations named this rule: the
+	// title "Default Video" (open()'s own pose) over the eleven dots of the
+	// measured ladder with an empty row list, and that same title over the
+	// TIMER/SIZE/EV/LENS rows of the photo row after the camera was
+	// power-cycled - the title is the barrel's datum, the rows are this class's,
+	// and only a pose applied to both puts them back on one row.
 	//
 	// The write below is what makes the claim an action: the same pair the
 	// wheel's selection sends (the frame, then the apply), armed at the
@@ -379,7 +382,6 @@ class RemoteDelegate extends Ui.BehaviorDelegate {
 	// camera holds stays, as the chain's rule says.
 	hidden function poseMode() as Void {
 		var level = BLEBarrel.menuLevel;
-		if (posedLevel == level) { return; }
 		// A mode belongs to a camera: no bond, no pose. The absence screen
 		// (UI_NOT_FOUND) is what the screen shows there, and the pose stays
 		// due for the bond that answers it.
@@ -387,19 +389,23 @@ class RemoteDelegate extends Ui.BehaviorDelegate {
 		// The Settings and resolution legs own the current id while they are on
 		// screen; the pose would fight them and it is never due on those pages.
 		if (inSettingsUI()) { return; }
-		var pose = Levels.poseFor(level, dev.peekKeptModeId(), currentModeId);
-		posedLevel = level;
+		var pose = Levels.poseFor(level, dev.peekKeptModeId(), currentModeId, BLEBarrel.currentLabel);
 		if (pose == null) { return; }
 		var id = pose[Levels.RID] as Lang.String;
 		var label = pose[Levels.RLB] as Lang.String;
-		Sys.println("[pose] level=" + level.toString() + " nothing under " + currentModeId + ", taking " + id);
+		if (poseHeld != null && poseHeld.equals(id)) { return; }
+		Sys.println("[pose] level=" + level.toString() + " title=" + BLEBarrel.currentLabel + " rows=" + currentModeId + " do not name one row, taking " + id);
 		applyMode(dev, id, label, false);
 		if (pose[Levels.RFAM].equals("x")) {
-			// The sentinel row of a replacing level arms the envelope, it has no
-			// frame to write (the row's family says so).
+			// The sentinel row of a replacing level arms the envelope and has no
+			// frame to write (the row's family says so) - the pose is over.
+			poseHeld = id;
 			return;
 		}
-		if (!currentModeId.equals(id)) {
+		if (!currentModeId.equals(id) || !BLEBarrel.currentLabel.equals(label)) {
+			// applyMode refused (no frame for that row): the mode the camera
+			// holds stays, and so does the name the screen carries for it.
+			poseHeld = id;
 			Sys.println("[pose] " + id + " refused, the mode stays " + BLEBarrel.currentLabel);
 			return;
 		}
