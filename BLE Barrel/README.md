@@ -33,7 +33,10 @@ XX Byte 7: command to camera
   0f Apply Settings
   16 Interval photo & video ? byte 18 = 0x01 (video) & 0x02 (photo)
   17 Stop TimeLapse & Interval byte 17 = 0x08 instead if 0x10 in standard video
-  27 
+  27 CheckAuthorization: body field1 = client id, field2 = 17 (WATCH_GARMINOS);
+     answer 0xc8 with field1 = status (0 ok, 1 Allow pending on camera, ...).
+     Only a client that completed this handshake receives pushes. Full flow:
+     docs/x5-protocol.md
   35 GPS Telemetry
   3c time highlight & "mark that" highlight
   41 X3 ? 

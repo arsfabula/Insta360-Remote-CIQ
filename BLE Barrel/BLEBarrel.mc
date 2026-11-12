@@ -358,6 +358,15 @@ const STATUS_ASK_MS = 1500;
 const STATUS_RETRY_MS = 6000;
 const STATUS_RETRY_MAX = 2;
 
+// The authorization handshake, part of every connect on a legacy-framed link:
+// CHECK_AUTHORIZATION (39) as a WATCH_GARMINOS client, 500 ms after the notify
+// profile opens. The camera only pushes to a client that completed this handshake
+// (measured twice on X5 fw 1.13.21: PR #2 by @no84by and this barrel's own
+// probe; PROTOCOL_APK.md §15.14). The answer moves no UI state yet, it only
+// feeds the wire log and authProbeStatus.
+const AUTH_CMD = 0x27;
+const AUTH_PROBE_MS = 500;
+
 
 
 
@@ -455,6 +464,16 @@ var x5CamState as Lang.Number or Null = null;
 var x5StatusAsked as Lang.Boolean = false;
 var x5StatusTries as Lang.Number = 0;
 var x5StatusTimer as Timer.Timer or Null = null;
+
+// The authorization probe's bookkeeping. authProbeSeq is the stamped sequence
+// of the request, used to pick its answer out of the responses, -1 when no
+// probe is in flight; authProbeStatus is the answered status (-1 while no
+// answer): 0 authorized, 1 unauthorized with an Allow pending on the camera,
+// 2 busy, 3..6 a client of each kind already connected, 7 sleeping.
+var authProbeStatus as Lang.Number = -1;
+var authProbeSeq as Lang.Number = -1;
+var authProbeAsked as Lang.Boolean = false;
+var authProbeTimer as Timer.Timer or Null = null;
 
 // The 0x2006 storage push, two small flags. The push carries no sizes: the free
 // and total byte counts live in option 20 and in the 0x2062 push, past octet 20
@@ -1176,6 +1195,12 @@ class BleDevice extends BluetoothLowEnergy.BleDelegate {
 			cancelPendingStart();
 			mMessage = currentLabel + "\n" + startMessage;
 			recState = stateStopRec;
+		} else if (authProbeSeq >= 0 && buf[10] == authProbeSeq && code < 0x1000) {
+			// The answer carrying the probe's sequence is the authorization
+			// answer, whatever code it echoes. This runs ahead of the ACK
+			// branch on purpose: the same code 200 shape would otherwise be
+			// parsed as a capture-state answer to command 15.
+			applyAuthProbe(buf);
 		} else if (code == ACK_CODE) {
 			// One frame, two jobs. The code-200 answer to command 15 is also the ACK
 			// the start sequence waits for, so the state read runs first and does not
@@ -1279,6 +1304,80 @@ class BleDevice extends BluetoothLowEnergy.BleDelegate {
 			x5StatusTimer.stop();
 			x5StatusTimer = null;
 		}
+	}
+
+	// The authorization handshake, asked once per link, 500 ms after the notify
+	// profile opened and so before the status ask at 1500 ms: the camera only
+	// pushes to an authorized client, so the ask has to open the gate in time
+	// for the status answer. The frame is the phone app's CHECK_AUTHORIZATION
+	// (39), field 1 = client id, field 2 = 17 = WATCH_GARMINOS, the shape the
+	// camera answers. This is X5 legacy framing only: a UCD2 link is a
+	// different protocol and stays untouched.
+	function scheduleAuthProbe() as Void {
+		if (authProbeTimer != null || authProbeAsked || ucd2Armed) {
+			return;
+		}
+		var t = new Timer.Timer();
+		authProbeTimer = t;
+		t.start(method(:onAuthProbe), AUTH_PROBE_MS, false);
+	}
+
+	function onAuthProbe() as Void {
+		authProbeTimer = null;
+		askAuthProbe();
+	}
+
+	function askAuthProbe() as Void {
+		if (authProbeAsked || device == null || ucd2Armed) {
+			return;
+		}
+		authProbeAsked = true;
+		var id = "garmin-remote";
+		var uid = System.getDeviceSettings().uniqueIdentifier;
+		if (uid != null && uid.length() >= 12) {
+			id = uid.substring(0, 12);
+		}
+		var f = [0, 0, 0, 0, 0x4, 0, 0, AUTH_CMD, 0, 0x2, 0xff, 0, 0, 0x80, 0, 0, 0x0a, id.length()]b;
+		f.addAll(id.toUtf8Array());
+		f.addAll([0x10, 0x11]b);
+		f[0] = f.size();
+		transmit(f);
+		authProbeSeq = SeqNo;
+		wireLine("auth probe", "asked cmd=" + AUTH_CMD.toString() + " id=" + id + " seq=" + authProbeSeq.toString());
+	}
+
+	// CheckAuthorizationResp, read by the probe's sequence. Shape first like
+	// everywhere else: field 1 is the status varint at octet 16, an answer
+	// without the field is status 0 (authorized), the encoding the PR's doc
+	// describes. What the camera is doing afterwards is not tracked here: the
+	// [nf] print of x5RecordNotif already names every push that arrives.
+	function applyAuthProbe(buf as Lang.ByteArray) as Void {
+		var st = 0;
+		if (buf.size() >= 18 && buf[16] == 0x08) {
+			st = buf[17] & 0xff;
+		}
+		authProbeStatus = st;
+		authProbeSeq = -1;
+		wireLine("auth probe", "answer status=" + st.toString() + " " + authStatusName(st));
+	}
+
+	function authStatusName(st as Lang.Number) as Lang.String {
+		if (st == 0) {
+			return "authorized";
+		}
+		if (st == 1) {
+			return "unauthorized, Allow pending on the camera";
+		}
+		if (st == 2) {
+			return "busy";
+		}
+		if (st >= 3 && st <= 6) {
+			return "a client is already connected";
+		}
+		if (st == 7) {
+			return "sleeping";
+		}
+		return "unknown status";
 	}
 
 
@@ -2307,7 +2406,10 @@ class BleDevice extends BluetoothLowEnergy.BleDelegate {
 		}
 		// The notify path is open from here, so this is the earliest point at which a
 		// question can be answered. What the camera is doing is asked once per
-		// connect, before the user asks for anything.
+		// connect, before the user asks for anything. The authorization probe goes
+		// first (500 ms) so that the status ask (1500 ms) runs on a link the
+		// camera has already named authorized or not.
+		scheduleAuthProbe();
 		scheduleCamStatusAsk();
 	}
 
@@ -2439,6 +2541,9 @@ function registerProfiles() as Void {
 				cancelStatusTimer();
 				x5StatusAsked = false;
 				x5StatusTries = 0;
+				authProbeAsked = false;
+				authProbeSeq = -1;
+				authProbeStatus = -1;
 				open();
 
 
