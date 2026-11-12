@@ -128,6 +128,22 @@ const ucd2RxMaxBody = 512;
 
 const DEBUG_TRACE = false;
 
+// LOG_FRAMES (item 9 of the integration, the hygiene of the log): the lines of
+// per-frame CONTENT - the hex of every chunk across the delegate (wireBytes) and
+// the decoded field line of every notification (the [nf] line) - are what fills
+// the ~90 lines the watch keeps in X5remote.TXT/BAK within seconds of a running
+// recording (docs/x5-protocol.md, the retention datum), so the verdict lines of
+// the decisions are out of the file before a user can pull it. The lines of
+// EVENTS (the wireLine family) answer the same facts named, one line per fact,
+// and they are the bench datum surface; the per-frame content answers the bytes,
+// which is only asked when the bytes themselves are on trial. This constant
+// turns the content lines off; armWire, the [wire] event lines it arms, and
+// every verdict line are untouched. With the constant false, every #n of the
+// wire log is one event line and no hex sits between them. The counters the
+// peek* API answers move whatever these lines print: the counters are a datum
+// apart from the log, never a print of it.
+const LOG_FRAMES = false;
+
 
 
 
@@ -627,8 +643,12 @@ class BleDevice extends BluetoothLowEnergy.BleDelegate {
 
 	// A byte array is an array of numbers at runtime, but the compiler wants the
 	// exact type, so the hex walk takes a ByteArray: every caller hands it one.
+	// The constant gate of LOG_FRAMES sits here, at the single site of the hex
+	// dump, not at the callers: the send and receive sites keep naming their
+	// event, and this answers whether the bytes of the event are printed too
+	// (the constant's comment names why the answer is no by default).
 	protected function wireBytes(tag as Lang.String, data as Lang.ByteArray) as Void {
-		if (!wireTrace) {
+		if (!wireTrace || !LOG_FRAMES) {
 			return;
 		}
 		wireEvents = wireEvents + 1;
@@ -1182,7 +1202,17 @@ class BleDevice extends BluetoothLowEnergy.BleDelegate {
 			// S-25 (CdC item 97): the content of a notification, read once per notification
 			// received, at the site that decodes it. The observer of the delegate keeps one slot
 			// per field, so a window answers for the LAST notification only and cannot name which
-			// echo a set of fields belongs to (note 26, note 27). The print sits before the branch
+			// echo a set of fields belongs to (note 26, note 27). The print sits before the
+			// branch that counts below, the way it always did.
+			// Item 9 of the integration, the hygiene of the log: this is a line of per-frame
+			// content - one per notification, with the hex of its body - and it printed
+			// unconditionally, the way it was written before any line of events existed.
+			// LOG_FRAMES answers now, and with the constant at its default the decoded fields
+			// stay datum of the peek* slots while the watch log keeps the events that NAME
+			// these fields (the battery, storage, capture and auth lines of wireLine).
+			if (wireTrace && LOG_FRAMES) {
+				System.println("[nf] code=" + notifCode.toString() + " f1=" + notifVal1.toString() + " f2=" + notifVal2.toString() + " f3=" + notifVal3.toString() + " opts=" + notifOptCount.toString() + " o1=" + notifOptTag.toString() + ":" + notifOptVal.toString() + " o2=" + notifOptTag2.toString() + ":" + notifOptVal2.toString() + " hex=" + notifHex);
+			}
 			System.println("[nf] code=" + notifCode.toString() + " f1=" + notifVal1.toString() + " f2=" + notifVal2.toString() + " f3=" + notifVal3.toString() + " opts=" + notifOptCount.toString() + " o1=" + notifOptTag.toString() + ":" + notifOptVal.toString() + " o2=" + notifOptTag2.toString() + ":" + notifOptVal2.toString() + " hex=" + notifHex);
 			var ix = x5CodeIndex(notifCode);
 			if (ix < 0) {
@@ -2019,7 +2049,11 @@ class BleDevice extends BluetoothLowEnergy.BleDelegate {
 
 	function armWire() as Void {
 		wireTrace = true;
-		wireLine("armed", "every byte crossing the delegate is printed from now on");
+		// The promise this line makes is the promise LOG_FRAMES keeps: the events
+		// crossing the delegate are printed from now on, one line per event; the
+		// bytes of those events answer only when that constant is flipped too
+		// (item 9 of the integration, the constant's comment holds the why).
+		wireLine("armed", "every event crossing the delegate is printed from now on");
 	}
 
 
