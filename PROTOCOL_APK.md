@@ -1321,6 +1321,18 @@ values: 0..4, 11, 12, 14. In the APK's option table those ids read
 whether the X5's physical mode dial also moves `0x2053`, and in which of `f1`/`f2`, is
 exactly what the v6 action matrix has to measure on the watch.
 
+**Closed 2026-11-12, by both benches.** `0x2053` is `CAM_SUBMODE_CHANGE {1: photo
+sub-mode, 2: video sub-mode, 3: active lens}`, value 100 = "not this family" (one half
+always carries the none flag). Option 40 is the photo sub-mode option, option 41 the
+video sub-mode option - not `PHOTO_RESOLUTION`/`REMAINING_TIME`. The physical dial and
+the camera's own screen move `0x2053` exactly like a write does: the PR #2 survey
+records the push on camera-side changes (`docs/data/x5-ble-survey-fw1.13.21.md`), and
+the mode-following behavior is what its app is built on (`docs/x5-protocol.md` §3.1-3.2,
+imported and credited). This barrel now carries the matching echo gate (`noteModeWrite`
+/ `settingMayGo`): the camera confirms a mode write with its `0x2053` 0.3-0.5 s later
+and refuses option writes while it is still switching (400). The v6 action matrix does
+not have to measure this anymore.
+
 **The v6 decoder, replayed against the corpus.** `tools/x5_corpus_push_decode_check.py`
 mirrors `pushDecode()`/`pushNote()` from the probe source and runs them twice: on the
 full corpus frame, and on the same frame cut to 20 octets as the watch leg receives it.
