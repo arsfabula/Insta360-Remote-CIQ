@@ -407,12 +407,13 @@ function levelsChainTableFallbackAndConfirm(logger) {
 
 // The trigger of the three first asks, corrected by the bench of 12 nov. (real
 // X5 fw 1.13.21 over the PC Bluetooth, trace lifted by int-x5-build\benchbuild.ps1):
-// the link connected, started and stopped a recording, and the profile-register
-// callback never printed a line - the connection is manual (pairDevice, then
-// discoverServices walks the services), so the profile registered at open is
-// never negotiated. The asks armed there were never asked on a real camera,
-// the authorization probe among them. They arm at armLinkAsks now, at the site
-// the walk finds the LBS characteristic and the link is demonstrably writable.
+// the profile-register callback runs at OPEN, right after the scan turns on and
+// before any pair - the log prints it with status=0 in both sessions. The asks
+// armed there came due while no device existed and were refused by the ask
+// guards: the first session connected, started and stopped a recording without
+// one question reaching the wire. The asks arm at armLinkAsks now, at the site
+// the walk finds the LBS characteristic and the link is demonstrably writable -
+// the 16:15 session then asked them all and the camera answered all three.
 // What this vector pins is the split, on the schedule itself: calling the
 // callback by name leaves the booking untouched, calling armLinkAsks books the
 // three, the probe first. That the asks cross the wire on a real connect is
