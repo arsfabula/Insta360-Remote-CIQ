@@ -75,7 +75,7 @@ function tapIsNotStartButKeyIs(logger) {
 }
 
 // The crash the user's own simulator run named, held as a vector. At the moment
-// the notify profile opens, the link books three delayed asks (the authorization
+// a link becomes writable, the link books three delayed asks (the authorization
 // probe at 500 ms, the camera state at 1500 ms, the card at 2500 ms) and the
 // opened app's view then starts its 125 ms tick. One process, one timer pool:
 // Toybox.Timer documents it - "The number of available timers (default 3) ...
@@ -84,7 +84,8 @@ function tapIsNotStartButKeyIs(logger) {
 // the "Too Many Timers" the opened widget took at RemoteView.onShow, while the
 // same startup passed in the older shape of this app, which owned no view timer
 // and sat exactly at the ceiling. So this vector arms the link's schedule the
-// way onProfileRegister does and then drives the very line the crash named.
+// way the link's ready site does now (armLinkAsks, where the service walk found
+// the characteristic) and then drives the very line the crash named.
 // Green means the link's asks and the view's tick fit one pool; against a barrel
 // that keeps a Timer object per ask, this is the vector that takes the crash.
 // The refusal of the host is not a catchable Lang exception: a probe of the same
@@ -141,7 +142,7 @@ function linkScheduleKeepsNearestDate(logger) {
 	var bookedAuth = BLEBarrel.authProbeDue != null;
 	var bookedState = BLEBarrel.x5StatusDue != null;
 	var bookedCard = BLEBarrel.x5StorageAskDue != null;
-	// The delays of onProfileRegister are 500 / 1500 / 2500 ms, so the probe is
+	// The link's ask delays are 500 / 1500 / 2500 ms, so the probe is
 	// the nearest date and the alarm must be armed for it.
 	var nearestIsProbe = nearest == BLEBarrel.authProbeDue;
 	// Taking one date down leaves the others booked: the state ask is dropped,

@@ -404,3 +404,52 @@ function levelsChainTableFallbackAndConfirm(logger) {
 	logger.debug("stored=" + show(stored));
 	return ok;
 }
+
+// The trigger of the three first asks, corrected by the bench of 12 nov. (real
+// X5 fw 1.13.21 over the PC Bluetooth, trace lifted by int-x5-build\benchbuild.ps1):
+// the link connected, started and stopped a recording, and the profile-register
+// callback never printed a line - the connection is manual (pairDevice, then
+// discoverServices walks the services), so the profile registered at open is
+// never negotiated. The asks armed there were never asked on a real camera,
+// the authorization probe among them. They arm at armLinkAsks now, at the site
+// the walk finds the LBS characteristic and the link is demonstrably writable.
+// What this vector pins is the split, on the schedule itself: calling the
+// callback by name leaves the booking untouched, calling armLinkAsks books the
+// three, the probe first. That the asks cross the wire on a real connect is
+// stage E1's oracle - this host has no GATT device to walk, and no vector here
+// pretends to have seen one.
+(:test)
+function asksArmAtTheLinkNotTheProfile(logger) {
+	var dev = freshLink();
+	// Open the schedule the way the link itself does, not by assigning null to
+	// the module dates: the default type check flow-types a field written null
+	// here into the comparisons far below (and refuses lt on Null/Null), while
+	// dates cleared inside methods stay the declared Number or Null. The probe
+	// has no cancel: onAuthProbe into a link with no device is refused by its
+	// own guard, after clearing the date.
+	dev.cancelStatusTimer();
+	dev.cancelStorageAskTimer();
+	dev.cancelRetry();
+	dev.cancelPendingStart();
+	dev.onAuthProbe();
+	BLEBarrel.authProbeAsked = false;
+	BLEBarrel.x5StatusAsked = false;
+	BLEBarrel.x5StorageAsked = false;
+	var before = dev.earliestAskDue();
+	dev.onProfileRegister(BLEBarrel.LBS_SERVICE, BluetoothLowEnergy.STATUS_SUCCESS);
+	var quiet = dev.earliestAskDue() == before &&
+		BLEBarrel.authProbeDue == null && BLEBarrel.x5StatusDue == null &&
+		BLEBarrel.x5StorageAskDue == null;
+	dev.armLinkAsks();
+	// The ordering of the three bookings, observed the way the default type
+	// check accepts nullable module fields: every relational comparison sits
+	// right after the null guard of its own left operand (linkScheduleKeepsNearestDate
+	// in UiTest observes the same dates in the same shape).
+	var booked = true;
+	booked = booked && BLEBarrel.authProbeDue != null && BLEBarrel.authProbeDue < BLEBarrel.x5StatusDue &&
+		BLEBarrel.x5StatusDue != null && BLEBarrel.x5StatusDue < BLEBarrel.x5StorageAskDue &&
+		BLEBarrel.x5StorageAskDue != null;
+	var probeFirst = dev.earliestAskDue() == BLEBarrel.authProbeDue;
+	logger.debug("quiet=" + quiet + " booked=" + booked + " probeFirst=" + probeFirst);
+	return quiet && booked && probeFirst;
+}

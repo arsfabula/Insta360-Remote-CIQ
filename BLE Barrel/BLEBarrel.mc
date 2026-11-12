@@ -1789,7 +1789,24 @@ class BleDevice extends BluetoothLowEnergy.BleDelegate {
 		armLinkAlarm();
 	}
 
-	// First ask after the notify profile is up: the camera answers an ask 0.6 to
+	// The three first asks of a link, armed at the one place this link is
+	// demonstrably able to answer: the walk in discoverServices has just found
+	// the LBS characteristic, and kickQueue writes from that same line. Why
+	// this site and not the profile-register callback: the bench of 12 nov.
+	// (real X5 fw 1.13.21, PC Bluetooth, trace lifted by int-x5-build\benchbuild.ps1)
+	// connected, started a recording and stopped one - and the callback printed
+	// nothing, in a log that printed every other wire event. The connection here
+	// is manual - pairDevice, then discoverServices walks the services itself -
+	// so the profile registered at open is never negotiated and the callback
+	// never runs. An ask armed there was an ask never asked. The guards inside
+	// each schedule* keep a repeat call of this one harmless.
+	function armLinkAsks() as Void {
+		scheduleAuthProbe();
+		scheduleCamStatusAsk();
+		scheduleStorageAsk();
+	}
+
+	// First ask after the link can answer: the camera answers an ask 0.6 to
 	// 3.9 s later on this link, and an ask written before the descriptor settles
 	// is answered into a closed window.
 	function scheduleCamStatusAsk() as Void {
@@ -1816,8 +1833,8 @@ class BleDevice extends BluetoothLowEnergy.BleDelegate {
 		armLinkAlarm();
 	}
 
-	// The authorization handshake, asked once per link, 500 ms after the notify
-	// profile opened and so before the status ask at 1500 ms: the camera only
+	// The authorization handshake, asked once per link, 500 ms after the link
+	// became writable and so before the status ask at 1500 ms: the camera only
 	// pushes to an authorized client, so the ask has to open the gate in time
 	// for the status answer. The frame is the phone app's CHECK_AUTHORIZATION
 	// (39), field 1 = client id, field 2 = 17 = WATCH_GARMINOS, the shape the
@@ -3213,20 +3230,16 @@ class BleDevice extends BluetoothLowEnergy.BleDelegate {
 
 	function onProfileRegister(uuid as BluetoothLowEnergy.Uuid, status as BluetoothLowEnergy.Status) as Void {
 		wireLine("profile register", uuid.toString() + " status=" + status.toString());
+		// Named by an unconditional println, the way the [scan] axis lines are,
+		// because this callback had been invisible in every real log: the bench
+		// of 12 nov. connected a real X5 without ever printing this line - the
+		// profile registered at open is not negotiated on a manually paired
+		// link. The link's asks no longer ride this trigger (see armLinkAsks);
+		// the print stays so the callback is never again trusted silently.
+		System.println("[ask] profile register uuid=" + uuid.toString() + " status=" + status.toString());
 		if (DEBUG_TRACE) {
 			debug("registered");
 		}
-		// The notify path is open from here, so this is the earliest point at which a
-		// question can be answered. What the camera is doing is asked once per
-		// connect, before the user asks for anything. The authorization probe goes
-		// first (500 ms) so that the status ask (1500 ms) runs on a link the
-		// camera has already named authorized or not.
-		scheduleAuthProbe();
-		scheduleCamStatusAsk();
-		// The card ask follows at 2500 ms, behind both, and changes no UI
-		// state: it fills the same card slot the 0x2006 push owns, only
-		// earlier than any card move would.
-		scheduleStorageAsk();
 	}
 
 
@@ -3296,6 +3309,9 @@ function registerProfiles() as Void {
 
 
 			if (lbs != null) {
+				// The link can be written from here on - so its first asks are
+				// booked from here on (armLinkAsks names why this site).
+				armLinkAsks();
 				kickQueue(dev);
 			}
 		} catch (ex) {
