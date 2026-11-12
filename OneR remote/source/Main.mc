@@ -12,6 +12,10 @@ var mainApp = null;
 class Main extends Application.AppBase {
 //	hidden var bleDevice;
 
+	// The edge-guard of gpsSync: the state this app last put the position radio
+	// in. The actuator is only asked when the decision below flips.
+	var gpsLive as Lang.Boolean = false;
+
 	function initialize() {
 		AppBase.initialize();
 	}
@@ -26,7 +30,13 @@ class Main extends Application.AppBase {
 		bleDevice.open();
 		// System.println("[Main] on start: " + BLEBarrel.GPSon);
 		mainApp = self;
-		GPSenable(BLEBarrel.GPSon);
+		// The position radio is never switched from the user's flag alone: one
+		// decision reads the flag and the family in force together (gpsSync, the
+		// pattern the PR's app named in its table, item 8 of the integration). At
+		// this point no bond has named a model yet, so the decision answers the
+		// flag, which is the older envelope's behavior; the sites that see a
+		// family re-ask it.
+		gpsSync();
 	}
 	
 	function GPSenable (state as Lang.Boolean) as Void {
@@ -48,6 +58,40 @@ class Main extends Application.AppBase {
 		} else {
 			Position.enableLocationEvents(Position.LOCATION_DISABLE,null);
 		}
+	}
+
+	// The one decision about the position radio (the pattern the PR's app names
+	// gpsSync in its table; item 8 of the integration: never GPS on an X5). Two
+	// datums answer it and only this function reads them together: the user's
+	// intent, kept in BLEBarrel.GPSon, and the model of the family in force,
+	// kept in BLEBarrel.capModel - the same pair the menu gate reads and prints
+	// at [lvl]. A model of the X5 line, the X5 and the X6, takes no position at
+	// all: no frame of either protocol path carries one - the GPS photo header is
+	// a frame of the older envelope (the p0 path of the selection switch patches
+	// it into cmdSetPhoto), and the UCD2 path of the X6 holds no position field -
+	// so the radio above them would run for no datum. Every other model, and a
+	// camera the chain does not name (the level 0 fallback, which behaves as the
+	// older envelope), answers the user's flag alone. The pair is applied at its
+	// edge only: enableLocationEvents is an actuator and the [gps] line names a
+	// flip, never a poll (criterion 14 of 11.3). The content test of a String is
+	// .equals(), never == (note 9 of the CdC). The two names are the X5 line of
+	// the capability matrix, and the phase-3 table of the level chain is where
+	// this fact moves to, named by the level of the models that take no position.
+	function gpsSync() as Void {
+		var model = BLEBarrel.capModel;
+		var positionless = false;
+		if (model != null) {
+			positionless = model.equals("X5") or model.equals("X6");
+		}
+		var want = BLEBarrel.GPSon and !positionless;
+		if (want == gpsLive) {
+			// No edge, nothing to name: silent on purpose, the line below answers
+			// a flip only.
+			return;
+		}
+		System.println("[gps] flip=" + want.toString() + " model=" + (model == null ? "none" : model) + " user_flag=" + BLEBarrel.GPSon.toString() + (positionless ? " (the family in force takes no position, the radio stays off whatever the flag)" : ""));
+		GPSenable(want);
+		gpsLive = want;
 	}
 
 	function getInitialView() {

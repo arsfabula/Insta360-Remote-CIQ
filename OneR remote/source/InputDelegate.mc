@@ -563,6 +563,12 @@ class InputDelegate extends Ui.BehaviorDelegate {
 		// an absence of a model is a refusal, never an empty menu (criterion 14 of 11.3).
 		var measuredNow = CapacitesBarrel.modelMeasured(mi);
 		Sys.println("[gate] model=" + BLEBarrel.capModel + " mi=" + mi.toString() + " measured=" + measuredNow.toString());
+		// The menu gate is where the app reads the family in force, so it is the
+		// site where the position axis re-syncs to it (Main.gpsSync, item 8 of the
+		// integration): a bond that completed while the main view sat untouched
+		// finds its verdict here, before any entry this build offers is reachable.
+		// The decision is edge-guarded, so opening the menu is never a poll.
+		mainApp.gpsSync();
 		switch (BLEBarrel.menuLevel) {
 			case 0:
 				break;
@@ -798,6 +804,11 @@ function onSelect(item) as Void {
 				// way a connection does, and never the level of a gate.
 				BLEBarrel.x5Armed = forcedModel.equals("X5");
 			}
+			// The position axis re-asks its decision at the site that changes the
+			// family in force (Main.gpsSync, item 8 of the integration): a forcing
+			// onto the X5 line takes the radio off even when the user's flag is on,
+			// a forcing off or onto the older envelope gives the flag its radio back.
+			mainApp.gpsSync();
 			// The user's confirmation of a model and level is kept by the name
 			// on air, beside the chain's answer (item 7 of the integration,
 			// the confirmed-level axis of the barrel): a future bond whose name
@@ -1134,7 +1145,13 @@ if ((BLEBarrel.GPSon) && (location != null) && (info != null)) {
             	break;
 			case "GPSon" :
             	BLEBarrel.GPSon = !BLEBarrel.GPSon;
-             	mainApp.GPSenable(BLEBarrel.GPSon);
+             	// The flag keeps answering the user's intent alone; what the radio
+             	// is asked answers the pair of the flag and of the family in force,
+             	// decided at the one site that reads both (Main.gpsSync, item 8 of
+             	// the integration). A toggle ON on a camera of the X5 line is kept
+             	// and named: the flag is true, the radio stays off, the [gps] line
+             	// of the flip says which of the two datums answered.
+             	mainApp.gpsSync();
 				chglbl = false;
              	break;
 			case "MenuLevel" :
