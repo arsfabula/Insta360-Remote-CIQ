@@ -2,9 +2,9 @@ using Toybox.Lang;
 using BLEBarrel;
 
 // Per-mode shooting settings for the X5. Only values confirmed on a camera screen are listed
-// (docs/x5-protocol.md ┬º5). BACK moves the focus Mode -> row 1 -> ... -> Mode; UP/DOWN change the
+// (docs/x5-protocol.md §5). BACK moves the focus Mode -> row 1 -> ... -> Mode; UP/DOWN change the
 // focused value. The camera's replies with current values are longer than 20 bytes, so the
-// watch cannot read them: a value is shown once the watch has set it ("ÔÇô" before), dim until the
+// watch cannot read them: a value is shown once the watch has set it ("–" before), dim until the
 // camera acks it.
 module Settings {
 	var focus = 0;      // 0 = mode row, n = settings row n
@@ -37,7 +37,7 @@ module Settings {
 	//        :exit  START exits the app
 	function timer(fm) { return ["timer", "TIMER", ["Off", "3s", "5s", "10s", "15s"], :opt, fm, [0, 3, 5, 10, 15], 26, 0]; }
 	function size(fm) { return ["size", "SIZE", ["72MP", "18MP"], :opt, fm, [11, 12], 40, 0]; }
-	function lens() { return ["lens", "LENS", ["360┬░", "Front"], :lens, 0, [3, 1], 0, 0]; }
+	function lens() { return ["lens", "LENS", ["360°", "Front"], :lens, 0, [3, 1], 0, 0]; }
 
 	function ev(fm) {
 		var labels = [];
@@ -47,7 +47,7 @@ module Settings {
 			var r = (e < 0 ? -e : e) % 10;
 			if (r != 0 && r != 3 && r != 7) { continue; }
 			values.add(e);
-			var s = (e > 0) ? "+" : ((e < 0) ? "-" : "┬▒");
+			var s = (e > 0) ? "+" : ((e < 0) ? "-" : "±");
 			var a = (e < 0) ? -e : e;
 			labels.add(s + (a / 10) + "." + (a % 10));
 		}
@@ -77,7 +77,7 @@ module Settings {
 				[[3, 1], [5, 1], [10, 1], [15, 1], [15, 3], [15, 6], [15, 10]], 0, 3], timer(5)];
 		}
 		if (id.equals("p7")) {
-			return [["dur", "TIME", ["Ôê×", "3m", "5m", "10m", "15m", "30m", "1h", "2h", "3h", "5h", "10h"], :dur, 5,
+			return [["dur", "TIME", ["∞", "3m", "5m", "10m", "15m", "30m", "1h", "2h", "3h", "5h", "10h"], :dur, 5,
 				[0, 180, 300, 600, 900, 1800, 3600, 7200, 10800, 18000, 36000], 0, 0], timer(18)];
 		}
 		if (id.equals("v0")) {
@@ -90,11 +90,11 @@ module Settings {
 		}
 		if (id.equals("v4")) {
 			return [res(12, ["8K30", "5.7K30"], [167, 10], 0),
-				["speed", "SPEED", ["Auto", "10├ù", "15├ù", "20├ù", "30├ù", "60├ù"], :opt, 12,
+				["speed", "SPEED", ["Auto", "10×", "15×", "20×", "30×", "60×"], :opt, 12,
 				[0, 10, 15, 20, 30, 60], 37, 0]];
 		}
 		if (id.equals("v6")) {
-			return [resFull(17), ["len", "LENGTH", ["1m", "3m", "5m", "10m", "15m", "20m", "25m", "30m", "Ôê×"], :opt, 17,
+			return [resFull(17), ["len", "LENGTH", ["1m", "3m", "5m", "10m", "15m", "20m", "25m", "30m", "∞"], :opt, 17,
 				[60, 180, 300, 600, 900, 1200, 1500, 1800, 0], 29, 1], lens()];
 		}
 		if (id.equals("v11")) {   // PureVideo
@@ -107,7 +107,7 @@ module Settings {
 			// Watch page. SOUND = camera option MUTE (14), verified on the camera. The LED (120) and
 			// beep (121) options are not stored by firmware 1.13.21, so there is no LIGHT row.
 			// Power off = SET_SHUTDOWN (219), after a confirmation. Power-on needs the wake beacon
-			// (docs/x5-protocol.md ┬º6), which a Connect IQ app cannot send.
+			// (docs/x5-protocol.md §6), which a Connect IQ app cannot send.
 			return [["mute", "SOUND", ["On", "Off"], :mute, 0, [0, 1], 14, 0],
 				["power", "", ["Power off camera"], :power, 0, [0], 0, 0],
 				["exit", "", ["Exit app"], :exit, 0, [0], 0, 0]];
@@ -120,7 +120,7 @@ module Settings {
 	function label(id, row) {
 		if (row[3] == :exit || row[3] == :power) { return row[2][0]; }
 		var i = vals[key(id, row)];
-		return (i == null) ? "ÔÇô" : row[2][i];
+		return (i == null) ? "–" : row[2][i];
 	}
 
 	function isAcked(id, row) { return acked[key(id, row)] == true; }

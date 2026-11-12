@@ -366,7 +366,7 @@ class RemoteView extends WatchUi.View {
 	}
 
 
-	// Small glyph beside a side button (UP 180┬░, DOWN 209┬░) while recording.
+	// Small glyph beside a side button (UP 180°, DOWN 209°) while recording.
 	hidden function drawKeyGlyph(dc, cx, cy, rr, deg, kind) {
 		var a = Math.toRadians(deg);
 		var px = cx + Math.cos(a) * (rr - 30);
@@ -622,7 +622,7 @@ class RemoteView extends WatchUi.View {
 			Gfx.TEXT_JUSTIFY_CENTER | Gfx.TEXT_JUSTIFY_VCENTER);
 	}
 
-	// Gear beside the BACK button (about 330┬░): BACK moves the settings focus. Amber while a
+	// Gear beside the BACK button (about 330°): BACK moves the settings focus. Amber while a
 	// settings row has the focus.
 	hidden function drawBackCue(dc, cx, cy, rr) {
 		var a = Math.toRadians(-30);
@@ -631,7 +631,7 @@ class RemoteView extends WatchUi.View {
 		ModeIcons.gear(dc, px, py, rr * 0.065, Settings.focus > 0 ? C_AMBER : C_DIM);
 	}
 
-	// Page-indicator dots along the left edge, centred between UP (180┬░) and DOWN (209┬░):
+	// Page-indicator dots along the left edge, centred between UP (180°) and DOWN (209°):
 	// one per mode, current one filled. UP moves up the column, DOWN moves down.
 	hidden function drawModeDots(dc, cx, cy, rr) {
 		var items = modeList();
@@ -674,7 +674,7 @@ class RemoteView extends WatchUi.View {
 		}
 		var t = text;
 		while (t.length() > 1 && dc.getTextWidthInPixels(t, font) > maxW) {
-			t = t.substring(0, t.length() - 2) + "ÔÇª";
+			t = t.substring(0, t.length() - 2) + "…";
 		}
 		dc.setColor(color, Gfx.COLOR_TRANSPARENT);
 		dc.drawText(cx, y, font, t, Gfx.TEXT_JUSTIFY_CENTER | Gfx.TEXT_JUSTIFY_VCENTER);
