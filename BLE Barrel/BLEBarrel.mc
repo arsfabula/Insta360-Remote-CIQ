@@ -311,6 +311,7 @@ const X5_SUB_MODE_NOTIF = 0x2053;
 const X5_OPTIONS_NOTIF = 0x2065;
 const X5_CAPTURE_NUM_NOTIF = 0x2064;
 const X5_CAPTURE_STATUS_NOTIF = 0x2010;
+const X5_AUTH_RESULT_NOTIF = 0x2011;
 const X5_RECORD_STATE_NOTIF = 0x2040;
 
 
@@ -1103,6 +1104,16 @@ class BleDevice extends BluetoothLowEnergy.BleDelegate {
 
 
 	function x5ApplyNotif() as Void {
+		if (notifCode == X5_AUTH_RESULT_NOTIF) {
+			// AUTHORIZATION_RESULT: the camera says the user answered its Allow
+			// prompt (field 1 = 0, the only answer ever observed on either bench).
+			// The gate of this link is open now; say so once in the wire log.
+			if (authProbeStatus != 0) {
+				authProbeStatus = 0;
+				wireLine("auth probe", "open now, 0x2011 from the user f1=" + notifVal1.toString());
+			}
+			return;
+		}
 
 
 
