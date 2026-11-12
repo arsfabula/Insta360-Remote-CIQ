@@ -363,6 +363,10 @@ class InputDelegate extends Ui.BehaviorDelegate {
              	if (BLEBarrel.photoCaptureMode || BLEBarrel.starlapseStartMode) {
              		bleDevice.sendCMD(BLEBarrel.cmdApply);
              		bleDevice.sendCMD(captureFrame);
+		// Arm the shot's answer right behind the send: the barrel matches the reply
+		// carrying this frame's sequence (armPhotoAck), and the verdict is read once by
+		// the view when it next draws. No screen claims a shot before that answer.
+		bleDevice.armPhotoAck();
              	} else {
              		// The legacy path keeps its old behavior: it sends the persisted
              		// mode, which is neither the mode frame nor the capture (the suspect
@@ -833,7 +837,8 @@ function onSelect(item) as Void {
 					// Axis chain: the family of the entry answers the row of the level in
 					// force, not a letter of the id — the row that answers the
 					// family is the row that answers the key and the frame, one
-					// datum that cannot be paired wrong (note 8 of the CdC).
+					// datum that cannot be paired wrong (note 8 of the CdC).
+
 					var photoFam = selFam.equals("p");
 				BLEBarrel.videoMode = !photoFam;
 				// Axis of the separation (item 48): a p3 selection arms the mode only;

@@ -298,6 +298,81 @@ var cmdTrackThat as Lang.ByteArray = [0x36, 0x00, 0x00, 0x00, 0x04, 0x00, 0x00, 
 // declared/arrived pair answers what crossed. Verified on the live X5 under
 // code 8; the bench's getFrame runs code 10, another GET of the family.
 var cmdGetBattery as Lang.ByteArray = [0x14, 0x00, 0x00, 0x00, 0x04, 0x00, 0x00, 0x08, 0x00, 0x02, 0xff, 0x00, 0x00, 0x80, 0x00, 0x00, 0x0a, 0x02, 0x0b, 0x14]b;
+
+// Powering the camera off (SET_SHUTDOWN, code 0xDB, empty body). The datum is the PR's,
+// run by its author on his own X5; here it is a frame until the Phase 5 bench answers
+// for it. One write, no body: the 20-octet ceiling keeps the whole frame and leaves the
+// same 16-octet answer shape as every write of this family.
+var cmdShutdownX5 as Lang.ByteArray = [0x10, 0x00, 0x00, 0x00, 0x04, 0x00, 0x00, 0x0db, 0x00, 0x02, 0x00, 0x00, 0x00, 0x80, 0x00, 0x00]b;
+
+// The varint writer of the protobuf bodies. Static frames above carry their body as
+// declared; a value that varies at runtime (an option id, an interval in seconds) is
+// written through this: one byte under 0x80, the 0x80 bit chaining the longer values.
+// The same encoder the PR names pbVar at its setter sites. Untyped, like the numeric
+// helpers of the house: it hands Numbers, never the Int the constants typecheck as.
+function pbVar(n) {
+	var out = []b;
+	while (true) {
+		var x = n & 0x7f;
+		n = n >> 7;
+		out.add(n > 0 ? (x | 0x80) : x);
+		if (n <= 0) { break; }
+	}
+	return out;
+}
+
+// The 16-octet envelope of a request with a body, the shape every write of this family
+// keeps: declared length at 0..3 (self-stamped), service octets, the command as 16 bits
+// at 7..8, 0x02, the sequence left at 0..0 here because sendCMD stamps octet 10 on the
+// way out, and the 0x80 tail. The PR's frameX5, under this house's name.
+function x5BodyFrame(code, body) {
+	var f = [0, 0, 0, 0, 0x04, 0, 0, code & 0xff, (code >> 8) & 0xff, 0x02, 0, 0, 0, 0x80, 0, 0]b;
+	f.addAll(body);
+	f[0] = f.size();
+	return f;
+}
+
+// The option writes whose value varies at runtime, the family the static frames above
+// declare one instance of. Shapes are the PR's, run by its author on his X5; they send
+// nothing until the Phase 4 settings page asks, and the Phase 5 bench answers for them.
+// The photo (option 40) and video (option 41) sub-modes: the body is a SET of the option,
+// and the camera answers them with the 0x2053 echo the gate of this module already reads.
+function setSubModeX5(video, n) {
+	var opt = video ? 0x29 : 0x28;           // OptionType VIDEO_SUB_MODE=41 / PHOTO_SUB_MODE=40
+	var tag0 = video ? 0xc8 : 0xc0;          // Options field 41/40 -> tag bytes c8 02 / c0 02
+	var body = (n == 0) ? [0x08, opt, 0x12, 0x00]b : [0x08, opt, 0x12, 0x03, tag0, 0x02, n]b;
+	return x5BodyFrame(0, body);
+}
+
+// SET_PHOTOGRAPHY_OPTIONS (0x09) {1: type, 2: {type: v}, 3: function mode}
+function setPhotoOptX5(fm, type, v) {
+	var inner = pbVar(type << 3);
+	inner.addAll(pbVar(v));
+	var b = [0x08]b; b.addAll(pbVar(type));
+	b.add(0x12); b.addAll(pbVar(inner.size())); b.addAll(inner);
+	b.add(0x18); b.addAll(pbVar(fm));
+	return x5BodyFrame(0x09, b);
+}
+
+// SET_TIMELAPSE_OPTIONS (0x12) {1: {2: lapse_ms}, 2: timelapse mode}
+function setLapseX5(tm, ms) {
+	var inner = [0x10]b; inner.addAll(pbVar(ms));
+	var b = [0x0a]b; b.addAll(pbVar(inner.size())); b.addAll(inner);
+	b.add(0x10); b.addAll(pbVar(tm));
+	return x5BodyFrame(0x12, b);
+}
+
+// SET_TIMELAPSE_OPTIONS (0x12) {1: {1: duration_s}, 2: timelapse mode} (Starlapse total time)
+function setLapseDurX5(tm, s) {
+	var inner = [0x08]b; inner.addAll(pbVar(s));
+	var b = [0x0a]b; b.addAll(pbVar(inner.size())); b.addAll(inner);
+	b.add(0x10); b.addAll(pbVar(tm));
+	return x5BodyFrame(0x12, b);
+}
+
+// SET_ACTIVE_SENSOR (0x41): 3 both lenses (360), 1 front
+function setSensorX5(v) { return x5BodyFrame(0x41, [0x08, v]b); }
+
 var currentMode as Lang.String or Lang.ByteArray = "DefaultV";
 var videoMode as Lang.Boolean = true;
 var currentLabel as Lang.String = "Default Video";
@@ -568,6 +643,27 @@ var x5StorageAskTimer as Timer.Timer or Null = null;
 // app must show that as unknown, not as zero.
 var x5StorageState as Lang.Number or Null = null;
 var x5StorageMode as Lang.Number or Null = null;
+
+// The answer of a shot this watch fired, followed by the sequence stamped on its
+// capture frame - the same shape as the auth probe and the storage ask of this module,
+// for the same reason: only the frame carrying that sequence answers that request. The
+// three-way reading is the PR's, and it is the reading the 20-octet ceiling allows: a
+// 200 whose declared length is above 16 carries the picture path, so a shot happened; a
+// bare 200 means the camera took nothing; anything else refused the request. The app arms
+// the witness at the send site (armPhotoAck), reads it once (photoResultTaken), and the
+// reset at the link edge clears it with the other sequences.
+var x5PhotoSeq as Lang.Number = -1;
+var x5PhotoResult = null;   // :ok / :noShot / :rejected, consumed by the app
+
+// The same witness for one settings write (an option of the family above, the shutdown
+// frame): armWriteAck after the send, the 200 answer names the write accepted, the 0x190
+// answer names it refused. The name travels only so the wire line says which write the
+// verdict answers for; the verdict itself is read once by settingResultTaken(). This is
+// the consumer side the echo gate has been waiting for: the settings page ported from the
+// PR writes as it selects, and needs the answer to show ok or refused at the row.
+var x5WriteSeq as Lang.Number = -1;
+var x5WriteName as Lang.String = "";
+var x5WriteResult = null;   // :ok / :rejected, consumed by the app
 
 
 
@@ -1452,6 +1548,37 @@ class BleDevice extends BluetoothLowEnergy.BleDelegate {
 			// answer, and for the same reason runs ahead of the ACK branch:
 			// its code 200 shape would else be met as a capture-state answer.
 			applyStorageAsk(buf);
+		} else if (x5PhotoSeq >= 0 && buf[10] == x5PhotoSeq && code < 0x1000) {
+			// The shot's answer runs ahead of the refusal branch on purpose: when the
+			// camera refuses a capture, that refusal is the shot's verdict, not a mode
+			// entry to mark degraded - a capture never sets modeReqId, and a degraded
+			// mark read from one would name the mode the menu last held. The declared
+			// length is read from the header, which the ceiling never cuts, so a short
+			// arrival classifies the same as a whole one (the PR's three-way reading).
+			var photoDeclared = (buf[0] & 0xff) | ((buf[1] & 0xff) << 8);
+			var photoVerdict = :rejected;
+			if (code == ACK_CODE && photoDeclared > 16) { photoVerdict = :ok; }
+			else if (code == ACK_CODE) { photoVerdict = :noShot; }
+			wireLine("photo", "ack code=" + code.toString() + " declared=" + photoDeclared.toString() + " shot=" + (photoVerdict == :rejected ? "refused" : (photoVerdict == :ok ? "taken" : "none")));
+			if (code == ACK_CODE) {
+				// The answer of a capture command carries the state byte at octet 19,
+				// the same byte the state read parses there (x5ParseCaptureState): a
+				// timed photo still running reads as a start, which is the clock of
+				// stateStartRec this frame should begin. A shot answer without that
+				// shape answers null at that site and moves nothing.
+				applyCamState(buf);
+			}
+			x5PhotoResult = photoVerdict;
+			x5PhotoSeq = -1;
+		} else if (x5WriteSeq >= 0 && buf[10] == x5WriteSeq && (code == ACK_CODE || code == 0x190)) {
+			// A settings write's answer, ahead of the refusal branch for the same
+			// reason as the shot above: this 0x190 belongs to a write the menu never
+			// named as a mode, and the row of the settings page is where its refusal
+			// must answer - not a degraded mark on an unrelated entry.
+			x5WriteResult = (code == ACK_CODE) ? :ok : :rejected;
+			wireLine("setting", x5WriteName + " -> " + (code == ACK_CODE ? "ok" : "refused 400"));
+			x5WriteSeq = -1;
+			x5WriteName = "";
 		} else if (code == 0x190 && lastCmdSeq >= 0 && buf[10] == lastCmdSeq) {
 			// The camera refused the write this watch just made, named by its
 			// sequence (0x190 = 400, the same shape the PR matched with its
@@ -2099,6 +2226,11 @@ class BleDevice extends BluetoothLowEnergy.BleDelegate {
 		camModeId = null;
 		x5StaleOptions = [];
 		lastCmdSeq = -1;
+		x5PhotoSeq = -1;
+		x5PhotoResult = null;
+		x5WriteSeq = -1;
+		x5WriteName = "";
+		x5WriteResult = null;
 	}
 
 
@@ -2182,6 +2314,40 @@ class BleDevice extends BluetoothLowEnergy.BleDelegate {
 	}
 	function peekStorageMode() as Lang.Number or Null {
 		return x5StorageMode;
+	}
+
+	// Arms the answer of a shot: the app calls this right after the sendCMD of a
+	// capture frame, at the same site that prints the frame's tell. lastCmdSeq is the
+	// sequence the transport just stamped, the one the answer will carry - the same
+	// follow-by-sequence discipline as the auth probe and the storage ask, asked from the
+	// app side because there the capture frame is assembled.
+	function armPhotoAck() as Void {
+		x5PhotoSeq = lastCmdSeq;
+		x5PhotoResult = null;
+	}
+
+	// Reads the shot's verdict once, as the PR's UI consumes photoResult: a read clears
+	// it, so one answer colors one screen and never leaks into the next press. Untyped
+	// like the symbols it hands over - the house rule for the values that are not numbers.
+	function photoResultTaken() {
+		var r = x5PhotoResult;
+		x5PhotoResult = null;
+		return r;
+	}
+
+	// Arms the answer of one settings write, same stamp site; the name only lets the
+	// wire line say which write the verdict answers for.
+	function armWriteAck(name as Lang.String) as Void {
+		x5WriteSeq = lastCmdSeq;
+		x5WriteName = name;
+		x5WriteResult = null;
+	}
+
+	// Reads a settings verdict once, same clearing as the shot above.
+	function settingResultTaken() {
+		var r = x5WriteResult;
+		x5WriteResult = null;
+		return r;
 	}
 	function peekStorageFreeBytes() as Lang.Number or Null {
 		return null;
