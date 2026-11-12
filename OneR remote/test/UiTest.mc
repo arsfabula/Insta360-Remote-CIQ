@@ -245,3 +245,44 @@ function startupUiSmoke(logger) {
 	logger.debug("first frames crossed");
 	return true;
 }
+
+// The screen tells the truth about an absent camera (bench of 12 nov., the 5th
+// session): after the X5 was switched off and a scan round exhausted itself,
+// the watch showed a READY screen - "Default Video", green ring, the X5 serial
+// at the bottom (deviceName is kept across opens) - while no camera existed.
+// The cause is a fact the view never read: uiState answered READY as a
+// fallthrough, and the NOT_FOUND screen the view draws was unreachable. The
+// absence is the barrel's own datum (device is nulled at the link teardown),
+// read after the record states so a link lost mid-recording keeps the
+// recording screen; NOT_FOUND's START press stays an answer (runStart sends,
+// the transport's device-null leg restarts the scan).
+(:test)
+function screenTruthNamesTheAbsentCamera(logger) {
+	uiLink();                            // a bond-shaped state: level 2, "Start", stopped
+	var ok = true;
+	var dev = new BLEBarrel.BleDevice(); // the app's single instance shape: no device yet
+	ok = ok && !dev.hasLink();
+	ok = ok && uiState(dev) == UI_NOT_FOUND;
+	ok = ok && uiState(dev) != UI_READY;
+	ok = ok && uiState(null) == UI_NOT_FOUND;      // no view object: the same absence
+	BLEBarrel.mMessage = "Scanning...\n64";
+	ok = ok && uiState(dev) == UI_SEARCHING;      // the search still answers first
+	BLEBarrel.mMessage = BLEBarrel.currentLabel + "\n" + BLEBarrel.startMessage;
+	// The order, named without posing a link: the record states answer BEFORE the
+	// absence, so a link lost mid-recording keeps the recording screen (and its
+	// "camera still recording" note) instead of claiming "no camera".
+	BLEBarrel.recState = BLEBarrel.stateStartRec;
+	ok = ok && uiState(dev) == UI_RECORDING;
+	BLEBarrel.recState = BLEBarrel.stateStarting;
+	ok = ok && uiState(dev) == UI_STARTING;
+	BLEBarrel.recState = BLEBarrel.stateStopRec;
+	ok = ok && uiState(dev) == UI_NOT_FOUND;
+	// The present leg (a link answers READY) has no unit route: no API builds a
+	// BluetoothLowEnergy.Device, and a (:test)-annotated class method is taken
+	// as a test case by the runner (it calls it with a logger, and the symbol
+	// is not found). Only the class poses that fact, at its connected branch;
+	// it is proven at the bench of 12 nov.: with the X5 bonded, uiState answered
+	// READY all through the measured ladder (modes applied, echoes confirmed).
+	logger.debug("truth crossed");
+	return ok;
+}

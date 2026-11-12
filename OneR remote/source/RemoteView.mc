@@ -57,6 +57,25 @@ function uiState(dev) {
 	if (r == BLEBarrel.stateStartRec) { return UI_RECORDING; }
 	if (r == BLEBarrel.stateStarting) { return UI_STARTING; }
 	if (r == BLEBarrel.stateStopping) { return UI_STOPPING; }
+	// No camera at the transport: the screen must not claim one. This fact, not
+	// a message string, is what answers the absence: the PR assumed the barrel
+	// always writes "Scanning..." when no device was found (its comment above),
+	// and this repository's scan machine does not - after an exhausted round it
+	// writes the start prompt (barrel onScanStateChange), and open() leaves the
+	// message as it found it. With no fact read here, the bench of 12 nov.
+	// watched a Default Video READY screen, green ring, X5 serial at the bottom
+	// (deviceName is kept across opens), while the camera was switched off. The
+	// fact sits in the barrel, as a method, not a field the view could read:
+	// the view's own dev answers it - hasLink() is the device field as a fact,
+	// nulled at the link teardown (linkGone); no dev object at all is the same
+	// absence.
+	// The check sits AFTER the record states on purpose: a link lost while the
+	// camera records keeps the recording screen and its "camera still recording"
+	// note, as the record machine has always answered it. The connecting window
+	// is transient and belongs to the barrel's connecting field; NOT_FOUND's
+	// START press reaches the retry - runStart sends, the transport finds no
+	// device and restarts the scan (barrel transmit).
+	if (dev == null || !dev.hasLink()) { return UI_NOT_FOUND; }
 	return UI_READY;
 }
 
@@ -285,7 +304,9 @@ class RemoteView extends WatchUi.View {
 				hero = :camOff; heroColor = C_MUTED;
 				title = "No camera";
 				info.add(["START", "Retry now", C_TEXT]);
-				info.add(["", "retrying\u2026", C_MUTED]);
+				// Truth of the round: the widget never relaunches a scan by itself
+				// after an exhausted round (proved twice at the bench of 12 nov.).
+				info.add(["", "no round alone", C_MUTED]);
 				if (stillRec != null) { info.add(stillRec); }
 				startCue = C_TEXT;
 				break;

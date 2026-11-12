@@ -3809,10 +3809,18 @@ function registerProfiles() as Void {
 		}
 	}
 
+	// The link as a fact, for the application's screen: the device field is the
+	// single datum of "a camera is at the transport right now" - set at the
+	// connected branch, nulled at the link teardown (linkGone). The view reads
+	// this method, never the field: the field lives in this class, one instance
+	// per process, the app's own bleDevice. (Bench of 12 nov.: the view had no
+	// way to read the absence and showed a READY screen while the X5 was off.)
+	function hasLink() as Lang.Boolean {
+		return device != null;
+	}
+
 	function open() as Void {
 		System.println("[ble] open() entered");
-
-
 		if (System.getDeviceSettings().isTouchScreen) {
 			startMessage = "Tap Here";
 		} else {

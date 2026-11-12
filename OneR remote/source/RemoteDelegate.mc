@@ -137,7 +137,18 @@ class RemoteDelegate extends Ui.BehaviorDelegate {
 		var s = uiState(dev);
 		inLog("START state=" + s + " mode=" + currentModeId + " focus=" + Settings.focus);
 		if (s == UI_SEARCHING) {
-			// the barrel rescans on its own; the press answers by the state line alone
+			// A press during an open scan reaches nothing: the transport answers it
+			// at its scanning guard (barrel transmit). Truth of the comment as the
+			// bench of 12 nov. proved it - the barrel does NOT rescan on its own
+			// after an exhausted round; that state is NOT_FOUND below, and its
+			// press is the retry.
+			return true;
+		}
+		if (s == UI_NOT_FOUND) {
+			// "Retry now" is true here: the frame is sent, the transport finds no
+			// device and restarts the scan (barrel transmit, the device-null leg).
+			// The empty frame reaches no bond - transmit returns at that leg.
+			dev.sendCMD(new [0]b);
 			return true;
 		}
 		if (s == UI_RECORDING) {
