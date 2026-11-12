@@ -1,5 +1,6 @@
 using Toybox.Test;
 using Toybox.WatchUi as Ui;
+using Toybox.Application;
 using BLEBarrel;
 
 // The UI half of the unit suite: PR #2's UiTest vectors (pr2-ref, green at
@@ -88,4 +89,38 @@ function titleTapAreaCoversAllLines(logger) {
 	var left = Settings.rowAt(50, 80);      // icon column
 	logger.debug("top=" + top + " bottom=" + bottom + " row1=" + row1 + " miss=" + miss + " left=" + left);
 	return top == 0 && bottom == 0 && row1 == 1 && miss == -1 && left == -1;
+}
+
+// Startup smoke (the PR had no equivalent - it is the vector the first launch
+// of the ported UI was missing, and the user's sim crash named it): the very
+// line Main.getInitialView answers, then the pair pushed through the real
+// view pipeline. The rest of the suite drives modules and delegates directly
+// and never instantiates the view; this one constructs it, shows it, lays it
+// out and draws its first frames. If the ported screen faults on startup,
+// this names the line in the sim log.
+(:test)
+function startupUiSmoke(logger) {
+	uiLink();   // the X5-shaped state a real bond leaves: level 2, "Start"
+	var app = Application.getApp();
+	var pair = app.getInitialView();
+	if (pair == null || pair.size() != 2) {
+		logger.debug("getInitialView answered nothing");
+		return false;
+	}
+	var view = pair[0];
+	var del = pair[1];
+	try {
+		// No processEvents on this target (verified absent from api.mir):
+		// pushView runs the constructors and the show half of the lifecycle
+		// synchronously; the draw half is driven by the sim and would end the
+		// run as an error if it faults - either way the vector names it.
+		Ui.pushView(view, del, Ui.SLIDE_IMMEDIATE);
+		Ui.requestUpdate();
+	} catch (e) {
+		logger.debug("startup smoke exception: " + e);
+		return false;
+	}
+	Ui.popView(Ui.SLIDE_IMMEDIATE);
+	logger.debug("first frames crossed");
+	return true;
 }

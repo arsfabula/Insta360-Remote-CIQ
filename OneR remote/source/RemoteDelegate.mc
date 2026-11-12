@@ -42,6 +42,20 @@ function inSettingsUI() {
 var setReturnMode = null;
 var setReturnLabel = null;
 
+// The three debounces of this delegate (the tap fallback, the mode-write
+// debounce, the settings-write debounce) own no Timer object: an app's Timer
+// pool is small (the API documents three by default, host-dependent) and this
+// widget shares it with the barrel's one-shot asks and the view's one
+// repeating timer - the PR's watch-app budget of four delegate-side timers
+// was already over the wall before RemoteView.onShow started its timer, which
+// is the "Too Many Timers" crash a widget run takes (the glance session and
+// the opened app are one process, one pool). So the delegate books due dates
+// in the System.getTimer() domain, and the view's 125 ms tick pumps them
+// (RemoteView.onTick -> uiPump.pumpDue). The delegate registers itself here
+// at construction; a hidden view simply stops pumping, and a due action
+// runs at the next show - never lost while the app lives.
+var uiPump = null;
+
 // The id of the mode the watch is showing, kept beside currentMode (which is a frame in
 // this app, not an id). The echo gate is armed with the id, never the frame.
 var currentModeId = "DefaultV";
@@ -74,10 +88,10 @@ function settingMayGo() {
 
 class RemoteDelegate extends Ui.BehaviorDelegate {
 	hidden var dev;
-	hidden var sendTimer;
+	hidden var dueSend = null;   // due dates, System.getTimer() domain - see pumpDue, no Timer objects
 	hidden var pendingSend = false;
-	hidden var setTimer;
-	hidden var tapTimer;
+	hidden var dueSet = null;
+	hidden var dueTap = null;
 	hidden var startKeyAt = null;   // time of the last START key press (onKeyPressed), null = none pending
 	hidden var tapPending = false;
 	hidden var pendingSetFrames = null;
@@ -86,24 +100,22 @@ class RemoteDelegate extends Ui.BehaviorDelegate {
 	function initialize(device) {
 		BehaviorDelegate.initialize();
 		dev = device;
-		sendTimer = new Timer.Timer();
-		setTimer = new Timer.Timer();
-		tapTimer = new Timer.Timer();
+		// No Timer.Timer() here, deliberately: see the uiPump note above.
+		uiPump = self;
 	}
 
 	// Connect IQ turns a screen tap into the SELECT behaviour first and only calls onTap when
 	// onSelect returns false. A START press always reaches onKeyPressed (KEY_ENTER) before
 	// onSelect, a tap never does. So onSelect without a fresh START key press is a tap: hand it
-	// to onTap (which knows where the finger was). If no onTap follows, the fallback timer runs
-	// START anyway, so a press is never lost.
+	// to onTap (which knows where the finger was). If no onTap follows, the fallback
+	// deadline runs START on the next pump, so a press is never lost.
 	function onSelect() {
 		var key = startKeyAt != null && Sys.getTimer() - startKeyAt < 2000;
 		inLog("select key=" + key);
 		startKeyAt = null;
 		if (!key) {
 			tapPending = true;
-			tapTimer.stop();
-			tapTimer.start(method(:onTapTimeout), 150, false);
+			dueTap = Sys.getTimer() + 150;
 			return false;
 		}
 		return runStart();
@@ -153,7 +165,7 @@ class RemoteDelegate extends Ui.BehaviorDelegate {
 			return true;
 		}
 		// READY: start recording / take the shot
-		sendTimer.stop();
+		dueSend = null;   // a pending mode write is flushed now, not later
 		flushMode();
 		BLEBarrel.recState = BLEBarrel.stateStarting;
 		if (BLEBarrel.photoCaptureMode) {
@@ -178,7 +190,7 @@ class RemoteDelegate extends Ui.BehaviorDelegate {
 	// onPreviousPage / onNextPage, so swiping up / down changes the focused value.
 	function onTap(evt) {
 		tapPending = false;
-		tapTimer.stop();
+		dueTap = null;   // the tap answered itself: no fallback
 		if (focusRowAt(evt)) { return true; }
 		return runStart();
 	}
@@ -230,16 +242,16 @@ class RemoteDelegate extends Ui.BehaviorDelegate {
 		if (row[3] == :exit || row[3] == :power) { return; }
 		pendingSetFrames = Settings.step(currentModeId, row, dir);
 		pendingSetKey = Settings.key(currentModeId, row);
-		setTimer.stop();
-		setTimer.start(method(:flushSetting), 800, false);
+		dueSet = Sys.getTimer() + 800;
 		Ui.requestUpdate();
 	}
 
 	function flushSetting() as Void {
 		if (pendingSetFrames == null) { return; }
 		if (!settingMayGo()) {
-			// the camera is still switching modes: try again shortly
-			setTimer.start(method(:flushSetting), 300, false);
+			// the camera is still switching modes: the pump re-enters this
+			// function 300 ms later (a due date, never a Timer object)
+			dueSet = Sys.getTimer() + 300;
 			return;
 		}
 		var frames = pendingSetFrames;
@@ -294,8 +306,7 @@ class RemoteDelegate extends Ui.BehaviorDelegate {
 		applyMode(dev, items[idx][1], items[idx][0], false);
 		BLEBarrel.modeHoldUntil = Sys.getTimer() + 3800;   // browsing: don't let late camera echoes move the cursor
 		pendingSend = true;
-		sendTimer.stop();
-		sendTimer.start(method(:flushMode), 800, false);
+		dueSend = Sys.getTimer() + 800;
 		Ui.requestUpdate();
 	}
 
@@ -303,6 +314,27 @@ class RemoteDelegate extends Ui.BehaviorDelegate {
 		if (pendingSend) {
 			pendingSend = false;
 			sendCurrentMode(dev);
+		}
+	}
+
+	// The one pump of the three debounces, entered from the view's single
+	// repeating timer (RemoteView.onTick calls this through uiPump). Writes
+	// first, so a START fallback that becomes due in the same window acts on
+	// a settled state - the same order the PR's three one-shot timers reached
+	// their callbacks, without owning three Timer objects.
+	function pumpDue() as Void {
+		var now = Sys.getTimer();
+		if (dueSend != null && now >= dueSend) {
+			dueSend = null;
+			flushMode();
+		}
+		if (dueSet != null && now >= dueSet) {
+			dueSet = null;
+			flushSetting();
+		}
+		if (dueTap != null && now >= dueTap) {
+			dueTap = null;
+			onTapTimeout();
 		}
 	}
 

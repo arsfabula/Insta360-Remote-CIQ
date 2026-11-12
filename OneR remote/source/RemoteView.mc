@@ -127,6 +127,10 @@ class RemoteView extends WatchUi.View {
 
 	function onTick() as Void {
 		tick++;
+		// The delegate's debounces ride this one timer (uiPump, see the note
+		// in RemoteDelegate.mc): this app owns exactly one Timer object, the
+		// barrel keeps its pool for the asks of the link.
+		if (uiPump != null) { uiPump.pumpDue(); }
 		if (toastMsg != null && !toastActive()) { toastMsg = null; WatchUi.requestUpdate(); }
 		mainApp.gpsSync();
 		var s = uiState(dev);
