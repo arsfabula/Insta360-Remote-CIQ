@@ -1257,12 +1257,27 @@ the raw files.
 including the header, `[4..6] = 04 00 00`, `[7:9]` = code LE, `[9] = 02`,
 `[10:13]` = seq 24-bit LE, `[13..15] = 80 00 00`, protobuf from 16.
 
-**§15.14 items (1) and (2) are closed, negatively.** Across the whole corpus the APK
+**§15.14 items (1) and (2): the first half holds, the conclusion is inverted (closed 2026-11-12).** Across the whole corpus the APK
 never sends `CHECK_AUTHORIZATION=39` or `REQUEST_AUTHORIZATION=86`, and it never
-answers the 7-octet beat on the RW characteristic. There is no session join on the
-PC leg either - and the camera still pushes the entire status set at it. So "the
-camera pushes nothing to a client that never joined" (§15.15) is wrong: the pushes are
-unconditional; what was missing on the watch bench was a camera that *changes state*.
+answers the 7-octet beat on the RW characteristic. But the pushes are **not** unconditional: two independent benches
+against the X5 fw 1.13.21 (PR #2 by @no84by on his side, and a one-shot probe patched
+into `BLE Barrel` here) show the same gate and the same handshake, frame for frame:
+`CHECK_AUTHORIZATION(0x27)` body `{1: id (≤12 chars), 2: 17 WATCH_GARMINOS}`; the camera
+first answers its generic 16-octet blanket ACK (`0x2017`), then a `0x00c8` response
+echoing the request's seq with body `{1: status}` (0 authorized / 1 unauthorized with
+the Allow prompt on the camera screen / 2 busy / 3-6 another client of that type already
+connected / 7 sleeping), and the push `0x2011 AUTHORIZATION_RESULT` carries the user's
+answer on the camera. **A client that never completes this handshake receives no push at
+all** - which is exactly why the months-long watch corpus holds zero pushes while its
+control commands always worked. Two boundaries measured with it: the approval is per
+client and per session (the same id string re-presents, the prompt reappears after a
+hard link loss), and the camera serves one client slot, so `status=2/3..6` reproduces
+readily on any leg holding stale bonds. Why the APK receives pushes without ever sending
+39 stays open - its pairing/login flow presumably carries an implicit grant; a watch
+client does not need that path, the handshake covers it end to end. The full flow,
+frame for frame, is documented in `docs/x5-protocol.md` (imported from PR #2, credited);
+the mainline barrel adopts the handshake at connect. What §15.15 was reaching for is
+real after all - keyed to authorization, not to joining.
 
 **Action → push timeline** (`ble-20261014-171953`/`-172014`/`-184011`/`-184026`, the
 only captures containing labelled captures):
@@ -1305,6 +1320,18 @@ values: 0..4, 11, 12, 14. In the APK's option table those ids read
 `PHOTO_RESOLUTION=40` / `REMAINING_TIME=41`, which is not how they behave here - so
 whether the X5's physical mode dial also moves `0x2053`, and in which of `f1`/`f2`, is
 exactly what the v6 action matrix has to measure on the watch.
+
+**Closed 2026-11-12, by both benches.** `0x2053` is `CAM_SUBMODE_CHANGE {1: photo
+sub-mode, 2: video sub-mode, 3: active lens}`, value 100 = "not this family" (one half
+always carries the none flag). Option 40 is the photo sub-mode option, option 41 the
+video sub-mode option - not `PHOTO_RESOLUTION`/`REMAINING_TIME`. The physical dial and
+the camera's own screen move `0x2053` exactly like a write does: the PR #2 survey
+records the push on camera-side changes (`docs/data/x5-ble-survey-fw1.13.21.md`), and
+the mode-following behavior is what its app is built on (`docs/x5-protocol.md` §3.1-3.2,
+imported and credited). This barrel now carries the matching echo gate (`noteModeWrite`
+/ `settingMayGo`): the camera confirms a mode write with its `0x2053` 0.3-0.5 s later
+and refuses option writes while it is still switching (400). The v6 action matrix does
+not have to measure this anymore.
 
 **The v6 decoder, replayed against the corpus.** `tools/x5_corpus_push_decode_check.py`
 mirrors `pushDecode()`/`pushNote()` from the probe source and runs them twice: on the

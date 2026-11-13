@@ -61,6 +61,14 @@ const START_DELAY_MS = 1200;
 const START_WAIT_MS = 400;
 const START_WAIT_MAX = 3;
 
+// Pump watchdog. The queue only moves on a requestWrite and its write callback;
+// when the stack keeps refusing writes, nothing here recovers on its own - no
+// timer re-kicks the pump, the next kick is whatever the user does next. After
+// this many consecutive refused writes the bond is declared dead: the unpair
+// and the teardown of the disconnect path (linkGone) run, and the normal
+// re-scan brings a fresh bond.
+const WEDGE_REFUSALS_MAX = 4;
+
 
 
 
@@ -120,6 +128,35 @@ const ucd2RxMaxBody = 512;
 
 const DEBUG_TRACE = false;
 
+// LOG_FRAMES (item 9 of the integration, the hygiene of the log): the lines of
+// per-frame CONTENT - the hex of every chunk across the delegate (wireBytes) and
+// the decoded field line of every notification (the [nf] line) - are what fills
+// the ~90 lines the watch keeps in X5remote.TXT/BAK within seconds of a running
+// recording (docs/x5-protocol.md, the retention datum), so the verdict lines of
+// the decisions are out of the file before a user can pull it. The lines of
+// EVENTS (the wireLine family) answer the same facts named, one line per fact,
+// and they are the bench datum surface; the per-frame content answers the bytes,
+// which is only asked when the bytes themselves are on trial. This constant
+// turns the content lines off; armWire, the [wire] event lines it arms, and
+// every verdict line are untouched. With the constant false, every #n of the
+// wire log is one event line and no hex sits between them. The counters the
+// peek* API answers move whatever these lines print: the counters are a datum
+// apart from the log, never a print of it.
+const LOG_FRAMES = false;
+
+// LOG_KEEPALIVE (E2 wrist bench, 13 nov.): the camera sends a KEEPALIVE every
+// second (docs/x5-protocol.md L42 names the frame shape 07 00 00 00 05 00 00,
+// L60 the cadence) and each one prints one wireBytes line - the end of the
+// first wrist pull was thirteen keepalives, thirteen seconds of the ~90-line
+// window (int-x5-build\watch-logs-e2-run1, #347-#359). The keepalive carries
+// one fact - the link is up - and every other event line proves it better; the
+// E2 run 1 session lost its connect phase to this flood before the pull. This
+// constant answers whether the 7-octet 0x0005 shape is printed at all; the
+// shape test is the documented octets themselves, so no other frame is hidden.
+// The bench copies flip it, the same way they flip LOG_FRAMES; with the
+// constant false the shipped log and the unit output are exactly as before.
+const LOG_KEEPALIVE = false;
+
 
 
 
@@ -148,6 +185,18 @@ const HOOK_WRITE_CEILING = 10;
 
 var recState as Lang.Number = stateStopRec;
 var startRecTime as Time.Moment = Time.now();
+// Whether the recording now shown was started by this watch or already running
+// when the watch found it. Set where a start transition is taken WITHOUT the
+// watch's own start sequence (from rest, by a camera push or a status answer),
+// cleared where the watch's own start confirms. The reason is the ceiling, not
+// a feeling: the elapsed seconds of a recording sit past the 20-octet cut of
+// the status answer (our own traces: declared=24 arrived=20), and no push
+// carries them either - PR #2's author met the same on a Descent Mk3i with the
+// same X5 fw 1.13.21 (no84by 5383db9) and drew REC with a joined note instead
+// of a clock counting from the join. The screen follows this flag: a clock that
+// counts from the join reads as the recording's own length, and the screen must
+// not say what the link cannot carry.
+var recJoined as Lang.Boolean = false;
 var elapsedRecTime as Time.Duration or Null = null;
 var clockTime as Time.Moment or Null = null;
 var lastTime as Time.Moment = Time.now();
@@ -274,6 +323,81 @@ var cmdTrackThat as Lang.ByteArray = [0x36, 0x00, 0x00, 0x00, 0x04, 0x00, 0x00, 
 // declared/arrived pair answers what crossed. Verified on the live X5 under
 // code 8; the bench's getFrame runs code 10, another GET of the family.
 var cmdGetBattery as Lang.ByteArray = [0x14, 0x00, 0x00, 0x00, 0x04, 0x00, 0x00, 0x08, 0x00, 0x02, 0xff, 0x00, 0x00, 0x80, 0x00, 0x00, 0x0a, 0x02, 0x0b, 0x14]b;
+
+// Powering the camera off (SET_SHUTDOWN, code 0xDB, empty body). The datum is the PR's,
+// run by its author on his own X5; here it is a frame until the Phase 5 bench answers
+// for it. One write, no body: the 20-octet ceiling keeps the whole frame and leaves the
+// same 16-octet answer shape as every write of this family.
+var cmdShutdownX5 as Lang.ByteArray = [0x10, 0x00, 0x00, 0x00, 0x04, 0x00, 0x00, 0x0db, 0x00, 0x02, 0x00, 0x00, 0x00, 0x80, 0x00, 0x00]b;
+
+// The varint writer of the protobuf bodies. Static frames above carry their body as
+// declared; a value that varies at runtime (an option id, an interval in seconds) is
+// written through this: one byte under 0x80, the 0x80 bit chaining the longer values.
+// The same encoder the PR names pbVar at its setter sites. Untyped, like the numeric
+// helpers of the house: it hands Numbers, never the Int the constants typecheck as.
+function pbVar(n) {
+	var out = []b;
+	while (true) {
+		var x = n & 0x7f;
+		n = n >> 7;
+		out.add(n > 0 ? (x | 0x80) : x);
+		if (n <= 0) { break; }
+	}
+	return out;
+}
+
+// The 16-octet envelope of a request with a body, the shape every write of this family
+// keeps: declared length at 0..3 (self-stamped), service octets, the command as 16 bits
+// at 7..8, 0x02, the sequence left at 0..0 here because sendCMD stamps octet 10 on the
+// way out, and the 0x80 tail. The PR's frameX5, under this house's name.
+function x5BodyFrame(code, body) {
+	var f = [0, 0, 0, 0, 0x04, 0, 0, code & 0xff, (code >> 8) & 0xff, 0x02, 0, 0, 0, 0x80, 0, 0]b;
+	f.addAll(body);
+	f[0] = f.size();
+	return f;
+}
+
+// The option writes whose value varies at runtime, the family the static frames above
+// declare one instance of. Shapes are the PR's, run by its author on his X5; they send
+// nothing until the Phase 4 settings page asks, and the Phase 5 bench answers for them.
+// The photo (option 40) and video (option 41) sub-modes: the body is a SET of the option,
+// and the camera answers them with the 0x2053 echo the gate of this module already reads.
+function setSubModeX5(video, n) {
+	var opt = video ? 0x29 : 0x28;           // OptionType VIDEO_SUB_MODE=41 / PHOTO_SUB_MODE=40
+	var tag0 = video ? 0xc8 : 0xc0;          // Options field 41/40 -> tag bytes c8 02 / c0 02
+	var body = (n == 0) ? [0x08, opt, 0x12, 0x00]b : [0x08, opt, 0x12, 0x03, tag0, 0x02, n]b;
+	return x5BodyFrame(0, body);
+}
+
+// SET_PHOTOGRAPHY_OPTIONS (0x09) {1: type, 2: {type: v}, 3: function mode}
+function setPhotoOptX5(fm, type, v) {
+	var inner = pbVar(type << 3);
+	inner.addAll(pbVar(v));
+	var b = [0x08]b; b.addAll(pbVar(type));
+	b.add(0x12); b.addAll(pbVar(inner.size())); b.addAll(inner);
+	b.add(0x18); b.addAll(pbVar(fm));
+	return x5BodyFrame(0x09, b);
+}
+
+// SET_TIMELAPSE_OPTIONS (0x12) {1: {2: lapse_ms}, 2: timelapse mode}
+function setLapseX5(tm, ms) {
+	var inner = [0x10]b; inner.addAll(pbVar(ms));
+	var b = [0x0a]b; b.addAll(pbVar(inner.size())); b.addAll(inner);
+	b.add(0x10); b.addAll(pbVar(tm));
+	return x5BodyFrame(0x12, b);
+}
+
+// SET_TIMELAPSE_OPTIONS (0x12) {1: {1: duration_s}, 2: timelapse mode} (Starlapse total time)
+function setLapseDurX5(tm, s) {
+	var inner = [0x08]b; inner.addAll(pbVar(s));
+	var b = [0x0a]b; b.addAll(pbVar(inner.size())); b.addAll(inner);
+	b.add(0x10); b.addAll(pbVar(tm));
+	return x5BodyFrame(0x12, b);
+}
+
+// SET_ACTIVE_SENSOR (0x41): 3 both lenses (360), 1 front
+function setSensorX5(v) { return x5BodyFrame(0x41, [0x08, v]b); }
+
 var currentMode as Lang.String or Lang.ByteArray = "DefaultV";
 var videoMode as Lang.Boolean = true;
 var currentLabel as Lang.String = "Default Video";
@@ -311,6 +435,7 @@ const X5_SUB_MODE_NOTIF = 0x2053;
 const X5_OPTIONS_NOTIF = 0x2065;
 const X5_CAPTURE_NUM_NOTIF = 0x2064;
 const X5_CAPTURE_STATUS_NOTIF = 0x2010;
+const X5_AUTH_RESULT_NOTIF = 0x2011;
 const X5_RECORD_STATE_NOTIF = 0x2040;
 
 
@@ -354,9 +479,51 @@ const X5_OPT_STORAGE_STATE = 20;
 const X5_GET_CAPTURE_STATUS = 15;
 const X5_STATE_AT_REST = 0;
 const X5_STATE_RECORDING = 1;
+// State 24 is PureVideo recording. Named from PR #2's bench (no84by bd9c0f1,
+// X5 fw 1.13.21, the same firmware ours runs): "START is answered with state
+// 24, a stop pushes 24 then 0, a connect mid-recording reads 24". This also
+// names an observation both repos already had and neither understood: PR #2's
+// own vector feed of a 0x2010 push carries field 1 = 0x18 = 24 - what its
+// comment called the file-finalization push is the stop tail of a PureVideo
+// recording. The author's earlier claim that state 24 never starts a recording
+// (his f569e28) is reversed by his own later logs; the reading here follows
+// the later one, and PureVideo is a real row of this app's level-2 menu
+// (v11, Levels.mc) - a widget that ignores 24 is blind exactly where its own
+// menu can put the camera. Photo states (single, burst, interval, starlapse)
+// are still never taken for a recording: their values are not named by either
+// bench and stay an open box.
+const X5_STATE_PUREVIDEO = 24;
 const STATUS_ASK_MS = 1500;
 const STATUS_RETRY_MS = 6000;
 const STATUS_RETRY_MAX = 2;
+
+// The bound of the mode echo gate: the camera's confirmation of a mode write
+// was seen 0.3 to 0.5 s after it on both benches, so 3 s covers the answer
+// with room, and the gate opens by itself if the answer never comes. The PR
+// holds the same value (holdMode(3000)); its browsing hold of 800+3000 is an
+// app decision, not a protocol one, and sits with the app.
+const MODE_ECHO_HOLD_MS = 3000;
+
+// The authorization handshake, part of every connect on a legacy-framed link:
+// CHECK_AUTHORIZATION (39) as a WATCH_GARMINOS client, 500 ms after the notify
+// profile opens. The camera only pushes to a client that completed this handshake
+// (measured twice on X5 fw 1.13.21: PR #2 by @no84by and this barrel's own
+// probe; PROTOCOL_APK.md §15.14). The answer moves no UI state yet, it only
+// feeds the wire log and authProbeStatus.
+const AUTH_CMD = 0x27;
+const AUTH_PROBE_MS = 500;
+
+// The card-state ask at connect, third in the ladder. The 0x2006 push names
+// the card only when it moves, never when the bond opens, so until something
+// moves the card state would stay unknown. GET_STORAGE (166) with body
+// {1: location 0} is the phone app's ask; its answer is one of the shapes
+// the docs name readable on this link - card_state inside the 20 octets, the
+// sizes past the cut and unknown as everywhere here (docs §10 of
+// x5-protocol.md; the PR's bench answered this frame, storSeq line of its
+// barrel). Asked once per link, 2500 ms, after the auth and status asks so
+// it never slips between them.
+const STORAGE_CMD = 0xA6;
+const STORAGE_ASK_MS = 2500;
 
 
 
@@ -442,6 +609,46 @@ var x5SubVideo as Lang.Number or Null = null;
 var x5ResNow as Lang.Number or Null = null;
 var x5FuncMode as Lang.Number or Null = null;
 
+// The mode echo gate, ported from PR #2 (settingMayGo), where the author
+// measured what both benches confirm: the camera answers a mode SET with a
+// 0x2053 push 0.3 to 0.5 s after the write, and refuses option writes while
+// it is still switching modes (error 400). modeReqId is the mode id of the
+// last mode this watch wrote, in the entry vocabulary the app itself uses
+// ("p3", "v7"), null while nothing is in flight; modeHoldUntil is the
+// System.getTimer() ms past which the gate reopens on its own, because the
+// gate never closes forever; camModeId is the mode the camera last said it
+// is in, from the same 0x2053 fields, null while that reading is not trusted.
+var modeReqId as Lang.String or Null = null;
+var modeHoldUntil as Lang.Number = 0;
+var camModeId as Lang.String or Null = null;
+// The mode kept for the name on air, loaded at the classification by
+// loadKeptMode(): the last mode this camera CONFIRMED holding, a datum of the
+// next bond. No decision lives here - the application chooses with the rows of
+// the level in force (Levels.poseFor), which is the only place that owns them.
+var keptModeId as Lang.String or Null = null;
+
+// The invalidation bookkeeping of the option rows. 0x2065 (WATCH_RES) is the
+// camera naming the options that moved: its body carries the option ids as a
+// repeated field 1, inside the 20-octet window (the survey records ids 30 and
+// 40 at octets 17 to 20), while the values sit in the nested map past octet
+// 21, in frames declared 26 to 30 that this bond cuts and the camera never
+// continues. So this push invalidates a row, it never fills one, and nothing
+// re-asks the option: a GET meets the same wall. x5StaleOptions holds one
+// entry per named id until a write of the option itself clears it.
+var x5StaleOptions as Lang.Array = [];
+
+// The degraded-axis. Entries this camera, named by the name it carries on air,
+// was seen refusing a user command: one set per camera name, kept across
+// links and across runs. It is fed by failures of user commands - the code
+// 400 answer named by its sequence, below, and the application's own write
+// pages when they run - never by a probe: the three asks this barrel sends
+// at connect (auth, status, card) name a state, never a menu, and that is
+// the point of the level chain (no probing frames; the phase-5 test counts
+// them). lastCmdSeq is the stamped sequence of the last legacy frame this
+// watch sent, which is the sequence a refusal of it answers by.
+var x5Degraded as Lang.Array = [];
+var lastCmdSeq as Lang.Number = -1;
+
 var x5BatteryLevel as Lang.Number or Null = null;
 var x5BatteryPowerType as Lang.Number = 0;
 var x5BatteryArrived as Lang.Boolean = false;
@@ -454,7 +661,27 @@ var x5BatteryLow as Lang.Boolean = false;
 var x5CamState as Lang.Number or Null = null;
 var x5StatusAsked as Lang.Boolean = false;
 var x5StatusTries as Lang.Number = 0;
-var x5StatusTimer as Timer.Timer or Null = null;
+// The date the state ask is due at, in the System.getTimer() domain. Not a
+// Timer object: see the schedule note above armLinkAlarm.
+var x5StatusDue as Lang.Number or Null = null;
+
+// The authorization probe's bookkeeping. authProbeSeq is the stamped sequence
+// of the request, used to pick its answer out of the responses, -1 when no
+// probe is in flight; authProbeStatus is the answered status (-1 while no
+// answer): 0 authorized, 1 unauthorized with an Allow pending on the camera,
+// 2 busy, 3..6 a client of each kind already connected, 7 sleeping.
+var authProbeStatus as Lang.Number = -1;
+var authProbeSeq as Lang.Number = -1;
+var authProbeAsked as Lang.Boolean = false;
+var authProbeDue as Lang.Number or Null = null;
+
+// The card-state ask: asked once per link, the seq picks its answer out of
+// the responses (-1 when nothing is in flight), the same rule as the auth
+// probe just above. The state it answers is the one slot the 0x2006 push
+// also owns; the sizes are not in either half and stay unknown.
+var x5StorageAsked as Lang.Boolean = false;
+var x5StorageAskSeq as Lang.Number = -1;
+var x5StorageAskDue as Lang.Number or Null = null;
 
 // The 0x2006 storage push, two small flags. The push carries no sizes: the free
 // and total byte counts live in option 20 and in the 0x2062 push, past octet 20
@@ -462,6 +689,27 @@ var x5StatusTimer as Timer.Timer or Null = null;
 // app must show that as unknown, not as zero.
 var x5StorageState as Lang.Number or Null = null;
 var x5StorageMode as Lang.Number or Null = null;
+
+// The answer of a shot this watch fired, followed by the sequence stamped on its
+// capture frame - the same shape as the auth probe and the storage ask of this module,
+// for the same reason: only the frame carrying that sequence answers that request. The
+// three-way reading is the PR's, and it is the reading the 20-octet ceiling allows: a
+// 200 whose declared length is above 16 carries the picture path, so a shot happened; a
+// bare 200 means the camera took nothing; anything else refused the request. The app arms
+// the witness at the send site (armPhotoAck), reads it once (photoResultTaken), and the
+// reset at the link edge clears it with the other sequences.
+var x5PhotoSeq as Lang.Number = -1;
+var x5PhotoResult = null;   // :ok / :noShot / :rejected, consumed by the app
+
+// The same witness for one settings write (an option of the family above, the shutdown
+// frame): armWriteAck after the send, the 200 answer names the write accepted, the 0x190
+// answer names it refused. The name travels only so the wire line says which write the
+// verdict answers for; the verdict itself is read once by settingResultTaken(). This is
+// the consumer side the echo gate has been waiting for: the settings page ported from the
+// PR writes as it selects, and needs the answer to show ok or refused at the row.
+var x5WriteSeq as Lang.Number = -1;
+var x5WriteName as Lang.String = "";
+var x5WriteResult = null;   // :ok / :rejected, consumed by the app
 
 
 
@@ -491,23 +739,56 @@ const HEX_DIGITS = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "a", "b", 
 function bytesToHex(data as Lang.ByteArray) as Lang.String {
 	var out = "";
 	for (var i = 0; i < data.size(); i++) {
-		var b = data[i];
+		// Masked because every other octet read in this file is masked; this
+		// was the one that was not. The mask names no cause - the unit vector
+		// hexWitnessPrintsHighOctets asked the engine what it hands back for
+		// 0xc8 and 0xff and it answers 200 and 255, so the unmasked b >> 4 was
+		// never a negative index of HEX_DIGITS, and the two bench deaths of
+		// 12 nov. at this printer are explained elsewhere (x5DecodeNotif now
+		// builds its witness inlined, without a call, for that reason). The
+		// digits themselves are pinned by that same vector: c8 80 ff 7f 00.
+		var b = data[i] & 0xff;
 		out += HEX_DIGITS[b >> 4];
 		out += HEX_DIGITS[b & 0x0f];
 	}
 	return out;
     }
+// ---- the schedule of the link's delayed actions: ONE Timer object ----
+// Toybox.Timer states the budget in its own documentation: "The number of
+// available timers (default 3) and the minimum time value (default 50 ms)
+// depends on the host system. An error will occur if too many timers are set."
+// That budget belongs to the process, and a widget pays it once for everything
+// the process runs - the glance session and the opened app are one process, one
+// pool. The app's own view keeps a repeating timer (the tick that repaints the
+// screen), so the five delayed actions of this link - the authorization probe,
+// the camera state ask, the card ask, the write retry, the start delay - cannot
+// own a Timer object each. This is not a theoretical limit: at the moment the
+// notify profile opens, three of them are armed at once (500, 1500 and 2500 ms
+// from the same callback), and the view's tick was the fourth - the "Too Many
+// Timers" crash a widget run took at RemoteView.onShow, while the same app in
+// the older shape, which owned no view timer, sat exactly at the ceiling.
+// So a delayed action of the link is booked as a date in the System.getTimer()
+// domain, the same domain the mode-echo gate books its hold in (modeHoldUntil),
+// and the link owns one Timer object, linkAlarm, armed for the earliest date.
+// When it fires, every action whose date has come runs, and the alarm is armed
+// again for the earliest date still in the future. Nothing is lost, nothing
+// needs a second object.
+const ASK_NONE = 0x7FFFFFFF;
+const ASK_MIN_MS = 50;
+
+var linkAlarm as Timer.Timer or Null = null;
+
 (:glance)
 class BleDevice extends BluetoothLowEnergy.BleDelegate {
  var scanning as Lang.Boolean = false;
  var scanTimeout as Lang.Number = 64;
  var device as BluetoothLowEnergy.Device or Null = null;
  var button as Lang.Number = 0;
- var retryTimer as Timer.Timer or Null = null;
+ var retryDue as Lang.Number or Null = null;
  var retryKind as Lang.Number = 0;
  var retryCount as Lang.Number = 0;
  var inRetry as Lang.Boolean = false;
- var startDelayTimer as Timer.Timer or Null = null;
+ var startDelayDue as Lang.Number or Null = null;
  var pendingStart as Lang.Boolean = false;
  var ucd2Profile as Lang.Dictionary or Null = null;
  var startAckSeen as Lang.Boolean = false;
@@ -518,6 +799,10 @@ class BleDevice extends BluetoothLowEnergy.BleDelegate {
 
  var applyBursts as Lang.Number = 0;
  var writing as Lang.Boolean = false;
+ // The pump's consecutive refused writes (the exception branch of kickQueue
+ // only). Cleared when a chunk is issued, and when the bond changes; at
+ // WEDGE_REFUSALS_MAX the bond is declared dead.
+ var wedgeCount as Lang.Number = 0;
 
 	protected function debug(str as Lang.String) as Void {
 		if (DEBUG_TRACE) {
@@ -533,8 +818,18 @@ class BleDevice extends BluetoothLowEnergy.BleDelegate {
 
 	// A byte array is an array of numbers at runtime, but the compiler wants the
 	// exact type, so the hex walk takes a ByteArray: every caller hands it one.
+	// The constant gate of LOG_FRAMES sits here, at the single site of the hex
+	// dump, not at the callers: the send and receive sites keep naming their
+	// event, and this answers whether the bytes of the event are printed too
+	// (the constant's comment names why the answer is no by default).
 	protected function wireBytes(tag as Lang.String, data as Lang.ByteArray) as Void {
-		if (!wireTrace) {
+		if (!wireTrace || !LOG_FRAMES) {
+			return;
+		}
+		// The keepalive shape of the LOG_KEEPALIVE constant's comment, at the
+		// single hex-dump site like its gate above: the event numbering keeps
+		// its count, only the line is not printed.
+		if (!LOG_KEEPALIVE && data.size() == 7 && data[4] == 0x05 && data[5] == 0x00) {
 			return;
 		}
 		wireEvents = wireEvents + 1;
@@ -903,7 +1198,23 @@ class BleDevice extends BluetoothLowEnergy.BleDelegate {
 		}
 		notifCode = (buf[7] & 0xff) | ((buf[8] & 0xff) << 8);
 		notifSeq = (buf[10] & 0xff) | ((buf[11] & 0xff) << 8) | ((buf[12] & 0xff) << 16);
-		notifHex = bytesToHex(buf);
+		// The hex witness, inlined. A call to bytesToHex here killed two bench
+		// sessions of 12 nov. (Illegal Access (Out of Bounds), Failed invoking
+		// <symbol>, both x5DecodeNotif frames named at that one call site,
+		// before and after the & 0xff mask went in). Nothing in the protocol is
+		// read out of this string - it only names frames in the log - so it has
+		// no business ending a link, and the same digits are built without a
+		// call two functions above, in wireLine. Octets masked the way every
+		// reading of this file masks them; compact form, as the [nf] line
+		// prints it. bytesToHex keeps its own mask for the other two callers
+		// (the mode reader and the currentMode property).
+		notifHex = "";
+		var hx = 0;
+		while (hx < buf.size()) {
+			var hb = buf[hx] & 0xff;
+			notifHex += HEX_DIGITS[(hb >> 4) & 0x0f] + HEX_DIGITS[hb & 0x0f];
+			hx += 1;
+		}
 		notifVal1 = 0;
 		notifVal2 = 0;
 		notifVal3 = 0;
@@ -969,6 +1280,14 @@ class BleDevice extends BluetoothLowEnergy.BleDelegate {
 			if (power != null) {
 				x5BatteryPowerType = power;
 				x5BatteryArrived = true;
+				// The 0x2004 low-battery alarm goes stale the moment the
+				// camera says it runs on external power (power_type 1): the
+				// rule the PR's reader applies on its side too. The alarm
+				// stays a fact of the wire log; the standing flag clears.
+				if (power == 1 && x5BatteryLow) {
+					x5BatteryLow = false;
+					wireLine("battery", "0x2004 alarm cleared: the camera is on external power");
+				}
 			}
 			if (level != null) {
 				wireLine("battery", level.toString() + "% power_type=" +
@@ -979,6 +1298,21 @@ class BleDevice extends BluetoothLowEnergy.BleDelegate {
 			} else {
 				wireLine("battery", "0x2003 arrived, nothing readable in its body");
 			}
+			return;
+		}
+		if (notifCode == X5_OPTIONS_NOTIF) {
+			// WATCH_RES, answered here rather than by the walk below, and not
+			// returned to: the ids are read from the raw window, the values are
+			// not asked for. What crosses of this frame is the repeated field 1
+			// of its body, the list of option ids (the survey names [30, 40] at
+			// octets 17 to 20); the map that would carry their values sits past
+			// octet 21 and no run on either bench has ever brought it over. The
+			// rows the camera names become untrusted here, and the app's cache
+			// reads that through optionIsStale; the reading of a value comes
+			// only from a write this watch made and the camera confirmed.
+			x5RecordNotif();
+			var named = x5CollectOptionIds(buf);
+			wireLine("options", "0x2065 invalidated options=" + named + " (values past the cut, never re-asked)");
 			return;
 		}
 
@@ -1065,8 +1399,17 @@ class BleDevice extends BluetoothLowEnergy.BleDelegate {
 			// S-25 (CdC item 97): the content of a notification, read once per notification
 			// received, at the site that decodes it. The observer of the delegate keeps one slot
 			// per field, so a window answers for the LAST notification only and cannot name which
-			// echo a set of fields belongs to (note 26, note 27). The print sits before the branch
-			System.println("[nf] code=" + notifCode.toString() + " f1=" + notifVal1.toString() + " f2=" + notifVal2.toString() + " f3=" + notifVal3.toString() + " opts=" + notifOptCount.toString() + " o1=" + notifOptTag.toString() + ":" + notifOptVal.toString() + " o2=" + notifOptTag2.toString() + ":" + notifOptVal2.toString() + " hex=" + notifHex);
+			// echo a set of fields belongs to (note 26, note 27). The print sits before the
+			// branch that counts below, the way it always did.
+			// Item 9 of the integration, the hygiene of the log: this is a line of per-frame
+			// content - one per notification, with the hex of its body - and it printed
+			// unconditionally, the way it was written before any line of events existed.
+			// LOG_FRAMES answers now, and with the constant at its default the decoded fields
+			// stay datum of the peek* slots while the watch log keeps the events that NAME
+			// these fields (the battery, storage, capture and auth lines of wireLine).
+			if (wireTrace && LOG_FRAMES) {
+				System.println("[nf] code=" + notifCode.toString() + " f1=" + notifVal1.toString() + " f2=" + notifVal2.toString() + " f3=" + notifVal3.toString() + " opts=" + notifOptCount.toString() + " o1=" + notifOptTag.toString() + ":" + notifOptVal.toString() + " o2=" + notifOptTag2.toString() + ":" + notifOptVal2.toString() + " hex=" + notifHex);
+			}
 			var ix = x5CodeIndex(notifCode);
 			if (ix < 0) {
 				x5CodesSeen.add(notifCode);
@@ -1083,7 +1426,90 @@ class BleDevice extends BluetoothLowEnergy.BleDelegate {
 
 
 
+	// A named option id joins the stale list once; the list answers the app's
+	// cache, which decides what an untrusted row means on screen. The scan is
+	// explicit on purpose: the array family is where the SDK API is the most
+	// treacherous (the note of tools/mc_check.py), and an index walk answers
+	// on every API level this project targets.
+	function x5StaleIndex(opt as Lang.Number) as Lang.Number {
+		var i = 0;
+		while (i < x5StaleOptions.size()) {
+			if (x5StaleOptions[i] == opt) {
+				return i;
+			}
+			i++;
+		}
+		return -1;
+	}
+
+	function x5MarkOptionStale(opt as Lang.Number) as Void {
+		if (x5StaleIndex(opt) < 0) {
+			x5StaleOptions.add(opt);
+		}
+	}
+
+	// The option ids of a WATCH_RES body: the repeated varint field 1 from
+	// octet 16 up to wherever the bond cut the frame. The walk's shape, kept
+	// separate on purpose - it stops at the first nested field (the value map,
+	// whose ids are not the window's) and at the cut, and it says what it
+	// named, for the wire line.
+	function x5CollectOptionIds(buf as Lang.ByteArray) as Lang.String {
+		var found = "";
+		var n = buf.size();
+		var i = 16;
+		while (i < n) {
+			var tag = x5Varint(buf, i, n);
+			if (tag == null) {
+				break;
+			}
+			i = x5VarintEnd;
+			var field = tag >> 3;
+			var wire = tag & 7;
+			if (wire != 0) {
+				break;
+			}
+			var v = x5Varint(buf, i, n);
+			if (v == null) {
+				break;
+			}
+			i = x5VarintEnd;
+			if (field == x5PhotoSubModeNotif) {
+				x5MarkOptionStale(v);
+				if (found.length() > 0) {
+					found += ",";
+				}
+				found += v.toString();
+			}
+		}
+		return found;
+	}
+
+	// The mode id named by a 0x2053 pair: the half that is not 100 names the
+	// mode, "p" for the photo half, "v" for the video half — the same names
+	// the app's menu entries carry. Two halves at 100, or both set, answer
+	// null: neither has ever been seen on either bench, one half is always
+	// the none flag (docs/x5-protocol.md §3.1).
+	function x5ModeIdOf(photo as Lang.Number, video as Lang.Number) as Lang.String or Null {
+		if (photo != x5SubModeNotApplicable && video == x5SubModeNotApplicable) {
+			return "p" + photo.toString();
+		}
+		if (video != x5SubModeNotApplicable && photo == x5SubModeNotApplicable) {
+			return "v" + video.toString();
+		}
+		return null;
+	}
+
 	function x5ApplyNotif() as Void {
+		if (notifCode == X5_AUTH_RESULT_NOTIF) {
+			// AUTHORIZATION_RESULT: the camera says the user answered its Allow
+			// prompt (field 1 = 0, the only answer ever observed on either bench).
+			// The gate of this link is open now; say so once in the wire log.
+			if (authProbeStatus != 0) {
+				authProbeStatus = 0;
+				wireLine("auth probe", "open now, 0x2011 from the user f1=" + notifVal1.toString());
+			}
+			return;
+		}
 
 
 
@@ -1103,42 +1529,103 @@ class BleDevice extends BluetoothLowEnergy.BleDelegate {
 			} else {
 				x5SubVideo = notifVal2;
 			}
+			// The mode echo gate (ported from PR #2, measured on both benches).
+			// The id of this push names the mode the camera says it is in; the
+			// half that is 100 says "not this family". The reading is recorded
+			// first, the decision of what to do with it belongs to the app.
+			var id = x5ModeIdOf(notifVal1, notifVal2);
+			if (id != null) {
+				camModeId = id;
+			}
+			if (id != null && modeReqId != null && id.equals(modeReqId)) {
+				// The echo of this watch's own mode write: the gate opens here,
+				// the hold runs out by itself. This is also the one moment the
+				// camera proved which mode it holds, so the id is kept under the
+				// name for the next bond (noteConfirmedMode names the rule).
+				modeReqId = null;
+				System.println("[mode] echo confirmed id=" + id);
+				noteConfirmedMode(id);
+			} else if (modeReqId != null && System.getTimer() < modeHoldUntil) {
+				// An echo that is not the one in flight while a request is in
+				// flight: not trusted, the PR's guard, kept verbatim in purpose.
+				// A late echo of the previous mode would otherwise move the app
+				// off the mode the user just asked for.
+				System.println("[mode] stale echo ignored id=" + (id == null ? "?" : id) + " waiting=" + modeReqId);
+			}
 			return;
 		}
 		if (notifCode == X5_OPTIONS_NOTIF) {
-
-
-
-
-
-			if (notifVal3 > 0) {
-				x5FuncMode = notifVal3;
-			}
-			if (notifOptTag == 31) {
-				x5ResNow = notifOptVal;
-			}
+			// The reads that used to sit here (field 3 read as a family, the
+			// option 31 value out of the nested map) answer on bytes this bond
+			// never delivers - every 0x2065 is declared 26 to 30 and cut at
+			// octet 20 - and the frame site now answers the push before the
+			// walk ever sees it. The invalidation is the whole reading;
+			// peekResNow and peekFuncMode still answer, and on this link their
+			// null is the truth of the wall.
 			return;
 		}
 		if (notifCode != X5_CAPTURE_STATUS_NOTIF && notifCode != X5_RECORD_STATE_NOTIF) {
 			return;
 		}
+		// The capture-state push confirms, it never re-starts. The PR's author
+		// found it on his own camera and the bench agrees: the camera pushes
+		// 0x2010 again while it finalizes a file, and read here as a fresh
+		// start that push moved startRecTime - the on-screen recording clock
+		// began again in the middle of a recording. What that finalizing push
+		// was is now named on the same bench: its field was 24, the PureVideo
+		// recording state, and a PureVideo stop pushes 24 then 0 (no84by
+		// bd9c0f1) - the branch below refuses it by value for every state > 0
+		// anyway. So the push only moves the
+		// machine on an edge of the watch's own state, the same discipline
+		// onUcd2Frame keeps for this on the ucd2 envelope: state>0 from
+		// anything but stateStartRec (the app's pending start - it writes
+		// stateStarting at the press, InputDelegate - or the camera's own
+		// button from rest, which both benches proved arrives unprompted),
+		// never while the watch already shows recording. A repeat push
+		// answers with a wire line and leaves the clock put.
 		if (notifVal1 > 0) {
-			cancelRetry();
-			cancelPendingStart();
-			mMessage = "Shooting";
-
-
-			recState = stateStartRec;
-
-
-			startRecTime = Time.now();
+			if (recState == stateStartRec) {
+				wireLine("capture", "push state=" + notifVal1.toString() + " while already recording, the clock stays put");
+			} else if (recState == stateStopping) {
+				// A state>0 push while a stop is pending is the same finalization
+				// push the comment above names: read as a start it would undo the
+				// user's stop and move the clock again, exactly the fault PR #2's
+				// vector captureStatusPushDoesNotRestartRecording met on its bench
+				// and the one this branch was written against. The stop stands; the
+				// state-0 answer below is what confirms it, and the stop's own
+				// retry path still owns it if that answer never comes.
+				wireLine("capture", "push state=" + notifVal1.toString() + " while a stop is pending, the stop stands");
+			} else {
+				// Same split as applyCamState right below: from rest this is a
+				// camera-side start the watch joined, from the app's pending
+				// start it is the confirmation of our press.
+				recJoined = recState == stateStopRec;
+				cancelRetry();
+				cancelPendingStart();
+				mMessage = "Shooting";
+				recState = stateStartRec;
+				startRecTime = Time.now();
+			}
 		} else {
+			// State 0 is idempotent at rest (the message and the burst count
+			// reset to what they already are), and while a stop is pending -
+			// the app's stateStopping from the press - this is exactly the
+			// confirmation of it, which is what recState becomes anyway.
+			// And it ANSWERS the retry the stop's send booked: this branch does
+			// what the confirmation of a start does a few lines above, less the
+			// join. Only the stop kind - this frame says nothing about an armed
+			// start retry, and the exhausted-retry vectors name what answers
+			// that one. The gap was named on the wrist, first video scene
+			// (E2 run 2, 13 nov.): the camera's answer to the stop arrived as
+			// a 66-octet body cut to 20, no state to read across the wall, and
+			// these pushes were the only confirmation that ever came - with no
+			// cancel here the retry re-sent the stop three times and asserted
+			// recording over the observed rest at exhaustion.
+			if (retryKind == retryKindStop) {
+				cancelRetry();
+			}
 			applyBursts = 0;
 			mMessage = currentLabel + "\n" + startMessage;
-
-
-
-
 			recState = stateStopRec;
 		}
 	}
@@ -1147,20 +1634,38 @@ class BleDevice extends BluetoothLowEnergy.BleDelegate {
 	// responseSig block used to run on every notification. It sees the ASSEMBLED
 	// frame, so it answers whether the camera sent the response in one
 	// notification or spread it over continuations, and it only ever runs for a
-	// frame x5RxFeed has completed or delivered as cut. The recording report
+	// frame x5RxFeed has completed or delivered as cut. The low-byte trap the
+	// PR met stays closed by construction here: that camera re-pushed 0x2010
+	// while finalizing a file, the old raw scan read octet 7 alone as the
+	// command - and 0x2010 is 0x10 at that octet - so the capture push looked
+	// like a legacy start and moved the clock again. Here the code is read as
+	// 16 bits, and x5IsNotif sends every frame with octet 8 at 0x20 or above
+	// to the notification side, so this function never sees one; keep both if
+	// this region is ever edited again. The recording report
 	// (code 0x40, and 0x10 on older firmware) names start and stop with the flag
 	// at octet 17; busy speaks for itself; the command error ends the start
 	// sequence; and the ACK of the start sequence is what lets fireStart go.
 	function x5ApplyResponse(buf as Lang.ByteArray) as Void {
-		if (buf == null || buf.size() < 18) {
+		// The floor is a whole frame header, 16 octets, and not 18: a code-200
+		// answer with no body is a frame of exactly 16 (4 804 of them in the
+		// corpus, PROTOCOL_APK 15.27), and that short frame is what carries two
+		// verdicts this function must answer - the shot's :noShot (the capture
+		// command's empty ack, the PR's three-way reading) and the start
+		// sequence's ACK. The branches that read past octet 17 say so at their
+		// own condition; the rest read only the header, which this floor names.
+		if (buf == null || buf.size() < 16) {
 			return;
 		}
 		var code = (buf[7] & 0xff) | ((buf[8] & 0xff) << 8);
-		var isRecReport = code == recReportCode || code == recReportCodeLegacy;
+		var isRecReport = (code == recReportCode || code == recReportCodeLegacy) && buf.size() >= 18;
 		if (isRecReport && buf[17] > 0x00) {
 			cancelRetry();
 			cancelPendingStart();
 			mMessage = "Shooting";
+			// This report answers the start THIS watch wrote - a report code
+			// below 0x20 never reaches the notification side - so the recording
+			// is ours, not one the watch joined.
+			recJoined = false;
 			recState = stateStartRec;
 			startRecTime = Time.now();
 		} else if (isRecReport && buf[17] == 0x00) {
@@ -1176,6 +1681,69 @@ class BleDevice extends BluetoothLowEnergy.BleDelegate {
 			cancelPendingStart();
 			mMessage = currentLabel + "\n" + startMessage;
 			recState = stateStopRec;
+		} else if (authProbeSeq >= 0 && buf[10] == authProbeSeq && code < 0x1000) {
+			// The answer carrying the probe's sequence is the authorization
+			// answer, whatever code it echoes. This runs ahead of the ACK
+			// branch on purpose: the same code 200 shape would otherwise be
+			// parsed as a capture-state answer to command 15.
+			applyAuthProbe(buf);
+		} else if (x5StorageAskSeq >= 0 && buf[10] == x5StorageAskSeq && code < 0x1000) {
+			// The card ask's answer goes by its sequence, like the auth
+			// answer, and for the same reason runs ahead of the ACK branch:
+			// its code 200 shape would else be met as a capture-state answer.
+			applyStorageAsk(buf);
+		} else if (x5PhotoSeq >= 0 && buf[10] == x5PhotoSeq && code < 0x1000) {
+			// The shot's answer runs ahead of the refusal branch on purpose: when the
+			// camera refuses a capture, that refusal is the shot's verdict, not a mode
+			// entry to mark degraded - a capture never sets modeReqId, and a degraded
+			// mark read from one would name the mode the menu last held. The declared
+			// length is read from the header, which the ceiling never cuts, so a short
+			// arrival classifies the same as a whole one (the PR's three-way reading).
+			var photoDeclared = (buf[0] & 0xff) | ((buf[1] & 0xff) << 8);
+			var photoVerdict = :rejected;
+			if (code == ACK_CODE && photoDeclared > 16) { photoVerdict = :ok; }
+			else if (code == ACK_CODE) { photoVerdict = :noShot; }
+			wireLine("photo", "ack code=" + code.toString() + " declared=" + photoDeclared.toString() + " shot=" + (photoVerdict == :rejected ? "refused" : (photoVerdict == :ok ? "taken" : "none")));
+			if (code == ACK_CODE) {
+				// The answer of a capture command carries the state byte at octet 19,
+				// the same byte the state read parses there (x5ParseCaptureState): a
+				// timed photo still running reads as a start, which is the clock of
+				// stateStartRec this frame should begin. A shot answer without that
+				// shape answers null at that site and moves nothing.
+				applyCamState(buf);
+			}
+			x5PhotoResult = photoVerdict;
+			x5PhotoSeq = -1;
+		} else if (x5WriteSeq >= 0 && buf[10] == x5WriteSeq && (code == ACK_CODE || code == 0x190)) {
+			// A settings write's answer, ahead of the refusal branch for the same
+			// reason as the shot above: this 0x190 belongs to a write the menu never
+			// named as a mode, and the row of the settings page is where its refusal
+			// must answer - not a degraded mark on an unrelated entry.
+			x5WriteResult = (code == ACK_CODE) ? :ok : :rejected;
+			wireLine("setting", x5WriteName + " -> " + (code == ACK_CODE ? "ok" : "refused 400"));
+			x5WriteSeq = -1;
+			x5WriteName = "";
+		} else if (code == 0x190 && lastCmdSeq >= 0 && buf[10] == lastCmdSeq) {
+			// The camera refused the write this watch just made, named by its
+			// sequence (0x190 = 400, the same shape the PR matched with its
+			// setSeq). When that write was a mode write, the id its page named
+			// before the send - modeReqId, in the app's entry vocabulary of
+			// the echo gate - is exactly the entry this camera is known not to
+			// take: the entry takes the degraded mark, kept by camera name
+			// across links and runs, and the write cycle closes (the hold of
+			// the gate runs out by itself, as ever). A refusal whose writer
+			// named no id gets the line and nothing else: what a refusal was
+			// about is not guessed here.
+			var refused = modeReqId;
+			var refusedSeq = lastCmdSeq;
+			lastCmdSeq = -1;
+			if (refused != null) {
+				modeReqId = null;
+				noteDegraded(refused);
+				wireLine("write refused", "400 on seq " + refusedSeq.toString() + " entry=" + refused + " marked degraded");
+			} else {
+				wireLine("write refused", "400 on seq " + refusedSeq.toString() + " no id known, nothing marked");
+			}
 		} else if (code == ACK_CODE) {
 			// One frame, two jobs. The code-200 answer to command 15 is also the ACK
 			// the start sequence waits for, so the state read runs first and does not
@@ -1208,6 +1776,10 @@ class BleDevice extends BluetoothLowEnergy.BleDelegate {
 	// Moving recState is what starts the on-screen clock, and it is done only while
 	// no start or stop sequence is in flight. The seconds field of the answer sits
 	// past the cut, so a recording found at connect is timed from the connect.
+	// The states that move the machine are the video recording ones named by two
+	// benches: 1 (several video modes share it) and 24 (PureVideo, PR #2's bench
+	// names the constant above); the photo states and anything unnamed answer with
+	// the refusal line below, never with a silent fall.
 	function applyCamState(buf as Lang.ByteArray) as Void {
 		var st = x5ParseCaptureState(buf);
 		if (st == null) {
@@ -1217,13 +1789,53 @@ class BleDevice extends BluetoothLowEnergy.BleDelegate {
 		x5StatusAsked = false;
 		x5StatusTries = 0;
 		cancelStatusTimer();
-		wireLine("cam state", "state=" + st.toString() + " " +
-			(st == X5_STATE_RECORDING ? "recording" : "at rest") +
-			" arrived=" + x5RxArrived.toString() + " of " + x5RxDeclared.toString());
-		if (st == X5_STATE_RECORDING && !pendingStart && recState != stateStartRec) {
-			recState = stateStartRec;
-			startRecTime = Time.now();
-			mMessage = "Shooting";
+		// The reading names itself before any branch, and it names what it is,
+		// not what it is not: an earlier shape of this line called every value
+		// other than 1 "at rest", which called a PureVideo recording stopped.
+		var named = "state=" + st.toString();
+		if (st == X5_STATE_RECORDING) {
+			named += " recording";
+		} else if (st == X5_STATE_PUREVIDEO) {
+			named += " recording (PureVideo)";
+		} else if (st == X5_STATE_AT_REST) {
+			named += " at rest";
+		} else {
+			named += " not a state either bench names";
+		}
+		wireLine("cam state", named + " arrived=" + x5RxArrived.toString() + " of " + x5RxDeclared.toString());
+		if ((st == X5_STATE_RECORDING or st == X5_STATE_PUREVIDEO) && !pendingStart) {
+			if (recState == stateStartRec) {
+				wireLine("cam state", "answer state=" + st.toString() + " while already recording, the clock stays put");
+			} else if (recState == stateStopping) {
+				// The stop tail, on the leg this function owns. Two benches name
+				// the same shape: PR #2's author on a Descent Mk3i with the same
+				// X5 fw 1.13.21 (no84by 34a00c2 and bd9c0f1: during a stop the
+				// camera sends its recording state - 1, or 24 for PureVideo -
+				// and THEN state=0, a real start arrives only after the 0), and
+				// this function's sibling - the 0x2010 push path refuses exactly
+				// this read since PR #2's captureStatusPushDoesNotRestartRecording
+				// met it, on a push whose field was 24 all along. The status
+				// answer was the leg never guarded: it is asked by the stop's
+				// own retry path, and its recording state used to restart the
+				// clock and undo the user's stop. The comment above this
+				// function already forbade it - "only while no start or stop
+				// sequence is in flight" - this is the code agreeing.
+				wireLine("cam state", "answer state=" + st.toString() + " while a stop is pending, the stop stands");
+			} else {
+				// From rest, this is a camera-side start and the watch joined it;
+				// from the app's own pending start it is the confirmation of our
+				// press. recState answers which, before it moves. A PureVideo
+				// answer from rest is the connect-mid-recording of a mode this
+				// app's own menu offers (v11): the joined screen is what says
+				// the truth there.
+				recJoined = recState == stateStopRec;
+				recState = stateStartRec;
+				startRecTime = Time.now();
+				mMessage = "Shooting";
+				if (recJoined) {
+					wireLine("cam state", "answer state=" + st.toString() + " from rest, joined a recording started on the camera");
+				}
+			}
 		} else if (st == X5_STATE_AT_REST && !pendingStart && recState == stateStartRec) {
 			recState = stateStopRec;
 			applyBursts = 0;
@@ -1251,11 +1863,103 @@ class BleDevice extends BluetoothLowEnergy.BleDelegate {
 		}
 	}
 
-	// First ask after the notify profile is up: the camera answers an ask 0.6 to
+	// The one alarm of the link, armed for the earliest date still in the
+	// future. Every schedule* and cancel* function below ends by calling this,
+	// and so does the pump: the alarm is never armed for anything but the
+	// nearest date, which is what lets five delayed actions live in one object.
+	function armLinkAlarm() as Void {
+		var next = earliestAskDue();
+		if (linkAlarm == null) {
+			if (next == ASK_NONE) {
+				return;
+			}
+			linkAlarm = new Timer.Timer();
+		}
+		linkAlarm.stop();
+		if (next == ASK_NONE) {
+			return;
+		}
+		var waitms = next - System.getTimer();
+		if (waitms < ASK_MIN_MS) {
+			// The date came due while this was being written. The host's own
+			// minimum (50 ms, the same sentence of the Timer documentation) is
+			// the shortest honest hop: the next callback reaches it.
+			waitms = ASK_MIN_MS;
+		}
+		linkAlarm.start(method(:onLinkAlarm), waitms, false);
+	}
+
+	// The nearest date of the five, ASK_NONE when none is booked. Written as a
+	// chain of pairwise choices so every local stays a plain Number - the
+	// nullable-number locals this file otherwise uses are module vars, and the
+	// type check of the app is at its default level, not off.
+	function earliestAskDue() as Lang.Number {
+		var next = ASK_NONE;
+		if (authProbeDue != null && authProbeDue < next) { next = authProbeDue; }
+		if (x5StatusDue != null && x5StatusDue < next) { next = x5StatusDue; }
+		if (x5StorageAskDue != null && x5StorageAskDue < next) { next = x5StorageAskDue; }
+		if (retryDue != null && retryDue < next) { next = retryDue; }
+		if (startDelayDue != null && startDelayDue < next) { next = startDelayDue; }
+		return next;
+	}
+
+	// The single callback: run every action whose date has come, in the order
+	// the delays were armed (the authorization probe, then the state ask, then
+	// the card ask, then the write retry, then the start delay), and arm the
+	// alarm again for whatever is left. An action that re-books itself, like
+	// the state ask's retry or the start delay's next wait, is reached by that
+	// re-arm, never twice in one pass.
+	function onLinkAlarm() as Void {
+		var now = System.getTimer();
+		if (authProbeDue != null && now >= authProbeDue) {
+			authProbeDue = null;
+			onAuthProbe();
+		}
+		if (x5StatusDue != null && now >= x5StatusDue) {
+			x5StatusDue = null;
+			onStatusAsk();
+		}
+		if (x5StorageAskDue != null && now >= x5StorageAskDue) {
+			x5StorageAskDue = null;
+			onStorageAsk();
+		}
+		if (retryDue != null && now >= retryDue) {
+			retryDue = null;
+			onRetry();
+		}
+		if (startDelayDue != null && now >= startDelayDue) {
+			startDelayDue = null;
+			onStartDelay();
+		}
+		armLinkAlarm();
+	}
+
+	// The three first asks of a link, armed at the one place this link is
+	// demonstrably able to answer: the walk in discoverServices has just found
+	// the LBS characteristic, and kickQueue writes from that same line. Why
+	// this site and not the profile-register callback: the callback does run,
+	// but at open, before any device exists - the bench of 12 nov. (real X5
+	// fw 1.13.21, PC Bluetooth, trace lifted by int-x5-build\benchbuild.ps1)
+	// prints "profile register ... status=0" right after the scan turns on,
+	// long before pair or connection state, in both of its sessions. An ask
+	// armed there is due while device is still null, and the ask functions
+	// refuse it by their own guard: the 15:53 session asked nothing at all
+	// despite a full connect-start-stop. The walk site is the only moment the
+	// link is proven writable, and the asks follow 500 / 1500 / 2500 ms later,
+	// answered on the wire (16:15 session: asked cmd=39 answered status=0,
+	// asked command 15 answered state=0, asked command 166 answered). The
+	// guards inside each schedule* keep a repeat call of this one harmless.
+	function armLinkAsks() as Void {
+		scheduleAuthProbe();
+		scheduleCamStatusAsk();
+		scheduleStorageAsk();
+	}
+
+	// First ask after the link can answer: the camera answers an ask 0.6 to
 	// 3.9 s later on this link, and an ask written before the descriptor settles
 	// is answered into a closed window.
 	function scheduleCamStatusAsk() as Void {
-		if (x5StatusTimer != null || x5StatusAsked) {
+		if (x5StatusDue != null || x5StatusAsked) {
 			return;
 		}
 		x5StatusTries = 0;
@@ -1264,21 +1968,150 @@ class BleDevice extends BluetoothLowEnergy.BleDelegate {
 
 	function scheduleStatusTimer(ms as Lang.Number) as Void {
 		cancelStatusTimer();
-		var t = new Timer.Timer();
-		x5StatusTimer = t;
-		t.start(method(:onStatusAsk), ms, false);
+		x5StatusDue = System.getTimer() + ms;
+		armLinkAlarm();
 	}
 
 	function onStatusAsk() as Void {
-		x5StatusTimer = null;
+		x5StatusDue = null;
 		askCamStatus();
 	}
 
 	function cancelStatusTimer() as Void {
-		if (x5StatusTimer != null) {
-			x5StatusTimer.stop();
-			x5StatusTimer = null;
+		x5StatusDue = null;
+		armLinkAlarm();
+	}
+
+	// The authorization handshake, asked once per link, 500 ms after the link
+	// became writable and so before the status ask at 1500 ms: the camera only
+	// pushes to an authorized client, so the ask has to open the gate in time
+	// for the status answer. The frame is the phone app's CHECK_AUTHORIZATION
+	// (39), field 1 = client id, field 2 = 17 = WATCH_GARMINOS, the shape the
+	// camera answers. This is X5 legacy framing only: a UCD2 link is a
+	// different protocol and stays untouched.
+	function scheduleAuthProbe() as Void {
+		if (authProbeDue != null || authProbeAsked || ucd2Armed) {
+			return;
 		}
+		authProbeDue = System.getTimer() + AUTH_PROBE_MS;
+		armLinkAlarm();
+	}
+
+	function onAuthProbe() as Void {
+		authProbeDue = null;
+		askAuthProbe();
+	}
+
+	function askAuthProbe() as Void {
+		if (authProbeAsked || device == null || ucd2Armed) {
+			return;
+		}
+		authProbeAsked = true;
+		var id = "garmin-remote";
+		var uid = System.getDeviceSettings().uniqueIdentifier;
+		if (uid != null && uid.length() >= 12) {
+			id = uid.substring(0, 12);
+		}
+		var f = [0, 0, 0, 0, 0x4, 0, 0, AUTH_CMD, 0, 0x2, 0xff, 0, 0, 0x80, 0, 0, 0x0a, id.length()]b;
+		f.addAll(id.toUtf8Array());
+		f.addAll([0x10, 0x11]b);
+		f[0] = f.size();
+		transmit(f);
+		authProbeSeq = SeqNo;
+		wireLine("auth probe", "asked cmd=" + AUTH_CMD.toString() + " id=" + id + " seq=" + authProbeSeq.toString());
+	}
+
+	// CheckAuthorizationResp, read by the probe's sequence. Shape first like
+	// everywhere else: field 1 is the status varint at octet 16, an answer
+	// without the field is status 0 (authorized), the encoding the PR's doc
+	// describes. What the camera is doing afterwards is not tracked here: the
+	// [nf] print of x5RecordNotif already names every push that arrives.
+	function applyAuthProbe(buf as Lang.ByteArray) as Void {
+		var st = 0;
+		if (buf.size() >= 18 && buf[16] == 0x08) {
+			st = buf[17] & 0xff;
+		}
+		authProbeStatus = st;
+		authProbeSeq = -1;
+		wireLine("auth probe", "answer status=" + st.toString() + " " + authStatusName(st));
+	}
+
+	function authStatusName(st as Lang.Number) as Lang.String {
+		if (st == 0) {
+			return "authorized";
+		}
+		if (st == 1) {
+			return "unauthorized, Allow pending on the camera";
+		}
+		if (st == 2) {
+			return "busy";
+		}
+		if (st >= 3 && st <= 6) {
+			return "a client is already connected";
+		}
+		if (st == 7) {
+			return "sleeping";
+		}
+		return "unknown status";
+	}
+
+	// The card-state ask, once per link at 2500 ms: after the auth probe and
+	// the status ask, so it never slips between them. GET_STORAGE (166) with
+	// body {1: location 0} asks the SD-card state, the one card datum this
+	// link can get asked: the state is readable, the free and total bytes sit
+	// past the cut (docs §10). Later changes belong to the 0x2006 push as
+	// ever - this ask only answers the state at connect, which no push brings
+	// until the card moves.
+	function scheduleStorageAsk() as Void {
+		if (x5StorageAskDue != null || x5StorageAsked || ucd2Armed) {
+			return;
+		}
+		x5StorageAskDue = System.getTimer() + STORAGE_ASK_MS;
+		armLinkAlarm();
+	}
+
+	function onStorageAsk() as Void {
+		x5StorageAskDue = null;
+		askStorageState();
+	}
+
+	function askStorageState() as Void {
+		if (x5StorageAsked || device == null || ucd2Armed) {
+			return;
+		}
+		x5StorageAsked = true;
+		// The frame the PR's bench proved: header, then body 08 00 = field 1,
+		// location 0.
+		transmit([0x12, 0, 0, 0, 0x04, 0, 0, STORAGE_CMD, 0x00, 0x02, 0, 0, 0, 0x80, 0, 0, 0x08, 0x00]b);
+		x5StorageAskSeq = SeqNo;
+		wireLine("storage", "asked command 166, seq=" + x5StorageAskSeq.toString());
+	}
+
+	function cancelStorageAskTimer() as Void {
+		x5StorageAskDue = null;
+		armLinkAlarm();
+	}
+
+	// The card answer, taken by its sequence like the auth answer above.
+	// Shape first, like everywhere else: the body opens 0a (the nested
+	// storage block), and the first inner field is 08 - the state octet is
+	// the one that survives the cut of this 41-byte answer. An empty ack or
+	// any other answer with this sequence gives null, writes nothing, and
+	// names itself in the log.
+	function x5ParseStorageAnswer(buf as Lang.ByteArray) as Lang.Number or Null {
+		if (buf == null || buf.size() < 20 || buf[16] != 0x0a || buf[18] != 0x08) {
+			return null;
+		}
+		return buf[19] & 0xff;
+	}
+
+	function applyStorageAsk(buf as Lang.ByteArray) as Void {
+		x5StorageAskSeq = -1;
+		var st = x5ParseStorageAnswer(buf);
+		if (st != null) {
+			x5StorageState = st;
+		}
+		wireLine("storage", "166 answer state=" + showValue(st) + " (the sizes past the cut, unknown here too)");
 	}
 
 
@@ -1616,7 +2449,11 @@ class BleDevice extends BluetoothLowEnergy.BleDelegate {
 
 	function armWire() as Void {
 		wireTrace = true;
-		wireLine("armed", "every byte crossing the delegate is printed from now on");
+		// The promise this line makes is the promise LOG_FRAMES keeps: the events
+		// crossing the delegate are printed from now on, one line per event; the
+		// bytes of those events answer only when that constant is flipped too
+		// (item 9 of the integration, the constant's comment holds the why).
+		wireLine("armed", "every event crossing the delegate is printed from now on");
 	}
 
 
@@ -1657,6 +2494,16 @@ class BleDevice extends BluetoothLowEnergy.BleDelegate {
 		x5SubVideo = null;
 		x5ResNow = null;
 		x5FuncMode = null;
+		modeReqId = null;
+		modeHoldUntil = 0;
+		camModeId = null;
+		x5StaleOptions = [];
+		lastCmdSeq = -1;
+		x5PhotoSeq = -1;
+		x5PhotoResult = null;
+		x5WriteSeq = -1;
+		x5WriteName = "";
+		x5WriteResult = null;
 	}
 
 
@@ -1730,6 +2577,17 @@ class BleDevice extends BluetoothLowEnergy.BleDelegate {
 		return x5CamState != null && x5CamState == X5_STATE_RECORDING;
 	}
 
+	// The answer of the authorization probe (39): -1 while no answer has come,
+	// else the status the camera gave - 0 the link is open, 1 the camera is
+	// showing its own Allow prompt, 2 busy, 3..6 a client of that kind is
+	// already connected, 7 sleeping; authStatusName below words them. When the
+	// user answers the prompt on the camera, its 0x2011 push moves this to 0 in
+	// x5ApplyNotif, so a screen that reads the edge is following the camera, not
+	// a guess. -1 is a real answer to the app: it means not yet known.
+	function peekAuthStatus() as Lang.Number {
+		return authProbeStatus;
+	}
+
 	// The two flags of the 0x2006 storage push, and the free space, which is not
 	// there to be had: the option 20 entry and the 0x2062 varints both begin at
 	// octet 21 or later of their frame and have never crossed this link, so this
@@ -1740,6 +2598,40 @@ class BleDevice extends BluetoothLowEnergy.BleDelegate {
 	}
 	function peekStorageMode() as Lang.Number or Null {
 		return x5StorageMode;
+	}
+
+	// Arms the answer of a shot: the app calls this right after the sendCMD of a
+	// capture frame, at the same site that prints the frame's tell. lastCmdSeq is the
+	// sequence the transport just stamped, the one the answer will carry - the same
+	// follow-by-sequence discipline as the auth probe and the storage ask, asked from the
+	// app side because there the capture frame is assembled.
+	function armPhotoAck() as Void {
+		x5PhotoSeq = lastCmdSeq;
+		x5PhotoResult = null;
+	}
+
+	// Reads the shot's verdict once, as the PR's UI consumes photoResult: a read clears
+	// it, so one answer colors one screen and never leaks into the next press. Untyped
+	// like the symbols it hands over - the house rule for the values that are not numbers.
+	function photoResultTaken() {
+		var r = x5PhotoResult;
+		x5PhotoResult = null;
+		return r;
+	}
+
+	// Arms the answer of one settings write, same stamp site; the name only lets the
+	// wire line say which write the verdict answers for.
+	function armWriteAck(name as Lang.String) as Void {
+		x5WriteSeq = lastCmdSeq;
+		x5WriteName = name;
+		x5WriteResult = null;
+	}
+
+	// Reads a settings verdict once, same clearing as the shot above.
+	function settingResultTaken() {
+		var r = x5WriteResult;
+		x5WriteResult = null;
+		return r;
 	}
 	function peekStorageFreeBytes() as Lang.Number or Null {
 		return null;
@@ -1768,6 +2660,67 @@ class BleDevice extends BluetoothLowEnergy.BleDelegate {
 	}
 	function peekFuncMode() as Lang.Number or Null {
 		return x5FuncMode;
+	}
+
+	// The mode echo gate, asked at the app's write sites (the shape PR #2 put
+	// on its delegate, and measured there): noteModeWrite is asked just before
+	// a mode write, with the id of the entry the user picked, the same name
+	// the menu carries. An option write may then cross once its echo has been
+	// seen, or once the hold ran out — never before, the camera answers 400
+	// while it is still switching modes.
+	function noteModeWrite(id as Lang.String) as Void {
+		modeReqId = id;
+		var t = System.getTimer() + MODE_ECHO_HOLD_MS;
+		if (t > modeHoldUntil) {
+			modeHoldUntil = t;
+		}
+		System.println("[mode] gate armed id=" + id);
+	}
+
+	// Extends the hold without arming a request: the app asks it while the
+	// user browses, so a late echo of the camera cannot move a cursor.
+	function holdMode(ms as Lang.Number) as Void {
+		var t = System.getTimer() + ms;
+		if (t > modeHoldUntil) {
+			modeHoldUntil = t;
+		}
+	}
+
+	function settingMayGo() as Lang.Boolean {
+		return modeReqId == null || System.getTimer() >= modeHoldUntil;
+	}
+
+	// The mode the camera last said it is in (its own screen moves it, both
+	// benches measured it), null while no trusted reading exists yet. What to
+	// do with it is the app's decision, never this reader's.
+	function peekCamMode() as Lang.String or Null {
+		return camModeId;
+	}
+
+	// The rows a WATCH_RES named since the last link reset: the cache of the
+	// app asks here whether a remembered option value still stands. The mark
+	// clears only on a confirmation this watch drove - a write of the option
+	// the camera answers 200 - never on a re-ask, which would meet the same
+	// wall the value never crossed.
+	function optionIsStale(opt as Lang.Number) as Lang.Boolean {
+		return x5StaleIndex(opt) >= 0;
+	}
+	function peekStaleOptions() as Lang.Array {
+		return x5StaleOptions;
+	}
+	function clearOptionStale(opt as Lang.Number) as Void {
+		if (x5StaleIndex(opt) < 0) {
+			return;
+		}
+		var keep = [];
+		var i = 0;
+		while (i < x5StaleOptions.size()) {
+			if (x5StaleOptions[i] != opt) {
+				keep.add(x5StaleOptions[i]);
+			}
+			i++;
+		}
+		x5StaleOptions = keep;
 	}
 	function peekSeenCodes() as Lang.Array {
 		return x5CodesSeen;
@@ -1819,6 +2772,10 @@ class BleDevice extends BluetoothLowEnergy.BleDelegate {
 	function onUcd2Frame() as Void {
 		cancelRetry();
 		if (recState == stateStarting) {
+			// The ucd2 frame answers the start THIS watch wrote (stateStarting
+			// is only ever the app's own press, the InputDelegate writes it) -
+			// the recording is not one the watch joined.
+			recJoined = false;
 			mMessage = "Shooting";
 			recState = stateStartRec;
 			startRecTime = Time.now();
@@ -1835,6 +2792,163 @@ class BleDevice extends BluetoothLowEnergy.BleDelegate {
 
 
 
+
+	// The confirmed-level axis of the menu. The chain at the scan answers by
+	// the name the camera carries on air; the entry MenuLevel of the app
+	// answers by what the user confirmed when the name matched no model. Both
+	// confirmations are kept by the name on air, so a later bond with that
+	// name resumes there; the fallback when neither answers is level 0, the
+	// universal one. Nothing here is ever verified by asking the camera -
+	// this barrel sends three asks at connect (auth, status, card), none of
+	// them asks a menu.
+	function noteConfirmedLevel(name as Lang.String, level as Lang.Number) as Void {
+		if (name == null || name.equals("n/a") || level < 0) {
+			System.println("[lvl] confirm refused name=" + (name == null ? "none" : name) + " level=" + level.toString());
+			return;
+		}
+		App.getApp().setProperty("lvl." + name, level);
+		System.println("[lvl] confirmed name=" + name + " level=" + level.toString() + " (kept for the next bond with this name)");
+	}
+
+	// The mode axis, kept by the same name on air as the level above. Only a
+	// CONFIRMED echo writes it (the echo branch of the mode gate): a mode this
+	// watch asked and the camera never echoed is not kept, because the camera
+	// never said it holds it. The app reads the kept id at its own level site
+	// and decides through the rows of the level in force (Levels.poseFor) -
+	// this barrel keeps a datum, it never chooses a menu entry.
+	function noteConfirmedMode(id as Lang.String or Null) as Void {
+		if (id == null || id.length() == 0) {
+			return;
+		}
+		if (deviceName == null || deviceName.equals("n/a") || deviceName.length() == 0) {
+			System.println("[mode] keep refused: no name to key the mode on, id=" + id);
+			return;
+		}
+		// The datum lives twice, at the same moment: in the property under the
+		// name (the next process reads it at its classification), and in this
+		// memory (keptModeId, the answer of peekKeptModeId). The bench of 12
+		// nov., third session, named why the memory is needed: the camera was
+		// power-cycled, the stack reconnected the paired device on its own, no
+		// scan round ever classified a name again - loadKeptMode never ran, and
+		// the only datum that knew the photo mode had been confirmed here was
+		// this field. Confirmed now, kept now: the property alone answered too
+		// late for a link that comes back without a scan.
+		keptModeId = id;
+		App.getApp().setProperty("mode." + deviceName, id);
+	}
+
+	// The load of that datum, at the same classification that loads the level:
+	// fresh every bond, so a later camera of another name never inherits this
+	// one's mode. The absence answers by a line, never by a silence.
+	function loadKeptMode() as Void {
+		keptModeId = null;
+		if (deviceName == null || deviceName.equals("n/a") || deviceName.length() == 0) {
+			System.println("[mode] kept name=none nothing to load");
+			return;
+		}
+		var v = App.getApp().getProperty("mode." + deviceName);
+		var s = v as Lang.String;
+		if (s != null && s.length() > 0) {
+			keptModeId = s;
+			System.println("[mode] kept name=" + deviceName + " id=" + s + " (the last mode this camera confirmed)");
+		} else {
+			System.println("[mode] kept name=" + deviceName + " none (no confirmed mode for this name)");
+		}
+	}
+
+	// The kept id as a fact, for the application's pose decision.
+	function peekKeptModeId() as Lang.String or Null {
+		return keptModeId;
+	}
+
+	// The degraded axis: three questions and one note, per camera name. The
+	// note comes from a failed user command - the 400 branch above, or the
+	// app's own write pages when they run - never from a probe. The set
+	// belongs to the camera name on air and crosses links and runs: an entry
+	// this camera refused once stays named, and the menu decides what a named
+	// entry means.
+	function noteDegraded(id as Lang.String) as Void {
+		if (id == null || id.length() == 0) {
+			return;
+		}
+		if (isEntryDegraded(id)) {
+			// Already kept: one line for one fact (criterion 14).
+			System.println("[degr] noted again id=" + id + " (already kept)");
+			return;
+		}
+		x5Degraded.add(id);
+		keepDegraded();
+		System.println("[degr] noted id=" + id + " kept=" + x5Degraded.size().toString());
+	}
+
+	function isEntryDegraded(id as Lang.String) as Lang.Boolean {
+		var i = 0;
+		while (i < x5Degraded.size()) {
+			if ((x5Degraded[i] as Lang.String).equals(id)) {
+				return true;
+			}
+			i++;
+		}
+		return false;
+	}
+
+	function peekDegraded() as Lang.Array {
+		return x5Degraded;
+	}
+
+	// One comma-joined string per camera name. The tokenizer is the manual
+	// scan on purpose: the string family of the SDK is where the API is the
+	// most treacherous (the note of tools/mc_check.py), and a scan on indexOf
+	// runs on every API level this project targets.
+	function keepDegraded() as Void {
+		if (deviceName == null || deviceName.equals("n/a")) {
+			System.println("[degr] kept refused: no name to key the set on");
+			return;
+		}
+		var s = "";
+		var i = 0;
+		while (i < x5Degraded.size()) {
+			if (i > 0) {
+				s += ",";
+			}
+			s += x5Degraded[i].toString();
+			i++;
+		}
+		App.getApp().setProperty("degr." + deviceName, s);
+	}
+
+	// The set for a name, loaded at the classification that named this bond,
+	// before any menu entry is reachable. The load starts a fresh set every
+	// bond: a later camera of another name never inherits this one's facts.
+	function loadDegradedForName() as Void {
+		x5Degraded = [];
+		if (deviceName == null || deviceName.equals("n/a")) {
+			return;
+		}
+		var v = App.getApp().getProperty("degr." + deviceName);
+		if (v == null) {
+			System.println("[degr] name=" + deviceName + " nothing kept");
+			return;
+		}
+		var s = v as Lang.String;
+		if (s == null || s.length() == 0) {
+			System.println("[degr] name=" + deviceName + " kept set empty");
+			return;
+		}
+		var i = 0;
+		while (i < s.length()) {
+			var j = i;
+			while (j < s.length() && !s.substring(j, j + 1).equals(",")) {
+				j++;
+			}
+			var item = s.substring(i, j);
+			if (item.length() > 0) {
+				x5Degraded.add(item);
+			}
+			i = j + 1;
+		}
+		System.println("[degr] name=" + deviceName + " loaded kept=" + x5Degraded.size().toString());
+	}
 
 	// Axis model, the forcing of the menu (the entry MenuLevel of the
 	// application). Three questions, three functions, each answering at its
@@ -1932,6 +3046,9 @@ class BleDevice extends BluetoothLowEnergy.BleDelegate {
 				SeqNo = 1;
 			}
 			value[SeqPos] = SeqNo;
+			// The sequence a refusal of this frame answers by (the 0x190
+			// branch of x5ApplyResponse matches against this).
+			lastCmdSeq = SeqNo;
 		}
 
 		wireBytes("sent frame", value);
@@ -1987,24 +3104,24 @@ class BleDevice extends BluetoothLowEnergy.BleDelegate {
 		pendingStart = true;
 		startAckSeen = false;
 		startWaitCount = 0;
-		if (startDelayTimer != null) {
-			startDelayTimer.stop();
-		}
-		var t = new Timer.Timer();
-		startDelayTimer = t;
 		if (applyBursts >= 2) {
-
-
 			startPhase = 1;
-			t.start(method(:onStartDelay), START_WAIT_MS, false);
+			armStartDelay(START_WAIT_MS);
 		} else {
 			startPhase = 0;
-			t.start(method(:onStartDelay), START_DELAY_MS, false);
+			armStartDelay(START_DELAY_MS);
 		}
 	}
 
+	// One wait of the start sequence, booked as a date like every other delayed
+	// action of the link (see armLinkAlarm).
+	function armStartDelay(ms as Lang.Number) as Void {
+		startDelayDue = System.getTimer() + ms;
+		armLinkAlarm();
+	}
+
 	function onStartDelay() as Void {
-		startDelayTimer = null;
+		startDelayDue = null;
 		if (!pendingStart) {
 			return;
 		}
@@ -2017,9 +3134,7 @@ class BleDevice extends BluetoothLowEnergy.BleDelegate {
 				transmit(currentMode as Lang.ByteArray);
 			}
 			transmit(cmdApply);
-			var t = new Timer.Timer();
-			startDelayTimer = t;
-			t.start(method(:onStartDelay), START_WAIT_MS, false);
+			armStartDelay(START_WAIT_MS);
 			return;
 		}
 		if (startAckSeen) {
@@ -2031,9 +3146,7 @@ class BleDevice extends BluetoothLowEnergy.BleDelegate {
 			fireStart();
 			return;
 		}
-		var t = new Timer.Timer();
-		startDelayTimer = t;
-		t.start(method(:onStartDelay), START_WAIT_MS, false);
+		armStartDelay(START_WAIT_MS);
 	}
 
 	function fireStart() as Void {
@@ -2041,10 +3154,8 @@ class BleDevice extends BluetoothLowEnergy.BleDelegate {
 		startAckSeen = false;
 		startWaitCount = 0;
 		startPhase = 0;
-		if (startDelayTimer != null) {
-			startDelayTimer.stop();
-			startDelayTimer = null;
-		}
+		startDelayDue = null;
+		armLinkAlarm();
 		transmit(cmdStartRec);
 	}
 
@@ -2053,10 +3164,8 @@ class BleDevice extends BluetoothLowEnergy.BleDelegate {
 		startAckSeen = false;
 		startWaitCount = 0;
 		startPhase = 0;
-		if (startDelayTimer != null) {
-			startDelayTimer.stop();
-			startDelayTimer = null;
-		}
+		startDelayDue = null;
+		armLinkAlarm();
 	}
 
 
@@ -2084,14 +3193,41 @@ class BleDevice extends BluetoothLowEnergy.BleDelegate {
 				writing = true;
 
 				ch.requestWrite(queue[0] as Lang.ByteArray, {:writeType => BluetoothLowEnergy.WRITE_TYPE_DEFAULT});
+				// An issued write answers that the stack takes writes again: the
+				// dead-bond count clears here.
+				wedgeCount = 0;
 				wireLine("requestWrite issued", "chunk in flight");
 			} else {
+				// Not counted as a refused write: this is a pre-discovery state,
+				// and the service walk re-kicks the queue when it finds the
+				// characteristic (the kick at the end of discoverServices).
 				wireLine("characteristic missing", "getCharacteristic(LBS_RW_CHAR) is null, write refused");
 			}
 		} catch (ex) {
-			wireLine("requestWrite refused", "exception: " + ex.getErrorMessage());
+			wireLine("requestWrite refused", "exception: " + ex.getErrorMessage() + " count=" + (wedgeCount + 1).toString());
 			writing = false;
-
+			// The pump is the only writer, and no timer re-kicks it: if the
+			// stack keeps refusing, the wedge outlives the app's own retries
+			// (which work on responses, not on writes). Past the ceiling the
+			// bond is declared dead, below.
+			wedgeCount += 1;
+			if (wedgeCount >= WEDGE_REFUSALS_MAX) {
+				// Declare the bond dead. unpairDevice is the counterpart of
+				// the pairDevice that made this bond - the same teardown the
+				// app's own close() runs, Device has no close() on this API -
+				// and the teardown after it is the one a real disconnect runs,
+				// extracted into linkGone so both reach the same code. The
+				// queue keeps its chunks exactly as the disconnect path
+				// leaves them: a service walk on the new bond kicks it again.
+				wireLine("pump wedge", "close the bond after " + wedgeCount.toString() + " refused writes");
+				wedgeCount = 0;
+				try {
+					BluetoothLowEnergy.unpairDevice(dev);
+				} catch (ex2) {
+					wireLine("pump wedge unpair refused", ex2.getErrorMessage());
+				}
+				linkGone();
+			}
 		}
 	}
 
@@ -2104,29 +3240,25 @@ class BleDevice extends BluetoothLowEnergy.BleDelegate {
 			retryCount = 0;
 		}
 		retryKind = kind;
-		startRetryTimer();
+		armRetry();
 	}
 
 	function cancelRetry() as Void {
 		retryKind = 0;
 		retryCount = 0;
-		if (retryTimer != null) {
-			retryTimer.stop();
-			retryTimer = null;
-		}
+		retryDue = null;
+		armLinkAlarm();
 	}
 
-	function startRetryTimer() as Void {
-		if (retryTimer != null) {
-			retryTimer.stop();
-		}
-		retryTimer = new Timer.Timer();
-		retryTimer.start(method(:onRetry), RETRY_DELAY_MS, false);
+	// The write retry, booked as a date like the rest of the schedule.
+	function armRetry() as Void {
+		retryDue = System.getTimer() + RETRY_DELAY_MS;
+		armLinkAlarm();
 	}
 
 
 	function onRetry() as Void {
-		retryTimer = null;
+		retryDue = null;
 		if (retryKind == 0) {
 			return;
 		}
@@ -2137,13 +3269,36 @@ class BleDevice extends BluetoothLowEnergy.BleDelegate {
 			cancelRetry();
 
 
-			recState = wasStart ? stateStopRec : stateStartRec;
+			// Exhaustion undoes what our own press optimistically wrote, and
+			// NOTHING ELSE: a state the link itself named - a capture push, an
+			// answer whose state octet crossed the wall - is a fact, and the
+			// screen keeps facts. The wrist named the fault of the old assert
+			// on the first video scene (E2 run 2, 13 nov., log
+			// int-x5-build\watch-logs-e2-run2-video #65-#100): the stop was
+			// confirmed by the pushes 0x2040 f1=0 and 0x2010 f1=0, the stop's
+			// own answer arrived as a 66-octet body cut to 20 with no state to
+			// read, so nothing cancelled the retry, it ran out, and its assert
+			// brought the red dot and the clock back on a stopped camera. With
+			// the cancel this branch pairs with in the capture machine, reaching
+			// here with an observed state should be rare; the guard is what
+			// makes the assert honest when it happens anyway - the four vectors
+			// exhausted... and stopConfirmedByCameraPush... hold the split.
+			if (wasStart) {
+				if (recState == stateStarting) {
+					recState = stateStopRec;
+				}
+			} else {
+				if (recState == stateStopping) {
+					recState = stateStartRec;
+				}
+			}
 			if (ucd2Armed) {
 
 
 
 				mMessage = "No answer from camera";
 			}
+			wireLine("retry", "exhausted kind=" + (wasStart ? "start" : "stop") + " recState=" + recState.toString() + " (the state the link last named stands)");
 			WatchUi.requestUpdate();
 			return;
 		}
@@ -2155,7 +3310,7 @@ class BleDevice extends BluetoothLowEnergy.BleDelegate {
 			sendCMD(cmdStopRec);
 		}
 		inRetry = false;
-		startRetryTimer();
+		armRetry();
 	}
 
 
@@ -2198,9 +3353,35 @@ class BleDevice extends BluetoothLowEnergy.BleDelegate {
 			return;
 		}
 		if (ucd2RxBuf != null) {
-
-
-			return;
+			// A frame of the other envelope is a frontier. The X6 corpora are what
+			// makes this reachable, not a hypothesis: a pushed UCD2 frame declares
+			// 25, only 20 octets cross the link, and the next notification is a new
+			// head - 68 of them, with no continuation anywhere (PROTOCOL_APK 15,
+			// L402-404) - so an open UCD2 frame stays open until something closes
+			// it. And the same measurement states the requirement the guard below
+			// used to break: an X6 answers an ask of the old envelope with a frame
+			// of the new one and both envelopes cross one stream, so the engine
+			// must read both, not one per connection (L409-412). Returning here
+			// swallowed that answer - a lost decision, not a lost byte.
+			// The open frame is therefore abandoned at the frontier and named: the
+			// only reading the UCD2 leg makes is the answer path above, which
+			// already closes on its first 20 octets, and the trailer of a frame
+			// this long never arrives to be checked anyway. What is not abandoned
+			// is a beat or a headless fragment of the old envelope: the same bytes
+			// the legacy reader would judge, left to it below (the box of the one
+			// frontier engine, named at the end of test/Ucd2Test.mc).
+			var cut = ucd2RxBuf;
+			if (cut == null) {
+				return;
+			}
+			if (x5IsFrame(value)) {
+				wireLine("ucd2 frame dropped at the other envelope", "want=" + ucd2RxWant.toString() +
+					" arrived=" + cut.size().toString());
+				ucd2RxBuf = null;
+				ucd2RxWant = 0;
+			} else {
+				return;
+			}
 		}
 		}
 
@@ -2302,13 +3483,17 @@ class BleDevice extends BluetoothLowEnergy.BleDelegate {
 
 	function onProfileRegister(uuid as BluetoothLowEnergy.Uuid, status as BluetoothLowEnergy.Status) as Void {
 		wireLine("profile register", uuid.toString() + " status=" + status.toString());
+		// Named by an unconditional println, the way the [scan] axis lines are,
+		// because where it runs was only known once it was printed: the bench of
+		// 12 nov. shows it firing at open, right after the scan turns on and
+		// before any pair - status=0, no device yet. The link's asks no longer
+		// ride this trigger; they arm where the link is proven writable (see
+		// armLinkAsks). The print stays so the callback's moment is never again
+		// argued from silence.
+		System.println("[ask] profile register uuid=" + uuid.toString() + " status=" + status.toString());
 		if (DEBUG_TRACE) {
 			debug("registered");
 		}
-		// The notify path is open from here, so this is the earliest point at which a
-		// question can be answered. What the camera is doing is asked once per
-		// connect, before the user asks for anything.
-		scheduleCamStatusAsk();
 	}
 
 
@@ -2378,6 +3563,9 @@ function registerProfiles() as Void {
 
 
 			if (lbs != null) {
+				// The link can be written from here on - so its first asks are
+				// booked from here on (armLinkAsks names why this site).
+				armLinkAsks();
 				kickQueue(dev);
 			}
 		} catch (ex) {
@@ -2414,6 +3602,9 @@ function registerProfiles() as Void {
 		mMessage = currentLabel + "\n" + startMessage;
 		WatchUi.requestUpdate();
 		writing = false;
+		// The bond changes (this branch runs for connected as for disconnected):
+		// a fresh bond starts with a fresh pump count.
+		wedgeCount = 0;
 		if (state == BluetoothLowEnergy.CONNECTION_STATE_CONNECTED) {
 			connecting = false;
 			applyBursts = 0;
@@ -2430,23 +3621,39 @@ function registerProfiles() as Void {
 			device = dev;
 			discoverServices(dev);
 		} else {
-			if (!scanning) {
-				scanning = true;
-				device = null;
-				// The link is gone: forget that a state ask was outstanding so the
-				// next connect asks again, and stop the timer that would ask into a
-				// dead link.
-				cancelStatusTimer();
-				x5StatusAsked = false;
-				x5StatusTries = 0;
-				open();
+			linkGone();
+		}
+	}
+
+	// The normal teardown of a dead link: null the device, re-open the scan,
+	// keep nothing that supposes the old bond was still answering. Two sites
+	// reach it when the bond is declared dead: the real disconnect the stack
+	// reports, and the pump's watchdog after WEDGE_REFUSALS_MAX refused
+	// writes. The guard is part of the pattern - a scan already open is not
+	// opened a second time.
+	private function linkGone() as Void {
+		if (!scanning) {
+			scanning = true;
+			device = null;
+			// The link is gone: forget that a state ask was outstanding so the
+			// next connect asks again, and stop the timer that would ask into a
+			// dead link.
+			cancelStatusTimer();
+			x5StatusAsked = false;
+			x5StatusTries = 0;
+			authProbeAsked = false;
+			authProbeSeq = -1;
+			authProbeStatus = -1;
+			x5StorageAsked = false;
+			x5StorageAskSeq = -1;
+			cancelStorageAskTimer();
+			open();
 
 
 
 
 
 
-			}
 		}
 	}
 
@@ -2607,6 +3814,41 @@ function registerProfiles() as Void {
 					// the model none here, so the verdict answers by a line and never
 					// by an absence of a line (criterion 14 of 11.3).
 					System.println("[mdl] name=" + deviceName + " model=" + capModel + " level=" + menuLevel.toString() + " detectedModel=" + detectedModel + " detectedLevel=" + detectedLevel.toString());
+
+					// The confirmed level, kept and restored by the name on air.
+					// The chain above decides by that name; nothing here asks the
+					// camera its menu (no probing frame is ever emitted at connect,
+					// the phase-5 gate counts the frames to prove it). When the
+					// chain answered a model, that level is kept for this name.
+					// When the chain answered none, the kept level is tried before
+					// the fallback, and the fallback is the level 0 the chain left
+					// standing. The key is the name, the unit the user owns; the
+					// datum of the detection above stays untouched, the restored
+					// level is a level in force, named as such at its print.
+					if (capModel.equals("none")) {
+						var kept = App.getApp().getProperty("lvl." + deviceName);
+						var keptLevel = kept as Lang.Number;
+						if (keptLevel != null && keptLevel >= 0) {
+							menuLevel = keptLevel;
+							System.println("[lvl] restored name=" + deviceName + " level=" + menuLevel.toString() + " no model in the chain, this is the level kept");
+						} else {
+							System.println("[lvl] name=" + deviceName + " no model, nothing kept, level 0 stands");
+						}
+					} else {
+						App.getApp().setProperty("lvl." + deviceName, menuLevel);
+						System.println("[lvl] kept name=" + deviceName + " level=" + menuLevel.toString());
+					}
+
+					// The mode kept for this name, loaded beside the level: the
+					// pose the app takes at the first menu of this level reads it
+					// (Levels.poseFor names the rule). Loaded here, at the same
+					// classification, because a mode is only ever usable through
+					// the rows of the level it belongs to.
+					loadKeptMode();
+
+					// The degradations kept for this name, loaded before any entry
+					// of the menu is reachable, fresh per bond of a new name.
+					loadDegradedForName();
 
                     // The hook of the compile-time constant, whose fault was closed with
                     // the constant at OFF (CdC item 147: the reference had `and`, the
@@ -2823,10 +4065,18 @@ function registerProfiles() as Void {
 		}
 	}
 
+	// The link as a fact, for the application's screen: the device field is the
+	// single datum of "a camera is at the transport right now" - set at the
+	// connected branch, nulled at the link teardown (linkGone). The view reads
+	// this method, never the field: the field lives in this class, one instance
+	// per process, the app's own bleDevice. (Bench of 12 nov.: the view had no
+	// way to read the absence and showed a READY screen while the X5 was off.)
+	function hasLink() as Lang.Boolean {
+		return device != null;
+	}
+
 	function open() as Void {
 		System.println("[ble] open() entered");
-
-
 		if (System.getDeviceSettings().isTouchScreen) {
 			startMessage = "Tap Here";
 		} else {
@@ -2916,6 +4166,20 @@ function registerProfiles() as Void {
 		notifCount = 0;
 		notifHex = "";
 		x5Seen = 0;
+
+		// The link is over, so the schedule goes with it: every date is dropped
+		// and the one Timer object the link owned is taken down. A session that
+		// ends leaves no alarm armed, and the process's timer pool is free for
+		// whatever starts next.
+		authProbeDue = null;
+		x5StatusDue = null;
+		x5StorageAskDue = null;
+		retryDue = null;
+		startDelayDue = null;
+		if (linkAlarm != null) {
+			linkAlarm.stop();
+			linkAlarm = null;
+		}
 
 		App.getApp().setProperty("recState", recState);
 		App.getApp().setProperty("startRecTime", startRecTime.value());

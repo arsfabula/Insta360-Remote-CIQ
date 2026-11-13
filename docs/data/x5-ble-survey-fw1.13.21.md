@@ -1,0 +1,135 @@
+Camera `X5 …` (serial suffix omitted), run 2026-11-10 20:04:37, Mac ATT MTU 515.
+
+### Read-only commands (empty request body)
+
+| Code | Command | Result | Reply bytes | Fits 20 B | Decoded reply |
+|---:|---|---|---:|:-:|---|
+| 8 (0x08) | GET_OPTIONS | 400 | 16 | yes |  |
+| 10 (0x0a) | GET_PHOTOGRAPHY_OPTIONS | 400 | 16 | yes |  |
+| 11 (0x0b) | GET_FILE_EXTRA | 400 | 16 | yes |  |
+| 15 (0x0f) | GET_CURRENT_CAPTURE_STATUS | 200 OK | 24 | no | [[1,[[1,0],[2,0],[10,0]]]] |
+| 17 (0x11) | GET_TIMELAPSE_OPTIONS | 400 | 16 | yes |  |
+| 21 (0x15) | GET_TIMELAPSE_PHOTOGRAPHY_OPTIONS | 400 | 16 | yes |  |
+| 29 (0x1d) | GET_CONNECTED_BT_PERIPHERALS | 400 | 16 | yes |  |
+| 37 (0x25) | GET_IPERF_AVERAGE | 200 OK | 16 | yes |  |
+| 39 (0x27) | CHECK_AUTHORIZATION | 200 OK | 18 | yes | [[1,1]] |
+| 43 (0x2b) | GET_SUBMODE_OPTIONS | 200 OK | 16 | yes |  |
+| 55 (0x37) | GET_SYNC_CAPTURE_MODE | 400 | 16 | yes |  |
+| 64 (0x40) | GET_FLOWSTATE_ENABLE | 200 OK | 16 | yes |  |
+| 66 (0x42) | GET_ACTIVE_SENSOR | 200 OK | 469 | no | (device-specific, 469 B, not published) |
+| 68 (0x44) | GET_MULTI_PHOTOGRAPHY_OPTIONS | 400 | 16 | yes |  |
+| 71 (0x47) | GET_RECORDING_FILE | 400 | 16 | yes |  |
+| 73 (0x49) | GET_PTZ_OPTION | 400 | 16 | yes |  |
+| 104 (0x68) | GET_BUTTON_PRESS_PARAM | 400 | 16 | yes |  |
+| 119 (0x77) | GET_TIME_REC_CFG | 400 | 16 | yes |  |
+| 121 (0x79) | GET_PLAYBACK_FILE_NUM | 400 | 16 | yes |  |
+| 126 (0x7e) | GET_MILLISECOND_TIME_STAMP | 400 | 16 | yes |  |
+| 131 (0x83) | GET_ABNORMAL_CAPTURE | 400 | 16 | yes |  |
+| 136 (0x88) | GET_CAMERA_LIVE_INFO | 200 OK | 16 | yes |  |
+| 150 (0x96) | GET_WIFI_MODE | 200 OK | 18 | yes | [[1,0]] |
+| 153 (0x99) | PLAYBACK_GET_PHOTO_GROUP_NUM | 400 | 16 | yes |  |
+| 159 (0x9f) | GET_WEBCAM_FACE_DET_FLAG | 400 | 16 | yes |  |
+| 166 (0xa6) | GET_STORAGE | 400 | 16 | yes |  |
+| 171 (0xab) | GET_ZOOM | 400 | 16 | yes |  |
+| 177 (0xb1) | GET_CUR_FILTER_PHOTO_ALBUM | 400 | 16 | yes |  |
+| 178 (0xb2) | GET_PHOTO_ALBUM_NUM | 400 | 16 | yes |  |
+| 182 (0xb6) | QUICKREADER_GET_STATUS | 400 | 16 | yes |  |
+| 191 (0xbf) | GET_INTERVALREC_CFG | 400 | 16 | yes |  |
+| 198 (0xc6) | GET_INTERVAL_RECORD_STATUS | 400 | 16 | yes |  |
+| 203 (0xcb) | PLAYBACK_GET_HIGHLIGHT_INFO | 400 | 16 | yes |  |
+| 205 (0xcd) | GET_INTERVALREC_SCENE_CFG | 400 | 16 | yes |  |
+| 206 (0xce) | GET_INTERVALREC_FEEDBACK_CFG | 400 | 16 | yes |  |
+| 211 (0xd3) | GET_ALBUM_UNFOLD_MAP_INDEX | 400 | 16 | yes |  |
+| 216 (0xd8) | GET_CAMERA_PARAMS_JSON | 200 OK | 6062 | no | (device-specific, 6062 B, not published) |
+| 223 (0xdf) | GET_WIFI_INTERFERENCE_STATUS | 200 OK | 16 | yes |  |
+| 224 (0xe0) | GET_P3_STATIC_HDR_PARAMS | 200 OK | 16 | yes |  |
+| 227 (0xe3) | GET_REC_RESULT_CACHE | 400 | 16 | yes |  |
+| 228 (0xe4) | GET_PHOTO_RESULT_CACHE | 400 | 16 | yes |  |
+| 239 (0xef) | GET_PTZ_TRACK_STATE | 400 | 16 | yes |  |
+| 242 (0xf2) | GET_FIRMWARE_VERSIONS | 400 | 16 | yes |  |
+
+### GET_OPTIONS, one OptionType at a time
+
+Only options that returned a value are listed. `Fits 20 B` = whole reply ≤ 20 bytes, i.e. readable on Connect IQ.
+
+| # | OptionType | Reply bytes | Fits 20 B | Value (decoded Options field) |
+|---:|---|---:|:-:|---|
+| 6 | ORIGIN_OFFSET | 360 | no | (device-specific, not published) |
+| 7 | CAPTURE_TIME_LIMIT | 22 | no | [[7,0]] |
+| 8 | GPS_TIMEOUT | 22 | no | [[8,0]] |
+| 11 | BATTERY_INFO (missing from enum; Options field 11) | 28 | no | [[11,[[1,0],[2,64],[4,0]]]] |
+| 14 | MUTE | 22 | no | [[14,0]] |
+| 17 | BUTTON_PRESS_OPTIONS | 31 | no | [[17,[[1,0],[2,0],[3,0],[4,0]]]] |
+| 19 | ACTIVATE_TIME | 28 | no | (device-specific, not published) |
+| 20 | STORAGE_STATE | 41 | no | [[20,[[1,0],[2,409195249664],[3,512057409536],[4,0]]]] |
+| 22 | MEDIA_OFFSET | 133 | no | (device-specific, not published) |
+| 24 | GYRO_SAMPLE_RATE | 24 | no | [[24,1000]] |
+| 29 | MEDIA_TIME | 25 | no | [[29,271438]] |
+| 30 | FIRMWAREREVISION | 31 | no | [[30,"v1.13.21"]] |
+| 37 | WIFI_CHANNEL_LIST | 61 | no | [[37,[[1,[[8,null]]],[2,"24282c3000000000000000000000000000000000000000000000000000000000… |
+| 39 | CALIBRATION_OFFSET | 361 | no | (device-specific, not published) |
+| 40 | PHOTO_SUB_MODE | 23 | no | [[40,7]] |
+| 41 | VIDEO_SUB_MODE | 23 | no | [[41,100]] |
+| 43 | WIFI_STATUS | 23 | no | [[43,1]] |
+| 48 | CAMERA_TYPE | 34 | no | [[48,"Insta360 X5"]] |
+| 63 | GYRO_INFO | 25 | no | [[63,[[1,0]]]] |
+| 65 | INTERNAL_FLOWSTATE | 23 | no | [[65,0]] |
+| 66 | VIDEO_ENCODE_TYPE | 23 | no | [[66,0]] |
+| 68 | IS_SELFIE | 23 | no | [[68,0]] |
+| 69 | ROLLING_SHUTTER_TIME | 30 | no | (device-specific, not published) |
+| 70 | GYRO_TIME_STAMP | 30 | no | (device-specific, not published) |
+| 76 | FLICKER_GLOBAL | 23 | no | [[76,0]] |
+| 77 | TEMP_VALUE | 23 | no | [[77,0]] |
+| 78 | ORIGIN_OFFSET_V2 | 303 | no | (device-specific, not published) |
+| 79 | ORIGIN_OFFSET_V3 | 361 | no | (device-specific, not published) |
+| 80 | MEDIA_OFFSET_V2 | 303 | no | (device-specific, not published) |
+| 81 | MEDIA_OFFSET_V3 | 361 | no | (device-specific, not published) |
+| 82 | INSTAPANO_FOCUS_SENSOR | 23 | no | [[82,3]] |
+| 83 | EXPECT_OUTPUT_TYPE | 23 | no | [[83,1]] |
+| 84 | HW_TYPE | 23 | no | [[84,0]] |
+| 88 | CAMERA_LANGUAGE | 23 | no | [[88,0]] |
+| 93 | CAMERA_POSTURE | 23 | no | [[93,5]] |
+| 97 | BT_WAKEUP_SW | 23 | no | [[97,1]] |
+| 103 | OFFSET_STATES | 23 | no | [[103,0]] |
+| 124 | WINDOW_CROP_INFO | 35 | no | [[124,[[1,0],[2,0],[3,0],[4,0],[5,0],[6,0]]]] |
+| 129 | FREEFRAME_GRID | 24 | no | [[129,0]] |
+| 132 | MAIN_VIDEO_ENCODE_TYPE | 24 | no | [[132,1]] |
+| 133 | DARK_EIS_ENABLE_GLOBAL | 24 | no | [[134,0]] |
+| 135 | INTERNAL_SPLICING | 24 | no | [[135,1]] |
+| 149 | HEAT_SHELL_TYPE | 24 | no | [[149,0]] |
+| 150 | OFFSET_DETECTED_TYPE | 24 | no | [[150,3]] |
+| 155 | HAS_CRASH | 24 | no | [[155,0]] |
+| 156 | CLOUD_IS_BUSY_STATUS | 24 | no | [[156,0]] |
+| 157 | TIME_WATERMARK_SWITCH | 24 | no | [[157,1]] |
+| 158 | DASHCAM_INFO | 47 | no | [[158,[[1,512057409536],[2,409195249664],[3,51205740953],[4,0]]]] |
+| 160 | PTZ_PANO_SAVE_SWITCH | 24 | no | [[160,0]] |
+| 161 | CHECK_BIAS_CORRECTED | 24 | no | [[161,1]] |
+| 173 | NEED_ADAPTIVE_ROTATION | 24 | no | [[173,0]] |
+
+Answered 200 but empty (not supported on this camera): 1 VIDEO_RESOLUTION, 2 PHOTO_SIZE, 3 VIDEO_BITRATE, 4 AUDIO_BITRATE, 5 AUDIO_SAMPLERATE, 9 REMAINING_CAPTURE_TIME, 10 REMAINING_PICTURES, 12 LOCAL_TIME, 13 TIME_ZONE, 18 ?, 21 LENS_INDEX, 23 SELF_TIMER, 25 ACC_FULL_SCALE_RANGE, 26 GYRO_FULL_SCALE_RANGE, 27 TAKE_RAW_PICTURE, 28 GAMMA_MODE, 31 SYS_ADOPTION, 32 CPU_TYPE, 33 GYRO_FILTER, 34 MCTF_ENABLE, 35 SPORT_MODE_ENABLE, 42 SECOND_STREAM_RES, 44 EVO_STATUS_MODE, 45 ORIGIN_OFFSET_3D, 46 MEDIA_OFFSET_3D, 47 CALIBRATION_OFFSET_3D, 49 BT_REMOTE_VERSION, 50 BT_REMOTE_TYPE, 51 QUALITY_SETTING, 52 OVERHEAT_PROTECTION, 53 CALIBRATION_ORIENTATION, 54 STANDBY_DURATION, 55 QUICK_CAPTURE_ENABLE, 57 TELEVISION_SYSTEM, 58 SENSOR0_SERIAL_VR360, 59 SENSOR1_SERIAL_VR360, 60 SENSOR_SERIAL_VR180, 64 SENSOR_ID, 67 SENSOR_INFO, 71 VIDEO_FOV, 72 STILL_FOV, 73 GYRO_POLYFIT_STATE, 74 GYRO_CALIBRATE_STATE, 75 MOBVOI_LICENSE_VERITY_STATE, 85 CHARGEBOX_CONNECTED_STATUS, 86 BT_CAR_TABLE, 87 PTZ_CTRL, 89 HW_BLE_VERSION, 90 FACTORY_CALIBRATION_STATUS, 91 MODULE_TYPE, 92 SFR_CALIBRATION_STATUS, 94 FACTORY_MODE_STATUS, 95 UDISK_MODE, 96 HW_VERSION, 98 ?, 99 FAC_AGEING_STATUS, 100 RAW10BIT_ENABLE, 101 SENSOR_TEMP_VALUE, 102 GYRO_MASETER_HW_STATE, 104 SENSOR_283LensType, 105 VOICE_CTRL_LANGUAGE, 106 VOICE_CTRL_ENABLE, 107 MAIN_MODE, 108 AUDIO_RECODER_ENABLE, 109 AUDIO_WNR_TYPE, 110 OTA_PKG_VERSION, 111 AUTO_SHUTDOWN_TIME, 112 APP_LIVE_VIEW_STATUS, 113 CAMERA_BITRATE_TYPE, 114 BOX_OTA_PKG_VERSION, 115 BOX_BT_VERSION, 116 BOX_VERSION, 117 GO3_VERSION, 118 WIFI_WORKING_STATUS, 119 BUTTON_FOLLOW_OPTION, 120 LED_SWITCH, 121 BEEP_SWITCH, 122 CAMERA_POSTURE_WHEN_CAPTURE_START, 123 CHARGEBOX_CONNECTED_STATUS_WHEN_CAPTURE_START, 125 VERTICAL_FLIP_ENABLE, 126 GYRO_BIAS, 127 BUTTON_AUTO_FOLLOW, 128 ASSISTIVE_GRID, 130 RC_CONN_INFO, 134 METERING_ENABLE_GLOBAL, 136 IPERF_STATUS, 137 WIFI_FACTORY, 138 SHARPNESS_GLOBAL, 139 LIGHT_REFRESH_RATE, 140 RF_RSSI, 141 FINDMY_ENABLE, 145 CANCEL_CAPTURE_ENABLE, 146 CANCEL_CAPTURE_GUIDE_FLAG, 147 QUICK_READER_MOVING_FLAG, 148 HAND_CONTROL_ENABLE, 151 CHILD_MODE, 152 HORIZON_INDICATOR_ENABLE, 153 CAMERA_BT_RSSI, 154 Q_BUTTON_CUSTOM_ACTION_INFO, 159 CO_BRANDED_PRODUCT_ID, 162 RECTIFY_GYRO_BIAS, 164 WIRELESS_LINK_NUM, 165 LIVE_BROADCAST_STATUS, 166 LONG_BATTERY, 167 P2P_TRANS_STATUS, 168 HORIZON_FILP_ENABLE, 169 LENS_ACCESSORIES_INFO, 170 MEDIA_OFFSET_V6, 171 STREET_PHOTO_TYPE, 172 QC_SINGLE_PRESS_SHOOT_TYPE, 174 MEDIA_OFFSET_V8, 175 GEOGRAPHIC_TIME_ZONE, 176 STORAGE_STATE_LIST, 177 CARD_LOCATION_LAST_UPDATE, 178 FC_FLIGHT_ID, 179 ZOOM_SPEED, 180 DETACHABLE_SCREEN_BATTERY_INFO.
+
+Rejected / no reply: none.
+
+### Control commands used by the watch app
+
+| Command | Result | Reply bytes | Fits 20 B | Decoded reply |
+|---|---|---:|:-:|---|
+| CHECK_AUTHORIZATION as WATCH_GARMINOS | 200 OK | 18 | yes | [[1,1]] |
+| GET_CURRENT_CAPTURE_STATUS | 200 OK | 24 | no | [[1,[[1,0],[2,0],[10,0]]]] |
+| SET_OPTIONS video sub-mode 0 | 200 OK | 16 | yes | [] |
+| SET_OPTIONS photo sub-mode 0 | 200 OK | 16 | yes | [] |
+| SET_OPTIONS video sub-mode 0 (restore) | 200 OK | 16 | yes | [] |
+
+### Notifications seen during the run
+
+| Code | Name | Bytes | Fits 20 B | Body |
+|---|---|---:|:-:|---|
+| 0x2017 | CAM_WIFI_START | 16 | yes | [] |
+| 0x2011 | AUTHORIZATION_RESULT | 18 | yes | [[1,0]] |
+| 0x2067 | WIFI_INTERFERENCE_STATUS | 33 | no | [[1,18446744073709551527],[2,0],[3,0],[4,36]] |
+| 0x2065 | WATCH_RES | 26 | no | [[1,31],[2,[[31,252]]],[3,7]] |
+| 0x2053 | CAM_SUBMODE_CHANGE | 22 | no | [[1,100],[2,0],[3,3]] |
+| 0x2065 | WATCH_RES | 30 | no | [[1,30],[1,40],[2,[[30,0],[40,12]]],[3,6]] |
+| 0x2065 | WATCH_RES | 30 | no | [[1,30],[1,40],[2,[[30,0],[40,11]]],[3,6]] |
+| 0x203c | DARK_EIS_STATUS | 18 | yes | [[1,2]] |
+| 0x2053 | CAM_SUBMODE_CHANGE | 22 | no | [[1,0],[2,100],[3,3]] |

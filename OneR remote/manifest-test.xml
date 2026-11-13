@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<!-- Test host for the unit suite: the same entry and permissions as the shipped
+     manifest, one device (descentmk351mm, the device the PR's suite ran on), the
+     BLEBarrel compiled from source instead of the barrel artifact - the barrel
+     symbols a vector touches are the tree's, never a hand-off binary.
+     Built by test.jungle with monkeyc -t; run by monkeydo <prg> descentmk351mm /t. -->
+<iq:manifest xmlns:iq="http://www.garmin.com/xml/connectiq" version="3">
+    <iq:application entry="Main" id="38afa6370ef54b479430e96d2de3b323" launcherIcon="@Drawables.LauncherIcon" minSdkVersion="3.1.0" name="@Strings.AppName" type="widget" version="0.9.96">
+        <iq:products>
+            <iq:product id="descentmk351mm"/>
+        </iq:products>
+        <iq:permissions>
+            <iq:uses-permission id="BluetoothLowEnergy"/>
+            <iq:uses-permission id="Positioning"/>
+        </iq:permissions>
+        <iq:languages>
+            <iq:language>eng</iq:language>
+        </iq:languages>
+        <iq:barrels>
+            <iq:depends name="BLEBarrel" version="1.0.0"/>
+        </iq:barrels>
+    </iq:application>
+</iq:manifest>

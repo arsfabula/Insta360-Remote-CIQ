@@ -152,7 +152,6 @@
         </iq:languages>
         <iq:barrels>
             <iq:depends name="BLEBarrel" version="1.0.0"/>
-            <iq:depends name="CapacitesBarrel" version="1.0.0"/>
         </iq:barrels>
     </iq:application>
 </iq:manifest>

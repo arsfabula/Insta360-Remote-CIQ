@@ -6,6 +6,80 @@ tests must be done with the PC's raw BLE adapter (no Garmin SDK). Final
 reintegration (step 4) happens on a separate Windows PC. This document is the
 single source of truth for continuing.
 
+> **Update 2026-11-08, the axis of the model (closing)** — the three artefact sites of the
+> axis answer at their tell instead of by silence, and the rung **S-31 closes as a measured
+> negative** (the transport's `[hook] sent n=… left=…` / `[hook] refused ceiling=10 sent=10`
+> line is the tell of the forcing; the notification half is refused by the design of the axis,
+> and no acceptance of this axis closes on a reply — EF-22). Closed at the artefacts, on `main`,
+> nothing pushed (commits `445e166`, `ec1155f`, and the tree of the third fix):
+>
+> - the gate of the menu decides and prints the measured cell of the model **once, above**
+>   `switch (BLEBarrel.menuLevel)`, so the four levels pass the tell (delegate :564 / :565 today);
+> - the selection of the entry `MenuLevel` gives back the value that names no frame, so a visit
+>   of the axis costs no write of the family in force (the new `case` at delegate :1133, mirroring
+>   the choice site at :806);
+> - the armings of the Burst and of the Interval stop read the **key of the cell** of the row in
+>   force beside the id of the X5 — `PhotoBurst`, `PhotoInterval` (delegate :1045 and :938) —
+>   and the Starlapse stays keyed to `v12` (:954), since an entry of that cell is `official`,
+>   its selection answers `[refused]` and its press never exists.
+>
+> The delegate as it sits: **1328 lines / 77 107 o / sha1 `2302042a053848fc8484860b3261fe65947d65b7`**
+> (128/128 braces, 656/656 parentheses; the CRLF working copy answers 78 434 o). Unchanged by this
+> work: `BLE Barrel/BLEBarrel.mc` at 2938 lines / 78 808 o / sha1 `538d4972077aca8dbda055514ac7024dadff88f0`
+> and `Capacites Barrel/source/Capacites.mc` at 579 lines / 22 252 o / sha1 `b0cede5f…`, the emitter
+> still answering **18 controls** and regenerating the module byte-for-byte. The **gate of this axis is the
+> `monkeyc.bat` of the SDK 9.1.0** (`connectiq-sdk-win-9.1.0-2026-03-09-6a872a80b`, `-d epix2pro51mm` for the host
+> gate, `-d epix2pro51mm_sim -w` for the simulator device): the bench stays on that SDK with the s132 5.1.0 dongle
+> firmware and the newer SDKs carry the problem of the nRF52840 dongle of this bench, so the 9.3.0 route answers the
+> workstation only and grades no rung (item 164); the two routes carry the same program, **Data 16 793 o + Code 28 850
+> o = 45 643 o** on both, the totals of a `.prg` not being comparable (note 51). Their VS Code program `OneR remote\bin\OneRremote.prg`
+> answers **Code 28 771 o**, 79 o under the tree of the axis, at an mtime of 17:16 against the 18:40 of the gate's artefacts —
+> **it predates the three fixes and owes a rebuild before any paste**: a tell pasted on that program answers an older
+> artefact and grades no rung of this axis (item 106, note 21). The bound of a family
+> forced is `const HOOK_WRITE_CEILING = 10;` at `BLE Barrel/BLEBarrel.mc:146`, asked at the two send
+> sites of that artefact, the counter back at nothing at a fresh bond. Two sites stay **findings, not
+> fixes**: the classification of the bond can never name the X4 Air (`deviceName.substring(0, 7).equals("X4 Air")`
+> at `BLE Barrel/BLEBarrel.mc:2583` today, seven characters against six) and the opener of a resolution
+> submenu of a model of the matrix stays keyed on the X5 datum `v0` (delegate :1217, the call at :1230) —
+> no measured datum says that such a menu opens one. **What is still owed is a paste of the simulator the
+> user starts, ONE session per tell**: the choice `forceoff` of the axis with ONE entry of the X5 and ONE
+> press of start (S-36, the state print answering `[hook] forced=false model= level=-1 sent=0` and then no
+> `[hook] sent` of that press and no refusal at all), and a forced session kept past the bound then ONE
+> re-connect (S-32, the line `[relink]` answering with the model and the level it detects and the count of
+> the family at nothing). **All three sessions of the row S-37 have now been made** and its three faces
+> answer at their tell while its verdict stays owed: the Interval session of the ONE X (items 168 and 169)
+> gives the first `[hook] sent n=1 left=9` of the family of a model forced after a reset of the submenu
+> and arms the stop of an Interval **by the key** of its cell (`[stop] cmd=23 declared=18 body=2` beside
+> the `[stop2]` bytes of the library's stop of a Timelapse, the arming at delegate :938 and the pick site
+> at :1306…:1309); the Burst session of the X4 Air (items 170 and 171) answers the tier, the key and the
+> shape at the selection and then the press of start at the site that picks the frame, `[cap] photo=true
+> burst=true slp=false frame=16` beside `[shape] o1p4 cmd=3 declared=16 body=0`, which pins that paste at
+> the tree of item 162 and reaches the cell by `selKey.equals("PhotoBurst")` at delegate :1045; and the
+> Starlapse session of the X4 Air (item 172) answers the refusal face, `[tier] id=o1p2 model=X4 Air
+> tier=official key=` with the key answering the empty String beside `[refused] id=o1p2 tier=official
+> model=X4 Air`, so that refusal costs the family nothing and the press of that entry never existed to
+> arm. The row keeps its verdict owed to the receipt at a camera of a model of the matrix over BLE (the
+> finding of item 47) and to the attribution of one report of a new opening to one frame of such a model.
+> Two wordings of that tell moved on the bytes of the artefact, never on a decision of the test:
+> `cmdSetPhoto` and `cmdSetPhotoBurst` are the SAME 16 octets (`BLE Barrel/BLEBarrel.mc:229` and :231,
+> command 3, empty body), so the flag names the arming and no size of a frame does (item 171); and NO
+> `[st]` line exists anywhere in the tree, the thirteen modules of the repository answering none at HEAD,
+> so the stop rule of that tell reads the `[stop]`/`[stop2]` pair beside the `[obs]` family of the bond
+> (item 172). Item **165** of that file draws the protocol of those sessions — the setup is made OUTSIDE
+> the graded session (note 30), ONE selection is graded per session (note 33), an absence never grades
+> (criterion 14) and a refusal re-runs rather than being read; the pin of a screen is the paste of its
+> build log, item 164's rule. The items **166**…**172** read seven pastes of it: S-29 is **Green at its
+> tell** (the gate answers a model of the level 1 — the X3 — and the level-2 face of the X4 Air answers on
+> the artefact of the axis), the second and third visits of the submenu of `MenuLevel` carry a fresh
+> ceiling and take another model, the ONE X answers the 9 entries of its row of the matrix, and the
+> interval session of that model gives the first `sent n=1` of a family forced after such a reset and the
+> stop armed by the key. S-35's verdict moved once, at the interval session of the ONE X, and no other
+> reading of the axis re-marks a rung (item 106, note 21). The decisions of this axis sit at **items
+> 160…172** of
+> `…\Documents\Default Project\Insta360 Remote\Cahier-des-charges-CIQ-decisions-20261108.md`; the ladder of §11.4 of `Cahier-des-charges-CIQ.md` keeps **38 rows, S-0…S-37**, and
+> adds none. Out of scope by design: the X6/UCD2 hardware leg (no camera of that model on this bench) and the
+> `0b` keepalive fork.
+>
 > **Update 2026-11-08** — the branch `feature/x6-ace-go` was finished and
 > merged into `main` (fast-forward, pushed); the branch is deleted both locally
 > and on GitHub. `main` is the only branch, at the work described below. The
@@ -66,8 +140,9 @@ https://services.garmin.com/appsLibraryBusinessServices_v0/rest/apps/
   the inner PRG starts at offset `4 + wrapper_size` (0x21 in our capture).
 
 If the direct URL stops working, fall back to:
-  - Android Connect IQ Store app cache + `adb` (no root needed on most builds), or
-  - Garmin Express on Windows + Process Monitor filtered on `Path ends with .prg`.
+
+- Android Connect IQ Store app cache + `adb` (no root needed on most builds), or
+- Garmin Express on Windows + Process Monitor filtered on `Path ends with .prg`.
 
 Keep the downloaded `.prg` OUT of the public git repo (store ToS).
 
@@ -107,6 +182,7 @@ Section layout (CIQ 5.1.1, all big-endian except the store wrapper):
 
 Data section format (CIQ 5.x, unified v1/v2 class defs): see the Kaitai spec
 `ciq.ksy` from anvilsecure/garmin-ciq-app-research. Key points:
+
 - sentinel byte 0xc1 (v1) or 0xc2 (v2), then 3-byte fragment `a5 5d ef`.
 - v2 class def: flags u1, then conditionally extends/static/parent/module offsets,
   app_types u2, nfields u2, then nfields * 9-byte field defs.
@@ -119,6 +195,7 @@ Data section format (CIQ 5.x, unified v1/v2 class defs): see the Kaitai spec
 ## 5. Protocol findings so far
 
 Already in `BLE Barrel/BLEBarrel.mc` / `tools/`:
+
 - GATT service `0000BE80-0000-1000-8000-00805F9B34FB`, write char BE81, notify BE82.
 - 16-byte envelope: `LL LL 00 00 04 00 00 XX 00 02 SS SS 00 80 00 00 | PB`
   (04 = command, 05 = keep-alive), protobuf body.
@@ -130,6 +207,7 @@ Already in `BLE Barrel/BLEBarrel.mc` / `tools/`:
 - `cmdHighlight`/`cmdTrackThat` embed `com.insta360.keyTime.highlight` / `.trackThat`.
 
 New findings from the official .prg (this work):
+
 - `cmdStartRec` / `cmdStopRec` protobuf payloads are **byte-identical** to the
   official app's stored constants -> codec validated.
 - No complete frame is stored as a constant: the 16-byte header (length, seq) is
@@ -169,6 +247,7 @@ New findings from the official .prg (this work):
 ## 6. What remains (next steps)
 
 ### 6.1 Ghidra P-code decompilation (step 2)
+
 - Install Ghidra + the `anvilsecure/GhidraGarminApp` SLEIGH processor/loader.
 - Load `insta360-epixpro51.prg`. The loader handles CIQ 5.x class defs.
 - Targets (in priority order):
@@ -184,11 +263,12 @@ New findings from the official .prg (this work):
   symbol names from the Data string pool.
 
 ### 6.2 Dynamic verification (step 3)
+
 - Constraint: Garmin SDK does NOT work on the original Linux PC. Do NOT depend on
   it. Use the PC's raw BLE adapter directly.
 - Insta360 LBS uses NoBonding/NoEncryption -> a passive BLE sniffer (nRF52 dongle
   + Wireshark) captures the full plaintext traffic between the official app and
-  the camera. Validate each statically discovered command against real captures.
+    the camera. Validate each statically discovered command against real captures.
 - Alternatively, replay commands with the archived `BLE Probe` ladder
   (`Archive\Probes-20261108` in the scratch area) — for replay of proven
   commands only; the framing rungs it chased are a dead end.
@@ -196,6 +276,7 @@ New findings from the official .prg (this work):
   pushed notification (0x8275/0x8293/0x8208/0x8256) proves it acted.
 
 ### 6.3 Reintegration (step 4) -- on the Windows PC
+
 - Add new commands to `BLE Barrel/BLEBarrel.mc` (cmd* arrays) + update
   `tools/insta360_proto.py` / `insta360_ucd2.py`.
 - Add golden tests in `tools/test_golden.py` (must reproduce byte-for-byte).
@@ -207,7 +288,6 @@ New findings from the official .prg (this work):
 ## 7. Constraints / notes for the next AI
 
 - Do not commit the official .prg or extracted proprietary blobs to a public repo.
-- The official app is CIQ 5.1.1 / device app type "App" (not widget/datafield).
 - Class defs use the v2 (0xc2) format with flags; v1 (0xc1) also appears (24 of them).
 - There is NO Symbols section in this build; symbol names live in the Data string
   pool, and Toybox symbols are resolved via the LinkTable + the SDK's symbol table.
@@ -224,11 +304,13 @@ python tools/prg_disasm.py insta360-epixpro51.prg --out ./prgdisasm
 ```
 
 Outputs:
+
 - `disasm.txt` — full listing (46 927 instructions, 887 methods, 29 unknown opcodes).
 - `methods.txt` — method map: `code_offset  class_off  symbol  flags`.
 - Method entries are marked `### METHOD entry @code+0xXXXX`.
 
 Key analysis results:
+
 - Frame builder candidates (methods using `newba` + byte 0x80 via `ipush2 128`):
   `@code+0x166a1` (symbol 1396) and `@code+0x16c85` (symbol 1403) in class 0x4a30.
   These are byte-array transforms (bit packing, 0x7f/0x80 masking) — likely CRC or
@@ -263,6 +345,7 @@ python tools/ble_probe.py --addr AA:BB:CC:DD:EE:FF \\
 ```
 
 Constraints (from original Linux PC):
+
 - Garmin SDK is broken on this machine; do not depend on it.
 - Camera must be powered on and discoverable; the watch must NOT be connected
   (Insta360 LBS allows only one central at a time).
@@ -290,6 +373,7 @@ python tools/prg_dump.py insta360-epixpro51.prg --out ./prgdump
 ## 11. Decompilation attempt (Ghidra + GhidraGarminApp)
 
 ### Setup status
+
 - Ghidra 12.2 downloaded and extracted to `/tmp/ghidra_install/`.
 - JDK 25 (Temurin) downloaded and extracted to `/tmp/jdk-25.0.5+8/`.
 - GhidraGarminApp extension built from source against Ghidra 12.2:
@@ -298,6 +382,7 @@ python tools/prg_dump.py insta360-epixpro51.prg --out ./prgdump
   the Ghidra install's `Extensions/Ghidra/GhidraGarminApp/`.
 
 ### Blockers
+
 - The extension's language definition (`data/languages/garminvm.ldefs`) has the
   `<language>` element commented out. Uncommenting it requires also compiling
   the SLEIGH spec (`garminvm.sinc` -> `garminvm.sla`), which needs the Ghidra
@@ -308,6 +393,7 @@ python tools/prg_dump.py insta360-epixpro51.prg --out ./prgdump
 - The extension is in beta state (processor name "skel", commented-out language).
 
 ### What was produced instead
+
 - `tools/prg_disasm.py` + `disasm.txt`: full P-code listing (46 927 instructions).
 - `tools/prg_dump.py`: Data section parser (236 classes, 521 strings, 57 containers).
 - `Insta360GarminApp_decompiled.mc`: structural skeleton (class/method map,
@@ -315,7 +401,9 @@ python tools/prg_dump.py insta360-epixpro51.prg --out ./prgdump
   **This is NOT compilable Monkey C** — it is a reference document.
 
 ### Recommendation
+
 For actual decompilation, use Ghidra GUI on a machine with a display:
+
 1. Install Ghidra 12.2 + the built extension.
 2. Uncomment the language definition and compile the SLEIGH spec.
 3. Import the .prg, run the decompiler on individual methods.
@@ -324,12 +412,14 @@ For actual decompilation, use Ghidra GUI on a machine with a display:
 Camera: `B8:2D:28:F3:A5:AC` (X5 3S6GEW), BLE service `0000BE80-...`.
 
 GATT layout (discovered):
+
 - BE81 write char: handle 0x0029, value handle 0x002a, properties 0x0a (read+write)
 - BE82 notify char: handle 0x002b, value handle 0x002c, properties 0x10 (notify)
 - BE83 read char: handle 0x002e, value handle 0x002f, properties 0x02 (read) -> value `11 22 33 44`
 - CCCD for BE82: handle 0x002d
 
 Verified commands (from BLEBarrel.mc, byte-identical to the barrel):
+
 - `cmdStartRec` (`12 00 00 00 04 00 00 04 00 02 ff 00 00 80 00 00 08 01`):
   camera responds with notification `10 00 00 00 04 00 00 17 20 02 ff 8a 43 f4 00 00`
   (command acknowledged; 0x17 0x20 = capture-status push).
@@ -340,6 +430,7 @@ Verified commands (from BLEBarrel.mc, byte-identical to the barrel):
 - `cmdGetBatStor` (`14 00 00 00 04 00 00 08 00 02 ff 00 00 80 00 00 08 0b 08 14`): accepted.
 
 Keep-alive states observed:
+
 - `07 00 00 00 05 00 00` = idle
 - `07 00 00 00 0b 00 00` = recording (or non-idle)
 - `10 00 00 00 04 00 00 17 20 02 ff 8a 43 f4 00 00` = capture-status push (0x17 0x20)
