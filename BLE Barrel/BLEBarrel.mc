@@ -1611,6 +1611,19 @@ class BleDevice extends BluetoothLowEnergy.BleDelegate {
 			// reset to what they already are), and while a stop is pending -
 			// the app's stateStopping from the press - this is exactly the
 			// confirmation of it, which is what recState becomes anyway.
+			// And it ANSWERS the retry the stop's send booked: this branch does
+			// what the confirmation of a start does a few lines above, less the
+			// join. Only the stop kind - this frame says nothing about an armed
+			// start retry, and the exhausted-retry vectors name what answers
+			// that one. The gap was named on the wrist, first video scene
+			// (E2 run 2, 13 nov.): the camera's answer to the stop arrived as
+			// a 66-octet body cut to 20, no state to read across the wall, and
+			// these pushes were the only confirmation that ever came - with no
+			// cancel here the retry re-sent the stop three times and asserted
+			// recording over the observed rest at exhaustion.
+			if (retryKind == retryKindStop) {
+				cancelRetry();
+			}
 			applyBursts = 0;
 			mMessage = currentLabel + "\n" + startMessage;
 			recState = stateStopRec;
@@ -3256,13 +3269,36 @@ class BleDevice extends BluetoothLowEnergy.BleDelegate {
 			cancelRetry();
 
 
-			recState = wasStart ? stateStopRec : stateStartRec;
+			// Exhaustion undoes what our own press optimistically wrote, and
+			// NOTHING ELSE: a state the link itself named - a capture push, an
+			// answer whose state octet crossed the wall - is a fact, and the
+			// screen keeps facts. The wrist named the fault of the old assert
+			// on the first video scene (E2 run 2, 13 nov., log
+			// int-x5-build\watch-logs-e2-run2-video #65-#100): the stop was
+			// confirmed by the pushes 0x2040 f1=0 and 0x2010 f1=0, the stop's
+			// own answer arrived as a 66-octet body cut to 20 with no state to
+			// read, so nothing cancelled the retry, it ran out, and its assert
+			// brought the red dot and the clock back on a stopped camera. With
+			// the cancel this branch pairs with in the capture machine, reaching
+			// here with an observed state should be rare; the guard is what
+			// makes the assert honest when it happens anyway - the four vectors
+			// exhausted... and stopConfirmedByCameraPush... hold the split.
+			if (wasStart) {
+				if (recState == stateStarting) {
+					recState = stateStopRec;
+				}
+			} else {
+				if (recState == stateStopping) {
+					recState = stateStartRec;
+				}
+			}
 			if (ucd2Armed) {
 
 
 
 				mMessage = "No answer from camera";
 			}
+			wireLine("retry", "exhausted kind=" + (wasStart ? "start" : "stop") + " recState=" + recState.toString() + " (the state the link last named stands)");
 			WatchUi.requestUpdate();
 			return;
 		}

@@ -678,3 +678,91 @@ function pureVideoStateTwentyFourCountsLikeRecording(logger) {
 	logger.debug("fromRest=" + fromRest.toString() + " keptClock=" + kept.toString() + " camStateRead=" + show(read));
 	return fromRest && kept && read == 24;
 }
+
+// E2 run 2 au poignet (13 nov.), la premiere scene video, log
+// int-x5-build\watch-logs-e2-run2-video #65-#100: la camera a repondu au STOP
+// par un corps de 66 octets (declared=66 arrived=20, `0a 30 0a 2e` imbrique,
+// l'etat au-dela du mur) - aucune confirmation par la legende des reponses n'est
+// jamais arrivee; le STOP n'a ete confirme que par les faits pousses: 0x2040
+// f1=0 (#72) puis 0x2010 f1=0 (#77). Le fait a bien deplace recState au repos -
+// l'ecran etait vert - mais RIEN n'a annule le retry que l'envoi avait reserve:
+// trois relances plus tard il a epuise et a AFFIRME RECORDING par-dessus le
+// repos observe - le cercle rouge et le chrono sont revenus sur une camera
+// arrete. Le fait doit repondre au retry reserve pour le stop, et l'epuisement
+// ne doit jamais ecrire par-dessus ce que le lien a nomme.
+(:test)
+function stopConfirmedByCameraPushCancelsTheStopRetry(logger) {
+	var d = freshLink();
+	// Le fait: la camera enregistre (la trame 0x2010 complete de 20 octets,
+	// la forme deja nommee par recordingFoundFromRestIsMarkedJoined).
+	d.onCharacteristicChanged(null, frame(20, 0x10, 0x20, 0xff, [0x08, 0x01, 0x10, 0x00]b));
+	var recording = BLEBarrel.recState == BLEBarrel.stateStartRec;
+	// L'appui STOP de l'utilisateur: l'app ecrit stateStopping, et l'envoi
+	// reserve le retry du stop (ce que sendCMD fait pour cmdStopRec; ici sans
+	// le timer - seule la kind reservee compte pour la suite du vecteur).
+	BLEBarrel.recState = BLEBarrel.stateStopping;
+	d.retryKind = BLEBarrel.retryKindStop;
+	d.retryCount = 0;
+	// La camera confirme par les faits pousses, pas par la reponse: 0x2040
+	// drapeau 0, la trame de 18 octets exactement comme au #72 du log.
+	d.onCharacteristicChanged(null, frame(18, 0x40, 0x20, 0xff, [0x08, 0x00]b));
+	var atRest = BLEBarrel.recState == BLEBarrel.stateStopRec;
+	var cancelled = d.retryKind == 0;
+	// Et meme mene jusqu'a l'epuisement, ce retry ne doit pas ecrire par-
+	// dessus le fait observe: on le reserve et on l'epuise a la main.
+	d.retryKind = BLEBarrel.retryKindStop;
+	d.retryCount = BLEBarrel.RETRY_MAX;
+	d.onRetry();
+	var stillRest = BLEBarrel.recState == BLEBarrel.stateStopRec;
+	logger.debug("recording=" + recording.toString() + " atRest=" + atRest.toString() + " cancelled=" + cancelled.toString() + " stillRest=" + stillRest.toString());
+	return recording && atRest && cancelled && stillRest && d.retryKind == 0;
+}
+
+// Le garde-fou de l'epuisement seul, sans trame: un repos que le lien a nomme
+// doit rester du repos, quelle que soit la kind reservee. L'ancienne ligne
+// affirmait l'enregistrement pour toute epuisement de kind stop.
+(:test)
+function exhaustedStopRetryNeverOverwritesObservedRest(logger) {
+	var d = freshLink();
+	BLEBarrel.recState = BLEBarrel.stateStopRec;
+	d.retryKind = BLEBarrel.retryKindStop;
+	d.retryCount = BLEBarrel.RETRY_MAX;
+	d.onRetry();
+	logger.debug("rec=" + BLEBarrel.recState.toString() + " kind=" + d.retryKind.toString());
+	return BLEBarrel.recState == BLEBarrel.stateStopRec && d.retryKind == 0;
+}
+
+// Et l'honnete inverse est gardee: aucune suite a l'appui, aucun fait pousse -
+// la machine etait en train d'enregistrer, l'optimiste stateStopping se defait,
+// le cercle rouge reste la lecture la plus vraie. C'est le comportement d'avant,
+// ecrit comme vecteur pour que le garde-fou ne le casse pas en passant.
+(:test)
+function exhaustedStopRetryWithNoFactsRestoresRecording(logger) {
+	var d = freshLink();
+	BLEBarrel.recState = BLEBarrel.stateStopping;
+	d.retryKind = BLEBarrel.retryKindStop;
+	d.retryCount = BLEBarrel.RETRY_MAX;
+	d.onRetry();
+	logger.debug("rec=" + BLEBarrel.recState.toString() + " kind=" + d.retryKind.toString());
+	return BLEBarrel.recState == BLEBarrel.stateStartRec && d.retryKind == 0;
+}
+
+// Le meme garde-fou de l'autre cote, et sa contrepartie honnete: un enregistrement
+// que le lien a nomme reste de l'enregistrement quand le retry d'un START epuise;
+// un stateStarting que rien n'a confirme se defait au repos, comme avant.
+(:test)
+function exhaustedStartRetryKeepsFactsAndUndoesOptimistic(logger) {
+	var d = freshLink();
+	BLEBarrel.recState = BLEBarrel.stateStartRec;
+	d.retryKind = BLEBarrel.retryKindStart;
+	d.retryCount = BLEBarrel.RETRY_MAX;
+	d.onRetry();
+	var keptRecording = BLEBarrel.recState == BLEBarrel.stateStartRec;
+	BLEBarrel.recState = BLEBarrel.stateStarting;
+	d.retryKind = BLEBarrel.retryKindStart;
+	d.retryCount = BLEBarrel.RETRY_MAX;
+	d.onRetry();
+	var undone = BLEBarrel.recState == BLEBarrel.stateStopRec;
+	logger.debug("keptRecording=" + keptRecording.toString() + " undone=" + undone.toString() + " kind=" + d.retryKind.toString());
+	return keptRecording && undone && d.retryKind == 0;
+}
