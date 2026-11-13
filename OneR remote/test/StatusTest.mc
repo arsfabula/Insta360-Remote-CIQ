@@ -12,9 +12,11 @@ using BLEBarrel;
 // wherever the behavior is the same, so the suite reads as a delta against the
 // PR's; where the mainline reading of the same frame differs, the vector says
 // so and asserts this repository's design (PROTOCOL_APK sections 15.27 and 16):
-//   * the ask-15 answer is read for exactly 0 and 1; other state values are
-//     real readings kept in x5CamState but they never move recState - the
-//     state>0 machine is the 0x2010 push, the next vectors name it;
+//   * the ask-15 answer is read for 0, 1 and 24 (PureVideo, named on PR #2's
+//     bench - no84by bd9c0f1, and PureVideo is v11 of this app's own level-2
+//     menu); other state values are real readings kept in x5CamState but they
+//     never move recState - the state>0 machine is the 0x2010 push, the next
+//     vectors name it;
 //   * the camera's mode is a reading (peekCamMode), never a move of the
 //     watch's cursor - what to follow is the app's decision;
 //   * the echo gate is observed through modeReqId / settingMayGo, the two
@@ -600,13 +602,19 @@ function statusAnswerStopTailDoesNotRestart(logger) {
 	BLEBarrel.recJoined = false;
 	d.onCharacteristicChanged(null, frame(24, 0xc8, 0x00, 0x73, [0x0a, 0x06, 0x08, 0x01]b));
 	var stopStands = BLEBarrel.recState == BLEBarrel.stateStopping && !BLEBarrel.recJoined;
+	// The same tail in its PureVideo form: a PureVideo stop pushes 24 then 0
+	// (no84by bd9c0f1, real watch logs) - the refusal is by the machine, not
+	// by one value.
+	BLEBarrel.recState = BLEBarrel.stateStopping;
+	d.onCharacteristicChanged(null, frame(24, 0xc8, 0x00, 0x81, [0x0a, 0x06, 0x08, 0x18]b));
+	var tailPureVideo = BLEBarrel.recState == BLEBarrel.stateStopping && !BLEBarrel.recJoined;
 	// The state-0 of the tail: at rest this is the confirmation of the stop;
 	// while the watch is stopping the stop's own retry path owns that move
 	// (applyCamState names the split), so the machine not moving here is the
 	// design, and the line records it rather than pretending.
 	d.onCharacteristicChanged(null, frame(24, 0xc8, 0x00, 0x74, [0x0a, 0x06, 0x08, 0x00]b));
-	logger.debug("stopStands=" + stopStands.toString() + " recAfterTail=" + BLEBarrel.recState.toString());
-	return stopStands;
+	logger.debug("stopStands=" + stopStands.toString() + " tailPureVideo=" + tailPureVideo.toString() + " recAfterTail=" + BLEBarrel.recState.toString());
+	return stopStands && tailPureVideo;
 }
 
 // A recording the watch joined is named as one. The elapsed seconds sit past
@@ -645,4 +653,28 @@ function recordingFoundFromRestIsMarkedJoined(logger) {
 	var reportOurs = BLEBarrel.recState == BLEBarrel.stateStartRec && !BLEBarrel.recJoined;
 	logger.debug("answerJoined=" + answerJoined.toString() + " answerOurs=" + answerOurs.toString() + " pushJoined=" + pushJoined.toString() + " reportOurs=" + reportOurs.toString());
 	return answerJoined && answerOurs && pushJoined && reportOurs;
+}
+
+// State 24 is PureVideo recording, named on PR #2's bench with the same X5
+// firmware as ours (no84by bd9c0f1: "START is answered with state 24, a stop
+// pushes 24 then 0, a connect mid-recording reads 24"). PureVideo is a real
+// row of this app's level-2 menu (v11), so an answer of 24 must move the
+// machine like state=1: from rest it starts and is marked joined - that is
+// the connect-mid-recording case, the one the joined screen exists for; while
+// already recording it confirms and never re-starts. The reading itself is
+// kept beside the machine as the header of this file states for every value.
+(:test)
+function pureVideoStateTwentyFourCountsLikeRecording(logger) {
+	var d = freshLink();
+	BLEBarrel.recState = BLEBarrel.stateStopRec;
+	BLEBarrel.recJoined = false;
+	d.onCharacteristicChanged(null, frame(24, 0xc8, 0x00, 0x82, [0x0a, 0x06, 0x08, 0x18]b));
+	var fromRest = BLEBarrel.recState == BLEBarrel.stateStartRec && BLEBarrel.recJoined;
+	var read = d.peekCamState();
+	var t0 = new Time.Moment(Time.now().value() - 60);
+	BLEBarrel.startRecTime = t0;
+	d.onCharacteristicChanged(null, frame(24, 0xc8, 0x00, 0x83, [0x0a, 0x06, 0x08, 0x18]b));
+	var kept = BLEBarrel.recState == BLEBarrel.stateStartRec && BLEBarrel.startRecTime.value() == t0.value();
+	logger.debug("fromRest=" + fromRest.toString() + " keptClock=" + kept.toString() + " camStateRead=" + show(read));
+	return fromRest && kept && read == 24;
 }

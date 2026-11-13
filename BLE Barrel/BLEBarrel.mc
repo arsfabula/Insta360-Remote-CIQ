@@ -466,6 +466,20 @@ const X5_OPT_STORAGE_STATE = 20;
 const X5_GET_CAPTURE_STATUS = 15;
 const X5_STATE_AT_REST = 0;
 const X5_STATE_RECORDING = 1;
+// State 24 is PureVideo recording. Named from PR #2's bench (no84by bd9c0f1,
+// X5 fw 1.13.21, the same firmware ours runs): "START is answered with state
+// 24, a stop pushes 24 then 0, a connect mid-recording reads 24". This also
+// names an observation both repos already had and neither understood: PR #2's
+// own vector feed of a 0x2010 push carries field 1 = 0x18 = 24 - what its
+// comment called the file-finalization push is the stop tail of a PureVideo
+// recording. The author's earlier claim that state 24 never starts a recording
+// (his f569e28) is reversed by his own later logs; the reading here follows
+// the later one, and PureVideo is a real row of this app's level-2 menu
+// (v11, Levels.mc) - a widget that ignores 24 is blind exactly where its own
+// menu can put the camera. Photo states (single, burst, interval, starlapse)
+// are still never taken for a recording: their values are not named by either
+// bench and stay an open box.
+const X5_STATE_PUREVIDEO = 24;
 const STATUS_ASK_MS = 1500;
 const STATUS_RETRY_MS = 6000;
 const STATUS_RETRY_MAX = 2;
@@ -1539,7 +1553,11 @@ class BleDevice extends BluetoothLowEnergy.BleDelegate {
 		// found it on his own camera and the bench agrees: the camera pushes
 		// 0x2010 again while it finalizes a file, and read here as a fresh
 		// start that push moved startRecTime - the on-screen recording clock
-		// began again in the middle of a recording. So the push only moves the
+		// began again in the middle of a recording. What that finalizing push
+		// was is now named on the same bench: its field was 24, the PureVideo
+		// recording state, and a PureVideo stop pushes 24 then 0 (no84by
+		// bd9c0f1) - the branch below refuses it by value for every state > 0
+		// anyway. So the push only moves the
 		// machine on an edge of the watch's own state, the same discipline
 		// onUcd2Frame keeps for this on the ucd2 envelope: state>0 from
 		// anything but stateStartRec (the app's pending start - it writes
@@ -1727,6 +1745,10 @@ class BleDevice extends BluetoothLowEnergy.BleDelegate {
 	// Moving recState is what starts the on-screen clock, and it is done only while
 	// no start or stop sequence is in flight. The seconds field of the answer sits
 	// past the cut, so a recording found at connect is timed from the connect.
+	// The states that move the machine are the video recording ones named by two
+	// benches: 1 (several video modes share it) and 24 (PureVideo, PR #2's bench
+	// names the constant above); the photo states and anything unnamed answer with
+	// the refusal line below, never with a silent fall.
 	function applyCamState(buf as Lang.ByteArray) as Void {
 		var st = x5ParseCaptureState(buf);
 		if (st == null) {
@@ -1736,35 +1758,51 @@ class BleDevice extends BluetoothLowEnergy.BleDelegate {
 		x5StatusAsked = false;
 		x5StatusTries = 0;
 		cancelStatusTimer();
-		wireLine("cam state", "state=" + st.toString() + " " +
-			(st == X5_STATE_RECORDING ? "recording" : "at rest") +
-			" arrived=" + x5RxArrived.toString() + " of " + x5RxDeclared.toString());
-		if (st == X5_STATE_RECORDING && !pendingStart) {
+		// The reading names itself before any branch, and it names what it is,
+		// not what it is not: an earlier shape of this line called every value
+		// other than 1 "at rest", which called a PureVideo recording stopped.
+		var named = "state=" + st.toString();
+		if (st == X5_STATE_RECORDING) {
+			named += " recording";
+		} else if (st == X5_STATE_PUREVIDEO) {
+			named += " recording (PureVideo)";
+		} else if (st == X5_STATE_AT_REST) {
+			named += " at rest";
+		} else {
+			named += " not a state either bench names";
+		}
+		wireLine("cam state", named + " arrived=" + x5RxArrived.toString() + " of " + x5RxDeclared.toString());
+		if ((st == X5_STATE_RECORDING or st == X5_STATE_PUREVIDEO) && !pendingStart) {
 			if (recState == stateStartRec) {
-				wireLine("cam state", "answer state=1 while already recording, the clock stays put");
+				wireLine("cam state", "answer state=" + st.toString() + " while already recording, the clock stays put");
 			} else if (recState == stateStopping) {
 				// The stop tail, on the leg this function owns. Two benches name
 				// the same shape: PR #2's author on a Descent Mk3i with the same
-				// X5 fw 1.13.21 (no84by 34a00c2: during a stop the camera sends
-				// state=1 and then state=0, a real start arrives only after the
-				// 0), and this function's sibling - the 0x2010 push path refuses
-				// exactly this read since PR #2's captureStatusPushDoesNotRestartRecording
-				// met it. The status answer was the leg never guarded: it is
-				// asked by the stop's own retry path, and its state=1 used to
-				// restart the clock and undo the user's stop. The comment above
-				// this function already forbade it - "only while no start or
-				// stop sequence is in flight" - this is the code agreeing.
-				wireLine("cam state", "answer state=1 while a stop is pending, the stop stands");
+				// X5 fw 1.13.21 (no84by 34a00c2 and bd9c0f1: during a stop the
+				// camera sends its recording state - 1, or 24 for PureVideo -
+				// and THEN state=0, a real start arrives only after the 0), and
+				// this function's sibling - the 0x2010 push path refuses exactly
+				// this read since PR #2's captureStatusPushDoesNotRestartRecording
+				// met it, on a push whose field was 24 all along. The status
+				// answer was the leg never guarded: it is asked by the stop's
+				// own retry path, and its recording state used to restart the
+				// clock and undo the user's stop. The comment above this
+				// function already forbade it - "only while no start or stop
+				// sequence is in flight" - this is the code agreeing.
+				wireLine("cam state", "answer state=" + st.toString() + " while a stop is pending, the stop stands");
 			} else {
 				// From rest, this is a camera-side start and the watch joined it;
 				// from the app's own pending start it is the confirmation of our
-				// press. recState answers which, before it moves.
+				// press. recState answers which, before it moves. A PureVideo
+				// answer from rest is the connect-mid-recording of a mode this
+				// app's own menu offers (v11): the joined screen is what says
+				// the truth there.
 				recJoined = recState == stateStopRec;
 				recState = stateStartRec;
 				startRecTime = Time.now();
 				mMessage = "Shooting";
 				if (recJoined) {
-					wireLine("cam state", "answer state=1 from rest, joined a recording started on the camera");
+					wireLine("cam state", "answer state=" + st.toString() + " from rest, joined a recording started on the camera");
 				}
 			}
 		} else if (st == X5_STATE_AT_REST && !pendingStart && recState == stateStartRec) {
