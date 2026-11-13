@@ -144,6 +144,19 @@ const DEBUG_TRACE = false;
 // apart from the log, never a print of it.
 const LOG_FRAMES = false;
 
+// LOG_KEEPALIVE (E2 wrist bench, 13 nov.): the camera sends a KEEPALIVE every
+// second (docs/x5-protocol.md L42 names the frame shape 07 00 00 00 05 00 00,
+// L60 the cadence) and each one prints one wireBytes line - the end of the
+// first wrist pull was thirteen keepalives, thirteen seconds of the ~90-line
+// window (int-x5-build\watch-logs-e2-run1, #347-#359). The keepalive carries
+// one fact - the link is up - and every other event line proves it better; the
+// E2 run 1 session lost its connect phase to this flood before the pull. This
+// constant answers whether the 7-octet 0x0005 shape is printed at all; the
+// shape test is the documented octets themselves, so no other frame is hidden.
+// The bench copies flip it, the same way they flip LOG_FRAMES; with the
+// constant false the shipped log and the unit output are exactly as before.
+const LOG_KEEPALIVE = false;
+
 
 
 
@@ -813,6 +826,12 @@ class BleDevice extends BluetoothLowEnergy.BleDelegate {
 		if (!wireTrace || !LOG_FRAMES) {
 			return;
 		}
+		// The keepalive shape of the LOG_KEEPALIVE constant's comment, at the
+		// single hex-dump site like its gate above: the event numbering keeps
+		// its count, only the line is not printed.
+		if (!LOG_KEEPALIVE && data.size() == 7 && data[4] == 0x05 && data[5] == 0x00) {
+			return;
+		}
 		wireEvents = wireEvents + 1;
 		var s = "";
 		var k = 0;
@@ -1391,7 +1410,6 @@ class BleDevice extends BluetoothLowEnergy.BleDelegate {
 			if (wireTrace && LOG_FRAMES) {
 				System.println("[nf] code=" + notifCode.toString() + " f1=" + notifVal1.toString() + " f2=" + notifVal2.toString() + " f3=" + notifVal3.toString() + " opts=" + notifOptCount.toString() + " o1=" + notifOptTag.toString() + ":" + notifOptVal.toString() + " o2=" + notifOptTag2.toString() + ":" + notifOptVal2.toString() + " hex=" + notifHex);
 			}
-			System.println("[nf] code=" + notifCode.toString() + " f1=" + notifVal1.toString() + " f2=" + notifVal2.toString() + " f3=" + notifVal3.toString() + " opts=" + notifOptCount.toString() + " o1=" + notifOptTag.toString() + ":" + notifOptVal.toString() + " o2=" + notifOptTag2.toString() + ":" + notifOptVal2.toString() + " hex=" + notifHex);
 			var ix = x5CodeIndex(notifCode);
 			if (ix < 0) {
 				x5CodesSeen.add(notifCode);
