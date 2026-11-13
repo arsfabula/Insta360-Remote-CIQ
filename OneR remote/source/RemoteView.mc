@@ -277,7 +277,10 @@ class RemoteView extends WatchUi.View {
 
 		drawRing(dc, cx, cy, r - 10, s);
 		if (s != UI_SEARCHING) { drawWidgets(dc, cx, cy, r - 10); }
-		if (BLEBarrel.GPSon && BLEBarrel.menuLevel < 2) { drawGps(dc, cx, cy, r - 10); }
+		// The GPS mark is a permanent option (the user's ruling, 13 nov.): it
+		// stands whenever the flag is on, whatever the level. Its colour is the
+		// fact of the radio, kept by the barrel at every onPosition.
+		if (BLEBarrel.GPSon) { drawGps(dc, cx, cy, r - 10); }
 
 		var inner = r - 28; // usable radius inside the ring
 		var rr = r - 10;    // ring radius
@@ -914,12 +917,20 @@ class RemoteView extends WatchUi.View {
 	}
 
 	hidden function drawGps(dc, cx, cy, rr) {
+		// The four states of the user's scale (13 nov.): grey - unusable, red -
+		// poor, orange - usable, green - good. GPSaccuracy is only ever written
+		// by the barrel at an onPosition (module init = NOT_AVAILABLE), so grey
+		// is the honest reading before the first position arrives.
 		var q = BLEBarrel.GPSaccuracy;
 		var c = C_DIM;
-		if (q == Position.QUALITY_POOR) { c = C_AMBER; }
-		else if (q == Position.QUALITY_USABLE || q == Position.QUALITY_GOOD) { c = C_GREEN; }
+		if (q == Position.QUALITY_POOR) { c = C_RED; }
+		else if (q == Position.QUALITY_USABLE) { c = C_AMBER; }
+		else if (q == Position.QUALITY_GOOD) { c = C_GREEN; }
 		dc.setColor(c, Gfx.COLOR_TRANSPARENT);
-		dc.drawText(cx, cy + rr * 0.78, Gfx.FONT_XTINY, "GPS", Gfx.TEXT_JUSTIFY_CENTER | Gfx.TEXT_JUSTIFY_VCENTER);
+		// 10 px higher than the PR's mark (the user's cosmetic ruling, 13 nov.,
+		// seen at the wrist): the word stood on the serial-number row. The 10 is
+		// absolute pixels - a row of text is ten pixels, not a ratio.
+		dc.drawText(cx, cy + rr * 0.78 - 10, Gfx.FONT_XTINY, "GPS", Gfx.TEXT_JUSTIFY_CENTER | Gfx.TEXT_JUSTIFY_VCENTER);
 	}
 
 	hidden function elapsed() {
