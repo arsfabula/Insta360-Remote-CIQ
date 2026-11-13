@@ -60,36 +60,35 @@ class Main extends Application.AppBase {
 		}
 	}
 
-	// The one decision about the position radio (the pattern the PR's app names
-	// gpsSync in its table; item 8 of the integration: never GPS on an X5). Two
-	// datums answer it and only this function reads them together: the user's
-	// intent, kept in BLEBarrel.GPSon, and the model of the family in force,
-	// kept in BLEBarrel.capModel - the same pair the menu gate reads and prints
-	// at [lvl]. A model of the X5 line, the X5 and the X6, takes no position at
-	// all: no frame of either protocol path carries one - the GPS photo header is
-	// a frame of the older envelope (the p0 path of the selection switch patches
-	// it into cmdSetPhoto), and the UCD2 path of the X6 holds no position field -
-	// so the radio above them would run for no datum. Every other model, and a
-	// camera the chain does not name (the level 0 fallback, which behaves as the
-	// older envelope), answers the user's flag alone. The pair is applied at its
-	// edge only: enableLocationEvents is an actuator and the [gps] line names a
-	// flip, never a poll (criterion 14 of 11.3). The content test of a String is
-	// .equals(), never == (note 9 of the CdC). The two names are the X5 line of
-	// the capability matrix, and the phase-3 table of the level chain is where
-	// this fact moves to, named by the level of the models that take no position.
+	// The one decision about the position radio (item 8 of the integration, twice
+	// corrected on the 13 nov. - by the user's field datum, then by the user's
+	// ruling that the option is PERMANENT). One datum answers it: the user's
+	// intent, kept in BLEBarrel.GPSon. The first reading of item 8 gated the
+	// radio on the model of the family in force; that was wrong twice over. The
+	// X5 line does carry a position path - the timeline of docs/x5-protocol.md
+	// L371 records the phone app sending UPLOAD_GPS (cmd 0x35) DURING a video
+	// recording, and the barrel's own sendPosition emits exactly that frame (its
+	// header opens with 0x35); the user verified in the Insta360 phone app that
+	// a recorded X5 video carries a GPS track. And the option itself is not a
+	// row of a camera's envelope: the user named it permanent, independent of
+	// the level in force, so no model list stands in front of it. What the
+	// original note was true about is only the frames it had looked at - the
+	// photo GPS header belongs to the older envelope, the UCD2 settings path
+	// holds no position field; on a line whose protocol carries no 0x35, the
+	// radio runs because the user asked for it, and the window of the send is
+	// the recording itself (sendPosition). Application by its edge only
+	// (gpsLive keeps the state the app put; a [gps] line names a flip, never a
+	// poll - criterion 14 of 11.3). The sites and the flag-keeping of the
+	// original item 8 stand untouched.
 	function gpsSync() as Void {
 		var model = BLEBarrel.capModel;
-		var positionless = false;
-		if (model != null) {
-			positionless = model.equals("X5") or model.equals("X6");
-		}
-		var want = BLEBarrel.GPSon and !positionless;
+		var want = BLEBarrel.GPSon;
 		if (want == gpsLive) {
 			// No edge, nothing to name: silent on purpose, the line below answers
 			// a flip only.
 			return;
 		}
-		System.println("[gps] flip=" + want.toString() + " model=" + (model == null ? "none" : model) + " user_flag=" + BLEBarrel.GPSon.toString() + (positionless ? " (the family in force takes no position, the radio stays off whatever the flag)" : ""));
+		System.println("[gps] flip=" + want.toString() + " model=" + (model == null ? "none" : model) + " user_flag=" + BLEBarrel.GPSon.toString());
 		GPSenable(want);
 		gpsLive = want;
 	}

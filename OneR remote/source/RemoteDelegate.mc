@@ -442,10 +442,13 @@ class RemoteDelegate extends Ui.BehaviorDelegate {
 			menu.addItem(new Ui.MenuItem(items[i][0], cur ? "current" : null, items[i][1], {}));
 			i += 1;
 		}
-		// GPS overlay only feeds the legacy cameras' photo command; the X5 line never uses it
-		if (BLEBarrel.menuLevel < 2) {
-			menu.addItem(new Ui.MenuItem("GPS overlay", BLEBarrel.GPSon ? "on" : "off", "GPSon", {}));
-		}
+		// The row of the position intent is a permanent option, independent of
+		// the level in force (the user's ruling, 13 nov.): it stands in the menu
+		// wherever the menu stands. Selecting it keeps the flag and calls
+		// Main.gpsSync, which names the flip at [gps]. The subtitle states the
+		// user's intent, the same reading the mainline's row gives; the fact of
+		// the radio belongs to the [gps] line, never here.
+		menu.addItem(new Ui.MenuItem("GPS overlay", BLEBarrel.GPSon ? "on" : "off", "GPSon", {}));
 		// the bench axis of the level chain: forcing a model, the same choices as the
 		// mainline menu, so the Phase 5 runs keep their forcing entry in the new UI too
 		menu.addItem(new Ui.MenuItem("Force model", null, "forceopen", {}));
@@ -494,9 +497,10 @@ function applyMode(dev, id, label, send) {
 	}
 
 	// GPS photo of the legacy lines (the mainline's measured path, case p0 and case
-	// Photo): the fix is written into the photo header before the mode. The radio is
-	// never enabled on the X5 line - the app's own gpsSync keeps it off there - so
-	// this only ever runs on the levels where it was verified at the bench.
+	// Photo): the fix is written into the photo header before the mode. That header
+	// is a frame of the older envelope - at the X5 line the rows carry other ids,
+	// and a header of another protocol is refused by the barrel's ceiling - so this
+	// only ever runs where it was verified at the bench.
 	if ((id.equals("p0") || id.equals("Photo")) && BLEBarrel.GPSon) {
 		var ginfo = Position.getInfo();
 		if (ginfo != null && ginfo.position != null) {
