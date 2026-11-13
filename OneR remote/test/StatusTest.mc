@@ -585,3 +585,64 @@ function asksArmAtTheLinkNotTheProfile(logger) {
 	logger.debug("quiet=" + quiet + " booked=" + booked + " probeFirst=" + probeFirst);
 	return quiet && booked && probeFirst;
 }
+
+// The stop tail, on the leg PR #2's bench found and this barrel left open:
+// during a stop the camera sends state=1 and THEN state=0, and a real start
+// arrives only after the 0 - found on a Descent Mk3i with the same X5 fw
+// 1.13.21 (no84by 34a00c2). The 0x2010 push path refuses this read since the
+// vector above; the status ANSWER was the leg never guarded - the stop's own
+// retry asks command 15, and its state=1 used to restart the clock and undo
+// the user's stop.
+(:test)
+function statusAnswerStopTailDoesNotRestart(logger) {
+	var d = freshLink();
+	BLEBarrel.recState = BLEBarrel.stateStopping;
+	BLEBarrel.recJoined = false;
+	d.onCharacteristicChanged(null, frame(24, 0xc8, 0x00, 0x73, [0x0a, 0x06, 0x08, 0x01]b));
+	var stopStands = BLEBarrel.recState == BLEBarrel.stateStopping && !BLEBarrel.recJoined;
+	// The state-0 of the tail: at rest this is the confirmation of the stop;
+	// while the watch is stopping the stop's own retry path owns that move
+	// (applyCamState names the split), so the machine not moving here is the
+	// design, and the line records it rather than pretending.
+	d.onCharacteristicChanged(null, frame(24, 0xc8, 0x00, 0x74, [0x0a, 0x06, 0x08, 0x00]b));
+	logger.debug("stopStands=" + stopStands.toString() + " recAfterTail=" + BLEBarrel.recState.toString());
+	return stopStands;
+}
+
+// A recording the watch joined is named as one. The elapsed seconds sit past
+// the cut of every status answer (declared=24 arrived=20 in our own traces) and
+// no push carries them, so a clock counting from the join would claim to be
+// the recording's own length. The flag below is what the screen reads instead:
+// REC and a joined note (the same reading on PR #2's bench, no84by 5383db9).
+// The split tested here is the one the transition makes: the same state=1,
+// from rest, joined; from the app's own pending start, ours.
+(:test)
+function recordingFoundFromRestIsMarkedJoined(logger) {
+	var d = freshLink();
+	// The status answer, from rest: joined.
+	BLEBarrel.recState = BLEBarrel.stateStopRec;
+	BLEBarrel.recJoined = false;
+	d.onCharacteristicChanged(null, frame(24, 0xc8, 0x00, 0x75, [0x0a, 0x06, 0x08, 0x01]b));
+	var answerJoined = BLEBarrel.recState == BLEBarrel.stateStartRec && BLEBarrel.recJoined;
+	// The same answer, while the watch's own start is pending (stateStarting
+	// is only ever the app's press, the InputDelegate writes it): ours.
+	BLEBarrel.recState = BLEBarrel.stateStarting;
+	BLEBarrel.recJoined = false;
+	d.onCharacteristicChanged(null, frame(24, 0xc8, 0x00, 0x76, [0x0a, 0x06, 0x08, 0x01]b));
+	var answerOurs = BLEBarrel.recState == BLEBarrel.stateStartRec && !BLEBarrel.recJoined;
+	// The 0x2010 push, from rest: joined. The frame is a whole 20 (declared
+	// equals arrived), field 1 carries the state, the shape captureStatusPush-
+	// DoesNotRestartRecording above uses.
+	BLEBarrel.recState = BLEBarrel.stateStopRec;
+	BLEBarrel.recJoined = false;
+	d.onCharacteristicChanged(null, frame(20, 0x10, 0x20, 0xff, [0x08, 0x01, 0x10, 0x00]b));
+	var pushJoined = BLEBarrel.recState == BLEBarrel.stateStartRec && BLEBarrel.recJoined;
+	// And the watch's own start, confirmed by the recording report: ours. The
+	// report code never reaches the notification side, so the flag clears.
+	BLEBarrel.recState = BLEBarrel.stateStopRec;
+	BLEBarrel.recJoined = true;
+	d.onCharacteristicChanged(null, frame(22, 0x40, 0x00, 0x77, [0x08, 0x01, 0x01]b));
+	var reportOurs = BLEBarrel.recState == BLEBarrel.stateStartRec && !BLEBarrel.recJoined;
+	logger.debug("answerJoined=" + answerJoined.toString() + " answerOurs=" + answerOurs.toString() + " pushJoined=" + pushJoined.toString() + " reportOurs=" + reportOurs.toString());
+	return answerJoined && answerOurs && pushJoined && reportOurs;
+}

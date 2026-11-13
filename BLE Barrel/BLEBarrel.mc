@@ -172,6 +172,18 @@ const HOOK_WRITE_CEILING = 10;
 
 var recState as Lang.Number = stateStopRec;
 var startRecTime as Time.Moment = Time.now();
+// Whether the recording now shown was started by this watch or already running
+// when the watch found it. Set where a start transition is taken WITHOUT the
+// watch's own start sequence (from rest, by a camera push or a status answer),
+// cleared where the watch's own start confirms. The reason is the ceiling, not
+// a feeling: the elapsed seconds of a recording sit past the 20-octet cut of
+// the status answer (our own traces: declared=24 arrived=20), and no push
+// carries them either - PR #2's author met the same on a Descent Mk3i with the
+// same X5 fw 1.13.21 (no84by 5383db9) and drew REC with a joined note instead
+// of a clock counting from the join. The screen follows this flag: a clock that
+// counts from the join reads as the recording's own length, and the screen must
+// not say what the link cannot carry.
+var recJoined as Lang.Boolean = false;
 var elapsedRecTime as Time.Duration or Null = null;
 var clockTime as Time.Moment or Null = null;
 var lastTime as Time.Moment = Time.now();
@@ -1548,6 +1560,10 @@ class BleDevice extends BluetoothLowEnergy.BleDelegate {
 				// retry path still owns it if that answer never comes.
 				wireLine("capture", "push state=" + notifVal1.toString() + " while a stop is pending, the stop stands");
 			} else {
+				// Same split as applyCamState right below: from rest this is a
+				// camera-side start the watch joined, from the app's pending
+				// start it is the confirmation of our press.
+				recJoined = recState == stateStopRec;
 				cancelRetry();
 				cancelPendingStart();
 				mMessage = "Shooting";
@@ -1597,6 +1613,10 @@ class BleDevice extends BluetoothLowEnergy.BleDelegate {
 			cancelRetry();
 			cancelPendingStart();
 			mMessage = "Shooting";
+			// This report answers the start THIS watch wrote - a report code
+			// below 0x20 never reaches the notification side - so the recording
+			// is ours, not one the watch joined.
+			recJoined = false;
 			recState = stateStartRec;
 			startRecTime = Time.now();
 		} else if (isRecReport && buf[17] == 0x00) {
@@ -1719,10 +1739,34 @@ class BleDevice extends BluetoothLowEnergy.BleDelegate {
 		wireLine("cam state", "state=" + st.toString() + " " +
 			(st == X5_STATE_RECORDING ? "recording" : "at rest") +
 			" arrived=" + x5RxArrived.toString() + " of " + x5RxDeclared.toString());
-		if (st == X5_STATE_RECORDING && !pendingStart && recState != stateStartRec) {
-			recState = stateStartRec;
-			startRecTime = Time.now();
-			mMessage = "Shooting";
+		if (st == X5_STATE_RECORDING && !pendingStart) {
+			if (recState == stateStartRec) {
+				wireLine("cam state", "answer state=1 while already recording, the clock stays put");
+			} else if (recState == stateStopping) {
+				// The stop tail, on the leg this function owns. Two benches name
+				// the same shape: PR #2's author on a Descent Mk3i with the same
+				// X5 fw 1.13.21 (no84by 34a00c2: during a stop the camera sends
+				// state=1 and then state=0, a real start arrives only after the
+				// 0), and this function's sibling - the 0x2010 push path refuses
+				// exactly this read since PR #2's captureStatusPushDoesNotRestartRecording
+				// met it. The status answer was the leg never guarded: it is
+				// asked by the stop's own retry path, and its state=1 used to
+				// restart the clock and undo the user's stop. The comment above
+				// this function already forbade it - "only while no start or
+				// stop sequence is in flight" - this is the code agreeing.
+				wireLine("cam state", "answer state=1 while a stop is pending, the stop stands");
+			} else {
+				// From rest, this is a camera-side start and the watch joined it;
+				// from the app's own pending start it is the confirmation of our
+				// press. recState answers which, before it moves.
+				recJoined = recState == stateStopRec;
+				recState = stateStartRec;
+				startRecTime = Time.now();
+				mMessage = "Shooting";
+				if (recJoined) {
+					wireLine("cam state", "answer state=1 from rest, joined a recording started on the camera");
+				}
+			}
 		} else if (st == X5_STATE_AT_REST && !pendingStart && recState == stateStartRec) {
 			recState = stateStopRec;
 			applyBursts = 0;
@@ -2659,6 +2703,10 @@ class BleDevice extends BluetoothLowEnergy.BleDelegate {
 	function onUcd2Frame() as Void {
 		cancelRetry();
 		if (recState == stateStarting) {
+			// The ucd2 frame answers the start THIS watch wrote (stateStarting
+			// is only ever the app's own press, the InputDelegate writes it) -
+			// the recording is not one the watch joined.
+			recJoined = false;
 			mMessage = "Shooting";
 			recState = stateStartRec;
 			startRecTime = Time.now();

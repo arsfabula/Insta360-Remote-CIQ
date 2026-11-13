@@ -329,7 +329,20 @@ class RemoteView extends WatchUi.View {
 				break;
 			case UI_RECORDING:
 				heroColor = C_RED; titleColor = C_RED;
-				title = elapsed(); timer = true;
+				if (BLEBarrel.recJoined) {
+					// A recording this watch joined: its own length is not
+					// knowable here - the seconds of the status answer sit past
+					// the 20-octet cut and no push carries them (the flag's own
+					// comment, and the same reading on PR #2's bench). Digits
+					// counting from the join would read as the recording's
+					// length, and the screen says facts. REC with the joined
+					// note is the fact; the ring marker below still walks, it
+					// claims only seconds since the join.
+					title = "REC";
+					info.add(["", "joined", C_AMBER]);
+				} else {
+					title = elapsed(); timer = true;
+				}
 				info.add(["", BLEBarrel.currentLabel, C_DIM]);
 				startCue = C_TEXT;
 				break;
