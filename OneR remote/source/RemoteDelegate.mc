@@ -78,11 +78,16 @@ function modeList() {
 	return out;
 }
 
-// Settings writes cross only once the camera is settled in its mode: the echo gate's
-// hold of the barrel answers when a mode write is still in flight. The PR asked its own
-// barrel (settingMayGo); the same two datums live here as module fields.
+// Settings writes cross only once the camera is settled: the barrel's one rule
+// (its device method names it) - the echo of a mode write, or that hold's end;
+// the camera answers 400 while it is still switching. This copy once asked the
+// echo alone, and the wrist reproduction of 13 nov. named what that costs: a
+// mode rewrite aimed at a mode the camera already holds gets an ack but no
+// echo, so the echo-only gate stays shut for the whole session and the user's
+// settings write never crosses (runs 5/6, the 18MP->72MP that never arrived).
+// Same two datums, same rule as the barrel, no stricter copy.
 function settingMayGo() {
-	if (BLEBarrel.modeReqId != null) { return false; }
+	if (BLEBarrel.modeReqId == null) { return true; }
 	return Sys.getTimer() >= BLEBarrel.modeHoldUntil;
 }
 
@@ -96,6 +101,7 @@ class RemoteDelegate extends Ui.BehaviorDelegate {
 	hidden var tapPending = false;
 	hidden var pendingSetFrames = null;
 	hidden var pendingSetKey = null;
+	hidden var settingHeld = false;   // this write's hold has been printed once (trace hygiene)
 	// One datum of the pose below: the row this session already posed and could
 	// not apply (a doc row, no frame) or has no frame to write (the sentinel of
 	// a replacing level). Asked a second time it answers the same absence, and
@@ -258,6 +264,7 @@ class RemoteDelegate extends Ui.BehaviorDelegate {
 		if (row[3] == :exit || row[3] == :power) { return; }
 		pendingSetFrames = Settings.step(currentModeId, row, dir);
 		pendingSetKey = Settings.key(currentModeId, row);
+		settingHeld = false;   // this write's deferral, when it comes, is named once
 		dueSet = Sys.getTimer() + 800;
 		Ui.requestUpdate();
 	}
@@ -266,7 +273,14 @@ class RemoteDelegate extends Ui.BehaviorDelegate {
 		if (pendingSetFrames == null) { return; }
 		if (!settingMayGo()) {
 			// the camera is still switching modes: the pump re-enters this
-			// function 300 ms later (a due date, never a Timer object)
+			// function 300 ms later (a due date, never a Timer object). The
+			// wait was once silent - the 13 nov. reproduction searched a whole
+			// session for a write that never crossed; one line, once per armed
+			// write, names the wait from now on.
+			if (!settingHeld) {
+				settingHeld = true;
+				Sys.println("[set] " + pendingSetKey + " held, a mode write is still in its window");
+			}
 			dueSet = Sys.getTimer() + 300;
 			return;
 		}

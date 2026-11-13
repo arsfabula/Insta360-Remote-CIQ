@@ -200,6 +200,31 @@ function modeEchoGateOpensOnOwnEchoOnly(logger) {
 	return opened && held && read != null && read.equals("v2");
 }
 
+// The hold's end opens the settings gate even when no echo ever came. A mode
+// rewrite aimed at a mode the camera already holds answers an ack but no 0x2053
+// (the echo only follows a real change) - the wrist reproduction of 13 nov.,
+// runs 5 and 6, names the consequence: the app's own gate (the settingMayGo of
+// RemoteDelegate.mc, the copy that feeds flushSetting) then stays shut for the
+// whole session and the user's settings write is held in silence, the camera
+// never sees it. The barrel's rule (its device method) is echo OR hold's end -
+// the app's gate must follow the one rule, not a stricter copy of it. The
+// unqualified call names the root-module function of RemoteDelegate.mc, the one
+// the app actually runs; the barrel's method is reached as d.settingMayGo.
+(:test)
+function holdEndOpensSettingsGateWithoutEcho(logger) {
+	var d = freshLink();
+	d.noteModeWrite("p0");
+	// Inside the hold, with no echo yet: held, this is what protects the
+	// camera from a 400 while it switches.
+	var held = !settingMayGo() && !d.settingMayGo();
+	// Past the hold, still no echo (the rewrite changed nothing on the
+	// camera): the documented rule opens.
+	BLEBarrel.modeHoldUntil = System.getTimer() - 1;
+	var opened = settingMayGo() && d.settingMayGo();
+	logger.debug("held=" + held + " opened=" + opened);
+	return held && opened;
+}
+
 // 0x2003 cut at the wall (declared 24, body 0a 06 08 01): the power type is
 // the half that crosses, the level sits past it and stays null - the app
 // shows unknown, never a number (PROTOCOL_APK 15.27).
