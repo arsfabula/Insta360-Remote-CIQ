@@ -7,14 +7,20 @@ using StartWarning;
 // open that writes, and the BACK that must not write are proven on the bench
 // (Task 3); what lives here is the arithmetic those scenes will show.
 
-// The absent key is the default user: the warning shows, and opening the menu
-// writes nothing - the countdown starts only when the user picks it.
+// The absent key is the default user: the warning shows, and the FIRST menu
+// open seeds the countdown its title promises. The old rule (absent opens
+// write nothing, the countdown starts only when the row is picked) failed the
+// wrist bench of 14 nov. evening: on a fresh install the user opened the menu
+// several times and the title never moved off "3 more display" - the promise
+// never counts down because nothing was ever seeded. Seeding pickValue()-1
+// makes the promised sequence exact from a first install: 3, 2, 1, the end
+// message, silence. BACK still writes nothing; only this open writes.
 (:test)
-function warningAbsentAlwaysShowsAndWritesNothing(logger) {
+function warningAbsentOpenSeedsThePromise(logger) {
 	var show = StartWarning.shouldShow(null);
 	var write = StartWarning.openWrite(null);
 	logger.debug("absent show=" + show.toString() + " openWrite=" + (write == null ? "none" : write.toString()));
-	return show && write == null;
+	return show && write != null && write == 3;
 }
 
 // Any positive value still presents the warning; 0 is the end of it.

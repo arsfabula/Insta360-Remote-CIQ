@@ -489,18 +489,16 @@ class RemoteDelegate extends Ui.BehaviorDelegate {
 	// reach it (the user's rule of 14 nov.: a BACK exit without this reading
 	// counts nothing, and nothing else advances the count). The value and the
 	// row's label answer the same pre-write reading: rowLabel(v) states what
-	// follows this reading, openWrite(v) stores exactly that.
+	// follows this reading, openWrite(v) stores exactly that - and when no
+	// countdown runs yet, the open seeds it (the module's note: the wrist
+	// bench showed an unseeded promise never counts down).
 	function openWarningMenu() {
 		var v = StartWarning.readLeft(Application.getApp());
 		var n = StartWarning.openWrite(v);
-		if (n != null) {
-			if (!StartWarning.writeLeft(Application.getApp(), n)) {
-				inLog("intro menu: store refused the countdown write");
-			}
-			inLog("intro menu open, countdown " + v.toString() + " -> " + n.toString());
-		} else {
-			inLog("intro menu open, no countdown running");
+		if (!StartWarning.writeLeft(Application.getApp(), n)) {
+			inLog("intro menu: store refused the countdown write");
 		}
+		inLog("intro menu open, countdown " + (v == null ? "none" : v.toString()) + " -> " + n.toString());
 		// The shape the user re-prescribed on 14 nov., in his words: "avec le
 		// warning en titre le menu countdown peut etre mis en dernier". The
 		// sentence is the menu's title (his earlier prescription, both forms

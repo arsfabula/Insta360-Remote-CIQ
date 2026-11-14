@@ -52,10 +52,17 @@ module StartWarning {
 		return left == null || left > 0;
 	}
 
-	// Value to store when the warning menu opens: null (write nothing) while
-	// no countdown runs, one less otherwise - the reading itself is spent.
+	// Value to store when the warning menu opens. One less - the reading
+	// itself is spent. While no countdown runs the open SEEDS the promise its
+	// title is making: pickValue()-1. The wrist bench of 14 nov. evening is
+	// what settled this: with the old "absent opens write nothing" rule a
+	// fresh install never moved off "3 more display" no matter how many times
+	// the menu was opened - a promise that never counts down is a lie, and
+	// the user named it ("le countdown ne décrémente pas"). Seeding makes the
+	// promised sequence exact from a first install: 3, 2, 1, the end message,
+	// silence. BACK still writes nothing: opening this menu is the only write.
 	function openWrite(left) {
-		if (left == null) { return null; }
+		if (left == null) { return pickValue() - 1; }
 		return left - 1;
 	}
 
