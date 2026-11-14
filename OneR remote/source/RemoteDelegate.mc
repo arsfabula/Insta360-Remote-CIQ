@@ -7,6 +7,7 @@ using Toybox.System as Sys;
 using Toybox.Timer;
 using Toybox.Lang;
 using BLEBarrel;
+using StartWarning;
 
 // The delegate of the ported RemoteView (phase 4 of the PR #2 integration). It is the
 // PR's RemoteDelegate, re-welded to this app's verified machinery: the rows answer to
@@ -115,12 +116,24 @@ class RemoteDelegate extends Ui.BehaviorDelegate {
 		uiPump = self;
 	}
 
+	// The one guard of the warning design: every input handler of this class
+	// asks it first, and it is the only reader of mainApp.warnIntro here. It
+	// names the event in the watch log, so the bench can point at each held
+	// key instead of at a silence; the two answers that are not refusals -
+	// BACK and the menu - ask it the same way and branch on its answer.
+	hidden function warnHolds(name) as Lang.Boolean {
+		if (!mainApp.warnIntro) { return false; }
+		inLog("intro holds " + name);
+		return true;
+	}
+
 	// Connect IQ turns a screen tap into the SELECT behaviour first and only calls onTap when
 	// onSelect returns false. A START press always reaches onKeyPressed (KEY_ENTER) before
 	// onSelect, a tap never does. So onSelect without a fresh START key press is a tap: hand it
 	// to onTap (which knows where the finger was). If no onTap follows, the fallback
 	// deadline runs START on the next pump, so a press is never lost.
 	function onSelect() {
+		if (warnHolds("select")) { return true; }
 		var key = startKeyAt != null && Sys.getTimer() - startKeyAt < 2000;
 		inLog("select key=" + key);
 		startKeyAt = null;
@@ -211,6 +224,7 @@ class RemoteDelegate extends Ui.BehaviorDelegate {
 	// Touch: tap / hold a settings row to focus it; tap elsewhere = START. Swipes arrive as
 	// onPreviousPage / onNextPage, so swiping up / down changes the focused value.
 	function onTap(evt) {
+		if (warnHolds("tap")) { return true; }
 		tapPending = false;
 		dueTap = null;   // the tap answered itself: no fallback
 		if (focusRowAt(evt)) { return true; }
@@ -218,6 +232,7 @@ class RemoteDelegate extends Ui.BehaviorDelegate {
 	}
 
 	function onHold(evt) {
+		if (warnHolds("hold")) { return true; }
 		return focusRowAt(evt);
 	}
 
@@ -240,6 +255,7 @@ class RemoteDelegate extends Ui.BehaviorDelegate {
 
 	// START key timestamp for the tap discrimination (see onSelect).
 	function onKeyPressed(evt) {
+		if (warnHolds("key")) { return true; }
 		if (evt.getKey() == Ui.KEY_ENTER) { startKeyAt = Sys.getTimer(); }
 		return false;
 	}
@@ -247,6 +263,10 @@ class RemoteDelegate extends Ui.BehaviorDelegate {
 	// BACK: move the focus Mode -> setting rows -> Mode; in a mode without settings it exits.
 	// Long-press BACK belongs to the OS: "Exit app" is in the hold-UP menu.
 	function onBack() {
+		// While the warning stands, BACK is the lesson itself: return false and
+		// the app exits by the standard mechanism of the root view - no exit
+		// call anywhere in this branch. That is what the screen teaches.
+		if (warnHolds("back")) { return false; }
 		var n = Settings.rows(currentModeId).size();
 		if (uiState(dev) != UI_READY || n == 0) { return false; }
 		Settings.focus = (Settings.focus + 1) % (n + 1);
@@ -299,6 +319,7 @@ class RemoteDelegate extends Ui.BehaviorDelegate {
 
 	// UP: highlight while recording, otherwise previous mode (-)
 	function onPreviousPage() {
+		if (warnHolds("up")) { return true; }
 		var s = uiState(dev);
 		if (s == UI_RECORDING) {
 			dev.sendCMD(BLEBarrel.cmdHighlight);
@@ -312,6 +333,7 @@ class RemoteDelegate extends Ui.BehaviorDelegate {
 
 	// DOWN: Track That while recording, otherwise next mode (+)
 	function onNextPage() {
+		if (warnHolds("down")) { return true; }
 		var s = uiState(dev);
 		if (s == UI_RECORDING) {
 			dev.sendCMD(BLEBarrel.cmdTrackThat);
@@ -429,6 +451,10 @@ class RemoteDelegate extends Ui.BehaviorDelegate {
 	}
 
 	function onMenu() {
+		// While the warning stands, the menu key (the long press of UP, the
+		// only gesture the screen invites) opens the three choices - never the
+		// Mode menu. Everything about the countdown lands there.
+		if (warnHolds("menu")) { openWarningMenu(); return true; }
 		if (uiState(dev) == UI_RECORDING) {
 			return true; // don't change mode mid-recording
 		}
@@ -456,6 +482,32 @@ class RemoteDelegate extends Ui.BehaviorDelegate {
 		menu.setFocus(focus);
 		Ui.pushView(menu, new ModeDelegate(dev), Ui.SLIDE_UP);
 		return true;
+	}
+
+	// The warning menu, opened - and here, and only here, the countdown is
+	// written: opening this menu is the proof that the user knows how to
+	// reach it (the user's rule of 14 nov.: a BACK exit without this reading
+	// counts nothing, and nothing else advances the count). The value and the
+	// row's label answer the same pre-write reading: rowLabel(v) states what
+	// follows this reading, openWrite(v) stores exactly that.
+	function openWarningMenu() {
+		var v = StartWarning.readLeft(Application.getApp());
+		var n = StartWarning.openWrite(v);
+		if (n != null) {
+			if (!StartWarning.writeLeft(Application.getApp(), n)) {
+				inLog("intro menu: store refused the countdown write");
+			}
+			inLog("intro menu open, countdown " + v.toString() + " -> " + n.toString());
+		} else {
+			inLog("intro menu open, no countdown running");
+		}
+		var menu = new Ui.Menu2({:title => "Major change"});
+		menu.addItem(new Ui.MenuItem("Exit app", null, "introExit", {}));
+		menu.addItem(new Ui.MenuItem("Continue", null, "introGo", {}));
+		// The promise in its own words, number included: the fixed copy of
+		// the design, no invented label, no sub-label.
+		menu.addItem(new Ui.MenuItem(StartWarning.rowLabel(v), null, "introFade", {}));
+		Ui.pushView(menu, new WarningMenuDelegate(), Ui.SLIDE_IMMEDIATE);
 	}
 }
 
@@ -628,6 +680,41 @@ class ForceModelDelegate extends Ui.Menu2InputDelegate {
 		}
 		bleDevice.noteConfirmedLevel();
 		Ui.popView(Ui.SLIDE_IMMEDIATE);
+		Ui.popView(Ui.SLIDE_IMMEDIATE);
+		Ui.requestUpdate();
+	}
+}
+
+// The three choices of the warning screen (design of 14 nov.). "Exit app" is
+// the one exit an in-menu choice can reach: Sys.exit(), the API the 9.1.0 doc
+// gives "from any point" - whether onStop runs there is a bench-named point,
+// not a question this class answers. "Continue" lifts the flag for this cold
+// start only: the page behind has kept the facts the link read meanwhile, and
+// shows them. The countdown row writes the renewal - 4, the user's number, so
+// the next readings display 3, then 2, then 1 - and continues like "Continue";
+// its own text is the promise, choosing it renews it at any point.
+class WarningMenuDelegate extends Ui.Menu2InputDelegate {
+	function initialize() {
+		Menu2InputDelegate.initialize();
+	}
+
+	function onSelect(item) {
+		var id = item.getId() as Lang.String;
+		if (id.equals("introExit")) {
+			inLog("intro menu: exit app");
+			Sys.exit();
+			return;
+		}
+		if (id.equals("introFade")) {
+			if (!StartWarning.writeLeft(Application.getApp(), StartWarning.pickValue())) {
+				inLog("intro menu: store refused the renewal");
+			}
+			inLog("intro menu: countdown renewed at " + StartWarning.pickValue().toString());
+		}
+		// "introGo", and the fade choice too: the flag belongs to this cold
+		// start, the property answers the next ones.
+		inLog("intro menu: continue" + (id.equals("introFade") ? " (countdown set)" : ""));
+		mainApp.warnIntro = false;
 		Ui.popView(Ui.SLIDE_IMMEDIATE);
 		Ui.requestUpdate();
 	}

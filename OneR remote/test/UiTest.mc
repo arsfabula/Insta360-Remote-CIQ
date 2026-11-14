@@ -15,6 +15,14 @@ function uiLink() {
 	var d = freshLink();
 	BLEBarrel.menuLevel = 2;
 	BLEBarrel.mMessage = "Start";
+	// The test context is the app context: the test PRG's onStart cold-started
+	// for real, and with no key in the store the warning flag stands up (the
+	// one decision of Task 2 answers absence with showing). The vectors of this
+	// file ask ready-state questions - after the warning was passed - so the
+	// passing is said here, in this helper, while the PR vectors below run
+	// verbatim. The warning's own vectors live in WarningTest.mc and never
+	// reach this helper.
+	if (mainApp != null) { mainApp.warnIntro = false; }
 	return d;
 }
 

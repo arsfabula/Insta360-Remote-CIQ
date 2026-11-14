@@ -9,6 +9,43 @@ using Toybox.Lang;
 // choosing it writes 4 so the visible countdown starts at the promised 3.
 module StartWarning {
 
+	// The one key the warning owns. Absent is the default state, and both
+	// runtimes answer absence with null (the bench's first "lvl.<name>" reads
+	// on the device, 12 nov.; the sim's own answer, "[warn] store answered
+	// none", at the smoke of Task 2). The reads and writes below are defense
+	// and one place for the key, nothing more mystical than that.
+	const KEY = "warnFadeLeft";
+
+	// Who may call the functions below: any class scope - the delegate's menu
+	// branch and the view's first draw do, the shape the bench proved for
+	// Settings and Levels calls. The entry class may not: Main.onStart calling
+	// a source-module function faults "Illegal Access (Out of Bounds)", stack
+	// one entry deep, with the callee absent from it - the second sighting of
+	// the shape the ucd2DiagFrame note in Main.onStart describes (the first
+	// version of the warning decision faulted there, 14 nov.; a Gate class
+	// instantiated from onStart faulted the same way).
+
+	// The property read, on any object that answers the AppBase shape. A
+	// refusal to answer is the absence: null.
+	function readLeft(app) {
+		try {
+			return app.getProperty(KEY);
+		} catch (ex) {
+			return null;
+		}
+	}
+
+	// The property write. A store that refuses is named by the answer, never
+	// swallowed: the caller logs it.
+	function writeLeft(app, value) as Lang.Boolean {
+		try {
+			app.setProperty(KEY, value);
+			return true;
+		} catch (ex) {
+			return false;
+		}
+	}
+
 	function shouldShow(left) as Lang.Boolean {
 		return left == null || left > 0;
 	}
