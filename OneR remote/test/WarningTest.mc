@@ -47,9 +47,10 @@ function warningPickStartsAtFour(logger) {
 	return v == 4;
 }
 
-// The third menu row is the promise itself, number included: the literal 3
-// while nothing counts, the remaining count while one runs, the sentence of
-// the end at the last presentation. Singular "time" for one.
+// The third menu row is the promise itself, number included (copy re-dictated
+// by the user on 14 nov. after the 51 mm bench showed the long sentence cut):
+// the literal 3 while nothing counts, the remaining count while one runs, the
+// sentence of the end at the last presentation. Singular "display" for one.
 (:test)
 function warningRowLabelsMatchPromise(logger) {
 	var a = StartWarning.rowLabel(null);
@@ -57,10 +58,10 @@ function warningRowLabelsMatchPromise(logger) {
 	var c = StartWarning.rowLabel(2);
 	var d = StartWarning.rowLabel(1);
 	logger.debug("labels: " + a + " | " + b + " | " + c + " | " + d);
-	return a.equals("The warning will display 3 more times")
-		&& b.equals("The warning will display 3 more times")
-		&& c.equals("The warning will display 1 more time")
-		&& d.equals("The warning will not display again");
+	return a.equals("3 more display of this warning")
+		&& b.equals("3 more display of this warning")
+		&& c.equals("1 more display of this warning")
+		&& d.equals("No more display of this warning");
 }
 
 // The store answers absence with null - both runtimes: the device (the first

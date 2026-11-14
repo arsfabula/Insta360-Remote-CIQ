@@ -63,17 +63,20 @@ module StartWarning {
 
 	// The third menu row, the promise in its own words. left is the value
 	// read BEFORE this open's write: what will follow this reading is left-1.
+	// The copy was re-dictated by the user on 14 nov. after the 51 mm bench
+	// showed the first sentence cut at the bottom of the menu: shorter by
+	// design, carried as a sub-label (see openWarningMenu).
 	function rowLabel(left) as Lang.String {
 		if (left == null) {
-			return "The warning will display 3 more times";
+			return "3 more display of this warning";
 		}
 		var n = left - 1;
 		if (n <= 0) {
-			return "The warning will not display again";
+			return "No more display of this warning";
 		}
 		if (n == 1) {
-			return "The warning will display 1 more time";
+			return "1 more display of this warning";
 		}
-		return "The warning will display " + n + " more times";
+		return n + " more display of this warning";
 	}
 }

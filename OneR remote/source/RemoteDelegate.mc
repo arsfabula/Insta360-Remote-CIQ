@@ -504,9 +504,15 @@ class RemoteDelegate extends Ui.BehaviorDelegate {
 		var menu = new Ui.Menu2({:title => "Major change"});
 		menu.addItem(new Ui.MenuItem("Exit app", null, "introExit", {}));
 		menu.addItem(new Ui.MenuItem("Continue", null, "introGo", {}));
-		// The promise in its own words, number included: the fixed copy of
-		// the design, no invented label, no sub-label.
-		menu.addItem(new Ui.MenuItem(StartWarning.rowLabel(v), null, "introFade", {}));
+		// The promise in its own words, number included - as the sub-label of
+		// a short row. The first shape of 14 nov. carried the sentence as the
+		// label itself; on the 51 mm round screen the menu then ran past the
+		// bottom edge (the user's read of the bench that day), and the design
+		// had only ever two ways to fit a frozen copy: the container yields.
+		// The sub-label font is the system's small one - the sentence keeps
+		// its words, the row keeps its height. "Countdown" is the row's name,
+		// chosen by the assistant that day and offered to the user as such.
+		menu.addItem(new Ui.MenuItem("Countdown", StartWarning.rowLabel(v), "introFade", {}));
 		Ui.pushView(menu, new WarningMenuDelegate(), Ui.SLIDE_IMMEDIATE);
 	}
 }
