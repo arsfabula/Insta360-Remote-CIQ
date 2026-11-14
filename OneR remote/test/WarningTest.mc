@@ -67,12 +67,13 @@ function warningRowLabelsMatchPromise(logger) {
 }
 
 // The store answers absence with null - both runtimes: the device (the first
-// "lvl.<name>" reads of the bench, 12 nov.) and the simulator (the smoke of
-// Task 2 printed "[warn] store answered none" from the real app store). What
-// that smoke actually faulted was the entry class invoking a module function -
-// the second sighting of the ucd2DiagFrame shape - and the decision now rides
-// StartWarning.Gate for that reason; see the note in the module. These two
-// vectors hold what the unit can hold: absence reads as null, a value is
+// "lvl.<name>" reads of the bench, 12 nov.) and the simulator (instrumented
+// as "[warn] store answered none" at Task 2's smoke, from the real app store;
+// that instrumentation was temporary and is gone from the shipped code). What
+// the smoke actually faulted was the ENTRY CLASS invoking a module function -
+// the second sighting of the ucd2DiagFrame shape - and the decision was fixed
+// by moving it to the view's first draw, class scope, no Gate class anywhere.
+// These two vectors hold what the unit can hold: absence reads as null, a value is
 // carried through a write and a re-read intact.
 class PropsSilent {
 	function getProperty(id) { return null; }

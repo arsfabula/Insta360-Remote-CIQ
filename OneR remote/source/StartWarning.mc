@@ -1,9 +1,11 @@
 using Toybox.Lang;
 
 // The start-warning countdown, pure. The property key, the reads and the
-// writes live with the caller (Main reads the decision at onStart, the
-// warning menu writes at its open); this module only turns the value it was
-// handed into what to show, what to write, and how the third menu row reads.
+// writes live with the callers (RemoteView.onUpdate asks the decision once,
+// at the first draw of a cold start - see the note there for why not
+// Main.onStart; the warning menu writes at its open); this module only turns
+// the value it was handed into what to show, what to write, and how the
+// menu's promise line reads.
 // The numbers are the design of 14 nov. (start-warning-design.md): the
 // countdown counts only menu reads, never time and never a BACK exit, and
 // choosing it writes 4 so the visible countdown starts at the promised 3.
