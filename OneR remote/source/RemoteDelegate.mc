@@ -501,18 +501,19 @@ class RemoteDelegate extends Ui.BehaviorDelegate {
 		} else {
 			inLog("intro menu open, no countdown running");
 		}
-		var menu = new Ui.Menu2({:title => "Major change"});
+		// The shape the user re-prescribed on 14 nov. after two bench reads on
+		// the 51 mm round screen: the sentence as a row label ran past the
+		// bottom edge, and as a sub-label of a short row it ran past it again
+		// (his photo of the menu shows "Countdown" half under the bezel). The
+		// container yields twice, in his words: the text becomes the menu's
+		// title, and the countdown row - short name, no sub-label - moves to
+		// first position; Exit and Continue follow below, where they were
+		// fully visible all along. The words of the promise are the words the
+		// rowLabel answers; only where they stand changed.
+		var menu = new Ui.Menu2({:title => StartWarning.rowLabel(v)});
+		menu.addItem(new Ui.MenuItem("Countdown", null, "introFade", {}));
 		menu.addItem(new Ui.MenuItem("Exit app", null, "introExit", {}));
 		menu.addItem(new Ui.MenuItem("Continue", null, "introGo", {}));
-		// The promise in its own words, number included - as the sub-label of
-		// a short row. The first shape of 14 nov. carried the sentence as the
-		// label itself; on the 51 mm round screen the menu then ran past the
-		// bottom edge (the user's read of the bench that day), and the design
-		// had only ever two ways to fit a frozen copy: the container yields.
-		// The sub-label font is the system's small one - the sentence keeps
-		// its words, the row keeps its height. "Countdown" is the row's name,
-		// chosen by the assistant that day and offered to the user as such.
-		menu.addItem(new Ui.MenuItem("Countdown", StartWarning.rowLabel(v), "introFade", {}));
 		Ui.pushView(menu, new WarningMenuDelegate(), Ui.SLIDE_IMMEDIATE);
 	}
 }
