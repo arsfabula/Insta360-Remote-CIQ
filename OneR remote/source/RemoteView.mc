@@ -964,7 +964,7 @@ class RemoteView extends WatchUi.View {
 		var y = h * 28 / 100;
 		var i = 0;
 		while (i < head.size()) {
-			dc.drawText(cx, y, font, Gfx.TEXT_JUSTIFY_CENTER, head[i]);
+			dc.drawText(cx, y, font, head[i], Gfx.TEXT_JUSTIFY_CENTER);
 			y += fh;
 			i += 1;
 		}
@@ -972,7 +972,7 @@ class RemoteView extends WatchUi.View {
 		y = h * 52 / 100;
 		i = 0;
 		while (i < body.size()) {
-			dc.drawText(cx, y, font, Gfx.TEXT_JUSTIFY_CENTER, body[i]);
+			dc.drawText(cx, y, font, body[i], Gfx.TEXT_JUSTIFY_CENTER);
 			y += fh + 4;
 			i += 1;
 		}
