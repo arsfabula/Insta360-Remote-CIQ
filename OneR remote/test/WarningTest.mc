@@ -48,9 +48,11 @@ function warningPickStartsAtFour(logger) {
 }
 
 // The third menu row is the promise itself, number included (copy re-dictated
-// by the user on 14 nov. after the 51 mm bench showed the long sentence cut):
-// the literal 3 while nothing counts, the remaining count while one runs, the
-// sentence of the end at the last presentation. Singular "display" for one.
+// by the user on 14 nov. after the 51 mm bench showed the long sentence cut).
+// The \n is part of the copy as the user prescribed it that evening ("est-ce
+// que le titre supporte le \n pour scinder apres display") - the split point
+// is his, after the word "display", two balanced lines for the menu title.
+// Singular "display" for one.
 (:test)
 function warningRowLabelsMatchPromise(logger) {
 	var a = StartWarning.rowLabel(null);
@@ -58,10 +60,10 @@ function warningRowLabelsMatchPromise(logger) {
 	var c = StartWarning.rowLabel(2);
 	var d = StartWarning.rowLabel(1);
 	logger.debug("labels: " + a + " | " + b + " | " + c + " | " + d);
-	return a.equals("3 more display of this warning")
-		&& b.equals("3 more display of this warning")
-		&& c.equals("1 more display of this warning")
-		&& d.equals("No more display of this warning");
+	return a.equals("3 more display\nof this warning")
+		&& b.equals("3 more display\nof this warning")
+		&& c.equals("1 more display\nof this warning")
+		&& d.equals("No more display\nof this warning");
 }
 
 // The store answers absence with null - both runtimes: the device (the first

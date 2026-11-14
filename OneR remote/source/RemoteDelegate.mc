@@ -501,19 +501,19 @@ class RemoteDelegate extends Ui.BehaviorDelegate {
 		} else {
 			inLog("intro menu open, no countdown running");
 		}
-		// The shape the user re-prescribed on 14 nov. after two bench reads on
-		// the 51 mm round screen: the sentence as a row label ran past the
-		// bottom edge, and as a sub-label of a short row it ran past it again
-		// (his photo of the menu shows "Countdown" half under the bezel). The
-		// container yields twice, in his words: the text becomes the menu's
-		// title, and the countdown row - short name, no sub-label - moves to
-		// first position; Exit and Continue follow below, where they were
-		// fully visible all along. The words of the promise are the words the
-		// rowLabel answers; only where they stand changed.
+		// The shape the user re-prescribed on 14 nov., in his words: "avec le
+		// warning en titre le menu countdown peut etre mis en dernier". The
+		// sentence is the menu's title (his earlier prescription, both forms
+		// read in full on the 51 mm screen - his photos of 14 nov. evening);
+		// the countdown row, whose content the title already states, becomes
+		// the last item - what still matters at the edge is how to leave
+		// (Exit) and how to pass (Continue). The \n in the title is his split
+		// point, after the word "display"; the module holds it, the vectors
+		// pin it, and whether the system prints it is the next bench read.
 		var menu = new Ui.Menu2({:title => StartWarning.rowLabel(v)});
-		menu.addItem(new Ui.MenuItem("Countdown", null, "introFade", {}));
 		menu.addItem(new Ui.MenuItem("Exit app", null, "introExit", {}));
 		menu.addItem(new Ui.MenuItem("Continue", null, "introGo", {}));
+		menu.addItem(new Ui.MenuItem("Countdown", null, "introFade", {}));
 		Ui.pushView(menu, new WarningMenuDelegate(), Ui.SLIDE_IMMEDIATE);
 	}
 }

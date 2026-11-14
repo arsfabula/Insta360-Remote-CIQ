@@ -64,19 +64,22 @@ module StartWarning {
 	// The third menu row, the promise in its own words. left is the value
 	// read BEFORE this open's write: what will follow this reading is left-1.
 	// The copy was re-dictated by the user on 14 nov. after the 51 mm bench
-	// showed the first sentence cut at the bottom of the menu: shorter by
-	// design, carried as a sub-label (see openWarningMenu).
+	// showed the first sentence cut at the bottom of the menu. The \n is his
+	// split point ("scinder apres display"), the evening he prescribed the
+	// sentence as the menu title - two balanced lines, the system's own wrap
+	// left to agree with it. Whether the title prints the break is the next
+	// bench read; the words are pinned here either way.
 	function rowLabel(left) as Lang.String {
 		if (left == null) {
-			return "3 more display of this warning";
+			return "3 more display\nof this warning";
 		}
 		var n = left - 1;
 		if (n <= 0) {
-			return "No more display of this warning";
+			return "No more display\nof this warning";
 		}
 		if (n == 1) {
-			return "1 more display of this warning";
+			return "1 more display\nof this warning";
 		}
-		return n + " more display of this warning";
+		return n + " more display\nof this warning";
 	}
 }
