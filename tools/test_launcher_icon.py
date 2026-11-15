@@ -13,6 +13,8 @@ import os
 import sys
 import unittest
 
+from PIL import Image
+
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 import gen_launcher_icon as g  # noqa: E402
@@ -100,6 +102,28 @@ class TestShippedIcon(unittest.TestCase):
         # A tile with transparent areas reads as a hole in the watch's picker.
         im, _ = rendered_tile()
         self.assertEqual(im.mode, "RGB")
+
+
+class TestShippedFiles(unittest.TestCase):
+    """The two PNGs the apps actually ship, and nothing else."""
+
+    SHIPPED = [os.path.join("OneR remote", "resources", "images", "icon.png"),
+               os.path.join("OneR remote DF", "resources", "drawables", "launcher_icon.png")]
+
+    def test_shipped_icons_are_identical(self):
+        # The widget and the data field cannot carry two different marks.
+        blobs = [open(os.path.join(repo_root(), p), "rb").read() for p in self.SHIPPED]
+        self.assertEqual(blobs[0], blobs[1], "les deux icones livrees different")
+
+    def test_shipped_icon_is_the_generated_one(self):
+        # Compare decoded pictures, not PNG bytes: PNG bytes depend on the Pillow
+        # version, the pixels do not.
+        want = g.tile()
+        for p in self.SHIPPED:
+            with Image.open(os.path.join(repo_root(), p)) as im:
+                self.assertEqual(im.size, want.size, "%s n'est pas au bon format" % p)
+                self.assertEqual(list(im.convert("RGB").getdata()),
+                                 list(want.getdata()), "%s n'est pas l'icone generee" % p)
 
 
 if __name__ == "__main__":
