@@ -255,6 +255,18 @@ function rowsRes(level) {
     return rowsOfLevel(chainRes, level);
 }
 
+// The envelope axis, read through the level axis: the UCD2 arming belongs to
+// the model (the chain of the barrel arms it at the link, BLEBarrel :3713;
+// the forced path arms it at the choice, InputDelegate :607). A menu
+// selection therefore never puts that arming out for a camera whose level
+// answers its own rows — from level 3 up, the selection's rows ARE the
+// armed camera's rows. Below that line, only a camera of another envelope has
+// something to return to, and the inherited reset stands. The level in force
+// is the whole question: no frame, no label, no id is asked here.
+function keepsUcd2AfterSelection(level as Lang.Number) as Lang.Boolean {
+    return level == 3;
+}
+
 // The row of an id, in the level in force: id, label, key and family answer
 // one position of one chain (the tell and the decision answer one datum). An
 // id the level does not answer returns null — a plumbing id, an id of another

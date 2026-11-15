@@ -925,6 +925,19 @@ class BleDevice extends BluetoothLowEnergy.BleDelegate {
 	}
 
 
+	// The routing question itself, kept apart from the sender so a test can ask
+	// it: which frames change envelope. Only the two this barrel measured on an
+	// X6 in 2023 (the X6a/X6b corpora) — the start and the stop. Everything
+	// else asked while the envelope is armed keeps the legacy shape it was
+	// built in; the fact that carries that ruling is the same corpora's
+	// statement at :3362-3364 (an X6 answers an ask of the old envelope with a
+	// frame of the new one, and both envelopes cross one stream — PROTOCOL_APK
+	// L409-412). ucd2Send ignores any trigger but these two anyway (kind stays
+	// 0 at :938); this is the sendCMD side of the same datum.
+	function onUcd2Leg(value as Lang.ByteArray) as Lang.Boolean {
+		return value == cmdStartRec || value == cmdStopRec;
+	}
+
 	function ucd2Send(trigger as Lang.ByteArray) as Void {
 		var kind = 0;
 		var op = ucd2OpStart;
@@ -2994,7 +3007,13 @@ class BleDevice extends BluetoothLowEnergy.BleDelegate {
 	}
 
 	function sendCMD(value as Lang.ByteArray) as Void {
-		if (ucd2Armed) {
+		// The envelope belongs to the model, not to the frame: only what was
+		// measured on that envelope changes it (onUcd2Leg, and the fact at
+		// :3362). An option frame asked while armed rides the raw legacy path
+		// below, unchanged — an X6 reads it (same corpora) — and is counted by
+		// the raw path's ceiling alone; ucd2Send keeps its own ceiling for its
+		// two frames. One write, one ceiling answer.
+		if (ucd2Armed && onUcd2Leg(value)) {
 			ucd2Send(value);
 			return;
 		}
