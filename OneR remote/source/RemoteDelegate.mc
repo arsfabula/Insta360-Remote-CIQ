@@ -662,17 +662,60 @@ class ForceModelDelegate extends Ui.Menu2InputDelegate {
 
 	function onSelect(item) {
 		var id = item.getId() as Lang.String;
+		// What a forcing choice answers is the same datum the generated route answers at
+		// its own selection (InputDelegate :604-641): the pair (testModel, testLevel)
+		// the chain clears at the next link, the level and the model in force for the
+		// run, the envelope that follows the model, the radio that follows the position
+		// axis, and the confirmation kept under the name on air. This site set only the
+		// pair, and called noteConfirmedLevel() without arguments — a latent crash
+		// since the weld of 60304c7, named at the sim bench of 15-nov-2026: a line
+		// "[force] X6 level=3" followed by "Not Enough Arguments" and the app's death.
+		// The entry is the one the user reaches (the "Force model" item of the main
+		// menu), so it answers the question the user asked.
+		var forcedModel = "";
+		var forcedLevel = -1;
 		if (id.equals("forceoff")) {
+			// "off" answers again by the model the bond named: the choice names it,
+			// and the level answers the chain at the index of that name, so off can
+			// never disagree with a detection.
+			forcedModel = BLEBarrel.detectedModel;
+			forcedLevel = Levels.levelOfName(forcedModel);
+		} else {
+			forcedModel = id.substring(5, id.length());
+			forcedLevel = Levels.levelOfName(forcedModel);
+		}
+		if (forcedLevel != -1) {
+			BLEBarrel.testLevel = forcedLevel;
+			BLEBarrel.testModel = forcedModel;
+			BLEBarrel.menuLevel = forcedLevel;
+			BLEBarrel.capModel = forcedModel;
+			if (forcedLevel == 3) {
+				// The UCD2 envelope, the state a real X6 connection arms at the bond.
+				BLEBarrel.ucd2Armed = true;
+				BLEBarrel.x5Armed = false;
+			} else {
+				BLEBarrel.ucd2Armed = false;
+				// The arming of the X5 follows the model of the matrix in force, not its
+				// level: the prefix chain of the barrel arms the X5 protocol for the X5
+				// only (BLEBarrel.mc:2040), and leaves it disarmed for the models of the
+				// older envelope and of the X4 line, so the arming follows the model the
+				// way a connection does, and never the level of a gate.
+				BLEBarrel.x5Armed = forcedModel.equals("X5");
+			}
+			// The position axis re-asks its decision at the site that changes the
+			// family in force (Main.gpsSync, item 8 of the integration).
+			mainApp.gpsSync();
+			// The user's confirmation of a model and level, kept by the name on air
+			// beside the chain's answer (item 7 of the integration) — the call the
+			// crash left without arguments; the body of noteConfirmedLevel guards the
+			// absent name itself.
+			bleDevice.noteConfirmedLevel(BLEBarrel.deviceName, forcedLevel);
+			Sys.println("[force] " + forcedModel + " level=" + forcedLevel.toString());
+		} else {
 			BLEBarrel.testModel = "";
 			BLEBarrel.testLevel = -1;
 			Sys.println("[force] off, the detected model answers again");
-		} else {
-			var name = id.substring(5, id.length());
-			BLEBarrel.testModel = name;
-			BLEBarrel.testLevel = Levels.levelOfName(name);
-			Sys.println("[force] " + name + " level=" + BLEBarrel.testLevel.toString());
 		}
-		bleDevice.noteConfirmedLevel();
 		Ui.popView(Ui.SLIDE_IMMEDIATE);
 		Ui.popView(Ui.SLIDE_IMMEDIATE);
 		Ui.requestUpdate();
