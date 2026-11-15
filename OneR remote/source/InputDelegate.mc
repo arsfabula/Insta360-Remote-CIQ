@@ -650,8 +650,9 @@ function onSelect(item) as Void {
 				// applies and the forcing answers disarmed, which is the state a run
 				// of the X5 lives in. The menu still answers the pair of the model,
 				// which the gate reads apart from the forcing (note 8 of the CdC).
-				BLEBarrel.testModel = "";
-				BLEBarrel.testLevel = -1;
+				// The datum is named once, in the barrel (clearForcing, :3190) -
+				// this site and the re-connect now clear it with the same words.
+				bleDevice.clearForcing();
 			}
 		}
 		// CdC item 159, the ceiling of a visit of the axis: a fresh visit of the

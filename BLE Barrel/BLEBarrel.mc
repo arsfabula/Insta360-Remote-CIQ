@@ -995,7 +995,9 @@ class BleDevice extends BluetoothLowEnergy.BleDelegate {
 			// (onUcd2Leg, via runSpeaksUcd2) - asking the detection a second time
 			// here would drop the frame at kind==0, silently, with no line to answer
 			// for the rejection (criterion 14). The frame carries its own command
-			// number at octets 6-7 (4 start, 5 stop - the numbers already answered
+			// number at octets 7-8 - the same pair ucd2FrameOption reads from the
+			// inherited legacy frame (:1074, where the legacy header's 04 00 marker
+			// sits at 4-5) - 4 start, 5 stop - the numbers already answered
 			// in the air - 7 video-mode sets, 9 resolution sets, 15 the status ask,
 			// whose body is empty and whose op stays unmeasured like the two option
 			// ops). The retry owns the trigger so it can rebuild and re-stamp.
@@ -2029,9 +2031,15 @@ class BleDevice extends BluetoothLowEnergy.BleDelegate {
 			// refusal answers by data and a line, never by an absence
 			// (criterion 14): the datum marks the ask closed FOR THIS BOND -
 			// the next bond resets it (:1922, :3806) and another camera asks
-			// for itself - and no timer is armed. A forcing is not a named X6: it
-			// keeps asking, and since the ruling of the 15 nov. evening it asks in
-			// the envelope the run speaks - see the leg branch below.
+			// for itself - and no timer is armed. A forcing is not a named X6:
+			// a run forced on another bond keeps asking, and since the ruling
+			// of the 15 nov. evening it asks in the envelope the run speaks -
+			// see the leg branch below. On a bond the scan DID name X6, a
+			// forcing down to a model of the older envelope does not bring the
+			// ask back either: the refusal answers what the camera IS, never
+			// what the bench pretends it is, and on this bond the legacy ask
+			// is dead traffic under any model in force (the user's ruling on
+			// the named X6, 15 nov.).
 			x5StatusAsked = true;
 			wireLine("cam state", "ask refused, the scan named an X6 (no legacy answer exists)");
 			return;
@@ -2965,15 +2973,23 @@ class BleDevice extends BluetoothLowEnergy.BleDelegate {
 
 
 	function onUcd2Frame() as Void {
-		cancelRetry();
 		if (ucd2TxKind == retryKindOption) {
 			// A 0x00c8 that closes an option write closes ONLY that write's retry.
 			// It says nothing of the recording, and the recording machine must not
 			// answer for it - the risk the design names (X6b corpus): an option's
 			// answer crossing while a start is still pending would declare the
 			// watch Shooting on a camera that said nothing of the kind.
+			// It closes no other write's retry either: this site used to cancel
+			// whatever retry stood armed, and the named review of 15-nov-2026 caught
+			// what that costs - an option's answer crossing while a start was in
+			// flight took the start's retry with it, the ring stayed at "Starting"
+			// with nothing pending and no line to answer the refusal (criterion 14).
+			if (retryKind == retryKindOption) {
+				cancelRetry();
+			}
 			return;
 		}
+		cancelRetry();
 		if (recState == stateStarting) {
 			// The ucd2 frame answers the start THIS watch wrote (stateStarting
 			// is only ever the app's own press, the InputDelegate writes it) -
@@ -3157,6 +3173,27 @@ class BleDevice extends BluetoothLowEnergy.BleDelegate {
 	// application). Three questions, three functions, each answering at its
 	// own boundary, so the forcing is never read through a write (note 8 of
 	// the CdC: the tell and the decision answer one datum).
+	// The datum of "this run is not forced", named once. Three sites had been
+	// writing it by hand - the re-connect (:3960), the generated route of the
+	// submenu (InputDelegate :646-657), and, since this edit, the ported app's
+	// Force model entry (RemoteDelegate :739-744, :748). Writing it by hand is
+	// how the third of them got left out: an off that sets the pair to the model
+	// the bond named
+	// keeps hookForced() true for an ORDINARY run, and the ceiling of the axis
+	// then counts that run's writes and refuses them all past HOOK_WRITE_CEILING
+	// with "[hook] refused" - on the user's own camera, with nothing forced.
+	// The named review of 15-nov-2026 caught it. testLevel goes to -1, which no
+	// model of the matrix answers, so the gate of the menu reads a run that is
+	// not forced; the counter of the forcing goes with the forcing, the way a
+	// fresh bond is a fresh ceiling (item 159). The model and level in force for
+	// the menu are NOT touched here: the site that gives the model back owns them,
+	// and the chain of a link re-arms them from the detection.
+	function clearForcing() as Void {
+		testModel = "";
+		testLevel = -1;
+		hookSent = 0;
+	}
+
 	//
 	// Is a run forced at all? The datum is the model of the matrix in force;
 	// an empty String answers a run that is not forced. The content test of a
@@ -3931,11 +3968,9 @@ function registerProfiles() as Void {
 			menuLevel = detectedLevel;
 			capModel = detectedModel;
 			// The forcing itself: no model in force, no envelope forced, no write
-			// counted. testLevel stays at -1, which no model of the matrix answers,
-			// so the gate of the application reads a run that is not forced.
-			testModel = "";
-			testLevel = -1;
-			hookSent = 0;
+			// counted. The datum is named once, in this class (:3190) - the three
+			// sites that need it now read the same words.
+			clearForcing();
 			// CdC item 158: the state of the axis model after this clearing, printed
 			// here so a re-connected run names the model in force and the model
 			// detected, and never leaves the two to be supposed.
@@ -3943,6 +3978,18 @@ function registerProfiles() as Void {
 			if (menuLevel == 3) {
 				ucd2Armed = true;
 				currentLabel = "X6 Video";
+			} else if (ucd2Armed) {
+				// A bond that lands below level 3 takes back the leg the previous
+				// bond armed. The leg follows the model in force, never the memory of
+				// a link: this site armed and never disarmed, and the named review of
+				// 15-nov-2026 caught the gap - a re-connect from an X6 to a camera of
+				// the older envelope left every start and stop riding the UCD2 leg
+				// toward a camera that answers the old one. The taking-back answers by
+				// a line, never by an absence (criterion 14 of 11.3). The X5 leg is
+				// not named here: the chain that reads the device name arms it at that
+				// reading (:4024-4029), and that chain owns it.
+				ucd2Armed = false;
+				wireLine("relink", "ucd2 leg taken back, the model in force is " + capModel + " at level " + menuLevel.toString());
 			}
 		} catch (ex) {
 

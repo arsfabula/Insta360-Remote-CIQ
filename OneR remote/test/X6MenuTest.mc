@@ -484,3 +484,88 @@ function dOptionAnswerClosesItsRetryAndMovesNothing(logger) {
 	logger.debug("askedAsOption=" + asked.toString() + " answerKeptState=" + kept.toString() + " startAnswerStillMoves=" + moves.toString());
 	return asked && kept && moves;
 }
+
+// Le datum du forçage effacé doit dire « pas de forçage », entièrement. La revue
+// nommée du 15 nov. a trouvé le site du « Force model » du menu principal (celui
+// que l'utilisateur atteint) posant testModel au modèle détecté pour le choix
+// « off » : hookForced() restait vrai sur un courant ordinaire, le plafond de
+// l'axe comptait ses écritures, et passé le plafond TOUTES les écritures de la
+// caméra possédée étaient refusées avec « [hook] refused ». Le datum est nommé
+// une fois (BleDevice.clearForcing, BLEBarrel :3190) ; ce vector épingle la
+// donnée, le
+// chemin du menu la présente par un appel.
+(:test)
+function eClearForcingEndsTheCeilingDatum(logger) {
+	var d = freshLink();
+	BLEBarrel.testModel = "X6";
+	BLEBarrel.testLevel = 3;
+	var forcedBefore = d.hookForced();
+	var counted = !d.hookCeiling() && BLEBarrel.hookSent == 1;
+	d.clearForcing();
+	var forcedAfter = d.hookForced();
+	var ceilingQuiet = !d.hookCeiling() && !d.hookForced() && BLEBarrel.hookSent == 0;
+	logger.debug("forcedBefore=" + forcedBefore.toString() + " counted=" + counted.toString() + " forcedAfter=" + forcedAfter.toString() + " ceilingQuiet=" + ceilingQuiet.toString());
+	return forcedBefore && counted && !forcedAfter && ceilingQuiet;
+}
+
+// Le pendant de dOptionAnswerClosesItsRetryAndMovesNothing, côté retry : la
+// réponse 0x00c8 à une écriture d'option fermait TOUT retry armé, y compris
+// celui d'un départ en vol - l'anneau restait « Démarrage… » sans rien d'armé
+// ni de ligne pour répondre du refus (critère 14 ; le risque du corpus X6b est
+// nommé par le code). Ce qui croise ferme le retry DE L'ÉCRITURE QUI A CROISÉ
+// (ucd2TxKind), jamais un autre. Le vector arme un retry de départ, fait
+// croiser une acquit d'option, et exige que le départ reste armé.
+(:test)
+function eOptionAnswerKeepsAnotherWritesRetryArmed(logger) {
+	var d = freshLink();
+	BLEBarrel.detectedLevel = 3;
+	BLEBarrel.ucd2Armed = true;
+	BLEBarrel.recState = BLEBarrel.stateStarting;
+	d.scheduleRetry(BLEBarrel.retryKindStart);
+	var armed = d.retryKind == BLEBarrel.retryKindStart && d.retryDue != null;
+	BLEBarrel.ucd2TxKind = BLEBarrel.retryKindOption;
+	d.onUcd2Frame();
+	var keptArmed = d.retryKind == BLEBarrel.retryKindStart && d.retryDue != null;
+	// Le pendant exact : quand l'acquit fermé est bien celui de l'option, son
+	// retry se ferme - la garde ne s'étend pas à son propre type. Le second
+	// appel nomme ucd2TxKind au départ (plus à l'option) pour que l'aiguillage
+	// prenne la route où le retry armé se ferme.
+	d.scheduleRetry(BLEBarrel.retryKindOption);
+	BLEBarrel.ucd2TxKind = BLEBarrel.retryKindStart;
+	d.onUcd2Frame();
+	var ownClosed = d.retryKind == 0 && d.retryDue == null;
+	d.retryDue = null;
+	d.retryKind = 0;
+	BLEBarrel.ucd2TxKind = 0;
+	BLEBarrel.ucd2Armed = false;
+	BLEBarrel.detectedLevel = 1;
+	BLEBarrel.recState = BLEBarrel.stateStopRec;
+	logger.debug("armed=" + armed.toString() + " optionAnswerKeptStartRetry=" + keptArmed.toString() + " ownOptionRetryClosed=" + ownClosed.toString());
+	return armed && keptArmed && ownClosed;
+}
+
+// La combinaison que la revue a demandée de nommer : une liaison que le scan a
+// NOMMÉE X6, forcée vers un modèle de l'ancienne enveloppe. La refus de la ask
+// 15 répond de ce que la caméra EST (le nom lu au scan), jamais de ce que le
+// banc prétend : la ask legs n'a aucune réponse sur cette liaison sous aucun
+// modèle en force. Le pendant reste prouvé ailleurs : un courant forcé vers le
+// niveau 3 sur une liaison qui ne nomme pas X6 demande, dans l'enveloppe qu'il
+// parle (dStatusAskChangesEnvelopeWithTheRun). Ici la marque tombe, aucun timer
+// n'est armé, et le compteur d'essais de la ask ne bouge pas.
+(:test)
+function eForcedDownOnNamedX6StillRefusesTheAsk(logger) {
+	var d = freshLink();
+	BLEBarrel.detectedLevel = 3;
+	BLEBarrel.testModel = "X5";
+	BLEBarrel.testLevel = 2;
+	d.askCamStatus();
+	var marked = BLEBarrel.x5StatusAsked;
+	var noTimer = BLEBarrel.x5StatusDue == null;
+	var triesKept = BLEBarrel.x5StatusTries == 0;
+	BLEBarrel.testModel = "";
+	BLEBarrel.testLevel = -1;
+	BLEBarrel.x5StatusAsked = false;
+	BLEBarrel.x5StatusTries = 0;
+	logger.debug("namedX6 forcedDown marked=" + marked.toString() + " noTimer=" + noTimer.toString() + " triesKept=" + triesKept.toString());
+	return marked && noTimer && triesKept;
+}

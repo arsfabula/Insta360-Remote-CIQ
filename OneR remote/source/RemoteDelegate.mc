@@ -723,10 +723,33 @@ class ForceModelDelegate extends Ui.Menu2InputDelegate {
 			// crash left without arguments; the body of noteConfirmedLevel guards the
 			// absent name itself.
 			bleDevice.noteConfirmedLevel(BLEBarrel.deviceName, forcedLevel);
-			Sys.println("[force] " + forcedModel + " level=" + forcedLevel.toString());
+			// The choice that names the camera the user owns - "off", or a model equal
+			// to the one the bond named - sends no frame of another protocol over this
+			// bond, so the ceiling of the axis never applies and the forcing answers
+			// disarmed: the same rule the generated route of the submenu already
+			// answers at InputDelegate :646-657, now in the words the barrel owns
+			// (clearForcing, :3190). Without it this site left the pair set to the
+			// detected model:
+			// hookForced() stayed true for an ordinary run, the ceiling counted that
+			// run's writes, and past the ceiling every write of the user's own camera
+			// was refused with "[hook] refused" - found by the named review of
+			// 15-nov-2026. This is the third difference between these two sites found
+			// the hard way (52e2549, 05f6e7b, this one); naming the rule once is where
+			// the drift ends. The line below names the state in force for the rest of
+			// the selection, never an absence (criterion 14 of 11.3).
+			if (forcedModel.equals(BLEBarrel.detectedModel)) {
+				// The clearing is answered by the class that owns the forcing
+				// machinery (BleDevice, the single instance of the run), the way
+				// this delegate already asks the link its other questions.
+				bleDevice.clearForcing();
+			}
+			Sys.println("[force] " + forcedModel + " level=" + forcedLevel.toString()
+				+ " forced=" + (!BLEBarrel.testModel.equals("")).toString()
+				+ " sent=" + BLEBarrel.hookSent.toString());
 		} else {
-			BLEBarrel.testModel = "";
-			BLEBarrel.testLevel = -1;
+			// A name the chain does not answer: no model in force, no envelope
+			// forced - the datum named once, in the barrel's link class.
+			bleDevice.clearForcing();
 			Sys.println("[force] off, the detected model answers again");
 		}
 		Ui.popView(Ui.SLIDE_IMMEDIATE);
