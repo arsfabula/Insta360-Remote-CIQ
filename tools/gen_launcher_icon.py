@@ -134,25 +134,39 @@ def state_icon(d, cx, cy, s, kind, glyph_color, arcs_color):
 
 
 def tile(kind="cam", ring="red", size=N, glyph_color=C_BLUE, arcs_color=C_GREEN,
-         ring_color=None, background=BLACK, disc=WHITE):
-    """The finished icon: the mark on an opaque disc, inside the ring."""
+         ring_color=None, disc=WHITE):
+    """The finished icon: the mark on a disc, inside the ring, on nothing.
+
+    Outside the disc the tile is transparent, not black: the mark IS a disc and the
+    watch composites it over whatever is behind it (the user's ruling, 15 nov. -
+    the icon this one replaces was RGBA for the same reason). The alpha comes from
+    a supersampled mask of the disc resized exactly like the picture, so the disc
+    keeps a soft edge without a colour halo: interpolating the old black background
+    against the white disc would leave one.
+    """
     ring_color = ring_color if ring_color is not None else (
         C_RED if ring == "red" else C_GREEN)
     m = size * SS
     L = layout(m)
-    im = Image.new("RGB", (m, m), rgb(background))
+    im = Image.new("RGB", (m, m), rgb(disc))   # never seen outside the mask
     d = ImageDraw.Draw(im)
     ring_r, ring_pen = m * RING_R, m * RING_PEN
-    d.ellipse([L["cx"] - ring_r - ring_pen / 2, L["cy"] - ring_r - ring_pen / 2,
-               L["cx"] + ring_r + ring_pen / 2, L["cy"] + ring_r + ring_pen / 2],
-              fill=rgb(disc))
     # PIL paints a thick outline INWARD from the path, so the path goes at the outer
     # edge and the band ends up straddling ring_r, the radius layout() advertises.
-    path = ring_r + ring_pen / 2
+    # The disc reaches that same outer edge: ring OUT, disc UNDER.
+    edge = ring_r + ring_pen / 2
+    d.ellipse([L["cx"] - edge, L["cy"] - edge, L["cx"] + edge, L["cy"] + edge],
+              fill=rgb(disc))
+    path = edge
     d.ellipse([L["cx"] - path, L["cy"] - path, L["cx"] + path, L["cy"] + path],
               outline=rgb(ring_color), width=int(ring_pen))
     state_icon(d, L["cx"], L["cy"], L["s"], kind, glyph_color, arcs_color)
-    return im.resize((size, size), Image.LANCZOS)
+    mask = Image.new("L", (m, m), 0)
+    ImageDraw.Draw(mask).ellipse([L["cx"] - edge, L["cy"] - edge,
+                                  L["cx"] + edge, L["cy"] + edge], fill=255)
+    im = im.resize((size, size), Image.LANCZOS)
+    im.putalpha(mask.resize((size, size), Image.LANCZOS))
+    return im
 
 
 def main(argv=None):

@@ -88,7 +88,6 @@ class TestShippedIcon(unittest.TestCase):
             ((lx - s * 0.62, ly), WHITE),                             # no wave left of the body
             ((L["cx"], L["cy"] - L["ring_r"]), C_RED),                # ring
             ((L["cx"] - L["ring_r"] * 0.60, L["cy"] - L["ring_r"] * 0.60), WHITE),  # disc inside
-            ((4, 4), BLACK),                                          # outer corner
         ]
         for (x, y), want in probes:
             self.assertEqual(px(im, x, y), want, "probe (%d,%d)" % (x, y))
@@ -98,10 +97,29 @@ class TestShippedIcon(unittest.TestCase):
             im, _ = rendered_tile(size=size)
             self.assertEqual(im.size, (size, size))
 
-    def test_icon_is_opaque(self):
-        # A tile with transparent areas reads as a hole in the watch's picker.
-        im, _ = rendered_tile()
-        self.assertEqual(im.mode, "RGB")
+    def test_background_is_transparent(self):
+        # The shipped mark is a disc, not a square: outside it there must be nothing.
+        # The icon that preceded this one was RGBA for exactly that reason.
+        im, L = rendered_tile()
+        self.assertEqual(im.mode, "RGBA")
+        edge = L["ring_r"] + L["ring_pen"] / 2 + 6   # past the disc edge AND the
+        # resize filter's ~3 px tail: inside that tail the edge is legitimately soft,
+        # which is the point of the mask; beyond it, there must be nothing.
+        for x, y in ((4, 4), (im.size[0] - 5, 4), (4, im.size[1] - 5),
+                     (im.size[0] - 5, im.size[1] - 5),
+                     (L["cx"] - edge, L["cy"]),       # just outside the disc, left
+                     (L["cx"], L["cy"] + edge)):      # just outside the disc, below
+            self.assertEqual(im.getpixel((int(round(x)), int(round(y))))[3], 0,
+                             "coin/extérieur non transparent (%d,%d)" % (x, y))
+
+    def test_disc_and_glyph_are_opaque(self):
+        im, L = rendered_tile()
+        s = L["s"]
+        for x, y in ((L["cx"], L["cy"] + L["ring_r"] * 0.60),   # disc, clear of the glyph
+                     (L["cx"], L["cy"] - L["ring_r"]),          # ring itself
+                     (L["cx"] - s * 0.35, L["cy"] + s * 1.35)):  # camera body
+            self.assertEqual(im.getpixel((int(round(x)), int(round(y))))[3], 255,
+                             "partie pleine translucide (%d,%d)" % (x, y))
 
 
 class TestShippedFiles(unittest.TestCase):
@@ -122,8 +140,9 @@ class TestShippedFiles(unittest.TestCase):
         for p in self.SHIPPED:
             with Image.open(os.path.join(repo_root(), p)) as im:
                 self.assertEqual(im.size, want.size, "%s n'est pas au bon format" % p)
-                self.assertEqual(list(im.convert("RGB").getdata()),
-                                 list(want.getdata()), "%s n'est pas l'icone generee" % p)
+                # No convert(): alpha is part of what is shipped.
+                self.assertEqual(list(im.getdata()), list(want.getdata()),
+                                 "%s n'est pas l'icone generee" % p)
 
 
 if __name__ == "__main__":
