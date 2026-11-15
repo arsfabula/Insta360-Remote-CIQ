@@ -967,15 +967,9 @@ if ((BLEBarrel.GPSon) && (location != null) && (info != null)) {
 			case "DefaultV" :
 				BLEBarrel.currentMode = "DefaultV";
 				break;
-			case "X6Video" :
-				// Arm the UCD2 envelope. currentMode stays at the "DefaultV"
-				// sentinel on purpose: the apply block below is guarded by it
-				// and would otherwise hand sendCMD() a String where it expects
-				// a ByteArray. The intent of the spec (no legacy frame reaches
-				// the camera while armed) is met either way.
-				BLEBarrel.ucd2Armed = true;
-				BLEBarrel.currentMode = "DefaultV";
-				BLEBarrel.currentLabel = "X6 Video";
+			// The "X6Video" case is gone with its row (design of 15 nov.): the
+			// level-3 menu answers real rows, the arming belongs to the model
+			// (chain at link, forced path) and never to a menu selection.
          }
 		// Name of mode to be displayed. 
         if (chglbl) {

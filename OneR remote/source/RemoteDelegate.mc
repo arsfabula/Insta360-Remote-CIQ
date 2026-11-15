@@ -542,17 +542,6 @@ function applyMode(dev, id, label, send) {
 	}
 	if (setReturnMode != null && !id.equals(setReturnMode)) { setReturnMode = null; setReturnLabel = null; }
 
-	if (id.equals("X6Video")) {
-		// Arm the UCD2 envelope (the mainline's case: currentMode stays at the "DefaultV"
-		// sentinel, the apply block would else hand sendCMD a String).
-		BLEBarrel.ucd2Armed = true;
-		currentModeId = "DefaultV";
-		BLEBarrel.currentMode = "DefaultV";
-		BLEBarrel.currentLabel = "X6 Video";
-		BLEBarrel.mMessage = BLEBarrel.currentLabel + "\n" + BLEBarrel.startMessage;
-		return;
-	}
-
 	// GPS photo of the legacy lines (the mainline's measured path, case p0 and case
 	// Photo): the fix is written into the photo header before the mode. That header
 	// is a frame of the older envelope - at the X5 line the rows carry other ids,
