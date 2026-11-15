@@ -406,10 +406,16 @@ notifications) already answers most of the question for the X6:
   is impossible on that corpus, and a strict "deliver only at `want`" rule would
   drop every X6 push the product handles today. The unification must deliver on
   the frame boundary (next head) with truncation flagged, not on `want` alone;
-- a **legacy ask is answered in UCD2** (`demande=LEG REPONSE=UCD2`, codes
-  `0x2017`, `0x5079`): the X6 answers the old envelope with new-envelope
-  frames, so the RX engine must recognize both envelopes in one stream, not one
-  per connection.
+- **re-assessed 15 nov. on the complete X6 corpora** (`OneRremote X6a/X6b.TXT`,
+  real X6 ECD3MA, both envelopes logged): a **legacy ask receives no answer at
+  all**. The `0x5079` frames paired above as "REPONSE" are 1 Hz STREAM pushes
+  whose sequence runs unbroken across our TX — noise, not a reply; `0x2017`
+  belongs to the X5 probe corpus, not to X6. What the X6 does answer is our own
+  UCD2 start/stop: the camera replies `code 0x00c8` with the request id echoed
+  (`[ucd2] ACK ... c800 ...`), and the decoder added in `3b13cfe` turns those
+  into Shooting/Stopped transitions. The X6 ignores the legacy envelope. The RX
+  engine must still parse both envelopes in one stream — a forced-X6 run on
+  X5 hardware sees the opposite dialect — but no legacy-to-UCD2 answer exists.
 
 The probe run on the watch (X6 bench, then X5/One R) confirms or refutes this
 on the link the product actually uses, and the rungs `L6`/`L8`/`U5` measure the
