@@ -162,8 +162,10 @@ function keepsUcd2OnlyAtX6Level(logger) {
 // (u16 petit-boutiste : 04 00 demarrer, 05 00 arreter, 07 00 modes video,
 // 09 00 resolutions), dans le meme ordre d'octets que le corps FILE - ce que
 // fait deja ucd2Frame(4) pour le demarrer que la camera a deja acquitte. Sous
-// forcage (detectedLevel != 3), rien ne change : le
-// brut herite est le chemin de banc et de crash-test prouve le 15 nov.
+// forcage d'un modele de niveau 3, la meme regle vaut : le courant force arme la
+// jambe UCD2 comme une liaison reelle (jugement de l'utilisateur du 15 nov. au
+// soir, vectors d'au-dessous - le banc avait mesure le melange des deux
+// enveloppes et l'avait juge defectueux).
 //
 // Les octets de référence ne viennent pas du barillet : ils sont la reponse du
 // codec documente tools/insta360_ucd2.py (build_file_command(seq, code, 1, body)),
@@ -196,8 +198,9 @@ const DREF_SET9 = [
 
 // La porte de l'aiguillage, dans les deux sens : sous X6 nomme au scan, toute
 // trame de l'ancienne enveloppe (garde 0x0004 aux octets 4-5) change d'enveloppe ;
-// sous forçage - level 3 courant mais le scan a nomme un autre modele - les
-// options restent brutes, seuls les deux ordres de mesure 2023 changent encore.
+// sous forçage d'un modele de niveau 3, la meme famille change d'enveloppe aussi -
+// jugement de l'utilisateur du 15 nov. au soir, releve sur le banc (voir les deux
+// vectors qui suivent). Les deux ordres de mesure 2023 la changent de toute facon.
 // Le vector laisse detectedLevel a sa valeur d'usine a la sortie : les vectors ne
 // se passent jamais un etat modifie sans le rendre.
 (:test)
@@ -214,6 +217,73 @@ function dLegWrapsEveryLegacyFrameUnderDetectedX6(logger) {
 	var stillSt = d.onUcd2Leg(BLEBarrel.cmdStartRec);
 	logger.debug("detectedX6 start=" + st.toString() + " stop=" + sp.toString() + " mode=" + md.toString() + " res=" + rs.toString() + " forced mode=" + fMd.toString() + " res=" + fRs.toString() + " startKept=" + stillSt.toString());
 	return st && sp && md && rs && !fMd && !fRs && stillSt;
+}
+
+// Le fait qui a fait changer la regle (15 nov. au soir, scene simulateur sur le
+// modele de montre de l'utilisateur cooperatif, journal simrun-910-fenix847mm.txt) :
+// sous forçage X6 devant la X5 du bureau, QUATRE trames UCD2 sont parties (op 4,
+// une par appui demarrer) et ZERO n'a recu de reponse, pendant que les ecritures de
+// mode partaient en brut et que l'X6 y reagissait visiblement. Un courant qui parle
+// deux enveloppes a la fois n'est pas un protocole, c'en est la moitie : le forçage
+// d'un modele de niveau 3 arme l'enveloppe UCD2 comme l'arme une liaison reelle de
+// ce modele. Le datum du forçage (testModel/testLevel) reste distinct de celui de la
+// detection (detectedLevel) - les deux sont rendus l'un apres l'autre ici, et un
+// forçage d'un modele de l'ancienne enveloppe (X5, niveau 2) n'ouvre rien.
+(:test)
+function dForcedLevel3WrapsTheWholeLegacyFamily(logger) {
+	var d = freshLink();
+	BLEBarrel.detectedLevel = 2;
+	BLEBarrel.testModel = "X6";
+	BLEBarrel.testLevel = 3;
+	var md = d.onUcd2Leg(BLEBarrel.cmdSetVideoSubNormal);
+	var rs = d.onUcd2Leg(BLEBarrel.cmdSet8k30);
+	var st = d.onUcd2Leg(BLEBarrel.cmdStartRec);
+	// Le forçage retire : la porte se referme avec lui, elle ne reste pas ouverte
+	// par habitude d'un run precedent.
+	BLEBarrel.testModel = "";
+	BLEBarrel.testLevel = -1;
+	var offMd = d.onUcd2Leg(BLEBarrel.cmdSetVideoSubNormal);
+	var offRs = d.onUcd2Leg(BLEBarrel.cmdSet8k30);
+	var offSt = d.onUcd2Leg(BLEBarrel.cmdStartRec);
+	// Un forçage d'un modele de l'ancienne enveloppe n'ouvre pas la jambe neuve.
+	BLEBarrel.testModel = "X5";
+	BLEBarrel.testLevel = 2;
+	var x5Md = d.onUcd2Leg(BLEBarrel.cmdSetVideoSubNormal);
+	BLEBarrel.testModel = "";
+	BLEBarrel.testLevel = -1;
+	BLEBarrel.detectedLevel = 1;
+	logger.debug("forcedX6 mode=" + md.toString() + " res=" + rs.toString() + " start=" + st.toString() + " | off mode=" + offMd.toString() + " res=" + offRs.toString() + " startKept=" + offSt.toString() + " | forcedX5 mode=" + x5Md.toString());
+	return md && rs && st && !offMd && !offRs && offSt && !x5Md;
+}
+
+// L'autre moitie du meme jugement, a l'endroit ou le courant se casse aujourd'hui :
+// l'aiguillage de sendCMD ouvrirait la jambe UCD2 sous forçage de niveau 3, mais
+// ucd2Send a sa propre garde, qui lit detectedLevel (:969) et rendrait kind==0 -
+// la trame disparaitrait sans jamais partir sur l'air, sans une ligne pour repondre
+// de ce rejet (critere 14). L'expediteur donc suit la meme donnee que l'aiguillage :
+// sous forçage de niveau 3 l'ecriture d'option est prise comme option; hors de ce
+// forçage elle est rejetee comme le pingle deja ucd2LegNamesOnlyStartStop.
+// (dev null dans ce vector : transmit repond par sa branche d'absence d'appareil.)
+(:test)
+function dForcedLevel3OptionWriteIsNotDroppedByTheSender(logger) {
+	var d = cleanUcd2Link();
+	BLEBarrel.ucd2Armed = true;
+	BLEBarrel.detectedLevel = 2;
+	BLEBarrel.testModel = "X6";
+	BLEBarrel.testLevel = 3;
+	BLEBarrel.ucd2TxKind = -1;
+	d.ucd2Send(BLEBarrel.cmdSetVideoSubNormal);
+	var asked = BLEBarrel.ucd2TxKind == BLEBarrel.retryKindOption;
+	BLEBarrel.testModel = "";
+	BLEBarrel.testLevel = -1;
+	BLEBarrel.ucd2TxKind = -1;
+	d.ucd2Send(BLEBarrel.cmdSetVideoSubNormal);
+	var dropped = BLEBarrel.ucd2TxKind == -1;
+	BLEBarrel.ucd2Armed = false;
+	BLEBarrel.detectedLevel = 1;
+	BLEBarrel.ucd2TxKind = 0;
+	logger.debug("forcedX6 askedAsOption=" + asked.toString() + " | forcingOff dropped=" + dropped.toString());
+	return asked && dropped;
 }
 
 // La fabrique : le corps FILE porte le nombre de commande que la trame legacy

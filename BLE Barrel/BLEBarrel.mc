@@ -942,19 +942,32 @@ class BleDevice extends BluetoothLowEnergy.BleDelegate {
 	// 0x5079 pushes running unbroken across our TX. What the camera does answer
 	// is the UCD2 envelope: our own start/stop come back as code 0x00c8, and
 	// the owner of the camera confirmed the start and the stop executing on his
-	// X6. So under a camera the scan NAMED as X6 (detectedLevel == 3) every
-	// frame of the old envelope changes envelope - the user's rule, verified on
-	// hardware. Under a forcing (the scan named another model) only the two
-	// orders measured in 2023 still cross: the raw inherited writes of a forced
-	// run are the proven bench path and stay raw.
+	// X6. So under a run that speaks the new envelope every frame of the old one
+	// changes envelope - the user's rule, verified on hardware. The half that
+	// read "under a forcing only the two 2023 orders cross" is withdrawn: the
+	// bench measured that mixed run (four starts wrapped and answered by nothing,
+	// mode writes raw and answered by the camera) and the user ruled it a defect.
+	// The envelope the run speaks: ONE datum, read the same way at both gates of the
+	// write leg (the switch in sendCMD and the sender ucd2Send). A camera the scan
+	// NAMED as an X6 (detectedLevel == 3) arms it at the bond - the user's rule,
+	// verified on hardware. A forcing to a model of level 3 arms it the same way
+	// (the user's ruling, 15 nov. evening): the bench measured a forced run speaking
+	// two envelopes at once - four starts wrapped and answered by nothing, mode
+	// writes raw and answered by the camera - and half a protocol is not a protocol.
+	// The two datums stay apart (note 8 of the CdC): this predicate ORs them, it
+	// never merges the forcing into the detection.
+	function runSpeaksUcd2() as Lang.Boolean {
+		return detectedLevel == 3 || (hookForced() && testLevel == 3);
+	}
+
 	function onUcd2Leg(value as Lang.ByteArray) as Lang.Boolean {
 		if (value == cmdStartRec || value == cmdStopRec) {
 			return true;
 		}
 		// The 04 00 at octets 4-5 is the envelope marker of the old protocol
-		// (StatusTest's frame() carries it too): under a named X6 this whole
-		// family rides the UCD2 leg, payload inherited untouched.
-		return detectedLevel == 3 && value.size() >= 17 && value[4] == 0x04 && value[5] == 0;
+		// (StatusTest's frame() carries it too): under a run that speaks UCD2 this
+		// whole family rides the UCD2 leg, payload inherited untouched.
+		return runSpeaksUcd2() && value.size() >= 17 && value[4] == 0x04 && value[5] == 0;
 	}
 
 	function ucd2Send(trigger as Lang.ByteArray) as Void {
@@ -966,11 +979,15 @@ class BleDevice extends BluetoothLowEnergy.BleDelegate {
 			cancelPendingStart();
 		} else if (trigger == cmdStartRec) {
 			kind = retryKindStart;
-		} else if (detectedLevel == 3 && onUcd2Leg(trigger)) {
-			// The option writes of a named X6: the frame carries its own
-			// command number at octets 6-7 (4 start, 5 stop - the numbers
-			// already answered in the air - 7 video-mode sets, 9 resolution
-			// sets). The retry owns the trigger so it can rebuild and re-stamp.
+		} else if (onUcd2Leg(trigger)) {
+			// The option writes of a run that speaks the new envelope, named or
+			// forced: the gate is the one the switch already read (onUcd2Leg, via
+			// runSpeaksUcd2) - asking the detection a second time here would drop
+			// the frame at kind==0, silently, with no line to answer for the
+			// rejection (criterion 14). The frame carries its own command number at
+			// octets 6-7 (4 start, 5 stop - the numbers already answered in the
+			// air - 7 video-mode sets, 9 resolution sets). The retry owns the
+			// trigger so it can rebuild and re-stamp.
 			kind = retryKindOption;
 			ucd2TxFrame = trigger;
 		}
@@ -3149,14 +3166,15 @@ class BleDevice extends BluetoothLowEnergy.BleDelegate {
 	}
 
 	function sendCMD(value as Lang.ByteArray) as Void {
-		// The envelope belongs to the model, not to the frame. Under a camera the
-		// scan named X6 (detectedLevel 3) onUcd2Leg answers true for the whole
-		// legacy-command family: every write crosses as UCD2, payload inherited -
-		// the 15 nov. corpora show that camera answering no legacy frame at all.
-		// Under a forcing the two 2023 orders still cross and the option writes
-		// ride the raw legacy path below unchanged, counted by the raw path's
-		// ceiling; ucd2Send keeps its own ceiling for the frames it takes. One
-		// write, one ceiling answer.
+		// The envelope belongs to the model, not to the frame - and the model in
+		// force answers one datum: runSpeaksUcd2. Under a camera the scan named X6
+		// (detectedLevel 3) onUcd2Leg answers true for the whole legacy-command
+		// family: every write crosses as UCD2, payload inherited - the 15 nov.
+		// corpora show that camera answering no legacy frame at all. A forcing to a
+		// model of that level arms the same leg (ruled the 15 nov. evening, after
+		// the bench saw a forced run answering itself two envelopes). ucd2Send
+		// keeps its own ceiling for the frames it takes, the raw path keeps its
+		// own for the rest. One write, one ceiling answer.
 		if (ucd2Armed && onUcd2Leg(value)) {
 			ucd2Send(value);
 			return;
