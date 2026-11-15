@@ -753,7 +753,6 @@ class WarningMenuDelegate extends Ui.Menu2InputDelegate {
 		if (id.equals("introExit")) {
 			inLog("intro menu: exit app");
 			Sys.exit();
-			return;
 		}
 		if (id.equals("introFade")) {
 			if (!StartWarning.writeLeft(Application.getApp(), StartWarning.pickValue())) {

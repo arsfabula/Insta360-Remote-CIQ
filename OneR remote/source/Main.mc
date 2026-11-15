@@ -55,19 +55,12 @@ class Main extends Application.AppBase {
 	function GPSenable (state as Lang.Boolean) as Void {
 		// System.println("[Main] [GPS Enable] State: "+ state);
 		if (state) {
-		// GPS initialisation
-		// Position.enableLocationEvents(Position.LOCATION_CONTINUOUS,	method(:onPosition));
-			if (Toybox.Position has :CONSTELLATION_GPS) {
-				// System.println("[Main] has constellation");
-				Position.enableLocationEvents({
-        			:acquisitionType => Position.LOCATION_CONTINUOUS,
-        			:constellations => [Position.CONSTELLATION_GPS]
-    				},
-    				method(:onPosition)
-				);
-			} else {
-				Position.enableLocationEvents(Position.LOCATION_CONTINUOUS, method(:onPosition));
-			}
+			// Only GPS, and only the plain call. The dictionary form pinned
+			// :constellations => [Position.CONSTELLATION_GPS], which the 9.3 doc says
+			// is already the default when the option is left out - and that enum is
+			// deprecated, "may be removed after System 10". Same behaviour, one
+			// warning less, nothing to chase on the next SDK.
+			Position.enableLocationEvents(Position.LOCATION_CONTINUOUS, method(:onPosition));
 		} else {
 			Position.enableLocationEvents(Position.LOCATION_DISABLE,null);
 		}

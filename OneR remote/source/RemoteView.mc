@@ -308,7 +308,6 @@ class RemoteView extends WatchUi.View {
 		// fact of the radio, kept by the barrel at every onPosition.
 		if (BLEBarrel.GPSon) { drawGps(dc, cx, cy, r - 10); }
 
-		var inner = r - 28; // usable radius inside the ring
 		var rr = r - 10;    // ring radius
 
 		// Every state uses the same two columns: an icon on the left, a title and LABEL value rows
