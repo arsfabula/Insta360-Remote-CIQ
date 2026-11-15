@@ -151,3 +151,137 @@ function keepsUcd2OnlyAtX6Level(logger) {
 	logger.debug("keep 3=" + k3.toString() + " 0=" + k0.toString() + " 1=" + k1.toString() + " 2=" + k2.toString());
 	return k3 && !k0 && !k1 && !k2;
 }
+
+// ---------- Paquet D (x6-menu-design.md, addendum du 15 nov. au soir) ----------
+// La regle que les corpus X6a/X6b ont etablie sur l'X6 reel (deposes le 15 nov.) :
+// l'X6 ne repond AUCUNE ask legacy, et il acquitte 0x00c8 nos propres trames UCD2
+// (execute de plus physiquement - temoin l'utilisateur cooperatif proprietaire).
+// Donc sous X6 NOMME au scan (detectedLevel == 3), toute ecriture de l'ancienne
+// enveloppe part dans l'enveloppe UCD2, le payload herite tel quel. Le nombre de
+// commande du corps est celui que la trame legacy porte deja aux octets 6-7
+// (gros-boutiste : 00 04 demarrer, 00 05 arreter, 00 07 modes video, 00 09
+// resolutions), ecrit dans l'ordre natif petit-boutiste du corps FILE - ce que
+// fait deja ucd2Frame(4) pour le demarrer que la camera a deja acquitte. Sous
+// forcage (detectedLevel != 3), rien ne change : le
+// brut herite est le chemin de banc et de crash-test prouve le 15 nov.
+//
+// Les octets de référence ne viennent pas du barillet : ils sont la reponse du
+// codec documente tools/insta360_ucd2.py (build_file_command(seq, code, 1, body)),
+// genere le 15 nov. au soir pour les deux corps reels ci-dessous - la queue de
+// cmdSetVideoSubNormal (code 7) et la queue de cmdSet8k30 (code 9). Le trailer de
+// ces trames n'est pas la table ucd2SeqXor (elle n'est juste que pour la longueur
+// 25) : c'est le CRC-32 de variante Insta360 (poly 0x04C11DB7, init 0xffffffff,
+// sans xor final), que le vector ci-dessous attend calcule sur la trame entiere.
+
+const DREF_SET7 = [
+	"55434432010c04011000000007000201000080000008291203c80200d92e5f50",
+	"55434432010c04021000000007000201000080000008291203c80200905048ad",
+	"55434432010c04031000000007000201000080000008291203c802005785baf9",
+	"55434432010c04071000000007000201000080000008291203c80200fccfb0ae",
+	"55434432010c04551000000007000201000080000008291203c80200b292dc38",
+	"55434432010c04801000000007000201000080000008291203c80200a8786eca",
+	"55434432010c04aa1000000007000201000080000008291203c8020046284f7c",
+	"55434432010c04fe1000000007000201000080000008291203c802002d94cc14"
+];
+const DREF_SET9 = [
+	"55434432010c0401140000000900020100008000000a011f1204f801a701180791c9989a",
+	"55434432010c0402140000000900020100008000000a011f1204f801a70118073c96fe17",
+	"55434432010c0403140000000900020100008000000a011f1204f801a7011807ca579c90",
+	"55434432010c0407140000000900020100008000000a011f1204f801a70118077c6b9584",
+	"55434432010c0455140000000900020100008000000a011f1204f801a701180728d1e79a",
+	"55434432010c0480140000000900020100008000000a011f1204f801a7011807c9a55f95",
+	"55434432010c04aa140000000900020100008000000a011f1204f801a70118074ea70017",
+	"55434432010c04fe140000000900020100008000000a011f1204f801a7011807f7bf7f17"
+];
+
+// La porte de l'aiguillage, dans les deux sens : sous X6 nomme au scan, toute
+// trame de l'ancienne enveloppe (garde 0x0004 aux octets 4-5) change d'enveloppe ;
+// sous forçage - level 3 courant mais le scan a nomme un autre modele - les
+// options restent brutes, seuls les deux ordres de mesure 2023 changent encore.
+// Le vector laisse detectedLevel a sa valeur d'usine a la sortie : les vectors ne
+// se passent jamais un etat modifie sans le rendre.
+(:test)
+function dLegWrapsEveryLegacyFrameUnderDetectedX6(logger) {
+	var d = freshLink();
+	BLEBarrel.detectedLevel = 3;
+	var st = d.onUcd2Leg(BLEBarrel.cmdStartRec);
+	var sp = d.onUcd2Leg(BLEBarrel.cmdStopRec);
+	var md = d.onUcd2Leg(BLEBarrel.cmdSetVideoSubNormal);
+	var rs = d.onUcd2Leg(BLEBarrel.cmdSet8k30);
+	BLEBarrel.detectedLevel = 1;
+	var fMd = d.onUcd2Leg(BLEBarrel.cmdSetVideoSubNormal);
+	var fRs = d.onUcd2Leg(BLEBarrel.cmdSet8k30);
+	var stillSt = d.onUcd2Leg(BLEBarrel.cmdStartRec);
+	logger.debug("detectedX6 start=" + st.toString() + " stop=" + sp.toString() + " mode=" + md.toString() + " res=" + rs.toString() + " forced mode=" + fMd.toString() + " res=" + fRs.toString() + " startKept=" + stillSt.toString());
+	return st && sp && md && rs && !fMd && !fRs && stillSt;
+}
+
+// La fabrique : le corps FILE porte le nombre de commande que la trame legacy
+// porte aux octets 6-7, puis le marqueur, le request-id et le bloc de flags
+// comme ucd2Frame(), puis la queue legacy recopiee telle quelle (le payload est
+// herite - c'est la rege de l'utilisateur, l'enveloppe seule change). La
+// longueur declaree est 9 + payload, et le trailer est le CRC calcule sur la
+// trame entiere - la table ucd2SeqXor ne vaut que pour la longueur 25, elle ne
+// peut pas servir ici. Les sequences sont celles de U2SEQS, le compteur est
+// pose par la fabrique elle-meme (transmit ne doit plus y toucher : le trailer
+// d'un seq reprise apres le CRC ne serait plus le bon).
+(:test)
+function dOptionFramesMatchTheReferenceCodec(logger) {
+	var d = cleanUcd2Link();
+	var bad = "";
+	for (var i = 0; i < U2SEQS.size(); i++) {
+		var seq = U2SEQS[i];
+		BLEBarrel.ucd2SeqNo = seq - 1;
+		var f7 = d.ucd2FrameOption(BLEBarrel.cmdSetVideoSubNormal);
+		if (f7.size() != 32) {
+			bad += " set7 seq=" + seq.toString() + " len=" + f7.size().toString() + " want=32";
+		}
+		var got7 = u2hex(f7);
+		if (!got7.equals(DREF_SET7[i])) {
+			bad += " set7 seq=" + seq.toString() + " got=" + got7 + " want=" + DREF_SET7[i];
+		}
+		BLEBarrel.ucd2SeqNo = seq - 1;
+		var f9 = d.ucd2FrameOption(BLEBarrel.cmdSet8k30);
+		if (f9.size() != 36) {
+			bad += " set9 seq=" + seq.toString() + " len=" + f9.size().toString() + " want=36";
+		}
+		var got9 = u2hex(f9);
+		if (!got9.equals(DREF_SET9[i])) {
+			bad += " set9 seq=" + seq.toString() + " got=" + got9 + " want=" + DREF_SET9[i];
+		}
+	}
+	logger.debug("frames=" + U2SEQS.size().toString() + "x2 (32,36)" + (bad.length() == 0 ? " all match the codec" : bad));
+	return bad.length() == 0;
+}
+
+// Ce que la reponse a une ecriture d'option peut et doit faire : fermer son
+// retry (le 0x00c8 est l'acquit d'acceptation, le meme que start/stop), et ne
+// RIEN deplacer dans la machine d'enregistrement. Le cas de risque est nomme :
+// une reponse d'option qui croise un start encore en attente ne doit pas le
+// declarer Shooting. Le pendant est epingle dans la foulée : remise en jambe
+// start, la meme trame c8 deplace bien l'etat - la garde ne s'etend pas.
+// (dev null dans ce vector : transmit repond par sa branche d'absence d'appareil
+// et le retry n'est pas arme - c'est le comportement de la jambe heritee, pas de
+// l'option ; ce qui est demande ici est l'aiguillage et la garde.)
+(:test)
+function dOptionAnswerClosesItsRetryAndMovesNothing(logger) {
+	var d = cleanUcd2Link();
+	BLEBarrel.ucd2Armed = true;
+	BLEBarrel.detectedLevel = 3;
+	d.ucd2Send(BLEBarrel.cmdSetVideoSubNormal);
+	var asked = BLEBarrel.ucd2TxKind == BLEBarrel.retryKindOption;
+	BLEBarrel.recState = BLEBarrel.stateStarting;
+	BLEBarrel.mMessage = "Starting";
+	d.onCharacteristicChanged(null, u2f(9, BLEBarrel.ucd2TypeFile, 0x42, 0xc8, 0x00, u2fileBody()));
+	var kept = BLEBarrel.recState == BLEBarrel.stateStarting && BLEBarrel.mMessage.equals("Starting");
+	BLEBarrel.recState = BLEBarrel.stateStarting;
+	BLEBarrel.mMessage = "Starting";
+	BLEBarrel.ucd2TxKind = BLEBarrel.retryKindStart;
+	d.onCharacteristicChanged(null, u2f(9, BLEBarrel.ucd2TypeFile, 0x43, 0xc8, 0x00, u2fileBody()));
+	var moves = BLEBarrel.recState == BLEBarrel.stateStartRec;
+	BLEBarrel.ucd2Armed = false;
+	BLEBarrel.detectedLevel = 1;
+	BLEBarrel.ucd2TxKind = 0;
+	logger.debug("askedAsOption=" + asked.toString() + " answerKeptState=" + kept.toString() + " startAnswerStillMoves=" + moves.toString());
+	return asked && kept && moves;
+}

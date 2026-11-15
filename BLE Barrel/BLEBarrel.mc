@@ -46,6 +46,7 @@ const RETRY_DELAY_MS = 2500;
 const RETRY_MAX = 3;
 const retryKindStart = 1;
 const retryKindStop = 2;
+const retryKindOption = 3;
 
 
 
@@ -253,7 +254,15 @@ var ucd2SeqNo as Lang.Number = 1;
 
 
 var txUcd2 as Lang.Boolean = false;
+// True only for a frame whose sequence the builder already stamped and whose
+// trailer is a CRC over the whole frame - transmit() then keeps its hands
+// off the sequence (ucd2Send sets and clears it around the send).
+var txUcd2Stamped as Lang.Boolean = false;
 var ucd2TxKind as Lang.Number = 0;
+// The trigger of the last option write, kept so the retry of kind option
+// can rebuild and re-stamp that very frame (start/stop rebuild from their
+// constants; an option frame is whichever row the user chose).
+var ucd2TxFrame as Lang.ByteArray or Null = null;
 
 
 var ucd2RxBuf as Lang.ByteArray or Null = null;
@@ -926,16 +935,26 @@ class BleDevice extends BluetoothLowEnergy.BleDelegate {
 
 
 	// The routing question itself, kept apart from the sender so a test can ask
-	// it: which frames change envelope. Only the two this barrel measured on an
-	// X6 in 2023 (the X6a/X6b corpora) — the start and the stop. Everything
-	// else asked while the envelope is armed keeps the legacy shape it was
-	// built in; the fact that carries that ruling is the same corpora's
-	// statement at :3362-3364 (an X6 answers an ask of the old envelope with a
-	// frame of the new one, and both envelopes cross one stream — PROTOCOL_APK
-	// L409-412). ucd2Send ignores any trigger but these two anyway (kind stays
-	// 0 at :938); this is the sendCMD side of the same datum.
+	// it: which frames change envelope. Ruled again on 15 nov. evening, over the
+	// real-X6 corpora the user deposited (X6a/X6b, camera X6 ECD3MA): a legacy
+	// ask receives NO answer at all - the "UCD2 answer to a legacy ask" this
+	// comment used to cite (PROTOCOL_APK L409-412) was keepalive noise, the
+	// 0x5079 pushes running unbroken across our TX. What the camera does answer
+	// is the UCD2 envelope: our own start/stop come back as code 0x00c8, and
+	// the owner of the camera confirmed the start and the stop executing on his
+	// X6. So under a camera the scan NAMED as X6 (detectedLevel == 3) every
+	// frame of the old envelope changes envelope - the user's rule, verified on
+	// hardware. Under a forcing (the scan named another model) only the two
+	// orders measured in 2023 still cross: the raw inherited writes of a forced
+	// run are the proven bench path and stay raw.
 	function onUcd2Leg(value as Lang.ByteArray) as Lang.Boolean {
-		return value == cmdStartRec || value == cmdStopRec;
+		if (value == cmdStartRec || value == cmdStopRec) {
+			return true;
+		}
+		// The 04 00 at octets 4-5 is the envelope marker of the old protocol
+		// (StatusTest's frame() carries it too): under a named X6 this whole
+		// family rides the UCD2 leg, payload inherited untouched.
+		return detectedLevel == 3 && value.size() >= 17 && value[4] == 0x04 && value[5] == 0;
 	}
 
 	function ucd2Send(trigger as Lang.ByteArray) as Void {
@@ -947,6 +966,13 @@ class BleDevice extends BluetoothLowEnergy.BleDelegate {
 			cancelPendingStart();
 		} else if (trigger == cmdStartRec) {
 			kind = retryKindStart;
+		} else if (detectedLevel == 3 && onUcd2Leg(trigger)) {
+			// The option writes of a named X6: the frame carries its own
+			// command number at octets 6-7 (4 start, 5 stop - the numbers
+			// already answered in the air - 7 video-mode sets, 9 resolution
+			// sets). The retry owns the trigger so it can rebuild and re-stamp.
+			kind = retryKindOption;
+			ucd2TxFrame = trigger;
 		}
 		if (kind == 0) {
 			return;
@@ -957,11 +983,105 @@ class BleDevice extends BluetoothLowEnergy.BleDelegate {
 		if (hookCeiling()) {
 			return;
 		}
-		var frame = ucd2Frame(op);
+		var frame = kind == retryKindOption ? ucd2FrameOption(trigger) : ucd2Frame(op);
+		if (kind == retryKindOption) {
+			// One named line for an experiment whose op is not yet measured: the
+			// cooperative user's log must be able to name it. Rare by nature (a
+			// user choice), never per chunk, never per keepalive - the lesson of
+			// 57a8a50 is respected: no string built on the hot path.
+			System.println("[ucd2] TX op=" + (trigger[7] & 0xff).toString() + " len=" + frame.size().toString());
+		}
 		txUcd2 = true;
+		// The option builder stamps its sequence itself and transmit() must not
+		// take it back: its trailer is a CRC over the whole frame, and a seq
+		// re-stamped after the CRC is a lie again (the seq-xor table is exact
+		// only at length 25).
+		txUcd2Stamped = kind == retryKindOption;
 		ucd2TxKind = kind;
 		transmit(frame);
 		txUcd2 = false;
+		txUcd2Stamped = false;
+	}
+
+	// An option frame of the old envelope, framed into a FILE body of the new
+	// one: the code the legacy frame already carries at octets 6-7, then the
+	// marker, request id and flags block exactly as ucd2Frame builds them, then
+	// the legacy tail (octets 16..) copied verbatim - the payload is inherited,
+	// only the envelope changes (the user's rule, 15 nov.). Unlike ucd2Frame,
+	// this one stamps its own sequence and closes the frame with the CRC-32 of
+	// the Insta360 variant computed over the whole frame: the reference codec
+	// (tools/insta360_ucd2.py, build_file_command with a body) does exactly
+	// that, and its bytes are the test vectors. The op stays UNMEASURED until
+	// the cooperative user's log names it - this is an experiment, not a claim.
+	function ucd2FrameOption(legacy as Lang.ByteArray) as Lang.ByteArray {
+		var payload = legacy.slice(16, legacy.size());
+		var declared = 9 + payload.size();
+		var f = new [16 + declared]b;
+		f[0] = 0x55;
+		f[1] = 0x43;
+		f[2] = 0x44;
+		f[3] = 0x32;
+		f[4] = 0x01;
+		f[5] = UCD2_FLAGS;
+		f[6] = ucd2TypeFile;
+		var s = ucd2SeqNo + 1;
+		if (s > 254) {
+			s = 1;
+		}
+		ucd2SeqNo = s;
+		f[UCD2_SEQ] = s & 0xff;
+		f[8] = declared & 0xff;
+		f[9] = (declared >> 8) & 0xff;
+		f[10] = 0;
+		f[11] = 0;
+		f[12] = legacy[7] & 0xff;
+		f[13] = legacy[6] & 0xff;
+		// (the command number at the legacy frame's octets 6-7 is big-endian -
+		// 00 04 start, 00 05 stop, 00 07 mode sets, 00 09 resolution sets -
+		// and the FILE body writes the same number in the envelope's native
+		// little-endian order, which is exactly what ucd2Frame(4) does for the
+		// start the camera has already answered).
+		f[14] = ucd2FileMarker;
+		f[15] = ucd2ReqId & 0xff;
+		f[16] = (ucd2ReqId >> 8) & 0xff;
+		f[17] = ucd2FileFlags[0];
+		f[18] = ucd2FileFlags[1];
+		f[19] = ucd2FileFlags[2];
+		f[20] = ucd2FileFlags[3];
+		var p = 21;
+		for (var i = 0; i < payload.size(); i++) {
+			f[p] = payload[i];
+			p = p + 1;
+		}
+		var crc = ucd2Crc32(f, p);
+		f[p] = crc & 0xff;
+		f[p + 1] = (crc >> 8) & 0xff;
+		f[p + 2] = (crc >> 16) & 0xff;
+		f[p + 3] = (crc >> 24) & 0xff;
+		return f;
+	}
+
+	// The CRC-32 variant Insta360 ships (tools/insta360_ucd2.py, the crc
+	// docstring: poly 0x04C11DB7, init 0xffffffff, no final xor, each byte
+	// XORed into the LOW byte followed by four MSB table rounds). Four table
+	// rounds are thirty-two bit steps, so it is computed bit by bit instead of
+	// by the 256-entry table: a frame never crosses thirty-six octets, a
+	// thousand shifts answer it at build time, and no table lands in memory
+	// (the OOM lesson of b9d6f8d). Mirrored and checked against the codec in
+	// python before it was written here.
+	function ucd2Crc32(f as Lang.ByteArray, upto as Lang.Number) as Lang.Number {
+		var crc = 0xffffffff;
+		for (var i = 0; i < upto; i++) {
+			crc = crc ^ (f[i] & 0xff);
+			for (var r = 0; r < 32; r++) {
+				if ((crc & 0x80000000) != 0) {
+					crc = ((crc << 1) & 0xffffffff) ^ 0x04c11db7;
+				} else {
+					crc = (crc << 1) & 0xffffffff;
+				}
+			}
+		}
+		return crc;
 	}
 
 
@@ -2784,6 +2904,14 @@ class BleDevice extends BluetoothLowEnergy.BleDelegate {
 
 	function onUcd2Frame() as Void {
 		cancelRetry();
+		if (ucd2TxKind == retryKindOption) {
+			// A 0x00c8 that closes an option write closes ONLY that write's retry.
+			// It says nothing of the recording, and the recording machine must not
+			// answer for it - the risk the design names (X6b corpus): an option's
+			// answer crossing while a start is still pending would declare the
+			// watch Shooting on a camera that said nothing of the kind.
+			return;
+		}
 		if (recState == stateStarting) {
 			// The ucd2 frame answers the start THIS watch wrote (stateStarting
 			// is only ever the app's own press, the InputDelegate writes it) -
@@ -3007,12 +3135,14 @@ class BleDevice extends BluetoothLowEnergy.BleDelegate {
 	}
 
 	function sendCMD(value as Lang.ByteArray) as Void {
-		// The envelope belongs to the model, not to the frame: only what was
-		// measured on that envelope changes it (onUcd2Leg, and the fact at
-		// :3362). An option frame asked while armed rides the raw legacy path
-		// below, unchanged — an X6 reads it (same corpora) — and is counted by
-		// the raw path's ceiling alone; ucd2Send keeps its own ceiling for its
-		// two frames. One write, one ceiling answer.
+		// The envelope belongs to the model, not to the frame. Under a camera the
+		// scan named X6 (detectedLevel 3) onUcd2Leg answers true for the whole
+		// legacy-command family: every write crosses as UCD2, payload inherited -
+		// the 15 nov. corpora show that camera answering no legacy frame at all.
+		// Under a forcing the two 2023 orders still cross and the option writes
+		// ride the raw legacy path below unchanged, counted by the raw path's
+		// ceiling; ucd2Send keeps its own ceiling for the frames it takes. One
+		// write, one ceiling answer.
 		if (ucd2Armed && onUcd2Leg(value)) {
 			ucd2Send(value);
 			return;
@@ -3054,11 +3184,15 @@ class BleDevice extends BluetoothLowEnergy.BleDelegate {
 
 
 		if (txUcd2) {
-			ucd2SeqNo = ucd2SeqNo + 1;
-			if (ucd2SeqNo > 254) {
-				ucd2SeqNo = 1;
+			if (!txUcd2Stamped) {
+				ucd2SeqNo = ucd2SeqNo + 1;
+				if (ucd2SeqNo > 254) {
+					ucd2SeqNo = 1;
+				}
+				ucd2StampSeq(value, ucd2SeqNo);
 			}
-			ucd2StampSeq(value, ucd2SeqNo);
+			// A pre-stamped frame (ucd2FrameOption) keeps its sequence: the CRC in
+			// its trailer was computed over the frame as it stands.
 		} else {
 			SeqNo = SeqNo + 1;
 			if (SeqNo > 254) {
@@ -3285,6 +3419,8 @@ class BleDevice extends BluetoothLowEnergy.BleDelegate {
 		if (retryCount > RETRY_MAX) {
 
 			var wasStart = (retryKind == retryKindStart);
+			var wasStop = (retryKind == retryKindStop);
+			var wasOption = (retryKind == retryKindOption);
 			cancelRetry();
 
 
@@ -3306,18 +3442,22 @@ class BleDevice extends BluetoothLowEnergy.BleDelegate {
 				if (recState == stateStarting) {
 					recState = stateStopRec;
 				}
-			} else {
+			} else if (wasStop) {
 				if (recState == stateStopping) {
 					recState = stateStartRec;
 				}
 			}
-			if (ucd2Armed) {
+			// An option write asserts no state of its own: its exhaustion undoes
+			// nothing the user pressed. Criterion 14 asks the line that answers it,
+			// and the line names the kind below.
+			if (ucd2Armed && !wasOption) {
 
 
 
 				mMessage = "No answer from camera";
 			}
-			wireLine("retry", "exhausted kind=" + (wasStart ? "start" : "stop") + " recState=" + recState.toString() + " (the state the link last named stands)");
+			var kindName = wasStart ? "start" : (wasStop ? "stop" : "option");
+			wireLine("retry", "exhausted kind=" + kindName + " recState=" + recState.toString() + (wasOption ? " (an option write undoes no state)" : " (the state the link last named stands)"));
 			WatchUi.requestUpdate();
 			return;
 		}
@@ -3325,6 +3465,11 @@ class BleDevice extends BluetoothLowEnergy.BleDelegate {
 		inRetry = true;
 		if (retryKind == retryKindStart) {
 			resendStart();
+		} else if (retryKind == retryKindOption && ucd2TxFrame != null) {
+			// The retry of an option write rebuilds that frame through the very
+			// route of the first attempt (sendCMD -> ucd2Send -> ucd2FrameOption),
+			// with a fresh sequence and a fresh CRC.
+			sendCMD(ucd2TxFrame);
 		} else {
 			sendCMD(cmdStopRec);
 		}
