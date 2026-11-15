@@ -545,9 +545,17 @@ function onSelect(item) as Void {
      	// selection, like the Timelapse stop just below and the flags above. Only a
      	// branch of the generated route re-arms it in the same selection.
      	BLEBarrel.starlapseStartMode = false;
-		// Only the X6Video entry below re-arms UCD2; any other menu selection
-		// returns the widget to the legacy envelope.
-		BLEBarrel.ucd2Armed = false;
+		// The UCD2 arming belongs to the model, not to the selection: the chain
+		// of the barrel arms it at the link (BLEBarrel :3732, menuLevel==3),
+		// the forced path arms it at the choice of the MenuLevel submenu (below,
+		// :615). A selection returns the widget to the legacy envelope only for a
+		// camera of another level — on the X6 line the rows of this menu ARE the
+		// rows of the armed camera, and the press that follows a selection must
+		// still reach the leg it was measured on (predicate vectorized in
+		// Levels.keepsUcd2AfterSelection).
+		if (!Levels.keepsUcd2AfterSelection(BLEBarrel.menuLevel)) {
+			BLEBarrel.ucd2Armed = false;
+		}
 		
 		itemID = item.getId() as Lang.String;
 		// Axis S-1: the id of the item the user selected, and the character that
