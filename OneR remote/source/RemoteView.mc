@@ -431,8 +431,11 @@ class RemoteView extends WatchUi.View {
 			drawModeDots(dc, cx, cy, rr);
 			if (setRows.size() > 0) { drawBackCue(dc, cx, cy, rr); }
 		}
-		drawColumn(dc, x0, cy, x0 + L_PAD + colMax, r, title, titleColor, titleFocused, timer, rows, dots,
-			dots ? readyRows : rows.size());
+		var col = {
+			:title => title, :titleColor => titleColor, :titleFocused => titleFocused,
+			:timer => timer, :rows => rows, :hits => dots, :nLayout => dots ? readyRows : rows.size()
+		};
+		drawColumn(dc, x0, cy, x0 + L_PAD + colMax, r, col);
 		if (s == UI_RECORDING) {
 			drawKeyGlyph(dc, cx, cy, rr, 180, :flag);    // UP = highlight
 			drawKeyGlyph(dc, cx, cy, rr, 209, :target);  // DOWN = Track That
@@ -554,7 +557,17 @@ class RemoteView extends WatchUi.View {
 	//   rows       [LABEL, value, value colour, focused, all choices or null]: label as a small
 	//              superscript in C_MUTED, values aligned; a row without a label starts at the edge
 	//   hits       record the row centres for touch focus (settings only)
-	hidden function drawColumn(dc, x0, ym, xMax, r, title, titleColor, titleFocused, timer, rows, hits, nLayout) {
+	// One dictionary instead of twelve arguments: the API 3.x VMs cap methods at nine
+	// arguments (told by the compiler on fenix5plus et al., 15 nov.), so a column is
+	// passed as data. { :title, :titleColor, :titleFocused, :timer, :rows, :hits, :nLayout }
+	hidden function drawColumn(dc, x0, ym, xMax, r, col) {
+		var title = col[:title];
+		var titleColor = col[:titleColor];
+		var titleFocused = col[:titleFocused];
+		var timer = col[:timer];
+		var rows = col[:rows];
+		var hits = col[:hits];
+		var nLayout = col[:nLayout];
 		fontsReady(dc);
 		var lf = labelFont;
 		var vf = colFonts[1];
