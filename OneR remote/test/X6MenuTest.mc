@@ -158,9 +158,9 @@ function keepsUcd2OnlyAtX6Level(logger) {
 // (execute de plus physiquement - temoin l'utilisateur cooperatif proprietaire).
 // Donc sous X6 NOMME au scan (detectedLevel == 3), toute ecriture de l'ancienne
 // enveloppe part dans l'enveloppe UCD2, le payload herite tel quel. Le nombre de
-// commande du corps est celui que la trame legacy porte deja aux octets 6-7
-// (gros-boutiste : 00 04 demarrer, 00 05 arreter, 00 07 modes video, 00 09
-// resolutions), ecrit dans l'ordre natif petit-boutiste du corps FILE - ce que
+// commande du corps est celui que la trame legacy porte deja aux octets 7-8
+// (u16 petit-boutiste : 04 00 demarrer, 05 00 arreter, 07 00 modes video,
+// 09 00 resolutions), dans le meme ordre d'octets que le corps FILE - ce que
 // fait deja ucd2Frame(4) pour le demarrer que la camera a deja acquitte. Sous
 // forcage (detectedLevel != 3), rien ne change : le
 // brut herite est le chemin de banc et de crash-test prouve le 15 nov.
@@ -252,6 +252,38 @@ function dOptionFramesMatchTheReferenceCodec(logger) {
 	}
 	logger.debug("frames=" + U2SEQS.size().toString() + "x2 (32,36)" + (bad.length() == 0 ? " all match the codec" : bad));
 	return bad.length() == 0;
+}
+
+// L'accompagnement demande par l'utilisateur (15 nov.) : un X6 nomme au scan ne
+// repond AUCUNE ask legacy (les deux corpus, zero trame legacy en RX). La demande
+// d'etat 15 est la seule ask que le courant emettait encore sous X6 detecte (les
+// asks auth et carte ont deja leur garde ucd2Armed) : ici elle est refusee, et le
+// refus repond par la donnee marquee + la ligne, jamais par une absence (critere
+// 14). La donnee marquee est de portee du lien : le bond suivant la remet a faux
+// (:1922, :3806), une autre camera redemande pour elle-meme. Le courant FORCE
+// n'est pas un X6 nomme : sa demande d'etat est le chemin prouve au poignet le
+// 15 nov., il ne change pas. Ce vector ne peut pas observer la vraie demande
+// sortante (un Device ne se construit pas en unitaire) ; il epingle que la marque
+// du refus vient de la regle X6 nomme, et qu'aucun timer n'est arme.
+(:test)
+function dStatusAskRefusedUnderNamedX6(logger) {
+	var d = freshLink();
+	BLEBarrel.detectedLevel = 3;
+	d.askCamStatus();
+	var marked = BLEBarrel.x5StatusAsked;
+	var noTimer = BLEBarrel.x5StatusDue == null;
+	var triesKept = BLEBarrel.x5StatusTries == 0;
+	// Le meme appel, detection d'une X5 : la regle ne marque rien (et l'appareil
+	// absent termine la course comme avant) - la marque vient bien du nom X6.
+	var e = freshLink();
+	BLEBarrel.detectedLevel = 1;
+	e.askCamStatus();
+	var untouched = !BLEBarrel.x5StatusAsked && BLEBarrel.x5StatusDue == null;
+	BLEBarrel.x5StatusAsked = false;
+	BLEBarrel.x5StatusDue = null;
+	BLEBarrel.x5StatusTries = 0;
+	logger.debug("namedX6 marked=" + marked.toString() + " noTimer=" + noTimer.toString() + " triesKept=" + triesKept.toString() + " x5detection untouched=" + untouched.toString());
+	return marked && noTimer && triesKept && untouched;
 }
 
 // Ce que la reponse a une ecriture d'option peut et doit faire : fermer son

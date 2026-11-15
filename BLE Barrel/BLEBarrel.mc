@@ -1035,12 +1035,12 @@ class BleDevice extends BluetoothLowEnergy.BleDelegate {
 		f[10] = 0;
 		f[11] = 0;
 		f[12] = legacy[7] & 0xff;
-		f[13] = legacy[6] & 0xff;
-		// (the command number at the legacy frame's octets 6-7 is big-endian -
-		// 00 04 start, 00 05 stop, 00 07 mode sets, 00 09 resolution sets -
-		// and the FILE body writes the same number in the envelope's native
-		// little-endian order, which is exactly what ucd2Frame(4) does for the
-		// start the camera has already answered).
+		f[13] = legacy[8] & 0xff;
+		// (the command number sits at the legacy frame's octets 7-8 as a
+		// little-endian u16 - 04 00 start, 05 00 stop, 07 00 mode sets,
+		// 09 00 resolution sets, the same octet order the FILE body uses -
+		// and carrying that pair across is exactly what ucd2Frame(4) already
+		// does for the start the camera has answered).
 		f[14] = ucd2FileMarker;
 		f[15] = ucd2ReqId & 0xff;
 		f[16] = (ucd2ReqId >> 8) & 0xff;
@@ -1984,6 +1984,20 @@ class BleDevice extends BluetoothLowEnergy.BleDelegate {
 	// three sit past the cut - they stay unknown, which is why this asks for the
 	// state and nothing pretends to know the rest.
 	function askCamStatus() as Void {
+		if (detectedLevel == 3) {
+			// The scan NAMED an X6: that camera answers no frame of the old
+			// envelope (the real X6a/X6b corpora, 15 nov. - zero legacy bytes
+			// in any RX stream). ask-15 on that bond is dead traffic: its
+			// retry storm was the "giving up" noise of the old runs. The
+			// refusal answers by data and a line, never by an absence
+			// (criterion 14): the datum marks the ask closed FOR THIS BOND -
+			// the next bond resets it (:1922, :3806) and another camera asks
+			// for itself - and no timer is armed. A forcing is not a named X6:
+			// its status ask is the proven wrist path of 15 nov., untouched.
+			x5StatusAsked = true;
+			wireLine("cam state", "ask refused, the scan named an X6 (no legacy answer exists)");
+			return;
+		}
 		if (x5StatusAsked || device == null) {
 			return;
 		}
