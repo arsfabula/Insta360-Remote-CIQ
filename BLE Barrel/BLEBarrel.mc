@@ -263,6 +263,13 @@ var ucd2TxKind as Lang.Number = 0;
 // can rebuild and re-stamp that very frame (start/stop rebuild from their
 // constants; an option frame is whichever row the user chose).
 var ucd2TxFrame as Lang.ByteArray or Null = null;
+// The frame the UCD2 leg last put on air is an ASK (the status ask 15), not a
+// write: the ask owns its own bounded retry (x5StatusDue, x5StatusTries,
+// STATUS_RETRY_MAX - the same machinery the raw path uses). Every send states this
+// datum, like ucd2TxKind, so the transport never inherits it from the frame before
+// it: no second retry loop on one frame, and the ceiling of the forcing does not
+// count a question as a write.
+var ucd2TxAsk as Lang.Boolean = false;
 
 
 var ucd2RxBuf as Lang.ByteArray or Null = null;
@@ -966,8 +973,11 @@ class BleDevice extends BluetoothLowEnergy.BleDelegate {
 		}
 		// The 04 00 at octets 4-5 is the envelope marker of the old protocol
 		// (StatusTest's frame() carries it too): under a run that speaks UCD2 this
-		// whole family rides the UCD2 leg, payload inherited untouched.
-		return runSpeaksUcd2() && value.size() >= 17 && value[4] == 0x04 && value[5] == 0;
+		// whole family rides the UCD2 leg, payload inherited untouched - including
+		// the asks whose body is empty (the status ask is 16 octets of header and
+		// nothing else), which is why the bound here is the header itself and not a
+		// payload length.
+		return runSpeaksUcd2() && value.size() >= 16 && value[4] == 0x04 && value[5] == 0;
 	}
 
 	function ucd2Send(trigger as Lang.ByteArray) as Void {
@@ -980,14 +990,15 @@ class BleDevice extends BluetoothLowEnergy.BleDelegate {
 		} else if (trigger == cmdStartRec) {
 			kind = retryKindStart;
 		} else if (onUcd2Leg(trigger)) {
-			// The option writes of a run that speaks the new envelope, named or
-			// forced: the gate is the one the switch already read (onUcd2Leg, via
-			// runSpeaksUcd2) - asking the detection a second time here would drop
-			// the frame at kind==0, silently, with no line to answer for the
-			// rejection (criterion 14). The frame carries its own command number at
-			// octets 6-7 (4 start, 5 stop - the numbers already answered in the
-			// air - 7 video-mode sets, 9 resolution sets). The retry owns the
-			// trigger so it can rebuild and re-stamp.
+			// The writes - and the one ask - of a run that speaks the new envelope,
+			// named or forced: the gate is the one the switch already read
+			// (onUcd2Leg, via runSpeaksUcd2) - asking the detection a second time
+			// here would drop the frame at kind==0, silently, with no line to answer
+			// for the rejection (criterion 14). The frame carries its own command
+			// number at octets 6-7 (4 start, 5 stop - the numbers already answered
+			// in the air - 7 video-mode sets, 9 resolution sets, 15 the status ask,
+			// whose body is empty and whose op stays unmeasured like the two option
+			// ops). The retry owns the trigger so it can rebuild and re-stamp.
 			kind = retryKindOption;
 			ucd2TxFrame = trigger;
 		}
@@ -996,8 +1007,13 @@ class BleDevice extends BluetoothLowEnergy.BleDelegate {
 		}
 		// Axis of the ceiling: the UCD2 leg is asked the same question as the
 		// legacy one, so a forced X6 family on a camera of another model is bounded
-		// the same way and answers with the same line (criterion 14).
-		if (hookCeiling()) {
+		// the same way and answers with the same line (criterion 14). The status ask
+		// is EXEMPT: a question is not a write, it already carries its own bound
+		// (x5StatusTries, STATUS_RETRY_MAX - the same machinery the raw path uses),
+		// and counting it here would spend the forcing's budget on questions and
+		// starve the very writes that bench exists to look at.
+		var isAsk = trigger == cmdApply;
+		if (!isAsk && hookCeiling()) {
 			return;
 		}
 		var frame = kind == retryKindOption ? ucd2FrameOption(trigger) : ucd2Frame(op);
@@ -1015,6 +1031,10 @@ class BleDevice extends BluetoothLowEnergy.BleDelegate {
 		// only at length 25).
 		txUcd2Stamped = kind == retryKindOption;
 		ucd2TxKind = kind;
+		// The transport reads this to keep its hands off the retry of an ask (see
+		// the module note at ucd2TxAsk): every send states it, so it is never
+		// inherited from the frame before it - the same discipline as ucd2TxKind.
+		ucd2TxAsk = isAsk;
 		transmit(frame);
 		txUcd2 = false;
 		txUcd2Stamped = false;
@@ -2009,8 +2029,9 @@ class BleDevice extends BluetoothLowEnergy.BleDelegate {
 			// refusal answers by data and a line, never by an absence
 			// (criterion 14): the datum marks the ask closed FOR THIS BOND -
 			// the next bond resets it (:1922, :3806) and another camera asks
-			// for itself - and no timer is armed. A forcing is not a named X6:
-			// its status ask is the proven wrist path of 15 nov., untouched.
+			// for itself - and no timer is armed. A forcing is not a named X6: it
+			// keeps asking, and since the ruling of the 15 nov. evening it asks in
+			// the envelope the run speaks - see the leg branch below.
 			x5StatusAsked = true;
 			wireLine("cam state", "ask refused, the scan named an X6 (no legacy answer exists)");
 			return;
@@ -2020,8 +2041,18 @@ class BleDevice extends BluetoothLowEnergy.BleDelegate {
 		}
 		x5StatusAsked = true;
 		x5StatusTries = x5StatusTries + 1;
-		transmit(cmdApply);
-		wireLine("cam state", "asked command 15, try " + x5StatusTries.toString());
+		if (runSpeaksUcd2()) {
+			// A run that speaks the new envelope asks its status IN it (the user's
+			// ruling, 15 nov. evening): the old envelope is not left on air beside
+			// it. The op stays unmeasured like the two option ops, and ucd2Send
+			// names the frame as it emits it ([ucd2] TX op=15). The ask keeps its
+			// own bounded retry below - the leg does not arm a second one.
+			ucd2Send(cmdApply);
+			wireLine("cam state", "asked command 15 through the UCD2 leg, try " + x5StatusTries.toString());
+		} else {
+			transmit(cmdApply);
+			wireLine("cam state", "asked command 15, try " + x5StatusTries.toString());
+		}
 		if (x5StatusTries <= STATUS_RETRY_MAX) {
 			scheduleStatusTimer(STATUS_RETRY_MS);
 		}
@@ -3258,9 +3289,12 @@ class BleDevice extends BluetoothLowEnergy.BleDelegate {
 
 		if (!inRetry) {
 			if (txUcd2) {
-
-
-				scheduleRetry(ucd2TxKind);
+				// An ask owns its retry (askCamStatus: x5StatusDue, x5StatusTries).
+				// Arming the write retry on top of it would run two loops on one
+				// frame - the retry storm the 15 nov. accompaniment removed.
+				if (!ucd2TxAsk) {
+					scheduleRetry(ucd2TxKind);
+				}
 			} else if (value == cmdStartRec) {
 				scheduleRetry(retryKindStart);
 			} else if (value == cmdStopRec) {

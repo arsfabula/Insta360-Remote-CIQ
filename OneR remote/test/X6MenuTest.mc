@@ -1,10 +1,10 @@
 using Levels;
 using BLEBarrel;
 
-// La moitié « menu X6 » de la suite unitaire : la table du niveau 3 decisee le
+// La moitiÃ© Â« menu X6 Â» de la suite unitaire : la table du niveau 3 decisee le
 // 15 nov. (x6-menu-design.md, decisions B1 + A1). Une table est une donnee,
-// pas une fonction : ce que ces vectors pingent est la FORME de la table — sa
-// taille, ses ids dans l'ordre, ses familles — parce que c'est exactement ce
+// pas une fonction : ce que ces vectors pingent est la FORME de la table â€” sa
+// taille, ses ids dans l'ordre, ses familles â€” parce que c'est exactement ce
 // que le banc lira (le menu construit ses items a travers rowsMain/rowsRes).
 // Les deux vectors visent la table attendue, pas l'actuelle : ils sont ecrits
 // avant la reecriture de rowsMainL3/rowsResL3 (rouge voulu, TDD).
@@ -22,10 +22,10 @@ function idsOf(rows) {
 
 // La table L3 est la table L2 sans la rangee Burst ("p3") : la page produit X6
 // (14-nov) nomme le meme jeu de modes que la X5, sans Burst. La copie est
-// litterale — memes ids, meme ordre — et rien sous L3 ne bouge : les tailles
+// litterale â€” memes ids, meme ordre â€” et rien sous L3 ne bouge : les tailles
 // de L2 (11) et de L1 (9) sont epinglees parce que la copie ne doit deplacer
 // aucune table d'un niveau inferieur. Le domaine des familles est clos : plus
-// aucune rangee, a aucun niveau, ne repond la famille sentinelle "x" — la
+// aucune rangee, a aucun niveau, ne repond la famille sentinelle "x" â€” la
 // ligne placeholder du niveau 3 disparait avec ce change. Et "v0" de L3 garde
 // sub=1 : sans lui le sous-menu Resolution ne s'ouvrirait pas sur un X6.
 (:test)
@@ -107,7 +107,7 @@ function x6ResTableIsLiteralInheritance(logger) {
 // L'aiguillage A1 : ce qui change d'enveloppe et ce qui ne change pas. Seules
 // les deux trames mesurees sur un X6 en 2023 (demarrer, arreter) voyagent vers
 // la jambe UCD2 ; toute autre trame, une option par exemple, garde la forme
-// heritee dans laquelle elle a ete construite — le fait qui porte la decision :
+// heritee dans laquelle elle a ete construite â€” le fait qui porte la decision :
 // un X6 repond aux asks de l'ancienne enveloppe par des trames UCD2 du meme
 // flux (corpus X6a/X6b, BLEBarrel.mc:3362-3364, PROTOCOL_APK L409-412).
 // La seconde moitie du vector epingle le comportement existant a ne pas casser
@@ -139,7 +139,7 @@ function ucd2LegNamesOnlyStartStop(logger) {
 
 // La selection ne doit jamais eteindre l'armement UCD2 d'un courant dont le
 // niveau repond ses propres lignes (X6, niveau 3) : l'armement est du cote du
-// modele — la chaine du barillet le pose au lien (:3713), le chemin force a la
+// modele â€” la chaine du barillet le pose au lien (:3713), le chemin force a la
 // choice (InputDelegate:607). Hors de ce niveau, la remise a zero heritee
 // reste : un X5 ou un X3 qui recoit une selection retourne a son envelope.
 (:test)
@@ -167,7 +167,7 @@ function keepsUcd2OnlyAtX6Level(logger) {
 // soir, vectors d'au-dessous - le banc avait mesure le melange des deux
 // enveloppes et l'avait juge defectueux).
 //
-// Les octets de référence ne viennent pas du barillet : ils sont la reponse du
+// Les octets de rÃ©fÃ©rence ne viennent pas du barillet : ils sont la reponse du
 // codec documente tools/insta360_ucd2.py (build_file_command(seq, code, 1, body)),
 // genere le 15 nov. au soir pour les deux corps reels ci-dessous - la queue de
 // cmdSetVideoSubNormal (code 7) et la queue de cmdSet8k30 (code 9). Le trailer de
@@ -198,7 +198,7 @@ const DREF_SET9 = [
 
 // La porte de l'aiguillage, dans les deux sens : sous X6 nomme au scan, toute
 // trame de l'ancienne enveloppe (garde 0x0004 aux octets 4-5) change d'enveloppe ;
-// sous forçage d'un modele de niveau 3, la meme famille change d'enveloppe aussi -
+// sous forÃ§age d'un modele de niveau 3, la meme famille change d'enveloppe aussi -
 // jugement de l'utilisateur du 15 nov. au soir, releve sur le banc (voir les deux
 // vectors qui suivent). Les deux ordres de mesure 2023 la changent de toute facon.
 // Le vector laisse detectedLevel a sa valeur d'usine a la sortie : les vectors ne
@@ -221,14 +221,14 @@ function dLegWrapsEveryLegacyFrameUnderDetectedX6(logger) {
 
 // Le fait qui a fait changer la regle (15 nov. au soir, scene simulateur sur le
 // modele de montre de l'utilisateur cooperatif, journal simrun-910-fenix847mm.txt) :
-// sous forçage X6 devant la X5 du bureau, QUATRE trames UCD2 sont parties (op 4,
+// sous forÃ§age X6 devant la X5 du bureau, QUATRE trames UCD2 sont parties (op 4,
 // une par appui demarrer) et ZERO n'a recu de reponse, pendant que les ecritures de
 // mode partaient en brut et que l'X6 y reagissait visiblement. Un courant qui parle
-// deux enveloppes a la fois n'est pas un protocole, c'en est la moitie : le forçage
+// deux enveloppes a la fois n'est pas un protocole, c'en est la moitie : le forÃ§age
 // d'un modele de niveau 3 arme l'enveloppe UCD2 comme l'arme une liaison reelle de
-// ce modele. Le datum du forçage (testModel/testLevel) reste distinct de celui de la
+// ce modele. Le datum du forÃ§age (testModel/testLevel) reste distinct de celui de la
 // detection (detectedLevel) - les deux sont rendus l'un apres l'autre ici, et un
-// forçage d'un modele de l'ancienne enveloppe (X5, niveau 2) n'ouvre rien.
+// forÃ§age d'un modele de l'ancienne enveloppe (X5, niveau 2) n'ouvre rien.
 (:test)
 function dForcedLevel3WrapsTheWholeLegacyFamily(logger) {
 	var d = freshLink();
@@ -238,14 +238,14 @@ function dForcedLevel3WrapsTheWholeLegacyFamily(logger) {
 	var md = d.onUcd2Leg(BLEBarrel.cmdSetVideoSubNormal);
 	var rs = d.onUcd2Leg(BLEBarrel.cmdSet8k30);
 	var st = d.onUcd2Leg(BLEBarrel.cmdStartRec);
-	// Le forçage retire : la porte se referme avec lui, elle ne reste pas ouverte
+	// Le forÃ§age retire : la porte se referme avec lui, elle ne reste pas ouverte
 	// par habitude d'un run precedent.
 	BLEBarrel.testModel = "";
 	BLEBarrel.testLevel = -1;
 	var offMd = d.onUcd2Leg(BLEBarrel.cmdSetVideoSubNormal);
 	var offRs = d.onUcd2Leg(BLEBarrel.cmdSet8k30);
 	var offSt = d.onUcd2Leg(BLEBarrel.cmdStartRec);
-	// Un forçage d'un modele de l'ancienne enveloppe n'ouvre pas la jambe neuve.
+	// Un forÃ§age d'un modele de l'ancienne enveloppe n'ouvre pas la jambe neuve.
 	BLEBarrel.testModel = "X5";
 	BLEBarrel.testLevel = 2;
 	var x5Md = d.onUcd2Leg(BLEBarrel.cmdSetVideoSubNormal);
@@ -257,12 +257,12 @@ function dForcedLevel3WrapsTheWholeLegacyFamily(logger) {
 }
 
 // L'autre moitie du meme jugement, a l'endroit ou le courant se casse aujourd'hui :
-// l'aiguillage de sendCMD ouvrirait la jambe UCD2 sous forçage de niveau 3, mais
+// l'aiguillage de sendCMD ouvrirait la jambe UCD2 sous forÃ§age de niveau 3, mais
 // ucd2Send a sa propre garde, qui lit detectedLevel (:969) et rendrait kind==0 -
 // la trame disparaitrait sans jamais partir sur l'air, sans une ligne pour repondre
 // de ce rejet (critere 14). L'expediteur donc suit la meme donnee que l'aiguillage :
-// sous forçage de niveau 3 l'ecriture d'option est prise comme option; hors de ce
-// forçage elle est rejetee comme le pingle deja ucd2LegNamesOnlyStartStop.
+// sous forÃ§age de niveau 3 l'ecriture d'option est prise comme option; hors de ce
+// forÃ§age elle est rejetee comme le pingle deja ucd2LegNamesOnlyStartStop.
 // (dev null dans ce vector : transmit repond par sa branche d'absence d'appareil.)
 (:test)
 function dForcedLevel3OptionWriteIsNotDroppedByTheSender(logger) {
@@ -284,6 +284,103 @@ function dForcedLevel3OptionWriteIsNotDroppedByTheSender(logger) {
 	BLEBarrel.ucd2TxKind = 0;
 	logger.debug("forcedX6 askedAsOption=" + asked.toString() + " | forcingOff dropped=" + dropped.toString());
 	return asked && dropped;
+}
+
+// L'ask de statut dans la meme regle (jugement de l'utilisateur du 15 nov. au soir,
+// apres la rectification D4 : un courant qui parle l'UCD2 ne laisse AUCUNE trame de
+// l'ancienne enveloppe sur l'air). La demande d'etat 15 est un corps vide de l'ancienne
+// enveloppe (cmdApply, 16 octets, nombre de commande 0f 00 aux octets 7-8) : sous un
+// courant UCD2 - camera nommee X6 au scan, ou forÃ§age d'un modele de ce niveau - elle
+// change d'enveloppe comme le reste. Sans ces deux donnees elle reste brute : c'est le
+// chemin prouve au poignet le 15 nov. Un forÃ§age d'un modele de l'ancienne enveloppe
+// (X5, niveau 2) ne l'ouvre pas.
+(:test)
+function dStatusAskChangesEnvelopeWithTheRun(logger) {
+	var d = freshLink();
+	BLEBarrel.detectedLevel = 2;
+	var raw = d.onUcd2Leg(BLEBarrel.cmdApply);
+	BLEBarrel.testModel = "X5";
+	BLEBarrel.testLevel = 2;
+	var rawX5Forced = d.onUcd2Leg(BLEBarrel.cmdApply);
+	BLEBarrel.testModel = "X6";
+	BLEBarrel.testLevel = 3;
+	var forced = d.onUcd2Leg(BLEBarrel.cmdApply);
+	BLEBarrel.testModel = "";
+	BLEBarrel.testLevel = -1;
+	BLEBarrel.detectedLevel = 3;
+	var named = d.onUcd2Leg(BLEBarrel.cmdApply);
+	BLEBarrel.detectedLevel = 1;
+	logger.debug("plain=" + raw.toString() + " forcedX5=" + rawX5Forced.toString() + " forcedX6=" + forced.toString() + " namedX6=" + named.toString());
+	return !raw && !rawX5Forced && forced && named;
+}
+
+// Les octets de cette ask encapsulee, contre le codec documente : corps FILE de
+// longueur declaree 9 (le corps vide), code 0f 00 repris de la trame legacy, marqueur
+// 02, request-id 1, bloc 00 00 80 00, trailer CRC-32 sur la trame entiere - soit 25
+// octets, la longueur exacte des deux ordres deja acquittes par la camera. Reference
+// generee le 15 nov. au soir par tools/insta360_ucd2.py :
+//   build_file_command(seq, 15, 1, b"")
+const DREF_ASK15 = [
+	"55434432010c0401090000000f0002010000800000ce20348a",
+	"55434432010c0402090000000f000201000080000063aff527",
+	"55434432010c0403090000000f0002010000800000f8d54a43",
+	"55434432010c0407090000000f0002010000800000232276d5",
+	"55434432010c0455090000000f0002010000800000a8be7f0c",
+	"55434432010c0480090000000f00020100008000002b41866c",
+	"55434432010c04aa090000000f0002010000800000188ea32f",
+	"55434432010c04fe090000000f00020100008000007e10e8a9"
+];
+
+// La fabrique d'un corps vide : cmdApply n'a rien au-dela de l'en-tete de 16 octets,
+// donc le payload herite est vide et la trame fait la longueur des deux ordres mesures.
+// Le vector ne se contente pas d'une longueur : il compare les octets des huit sequences
+// (le trailer n'est pas la table ucd2SeqXor, seulement juste a 25 - un CRC sur la trame
+// entiere se sait par la reponse du codec).
+(:test)
+function dAsk15FrameMatchesTheReferenceCodec(logger) {
+	var d = cleanUcd2Link();
+	var bad = "";
+	for (var i = 0; i < U2SEQS.size(); i++) {
+		var seq = U2SEQS[i];
+		BLEBarrel.ucd2SeqNo = seq - 1;
+		var f = d.ucd2FrameOption(BLEBarrel.cmdApply);
+		if (f.size() != 25) {
+			bad += " ask15 seq=" + seq.toString() + " len=" + f.size().toString() + " want=25";
+		}
+		var got = u2hex(f);
+		if (!got.equals(DREF_ASK15[i])) {
+			bad += " ask15 seq=" + seq.toString() + " got=" + got + " want=" + DREF_ASK15[i];
+		}
+	}
+	logger.debug("frames=" + U2SEQS.size().toString() + " (25)" + (bad.length() == 0 ? " all match the codec" : bad));
+	return bad.length() == 0;
+}
+
+// L'ask encapsulee n'appartient pas au retry d'ecriture : la demande d'etat possede DEJA
+// son propre retry borne (x5StatusDue, x5StatusTries, STATUS_RETRY_MAX - le meme que le
+// chemin brut). L'armer deux fois sur une seule trame est exactement le orage de retries
+// que l'accompagnement du 15 nov. a supprime. L'expediteur donc marque la trame comme
+// une ask, et ce marqueur ne s'etend pas a l'ecriture d'option voisine - sans quoi un
+// start perdrait son retry par heredite d'une ask precedente.
+(:test)
+function dAskOnTheUcd2LegIsNotOwnedByTheWriteRetry(logger) {
+	var d = cleanUcd2Link();
+	BLEBarrel.ucd2Armed = true;
+	BLEBarrel.detectedLevel = 2;
+	BLEBarrel.testModel = "X6";
+	BLEBarrel.testLevel = 3;
+	d.ucd2Send(BLEBarrel.cmdApply);
+	var askMarked = BLEBarrel.ucd2TxAsk;
+	var askAsOption = BLEBarrel.ucd2TxKind == BLEBarrel.retryKindOption;
+	d.ucd2Send(BLEBarrel.cmdSetVideoSubNormal);
+	var writeMarked = BLEBarrel.ucd2TxAsk;
+	BLEBarrel.testModel = "";
+	BLEBarrel.testLevel = -1;
+	BLEBarrel.ucd2Armed = false;
+	BLEBarrel.detectedLevel = 1;
+	BLEBarrel.ucd2TxKind = 0;
+	logger.debug("ask framedAsOption=" + askAsOption.toString() + " askMarked=" + askMarked.toString() + " optionWriteMarked=" + writeMarked.toString());
+	return askAsOption && askMarked && !writeMarked;
 }
 
 // La fabrique : le corps FILE porte le nombre de commande que la trame legacy
@@ -331,8 +428,8 @@ function dOptionFramesMatchTheReferenceCodec(logger) {
 // refus repond par la donnee marquee + la ligne, jamais par une absence (critere
 // 14). La donnee marquee est de portee du lien : le bond suivant la remet a faux
 // (:1922, :3806), une autre camera redemande pour elle-meme. Le courant FORCE
-// n'est pas un X6 nomme : sa demande d'etat est le chemin prouve au poignet le
-// 15 nov., il ne change pas. Ce vector ne peut pas observer la vraie demande
+// n'est pas un X6 nomme : il demande encore, et depuis le jugement du 15 nov. au
+// soir il demande dans l'enveloppe que le courant parle (le vector d'au-dessus).
 // sortante (un Device ne se construit pas en unitaire) ; il epingle que la marque
 // du refus vient de la regle X6 nomme, et qu'aucun timer n'est arme.
 (:test)
@@ -360,7 +457,7 @@ function dStatusAskRefusedUnderNamedX6(logger) {
 // retry (le 0x00c8 est l'acquit d'acceptation, le meme que start/stop), et ne
 // RIEN deplacer dans la machine d'enregistrement. Le cas de risque est nomme :
 // une reponse d'option qui croise un start encore en attente ne doit pas le
-// declarer Shooting. Le pendant est epingle dans la foulée : remise en jambe
+// declarer Shooting. Le pendant est epingle dans la foulÃ©e : remise en jambe
 // start, la meme trame c8 deplace bien l'etat - la garde ne s'etend pas.
 // (dev null dans ce vector : transmit repond par sa branche d'absence d'appareil
 // et le retry n'est pas arme - c'est le comportement de la jambe heritee, pas de
