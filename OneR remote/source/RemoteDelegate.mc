@@ -635,6 +635,19 @@ class ModeDelegate extends Ui.Menu2InputDelegate {
 		var id = item.getId() as Lang.String;
 		if (id.equals("exit")) { Sys.exit(); }
 		if (id.equals("forceopen")) {
+			// CdC item 159, the ceiling of a visit of the axis — the same rule the
+			// mainline's entry of the same name answers (InputDelegate :657-668): a
+			// fresh opening of the forcing submenu is a fresh ceiling, the way a
+			// fresh bond is one. Without this site the ported app carries the defect
+			// the sim bench named on 15 nov.: the only reset of the counter lived in
+			// the MenuLevel entry, an entry this UI does not carry, so a forced run
+			// died for good at the tenth write ([hook] refused) and no choice could
+			// re-arm it before an app restart. The entry that opens the submenu of
+			// the axis in this UI is the one below — it ends one visit and takes the
+			// counter of the forcing back; the print answers at the site that decides
+			// it (criterion 14 of 11.3), never by the absence of a count.
+			BLEBarrel.hookSent = 0;
+			Sys.println("[hook] reset sent=0");
 			var menu = new Ui.Menu2({:title => "Force model"});
 			addMenuLevelItems(menu);
 			Ui.pushView(menu, new ForceModelDelegate(), Ui.SLIDE_IMMEDIATE);
