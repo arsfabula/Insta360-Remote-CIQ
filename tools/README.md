@@ -1,7 +1,9 @@
 # tools
 
 Host-side tooling for the Insta360 remote. Not part of the Connect IQ build
-and not shipped to the watch. Plain Python 3, no dependencies, no `protoc`.
+and not shipped to the watch. Plain Python 3, no dependencies, no `protoc` —
+with one exception: `gen_launcher_icon.py` needs Pillow, and only when the
+launcher icons are regenerated.
 
 ## Why
 
@@ -20,6 +22,8 @@ instead of a hex blob.
 | `ciq_arrays.py` | Reads the `var cmdX = [...]b;` arrays straight out of `BLEBarrel.mc`. |
 | `test_golden.py` | Golden-byte tests: the encoder must reproduce every shipped command. |
 | `audit_commands.py` | Compares each command's payload against what its label claims. |
+| `gen_launcher_icon.py` | Draws the launcher icon from `ModeIcons.stateIcon`'s own geometry. **Needs Pillow.** |
+| `test_launcher_icon.py` | Pixel tests + a guard refusing any drift between that drawing and the `.mc` sources. |
 
 `ciq_arrays.py` deliberately parses the `.mc` source instead of holding a copy
 of the bytes, so the tests cannot drift away from what actually ships.
@@ -27,8 +31,9 @@ of the bytes, so the tests cannot drift away from what actually ships.
 ## Usage
 
 ```
-python tools/test_golden.py      # 17 tests, all must pass
-python tools/audit_commands.py   # human-readable report + candidate fixes
+python tools/test_golden.py        # golden-byte tests, all must pass
+python tools/test_launcher_icon.py # icon pixels + the fidelity guard
+python tools/audit_commands.py     # human-readable report + candidate fixes
 ```
 
 `audit_commands.py` always exits 0: a divergence between a label and its

@@ -35,6 +35,43 @@ def px(im, x, y):
     return im.getpixel((int(round(x)), int(round(y))))[:3]
 
 
+def repo_root():
+    return os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+
+def read_mc(*parts):
+    with open(os.path.join(repo_root(), *parts), encoding="utf-8-sig") as fh:
+        return fh.read()
+
+
+def stateicon_body(src):
+    """The text of stateIcon, from its definition to the next function."""
+    start = src.index("function stateIcon")
+    return src[start:src.index("\n\tfunction ", start + 1)]
+
+
+class TestFollowsTheApp(unittest.TestCase):
+    """A guard, not a discovery: the icon must not drift from the code it copies.
+
+    Same stance as the CHARACTERISED group in test_golden.py - it is green now, and
+    it exists to turn red when the app's drawing changes and this generator is left
+    behind. A picture that silently stops matching the mark on the watch face is the
+    failure this whole tool is here to avoid.
+    """
+
+    def test_geometry_literals_exist_in_modeicons(self):
+        body = stateicon_body(read_mc("OneR remote", "source", "ModeIcons.mc"))
+        for coeff in g.GEOMETRY:
+            self.assertIn(str(coeff), body,
+                          "stateIcon ne dessine plus avec %s" % coeff)
+
+    def test_palette_literals_exist_in_remoteview(self):
+        body = read_mc("OneR remote", "source", "RemoteView.mc")
+        for name, value in g.PALETTE.items():
+            self.assertIn("0x%06X" % value, body,
+                          "%s ne correspond plus a la palette de RemoteView.mc" % name)
+
+
 class TestShippedIcon(unittest.TestCase):
     def test_probes_of_the_shipped_icon(self):
         im, L = rendered_tile()                      # tile(kind="cam", ring="red", size=512)
