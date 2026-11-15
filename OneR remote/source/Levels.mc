@@ -40,7 +40,7 @@
 //   [0] id     the string the selection brings back
 //   [1] label  what the item prints
 //   [2] key    the key of refFrame(); "" names no frame, the id names itself
-//   [3] fam    "v" video mode, "p" photo mode, "r" resolution, "x" sentinel
+//   [3] fam    "v" video mode, "p" photo mode, "r" resolution
 //   [4] sub    1 opens the resolution submenu, 0 does not
 // The id namespace is scoped by the level: rowOfId() answers only through the
 // rows of the level in force, so an id never resolves through the rows of
@@ -179,16 +179,40 @@ const rowsResL2 = [
 
 // ---------------------------------------------------------------------------
 // Level 3, the UCD2 envelope (X6). The jump is real, so the level replaces
-// rather than adds: a camera of this envelope answers one entry, and the
-// legacy rows of the levels below are not offered to it — the gate of the
-// application builds no level under this one (rowsOfLevel() stops the chain
-// at a replacing level). The X6Video entry arms the envelope; its write is
-// not a frame of this table (the "x" family of the row says so, and the
-// legacy frames never reach this camera).
+// rather than adds: rowsOfLevel() stops the chain at a replacing level, and
+// this table IS the menu of the X6 line. The placeholder of the first arming
+// ("X6Video", the "x" family) is gone: the level now answers with its rows.
+// doc: X6 = same mode set as X5, minus Burst (pages produit, 14-nov-2026);
+// numbers X5-measured inherited (decision A1, 15-nov-2026); first X6 proof is
+// a user log. No X6-specific resolution enters before its first measurement
+// on the wire — the 8K50 and its family wait for a log that names them.
+// Starlapse stays out of the table exactly as at level 2 (bench decision of
+// the X5 line, CdC item 100); whether an X6 takes it is not a guess to make
+// here. Every row below is the level-2 row — same id, label, key and sub.
+// The frame each names was measured on the X5 line, never on an X6: each row
+// marks itself héritée.
 const rowsMainL3 = [
-    ["X6Video", "X6 Video", "", "x", 0]
+    ["v0",  "Video",          "v0",  "v", 1],  // X5: cmdSetVideoSubNormal (mesure L2); hérité X5, non mesuré X6. Ouvre le sous-menu Résolution ici aussi — la construction du sous-menu lit rowsRes(menuLevel)
+    ["v1",  "Bullet Time",    "v1",  "v", 0],  // X5: cmdSetVideoSubBulletTime (mesure L2); hérité X5, non mesuré X6
+    ["v2",  "Timelapse",      "v2",  "v", 0],  // X5: cmdSetVideoSubTimelapse (mesure L2); hérité X5, non mesuré X6
+    ["v4",  "TimeShift",      "v4",  "v", 0],  // X5: cmdSetVideoSubTimeShift (mesure L2); hérité X5, non mesuré X6
+    ["v6",  "Loop Recording", "v6",  "v", 0],  // X5: cmdSetVideoSubLoop (mesure L2); hérité X5, non mesuré X6
+    ["v11", "PureVideo",      "v11", "v", 0],  // X5: cmdSetVideoSubPure (mesure L2); hérité X5, non mesuré X6
+    ["v14", "Road Mode",      "v14", "v", 0],  // X5: cmdSetVideoSubRoad (mesure L2); hérité X5, non mesuré X6
+    ["v15", "InstaFrame",     "v15", "v", 0],  // X5: cmdSetVideoSubInstaFrame (mesure L2); hérité X5, non mesuré X6
+    ["p0",  "Photo",          "p0",  "p", 0],  // X5: cmdSetPhotoSubNormal (mesure L2); hérité X5, non mesuré X6. La capture appartient à la presse, jamais à la sélection
+    ["p2",  "Interval",       "p2",  "p", 0]   // X5: cmdSetPhotoSubInterval (mesure L2); hérité X5, non mesuré X6. Burst ("p3") absent: la page produit X6 ne le nomme pas
 ];
-const rowsResL3 = [];
+// The order is the level-2 order, inherited whole (CdC item 107: high pixel
+// class to low; the protocol numbers carry no order).
+const rowsResL3 = [
+    ["r167", "8K 30",    "r167", "r", 0],  // X5: cmdSet8k30 (mesure L2); hérité X5, non mesuré X6
+    ["r10",  "5.7K 30",  "r10",  "r", 0],  // X5: cmdSet5k30 (mesure L2); hérité X5, non mesuré X6
+    ["r19",  "5.7K 25",  "r19",  "r", 0],  // X5: cmdSet5k25 (mesure L2); hérité X5, non mesuré X6
+    ["r20",  "5.7K 24",  "r20",  "r", 0],  // X5: cmdSet5k24 (mesure L2); hérité X5, non mesuré X6
+    ["r12",  "4K 50",    "r12",  "r", 0],  // X5: cmdSet4k50 (mesure L2); hérité X5, non mesuré X6
+    ["r0",   "4K 30",    "r0",   "r", 0]   // X5: cmdSet4k30 (mesure L2); hérité X5, non mesuré X6
+];
 
 // The chain of the main menu and of the resolution submenu, per level.
 const chainMain = [rowsMainL0, rowsMainL1, rowsMainL2, rowsMainL3];

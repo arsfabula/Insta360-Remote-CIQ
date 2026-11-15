@@ -474,8 +474,13 @@ function levelsChainTableFallbackAndConfirm(logger) {
 	ok = ok && Levels.rowOfId(2, "PhotoHDR") == null;
 	var p0 = Levels.rowOfId(2, "p0");
 	ok = ok && p0 != null && p0[Levels.RKEY].equals("p0") && entryFrame("p0") != null;
-	// L3 answers its own rows alone, like every replacing level.
-	ok = ok && Levels.rowOfId(3, "v0") == null;
+	// L3 answers its own rows alone, like every replacing level. Since the
+	// design of 15 nov. those rows ARE the X5 line minus Burst, so a shared id
+	// resolves at that level too — and the id the X6 table does not carry
+	// ("p3", Burst) resolves nowhere.
+	var r3 = Levels.rowOfId(3, "v0");
+	ok = ok && r3 != null && r3[Levels.RID].equals("v0") && r3[Levels.RSUB] == 1;
+	ok = ok && Levels.rowOfId(3, "p3") == null;
 	var r1 = Levels.rowOfId(1, "TimeLapse");
 	ok = ok && r1 != null && r1[Levels.RKEY].equals("TimeLapse") && entryFrame("TimeLapse") != null;
 	ok = ok && entryFrame("PhotoHDR") != null;
@@ -552,10 +557,13 @@ function modeKeepLoadAndPoseForTheLevel(logger) {
 	// An id of another level never comes back through this level's rows.
 	var fb = Levels.poseFor(2, "TimeLapse", "DefaultV", "Default Video");
 	ok = ok && fb != null && fb[Levels.RID].equals("v0");
-	// The level the user forced to: the kept id of the X5 line is not a row of
-	// the UCD2 level, so that level's own first row answers.
-	var l3 = Levels.poseFor(3, "p0", "v6", "Loop Recording");
-	ok = ok && l3 != null && Levels.rowOfId(3, l3[Levels.RID]) != null;
+	// The forced UCD2 level answers through its own rows — the X5 line minus
+	// Burst (design of 15 nov.). A coherent pair at that level is never moved
+	// (same rule as every other level, now that the level carries real rows),
+	// and a kept id of the line resolves through those rows.
+	ok = ok && Levels.poseFor(3, "p0", "v6", "Loop Recording") == null;
+	var l3 = Levels.poseFor(3, "p0", "DefaultV", "Default Video");
+	ok = ok && l3 != null && l3[Levels.RID].equals("p0") && Levels.rowOfId(3, l3[Levels.RID]) != null;
 	// No rows: nothing to pose, the app's legacy pose stays (level 0).
 	ok = ok && Levels.poseFor(0, "p0", "DefaultV", "Default Video") == null;
 	ok = ok && Levels.poseFor(0, null, null, null) == null;
