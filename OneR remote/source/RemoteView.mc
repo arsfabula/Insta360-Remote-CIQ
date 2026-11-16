@@ -157,6 +157,21 @@ class RemoteView extends WatchUi.View {
 	}
 
 	function onShow() {
+		// Geste du menu sur les cinq cibles sans comportement menu (Venu 4,
+		// Venu X1, vivoactive 6, Approach S72 43/47 mm, regle 16 nov. ; la
+		// liste des appareils pris en charge est celle du SDK 9.3.0) :
+		// l'indicateur d'action du bord droit, que l'utilisateur connait deja
+		// hors application. L'invocation est gardee a la source : l'operation
+		// est de l'API 5.1.1, le manifeste demande 3.1.0. La detection suit
+		// les echantillons du SDK - WatchUi has :WatchFaceDelegate, Analog -
+		// l'operateur has sur la classe nomme l'API, pas l'objet ; la gate
+		// 9.1.0 de l'instant a refuse les trois formes appelee de has, mot
+		// reserve de la grammaire (c'est la le note de banc). Le delegate
+		// repond a l'indicateur par le meme menu que le comportement menu :
+		// un seul menu, deux gestes.
+		if (WatchUi.View has :setActionMenuIndicator) {
+			setActionMenuIndicator({ :enabled => true });
+		}
 		timer.start(method(:onTick), 125, true);
 	}
 

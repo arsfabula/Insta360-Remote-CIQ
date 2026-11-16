@@ -484,6 +484,17 @@ class RemoteDelegate extends Ui.BehaviorDelegate {
 		return true;
 	}
 
+	// Le geste de l'indicateur d'action (regle de l'utilisateur, 16 nov.) :
+	// les montres sans comportement menu - Venu 4, Venu X1, vivoactive 6,
+	// Approach S72 - ne connaissent que celui-la, et c'est le geste qu'elles
+	// montrent a l'ecran hors application, donc deja connu de l'utilisateur.
+	// Le delegue ne remplace pas onMenu, il s'y range : un seul menu, deux
+	// gestes. La vue active l'indicateur (RemoteView.onShow) ; sur les cinq
+	// boutons le systeme n'appelle pas ce geste ici, onMenu reste la voie.
+	function onActionMenu() {
+		return onMenu();
+	}
+
 	// The warning menu, opened - and here, and only here, the countdown is
 	// written: opening this menu is the proof that the user knows how to
 	// reach it (the user's rule of 14 nov.: a BACK exit without this reading

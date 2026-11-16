@@ -484,6 +484,13 @@ class InputDelegate extends Ui.BehaviorDelegate {
         return true;
     }
 
+    // Le geste de l'indicateur d'action, porte au meme menu que onMenu (la
+    // regle de l'utilisateur du 16 nov. est celle de la vue active ; la paire
+    // de banc la porte aussi, pour rester pareille a sa jumelle).
+    function onActionMenu() {
+        return onMenu();
+    }
+
 }
 
 class Menu2Delegate extends Ui.Menu2InputDelegate {
