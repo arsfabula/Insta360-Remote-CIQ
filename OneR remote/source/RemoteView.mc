@@ -34,9 +34,23 @@ const C_BLUE = 0x3FA9F5;
 const C_GREEN = 0x3DDC84;
 const C_AMBER = 0xFFB020;
 const C_RED = 0xFF3B30;
-const C_BATT = 0x00E5FF;  // battery widget (bright cyan)
-const C_CARD = 0xFF4FE0;  // storage widget (bright magenta)
+// Les deux arcs de jauge (batterie, carte SD) sont hors service depuis la regle
+// du 16 nov. — voir le bloc drawWidgets plus bas. Couleurs gardees commentees.
+// const C_BATT = 0x00E5FF;  // battery widget (bright cyan)
+// const C_CARD = 0xFF4FE0;  // storage widget (bright magenta)
 const C_TOAST_BG = 0x8A1C14;  // toast pill (dark red, white text)
+
+// La version que l'utilisateur relit sur l'ecran de connexion (regle du 16 nov. :
+// ce chantier est majeur, la version devient 1.0.0). Aucune API runtime ne dit la
+// version de l'appli — verifie le 16 nov. dans le SDK 9.1.0 (api.debug.xml et doc :
+// ni System ni Application n'ont de getVersion ; firmwareVersion / monkeyVersion /
+// softwareVersion parlent de la MONTRE). Ce const est donc la source affichee, le
+// version= du manifest celle du magasin : a bumper ENSEMBLE. Les deux manifestes
+// (manifest.xml, manifest-test.xml) portent 1.0.0 depuis ce jour.
+// CE FICHIER EST LE SEUL a definir vNum : un const est global a toute l'application,
+// et la gate du 16 nov. l'a montre (Redefinition of 'vNum' des que ViewData le
+// declarait aussi). La vue hors service, ViewData, ne fait plus que le nommer.
+const vNum = "1.0.0";
 
 // Layout tokens for the two-column screens (fractions of the screen radius r, or pixels)
 const L_ROW = 0.15;     // row pitch in the right column
@@ -144,9 +158,16 @@ class RemoteView extends WatchUi.View {
 	}
 
 	hidden var lastAuth = -1;
-	hidden var lastPower = null;  // null unknown, true USB, false battery
-	hidden var lastLow = false;
-	hidden var lastCard = null;
+	// Regle du 16 nov. (cosmetique, chantier 1.0.0) : l'etat de la batterie et du
+	// stockage n'est pas tenable a l'ecran — le niveau ne franchit jamais la coupe
+	// de 20 octets de Connect IQ et la demande de stockage ne rapporte rien d'affichable
+	// sur la leg UCD2. Tout ce qui s'y rapporte est commente : les variables ci-dessous,
+	// les toasts de branchement / carte SD dans onTick, et le jeu complet des arcs et
+	// icones (drawWidgets / gauge / label / xf / outline) plus bas. Le decodage reste
+	// dans le barillet, ses vectors restent verts : l'appli ne lit plus rien.
+	// hidden var lastPower = null;  // null unknown, true USB, false battery
+	// hidden var lastLow = false;
+	// hidden var lastCard = null;
 
 	function onTick() as Void {
 		tick++;
@@ -171,23 +192,26 @@ class RemoteView extends WatchUi.View {
 		}
 		// X5 status pushes (0x2003 power, 0x2004 low battery, 0x2006 card): announce changes.
 		// The mainline barrel decodes these into its own fields, read through the peek accessors.
-		var pw = dev.peekBatteryArrived() ? (dev.peekBatteryPowerType() == 1) : null;
-		if (pw != null && pw != lastPower) {
-			toast(pw ? "Camera charging" : "Camera on battery"); // pushed only on plug / unplug
-			lastPower = pw;
-		}
+		// Hors service depuis la regle du 16 nov. (voir le bloc de tete des variables ci-dessus) :
+		// la caméra ne pousse rien de sur en leg UCD2, et l'ecran ne doit plus promettre
+		// une batterie ou une carte qu'il ne peut pas voir.
+		// var pw = dev.peekBatteryArrived() ? (dev.peekBatteryPowerType() == 1) : null;
+		// if (pw != null && pw != lastPower) {
+		// 	toast(pw ? "Camera charging" : "Camera on battery"); // pushed only on plug / unplug
+		// 	lastPower = pw;
+		// }
 		var sr = dev.settingResultTaken();
 		if (sr == :rejected) { toast("Setting rejected"); vibe([[80, 300]]); }
-		if (dev.peekBatteryLow() && !lastLow) { toast("Camera battery low"); vibe([[80, 300], [0, 150], [80, 300]]); }
-		lastLow = dev.peekBatteryLow();
-		var cd = dev.peekStorageState();
-		if (cd != null && cd != lastCard) {
-			if (cd == 1) { toast("No SD card"); vibe([[80, 300]]); }
-			else if (cd == 2) { toast("SD card full"); vibe([[80, 300]]); }
-			else if (cd >= 3) { toast("SD card error"); vibe([[80, 300]]); }
-			else if (lastCard != null) { toast("SD card OK"); }
-			lastCard = cd;
-		}
+		// if (dev.peekBatteryLow() && !lastLow) { toast("Camera battery low"); vibe([[80, 300], [0, 150], [80, 300]]); }
+		// lastLow = dev.peekBatteryLow();
+		// var cd = dev.peekStorageState();
+		// if (cd != null && cd != lastCard) {
+		// 	if (cd == 1) { toast("No SD card"); vibe([[80, 300]]); }
+		// 	else if (cd == 2) { toast("SD card full"); vibe([[80, 300]]); }
+		// 	else if (cd >= 3) { toast("SD card error"); vibe([[80, 300]]); }
+		// 	else if (lastCard != null) { toast("SD card OK"); }
+		// 	lastCard = cd;
+		// }
 		// Animate while searching or in transition; otherwise redraw once a second.
 		if (s == UI_SEARCHING || s == UI_STARTING || s == UI_STOPPING || (s == UI_RECORDING && tick % 4 == 0) || tick % 8 == 0) {
 			WatchUi.requestUpdate();
@@ -302,7 +326,9 @@ class RemoteView extends WatchUi.View {
 		dc.clear();
 
 		drawRing(dc, cx, cy, r - 10, s);
-		if (s != UI_SEARCHING) { drawWidgets(dc, cx, cy, r - 10); }
+		// Regle du 16 nov. : plus d'arcs de batterie ni de carte SD — la leg UCD2 ne
+		// rapporte ni l'un ni l'autre. L'anneau ne porte plus que l'arc d'etat (drawRing).
+		// if (s != UI_SEARCHING) { drawWidgets(dc, cx, cy, r - 10); }
 		// The GPS mark is a permanent option (the user's ruling, 13 nov.): it
 		// stands whenever the flag is on, whatever the level. Its colour is the
 		// fact of the radio, kept by the barrel at every onPosition.
@@ -380,8 +406,13 @@ class RemoteView extends WatchUi.View {
 			Settings.clampFocus(currentModeId);
 		}
 
-		// Bottom: camera name along the ring (muted placeholder until we know which camera)
+		// Bottom: camera name along the ring (muted placeholder until we know which camera).
+		// Regle du 16 nov. : tant que le lien n'est pas fait — l'ecran de connexion — le
+		// nom porte la version en clair, pour que l'utilisateur puisse nommer la version
+		// qu'il a au poignet. Le nom d'une camera reelle ne la porte pas : l'ecran dit
+		// des faits, et la version se relit en cherchant.
 		var known = !(s == UI_NOT_FOUND || s == UI_SEARCHING);
+		var nameText = known ? cameraName() : ("Insta360 v" + vNum);
 		var dots = (s == UI_READY);
 
 		// Icon + column as one group, centred in the free width between the mode dots and the
@@ -418,7 +449,7 @@ class RemoteView extends WatchUi.View {
 		if (left < areaL) { left = areaL; }
 		var ix = left + iconW / 2;
 		// camera name on the group's vertical axis
-		drawNameArc(dc, cx, cy, rr, known ? cameraName() : "Insta360", known ? C_DIM : C_MUTED, dots,
+		drawNameArc(dc, cx, cy, rr, nameText, known ? C_DIM : C_MUTED, dots,
 			left + (iconW + gap + colW) / 2);
 		var x0 = left + iconW + gap - L_PAD;
 		if (hero == :mode) {
@@ -818,141 +849,150 @@ class RemoteView extends WatchUi.View {
 		dc.setPenWidth(1);
 	}
 
-	// Outer widget ring, top half: battery arc on the upper right (85..50 deg),
-	// card / remaining arc on the upper left (95..130 deg). Track + fill + small value label.
-	hidden function drawWidgets(dc, cx, cy, rr) {
-		var gr = rr - 17;
-		// battery
-		// Over Connect IQ the level never arrives (cut at 20 bytes); the power source and the
-		// low-battery alarm do. Show the level when known, else USB / BAT / LOW.
-		var b = dev.peekBatteryLevel();
-		var bc = C_BATT;
-		var bt = "--";
-		if (b != null) {
-			if (b <= 15) { bc = C_RED; } else if (b <= 30) { bc = C_AMBER; }
-			bt = b + "%";
-		}
-		var pwKnown = dev.peekBatteryArrived();
-		if (pwKnown) {
-			if (dev.peekBatteryPowerType() == 1) { bc = C_GREEN; if (b == null) { bt = "USB"; } }
-			else if (b == null) { bt = "BAT"; }
-		}
-		if (dev.peekBatteryLow() && !(pwKnown && dev.peekBatteryPowerType() == 1)) {
-			bc = C_RED;
-			if (b == null) { bt = "LOW"; }
-		}
-		var bf = (b != null) ? b / 100.0 : ((bc == C_RED) ? 0.1 : null);
-		gauge(dc, cx, cy, gr, 85, 50, bf, bc);
-		label(dc, cx, cy, gr - 20, 67, bt, bc, :battery, bf == null ? 0.0 : bf);
-
-		// storage: only when the camera ever reported it (its replies are cut at 20 bytes over Connect IQ)
-		var card = dev.peekStorageState();
-		var freeB = dev.peekStorageFreeBytes();
-		if (card == null && freeB == null) {
-			return;
-		}
-		var frac = null;
-		var sc = C_CARD;
-		var txt = "--";
-		if (card != null && card != 0) {
-			sc = C_RED;
-			txt = (card == 1) ? "NO SD" : (card == 2) ? "FULL" : "SD ERR";
-			frac = 0.0;
-		} else if (freeB != null) {
-			// the total never crosses the 20-octet ceiling: no fraction, the free figure answers for itself
-			txt = ((freeB as Lang.Number).toFloat() / 1073741824.0).format("%.1f") + "G";
-		} else if (card == 0) {
-			txt = "SD";   // card present and writable; sizes do not reach the watch
-		}
-		if (frac != null && frac < 0.1) { sc = C_AMBER; }
-		gauge(dc, cx, cy, gr, 95, 130, frac, sc);
-		label(dc, cx, cy, gr - 20, 113, txt, sc, :card, 0.0);
-	}
-
-	// Arc from a0 towards a1 (degrees, either direction); fill = fraction or null for unknown.
-	hidden function gauge(dc, cx, cy, gr, a0, a1, fill, color) {
-		var dir = (a1 < a0) ? Gfx.ARC_CLOCKWISE : Gfx.ARC_COUNTER_CLOCKWISE;
-		dc.setPenWidth(8);
-		dc.setColor(C_FAINT, Gfx.COLOR_TRANSPARENT);
-		dc.drawArc(cx, cy, gr, dir, a0, a1);
-		if (fill != null && fill > 0.01) {
-			if (fill > 1.0) { fill = 1.0; }
-			dc.setColor(color, Gfx.COLOR_TRANSPARENT);
-			dc.drawArc(cx, cy, gr, dir, a0, a0 + (a1 - a0) * fill);
-		}
-		dc.setPenWidth(1);
-	}
-
-	// Value with a small leading glyph (battery or SD card), set along the ring's curve.
-	// Text runs clockwise (left to right across the top); the glyph leads at the higher angle.
-	hidden var arcFont = null;
-
-	hidden function label(dc, cx, cy, rad, deg, text, color, glyph, level) {
-		var gw = 20;
-		var gap = 6;
-		var radial = (dc has :drawRadialText);
-		if (radial && arcFont == null) {
-			// the vector face exists only from API 4.1: on a target without it the arc answers
-			// with the system font, the same fallback the size ladder of arcFontSafe uses.
-			arcFont = (Gfx has :getVectorFont) ? Gfx.getVectorFont({:face => ["RobotoCondensedBold", "RobotoCondensedRegular"], :size => 26}) : null;
-			if (arcFont == null) { radial = false; }
-		}
-		var f = radial ? arcFont : Gfx.FONT_XTINY;
-		var tw = dc.getTextWidthInPixels(text, f);
-		var k = 180.0 / (Math.PI * rad);                // degrees per pixel at this radius
-		var span = (gw + gap + tw) * k;
-		var gDeg = deg + span / 2 - (gw / 2.0) * k;
-		var tDeg = deg - span / 2 + (tw / 2.0) * k;
-
-		// glyph drawn in local (u along the text, v outward) coordinates, rotated onto the curve
-		var ga = Math.toRadians(gDeg);
-		var gx = cx + Math.cos(ga) * rad;
-		var gy = cy - Math.sin(ga) * rad;
-		var tu = [Math.sin(ga), Math.cos(ga)];    // reading direction
-		var tv = [Math.cos(ga), -Math.sin(ga)];   // outward
-		dc.setColor(color, Gfx.COLOR_TRANSPARENT);
-		dc.setPenWidth(2);
-		if (glyph == :battery) {
-			outline(dc, gx, gy, tu, tv, [[-9, -5], [6, -5], [6, 5], [-9, 5]]);
-			dc.fillPolygon(xf(gx, gy, tu, tv, [[6, -2], [9, -2], [9, 2], [6, 2]]));
-			var fw = 11.0 * level;
-			if (fw > 0.5) { dc.fillPolygon(xf(gx, gy, tu, tv, [[-7, -3], [-7 + fw, -3], [-7 + fw, 3], [-7, 3]])); }
-			if (dev.peekBatteryPowerType() == 1) {
-				dc.setColor(C_BG, Gfx.COLOR_TRANSPARENT);
-				dc.fillPolygon(xf(gx, gy, tu, tv, [[0, 4], [-3, -1], [0, -1], [-1, -4], [3, 1], [0, 1]]));
-			}
-		} else {
-			outline(dc, gx, gy, tu, tv, [[-5, -7], [-5, 7], [2, 7], [5, 4], [5, -7]]);
-		}
-		dc.setPenWidth(1);
-		dc.setColor(color, Gfx.COLOR_TRANSPARENT);
-
-		if (radial) {
-			dc.drawRadialText(cx, cy, f, text, Gfx.TEXT_JUSTIFY_CENTER | Gfx.TEXT_JUSTIFY_VCENTER,
-				tDeg, rad, Gfx.RADIAL_TEXT_DIRECTION_CLOCKWISE);
-		} else {
-			var ta = Math.toRadians(tDeg);
-			dc.drawText(cx + Math.cos(ta) * rad, cy - Math.sin(ta) * rad, f, text,
-				Gfx.TEXT_JUSTIFY_CENTER | Gfx.TEXT_JUSTIFY_VCENTER);
-		}
-	}
-
-	hidden function xf(x, y, tu, tv, pts) {
-		var out = [];
-		for (var i = 0; i < pts.size(); i++) {
-			var u = pts[i][0]; var w = pts[i][1];
-			out.add([x + u * tu[0] + w * tv[0], y + u * tu[1] + w * tv[1]]);
-		}
-		return out;
-	}
-
-	hidden function outline(dc, x, y, tu, tv, pts) {
-		var p = xf(x, y, tu, tv, pts);
-		for (var i = 0; i < p.size(); i++) {
-			var q = p[(i + 1) % p.size()];
-			dc.drawLine(p[i][0], p[i][1], q[0], q[1]);
-		}
-	}
+// REGLE DU 16 NOV. (cosmetique, chantier 1.0.0) — BLOC HORS SERVICE :
+// l'etat de la batterie et du stockage n'est pas tenable a l'ecran : le niveau
+// ne franchit pas la coupe des 20 octets et la leg UCD2 ne rapporte ni la carte
+// ni l'espace libre. Les arcs, les jauges et les icones correspondantes sont
+// commentes tels quels, sans reecriture. Le point d'entree etait drawWidgets,
+// l'appel de onUpdate, commente aussi. gauge / label / xf / outline ne servaient
+// QU'a ces deux arcs — verifie le 16 nov. par grep sur tout le depot. Le
+// decodage reste dans le barillet, et ses vectors restent verts : l'appli ne
+// lit plus rien.
+	// // Outer widget ring, top half: battery arc on the upper right (85..50 deg),
+	// // card / remaining arc on the upper left (95..130 deg). Track + fill + small value label.
+	// hidden function drawWidgets(dc, cx, cy, rr) {
+		// var gr = rr - 17;
+		// // battery
+		// // Over Connect IQ the level never arrives (cut at 20 bytes); the power source and the
+		// // low-battery alarm do. Show the level when known, else USB / BAT / LOW.
+		// var b = dev.peekBatteryLevel();
+		// var bc = C_BATT;
+		// var bt = "--";
+		// if (b != null) {
+			// if (b <= 15) { bc = C_RED; } else if (b <= 30) { bc = C_AMBER; }
+			// bt = b + "%";
+		// }
+		// var pwKnown = dev.peekBatteryArrived();
+		// if (pwKnown) {
+			// if (dev.peekBatteryPowerType() == 1) { bc = C_GREEN; if (b == null) { bt = "USB"; } }
+			// else if (b == null) { bt = "BAT"; }
+		// }
+		// if (dev.peekBatteryLow() && !(pwKnown && dev.peekBatteryPowerType() == 1)) {
+			// bc = C_RED;
+			// if (b == null) { bt = "LOW"; }
+		// }
+		// var bf = (b != null) ? b / 100.0 : ((bc == C_RED) ? 0.1 : null);
+		// gauge(dc, cx, cy, gr, 85, 50, bf, bc);
+		// label(dc, cx, cy, gr - 20, 67, bt, bc, :battery, bf == null ? 0.0 : bf);
+//
+		// // storage: only when the camera ever reported it (its replies are cut at 20 bytes over Connect IQ)
+		// var card = dev.peekStorageState();
+		// var freeB = dev.peekStorageFreeBytes();
+		// if (card == null && freeB == null) {
+			// return;
+		// }
+		// var frac = null;
+		// var sc = C_CARD;
+		// var txt = "--";
+		// if (card != null && card != 0) {
+			// sc = C_RED;
+			// txt = (card == 1) ? "NO SD" : (card == 2) ? "FULL" : "SD ERR";
+			// frac = 0.0;
+		// } else if (freeB != null) {
+			// // the total never crosses the 20-octet ceiling: no fraction, the free figure answers for itself
+			// txt = ((freeB as Lang.Number).toFloat() / 1073741824.0).format("%.1f") + "G";
+		// } else if (card == 0) {
+			// txt = "SD";   // card present and writable; sizes do not reach the watch
+		// }
+		// if (frac != null && frac < 0.1) { sc = C_AMBER; }
+		// gauge(dc, cx, cy, gr, 95, 130, frac, sc);
+		// label(dc, cx, cy, gr - 20, 113, txt, sc, :card, 0.0);
+	// }
+//
+	// // Arc from a0 towards a1 (degrees, either direction); fill = fraction or null for unknown.
+	// hidden function gauge(dc, cx, cy, gr, a0, a1, fill, color) {
+		// var dir = (a1 < a0) ? Gfx.ARC_CLOCKWISE : Gfx.ARC_COUNTER_CLOCKWISE;
+		// dc.setPenWidth(8);
+		// dc.setColor(C_FAINT, Gfx.COLOR_TRANSPARENT);
+		// dc.drawArc(cx, cy, gr, dir, a0, a1);
+		// if (fill != null && fill > 0.01) {
+			// if (fill > 1.0) { fill = 1.0; }
+			// dc.setColor(color, Gfx.COLOR_TRANSPARENT);
+			// dc.drawArc(cx, cy, gr, dir, a0, a0 + (a1 - a0) * fill);
+		// }
+		// dc.setPenWidth(1);
+	// }
+//
+	// // Value with a small leading glyph (battery or SD card), set along the ring's curve.
+	// // Text runs clockwise (left to right across the top); the glyph leads at the higher angle.
+	// hidden var arcFont = null;
+//
+	// hidden function label(dc, cx, cy, rad, deg, text, color, glyph, level) {
+		// var gw = 20;
+		// var gap = 6;
+		// var radial = (dc has :drawRadialText);
+		// if (radial && arcFont == null) {
+			// // the vector face exists only from API 4.1: on a target without it the arc answers
+			// // with the system font, the same fallback the size ladder of arcFontSafe uses.
+			// arcFont = (Gfx has :getVectorFont) ? Gfx.getVectorFont({:face => ["RobotoCondensedBold", "RobotoCondensedRegular"], :size => 26}) : null;
+			// if (arcFont == null) { radial = false; }
+		// }
+		// var f = radial ? arcFont : Gfx.FONT_XTINY;
+		// var tw = dc.getTextWidthInPixels(text, f);
+		// var k = 180.0 / (Math.PI * rad);                // degrees per pixel at this radius
+		// var span = (gw + gap + tw) * k;
+		// var gDeg = deg + span / 2 - (gw / 2.0) * k;
+		// var tDeg = deg - span / 2 + (tw / 2.0) * k;
+//
+		// // glyph drawn in local (u along the text, v outward) coordinates, rotated onto the curve
+		// var ga = Math.toRadians(gDeg);
+		// var gx = cx + Math.cos(ga) * rad;
+		// var gy = cy - Math.sin(ga) * rad;
+		// var tu = [Math.sin(ga), Math.cos(ga)];    // reading direction
+		// var tv = [Math.cos(ga), -Math.sin(ga)];   // outward
+		// dc.setColor(color, Gfx.COLOR_TRANSPARENT);
+		// dc.setPenWidth(2);
+		// if (glyph == :battery) {
+			// outline(dc, gx, gy, tu, tv, [[-9, -5], [6, -5], [6, 5], [-9, 5]]);
+			// dc.fillPolygon(xf(gx, gy, tu, tv, [[6, -2], [9, -2], [9, 2], [6, 2]]));
+			// var fw = 11.0 * level;
+			// if (fw > 0.5) { dc.fillPolygon(xf(gx, gy, tu, tv, [[-7, -3], [-7 + fw, -3], [-7 + fw, 3], [-7, 3]])); }
+			// if (dev.peekBatteryPowerType() == 1) {
+				// dc.setColor(C_BG, Gfx.COLOR_TRANSPARENT);
+				// dc.fillPolygon(xf(gx, gy, tu, tv, [[0, 4], [-3, -1], [0, -1], [-1, -4], [3, 1], [0, 1]]));
+			// }
+		// } else {
+			// outline(dc, gx, gy, tu, tv, [[-5, -7], [-5, 7], [2, 7], [5, 4], [5, -7]]);
+		// }
+		// dc.setPenWidth(1);
+		// dc.setColor(color, Gfx.COLOR_TRANSPARENT);
+//
+		// if (radial) {
+			// dc.drawRadialText(cx, cy, f, text, Gfx.TEXT_JUSTIFY_CENTER | Gfx.TEXT_JUSTIFY_VCENTER,
+				// tDeg, rad, Gfx.RADIAL_TEXT_DIRECTION_CLOCKWISE);
+		// } else {
+			// var ta = Math.toRadians(tDeg);
+			// dc.drawText(cx + Math.cos(ta) * rad, cy - Math.sin(ta) * rad, f, text,
+				// Gfx.TEXT_JUSTIFY_CENTER | Gfx.TEXT_JUSTIFY_VCENTER);
+		// }
+	// }
+//
+	// hidden function xf(x, y, tu, tv, pts) {
+		// var out = [];
+		// for (var i = 0; i < pts.size(); i++) {
+			// var u = pts[i][0]; var w = pts[i][1];
+			// out.add([x + u * tu[0] + w * tv[0], y + u * tu[1] + w * tv[1]]);
+		// }
+		// return out;
+	// }
+//
+	// hidden function outline(dc, x, y, tu, tv, pts) {
+		// var p = xf(x, y, tu, tv, pts);
+		// for (var i = 0; i < p.size(); i++) {
+			// var q = p[(i + 1) % p.size()];
+			// dc.drawLine(p[i][0], p[i][1], q[0], q[1]);
+		// }
+	// }
 
 	// The warning screen of the design of 14 nov.: the user's copy verbatim,
 	// only the line breaks are mine, and the font only ever chosen so the

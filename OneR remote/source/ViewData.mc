@@ -2,7 +2,12 @@ using Toybox.WatchUi;
 using Toybox.System;
 using Toybox.Math;
 using BLEBarrel;
-const vNum = "0.9.96";
+// vNum n'est plus defini ICI (vue hors service, plus jamais affichee) : un const est
+// global a l'application et la gate du 16 nov. a refuse deux definitions. La definition
+// unique, et la version en clair sur l'ecran de connexion, vivent dans RemoteView.mc.
+// Le present fichier lit toujours vNum plus bas — si un jour on rallume cette vue, lire
+// la version se fait par la meme source que l'ecran qui sert.
+// const vNum = "1.0.0";
 
 
 class ViewData extends WatchUi.View {
