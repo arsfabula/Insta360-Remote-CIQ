@@ -52,6 +52,13 @@ const C_TOAST_BG = 0x8A1C14;  // toast pill (dark red, white text)
 // declarait aussi). La vue hors service, ViewData, ne fait plus que le nommer.
 const vNum = "1.0.0";
 
+// Le nom que l'ecran de connexion ecrit a gauche (regle du 16 nov. : « le texte a
+// gauche doit etre "Insta360 Remote" »). Ce n'est pas un nom invente ici : c'est le nom
+// livre — resources/strings.xml porte AppName = « Insta360 Remote » et les deux
+// manifestes s'en declarent (name="@Strings.AppName"). Meme discipline que vNum :
+// un seul domicile dans le code, et a aligner ici si jamais le nom livre change.
+const APP_NAME = "Insta360 Remote";
+
 // Layout tokens for the two-column screens (fractions of the screen radius r, or pixels)
 const L_ROW = 0.15;     // row pitch in the right column
 const L_TITLE = 0.20;   // title band height
@@ -350,13 +357,22 @@ class RemoteView extends WatchUi.View {
 		switch (s) {
 			case UI_SEARCHING:
 				hero = :cam; heroColor = C_BLUE;
-			title = "Searching";
+			// Regle du 16 nov. (l'utilisateur, l'ecran sous les yeux au banc simulateur) :
+			// a gauche, l'ecran de connexion donne le nom de l'appli — le nom livre, pas un
+			// mot d'etat. L'etat ne disparait pas pour autant : il descend en ligne dim,
+			// comme le reste des faits de l'ecran.
+			title = APP_NAME;
+			info.add(["", "Searching", C_DIM]);
 			info.add(["", "Wake the camera", C_DIM]);
 				if (stillRec != null) { info.add(stillRec); }
 				break;
 			case UI_NOT_FOUND:
 				hero = :camOff; heroColor = C_MUTED;
-				title = "No camera";
+				// Meme regle qu'au-dessus : le nom de l'appli a gauche, l'etat de la
+				// liaison en ligne dim. Les deux faits de cet ecran restent enonces :
+				// aucune camera vue, et le widget ne relance pas de round seul.
+				title = APP_NAME;
+				info.add(["", "No camera", C_MUTED]);
 				info.add(["START", "Retry now", C_TEXT]);
 				// Truth of the round: the widget never relaunches a scan by itself
 				// after an exhausted round (proved twice at the bench of 12 nov.).
