@@ -2,6 +2,7 @@ using Toybox.Test;
 using Toybox.System;
 using Toybox.Time;
 using Toybox.Application;
+using Toybox.WatchUi as Ui;
 using Toybox.BluetoothLowEnergy;
 using BLEBarrel;
 
@@ -491,6 +492,33 @@ function levelsChainTableFallbackAndConfirm(logger) {
 	ok = ok && Levels.levelOfName("X5") == 2;
 	logger.debug("stored=" + show(stored));
 	return ok;
+}
+
+// The order of the Force model menu IS the order of the table — newest model
+// first — then Other (the level 0 base, no model of the table) and Off (the
+// detected model back). The user's ruling of 16 nov. 2026. The level of Other
+// is dictated at the selection by the two selecteurs; this vector pins the
+// builder's contract, labels and ids, one line each — the walk stops at the
+// first null item, the same walk the mainline names at [menu].
+(:test)
+function forceMenuOrdersNewestFirstThenOtherOff(logger) {
+	var menu = new Ui.Menu2({:title => "Force model"});
+	addMenuLevelItems(menu);
+	var want = "forceX6,forceX5,forceX4,forceX3,forceX2,forceONE,forceother,forceoff";
+	var wantLabels = "X6,X5,X4,X3,X2,ONE,Other,Off";
+	var ids = "";
+	var labels = "";
+	var i = 0;
+	while (i < 40) {
+		var it = menu.getItem(i);
+		if (it == null) { break; }
+		if (ids.length() > 0) { ids += ","; labels += ","; }
+		ids += it.getId();
+		labels += it.getLabel();
+		i++;
+	}
+	logger.debug("ids=" + ids + " labels=" + labels);
+	return ids.equals(want) && labels.equals(wantLabels);
 }
 
 // The mode axis: the keep is the camera's own confirmation, the load is per

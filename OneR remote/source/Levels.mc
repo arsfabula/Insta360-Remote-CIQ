@@ -65,22 +65,26 @@ const RFAM = 3;
 const RSUB = 4;
 
 // ---------------------------------------------------------------------------
-// Axis model: the table modele -> niveau. One line per model, one provenance
-// per line. This table and the prefix chain of the protocol barrel
+// The order of the table is the order the "Force model" menu shows (the user's
+// ruling of 16 nov. 2026: newest model first). One line per model, one
+// provenance per line. This table and the prefix chain of the protocol barrel
 // (BLEBarrel.onScanResults) answer the same datum, the model of a name and
 // its level: keep the two in step, the chain names the model over the air,
 // this table is what the application reads for a forced choice and for the
 // choices of the MenuLevel submenu.
 const models = [
+    "X6",       // doc: the UCD2 envelope
     "X5",       // mesure: releve over BLE; UCD2-era menu of the X5 line
-    "X4 Air",   // doc: same line as the X4, the name decides over the air
-    "X4",       // doc: the X5 line before the X5
+    "X4",       // doc: the X5 line before the X5; the X4 Air is covered here too —
+                // it maps to the same level 2 and the air chain names it "X4"
     "X3",       // doc: the older envelope
     "X2",       // doc: the older envelope, never the level 0 (the X2 is pre-UCD2)
-    "ONE X",    // doc: the older envelope
-    "X6"        // doc: the UCD2 envelope
+    "ONE"       // doc: the older envelope; short on purpose — the air chain tests
+                // the three first characters ("ONE"), and a forced choice re-enters
+                // this table through levelOfName, so both sides must carry the same
+                // string (shortened from "ONE X", decision of 16 nov.)
 ];
-const modelLevels = [2, 2, 2, 1, 1, 1, 3];
+const modelLevels = [3, 2, 2, 1, 1, 1];
 
 // The level of a model name; -1 names no model of the table, and the caller
 // keeps the level the chain of the barrel left standing. The content test of

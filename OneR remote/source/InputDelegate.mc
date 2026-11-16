@@ -267,17 +267,22 @@ function addLevelResItems(menu, level) as Void {
 
 function addMenuLevelItems(menu) as Void {
     // Axis model, the choices of the submenu of MenuLevel: one choice per model
-    // of the level chain, plus the off choice that gives the detected model back.
-    // The choice carries a model name, never a frame and never a level number:
-    // the forcing is applied at the selection of the choice, which is where the
-    // datum of the run changes, and the level of a model answers the table of
-    // the chain at the index of its name, one datum.
+    // of the level chain, in the order of the table (newest first, the user's
+    // ruling of 16 nov. 2026), then "Other", the choice that activates the level
+    // 0 base — no model of the table, the app of start, stop and state alone —
+    // then the off choice that gives the detected model back. A choice carries a
+    // model name, never a frame and never a level number: the forcing is applied
+    // at the selection of the choice, which is where the datum of the run
+    // changes, and the level of a model answers the table of the chain at the
+    // index of its name, one datum. "Other" names no model, so its level is
+    // dictated at the selection (the two selecteurs name it), never here.
     var n = 0;
     while (n < Levels.models.size()) {
         menu.addItem(new Ui.MenuItem(Levels.models[n], "", "force" + Levels.models[n], {}));
         n += 1;
     }
-    menu.addItem(new Ui.MenuItem("off", "", "forceoff", {}));
+    menu.addItem(new Ui.MenuItem("Other", "", "forceother", {}));
+    menu.addItem(new Ui.MenuItem("Off", "", "forceoff", {}));
 }
 
 
@@ -576,8 +581,9 @@ function onSelect(item) as Void {
 		// a function of the barrel that creates the device is reached as a method of the
 		// device, not by module name (note 47 of the CdC).
 		// The id of a choice is force + the name of a model of the module verbatim
-		// (addMenuLevelItems above), and forceoff, the choice that gives the detected
-		// model back. One scan of the two tables of the module answers the model and the
+		// (addMenuLevelItems above), forceother (the level 0 base, no model of the
+		// table), and forceoff, the choice that gives the detected model back. One
+		// scan of the two tables of the module answers the model and the
 		// level of a choice, so the choice of a model and the envelope of that model
 		// answer one datum (note 8 of the CdC): no hand-written pair, no ternary (trap
 		// of the repo notes), the content test of a String is .equals() (note 9).
@@ -600,6 +606,16 @@ function onSelect(item) as Void {
 			// detection.
 			forcedModel = BLEBarrel.detectedModel;
 			forcedLevel = Levels.levelOfName(forcedModel);
+		}
+		if (itemID.equals("forceother")) {
+			// "Other" names no model of the table, so the scan above answers
+			// nothing for it and the level is dictated here: the level 0 base, the
+			// app of start, stop and state alone (the user's ruling of 16 nov.
+			// 2026). It is a level like the others, so the pair of the run carries
+			// it and the ceiling of the axis bounds the visit; only "Off" gives the
+			// detected model back.
+			forcedModel = "Other";
+			forcedLevel = 0;
 		}
 		if (forcedLevel != -1) {
 			// The forcing, applied at the selection of the choice: the datum of the

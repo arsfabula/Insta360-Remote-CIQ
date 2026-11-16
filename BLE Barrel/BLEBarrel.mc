@@ -158,15 +158,6 @@ const LOG_FRAMES = false;
 // constant false the shipped log and the unit output are exactly as before.
 const LOG_KEEPALIVE = false;
 
-
-
-
-
-
-
-const X6_TEST_HOOK = false;
-const X6_TEST_HOOK_NAME = "X5 3S6GEW";
-
 // of that: a frame of the forced family crosses only while the counter stays
 // under it, and the refusal answers with a print at the transport, never by
 // silence (criterion 14 of 11.3). The datum counts the frames that crossed.
@@ -4043,7 +4034,7 @@ function registerProfiles() as Void {
 					if (deviceName.length() >= 3) {
 					var prefix = deviceName.substring(0, 3);
 				if (prefix != null) {
-					if (prefix.equals("ONE")) { capModel = "ONE X";
+					if (prefix.equals("ONE")) { capModel = "ONE";
 						menuLevel = 1;
 					}
 					if (prefix.equals("X3 ")) { capModel = "X3";
@@ -4057,15 +4048,14 @@ function registerProfiles() as Void {
 						menuLevel = 1;
 					}
 
-					// The X4 Air shares the three first characters with the X4, so the
-					// full name decides between the two, and it decides only when the
-					// name answers the seven first characters: the name of the X4 Air
-					// over the wire was never relevee, so this test reads the datum of
-					// the name and never guesses a model.
+					// The X4 Air is covered by this branch, not named apart: the
+					// sub-test of 15 nov. here read seven characters against a six
+					// character string and could never answer true, and the model
+					// table (Levels.models) no longer carries an "X4 Air" line —
+					// both names map to the same level 2, so the three-character
+					// prefix decides, as it does for every other model. Naming the
+					// Air over the wire was never relevee anyway.
 					if (prefix.equals("X4 ")) { capModel = "X4";
-						if (deviceName.length() >= 7) {
-							if (deviceName.substring(0, 7).equals("X4 Air")) { capModel = "X4 Air"; }
-						}
 						menuLevel = 2;
 					}
 					if (prefix.equals("X5 ")) { capModel = "X5";
@@ -4127,13 +4117,12 @@ function registerProfiles() as Void {
 					// of the menu is reachable, fresh per bond of a new name.
 					loadDegradedForName();
 
-                    // The hook of the compile-time constant, whose fault was closed with
-                    // the constant at OFF (CdC item 147: the reference had `and`, the
-                    // reconstruction had `or`, which forced every named camera to the
-                    // level 3). This site stays as it is.
-                    if (X6_TEST_HOOK and deviceName.equals(X6_TEST_HOOK_NAME)) {
-						menuLevel = 3;
-					}
+					// The X6 test hook is retired (16 nov. 2026, the user's ruling): the
+					// fault closed at CdC item 147 left its constants at OFF, the bench of
+					// 15 nov. named that the hook did not survive a relink anyway, and the
+					// two constants left the tree. The "Force model" menu is the axis that
+					// forces a model on a camera of another model; the classification here
+					// stays what the prefix chain named.
 				}
 					}
 					connect(result);

@@ -666,7 +666,7 @@ class ModeDelegate extends Ui.Menu2InputDelegate {
 }
 
 // The forcing choices of the level chain (the mainline's addMenuLevelItems list:
-// force<model> / forceoff). Same datums the mainline's Menu2Delegate sets: the forcing
+// force<model> / forceother / forceoff). Same datums the mainline's Menu2Delegate sets: the forcing
 // lands at the selection of the choice, where the datum of the run changes.
 class ForceModelDelegate extends Ui.Menu2InputDelegate {
 	function initialize() {
@@ -693,6 +693,14 @@ class ForceModelDelegate extends Ui.Menu2InputDelegate {
 			// never disagree with a detection.
 			forcedModel = BLEBarrel.detectedModel;
 			forcedLevel = Levels.levelOfName(forcedModel);
+		} else if (id.equals("forceother")) {
+			// "Other" names no model of the table: the level 0 base, the app of
+			// start, stop and state alone. The level is dictated here, the datum
+			// the mainline's selecteur of the same choice dictates (the user's
+			// ruling of 16 nov. 2026) — the substring below would hand a name the
+			// chain does not answer, so this branch stands before it.
+			forcedModel = "Other";
+			forcedLevel = 0;
 		} else {
 			forcedModel = id.substring(5, id.length());
 			forcedLevel = Levels.levelOfName(forcedModel);
