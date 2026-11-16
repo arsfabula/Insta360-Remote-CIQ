@@ -52,11 +52,11 @@ const C_TOAST_BG = 0x8A1C14;  // toast pill (dark red, white text)
 // declarait aussi). La vue hors service, ViewData, ne fait plus que le nommer.
 const vNum = "1.0.0";
 
-// Le nom que l'ecran de connexion ecrit a gauche (regle du 16 nov. : « le texte a
-// gauche doit etre "Insta360 Remote" »). Ce n'est pas un nom invente ici : c'est le nom
-// livre — resources/strings.xml porte AppName = « Insta360 Remote » et les deux
-// manifestes s'en declarent (name="@Strings.AppName"). Meme discipline que vNum :
-// un seul domicile dans le code, et a aligner ici si jamais le nom livre change.
+// Le nom LIVRE de l'appli, tel que le manifest le declare : resources/strings.xml porte
+// AppName = « Insta360 Remote » et les deux manifestes pointent @Strings.AppName. Ici il
+// sert a la ligne de nom de l'anneau, sur l'ecran de connexion (« Insta360 Remote
+// v1.0.0 », regle du 16 nov. precisee au banc). Meme discipline que vNum : un seul
+// domicile dans le code, et a aligner ici si jamais le nom livre change.
 const APP_NAME = "Insta360 Remote";
 
 // Layout tokens for the two-column screens (fractions of the screen radius r, or pixels)
@@ -357,22 +357,13 @@ class RemoteView extends WatchUi.View {
 		switch (s) {
 			case UI_SEARCHING:
 				hero = :cam; heroColor = C_BLUE;
-			// Regle du 16 nov. (l'utilisateur, l'ecran sous les yeux au banc simulateur) :
-			// a gauche, l'ecran de connexion donne le nom de l'appli — le nom livre, pas un
-			// mot d'etat. L'etat ne disparait pas pour autant : il descend en ligne dim,
-			// comme le reste des faits de l'ecran.
-			title = APP_NAME;
-			info.add(["", "Searching", C_DIM]);
+			title = "Searching";
 			info.add(["", "Wake the camera", C_DIM]);
 				if (stillRec != null) { info.add(stillRec); }
 				break;
 			case UI_NOT_FOUND:
 				hero = :camOff; heroColor = C_MUTED;
-				// Meme regle qu'au-dessus : le nom de l'appli a gauche, l'etat de la
-				// liaison en ligne dim. Les deux faits de cet ecran restent enonces :
-				// aucune camera vue, et le widget ne relance pas de round seul.
-				title = APP_NAME;
-				info.add(["", "No camera", C_MUTED]);
+				title = "No camera";
 				info.add(["START", "Retry now", C_TEXT]);
 				// Truth of the round: the widget never relaunches a scan by itself
 				// after an exhausted round (proved twice at the bench of 12 nov.).
@@ -423,12 +414,16 @@ class RemoteView extends WatchUi.View {
 		}
 
 		// Bottom: camera name along the ring (muted placeholder until we know which camera).
-		// Regle du 16 nov. : tant que le lien n'est pas fait — l'ecran de connexion — le
-		// nom porte la version en clair, pour que l'utilisateur puisse nommer la version
-		// qu'il a au poignet. Le nom d'une camera reelle ne la porte pas : l'ecran dit
-		// des faits, et la version se relit en cherchant.
+		// Regle du 16 nov. (precisee au banc simulateur, l'ecran sous les yeux) : tant que le
+		// lien n'est pas fait — l'ecran de connexion — cette ligne porte le nom LIVRE de
+		// l'appli et sa version : « Insta360 Remote v1.0.0 ». Nom et version se lisent la,
+		// pour que l'utilisateur puisse nommer ce qu'il a au poignet. Le nom d'une camera
+		// reellement connectee ne porte pas la version : l'ecran dit des faits.
+		// La colonne de gauche, elle, garde les mots d'etat (« Searching » / « No camera ») :
+		// la regle du 16 nov. ne la concerne pas, j'y avais mis le nom par erreur et c'est
+		// revenu tel quel.
 		var known = !(s == UI_NOT_FOUND || s == UI_SEARCHING);
-		var nameText = known ? cameraName() : ("Insta360 v" + vNum);
+		var nameText = known ? cameraName() : (APP_NAME + " v" + vNum);
 		var dots = (s == UI_READY);
 
 		// Icon + column as one group, centred in the free width between the mode dots and the
