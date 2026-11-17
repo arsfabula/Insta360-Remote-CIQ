@@ -60,10 +60,13 @@ function otherRowsStillWrap(logger) {
 // vector; the same contract as the delegate ported it.)
 // The grip this vector holds on the delegate's state was the pseudo-mode
 // "set" - it kept every runStart leg at an answer of true with no frame on
-// the wire. The pseudo-mode fell (settings-push, 17 nov. 2026); the same
-// fact is now held the honest way, by the UI_STARTING leg: the camera never
-// confirmed, the press cancels the wait, writes nothing, asks nothing of a
-// link this vector's device does not have. The assertions do not move.
+// the wire. The pseudo-mode fell (settings-push, 17 nov. 2026); the state
+// now walked through is the UI_STARTING leg: the fallback press cancels the
+// unconfirmed start (that leg sends no frame), and the KEY press that
+// follows finds the READY the fallback restored - it takes the capture leg
+// and books a frame on this vector's fake device. The vector never asserts
+// on the wire: what it holds is the tap/key distinction alone (false from
+// the tap, true from the key). The assertions do not move.
 (:test)
 function tapIsNotStartButKeyIs(logger) {
 	var dev = uiLink();

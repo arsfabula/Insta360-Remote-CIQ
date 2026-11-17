@@ -7,8 +7,9 @@ Ce fichier n'est pas la fiche publiée : il en est la source versionnée.
 
 Faits vérifiés dans le code à `b672c68` (125 produits, 125 OK en 9.3.0) : commandes et
 textes d'écran dans `OneR remote/source/RemoteDelegate.mc` / `RemoteView.mc` /
-`Settings.mc` / `Levels.mc` / `StartWarning.mc`. Le crédit suit la formule du dépôt
-(`@no84by`, auteur du PR d'origine et du travail de protocole).
+`Settings.mc` / `Levels.mc` (la liste nommait encore `StartWarning.mc` : l'écran est
+coupé depuis le 17 nov. 2026, voir la note de chantier en fin de fichier). Le crédit
+suit la formule du dépôt (`@no84by`, auteur du PR d'origine et du travail de protocole).
 
 ---
 
