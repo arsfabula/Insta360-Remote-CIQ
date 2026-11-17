@@ -28,6 +28,20 @@ function inLog(msg) {
 	Sys.println("[in] " + msg);
 }
 
+// The one rule of the long press (the user's design A, decision of 17 nov.
+// 2026): at 700 ms the press belongs to the settings page, under it the press
+// belongs to START. The rule is this pure function, and the suite's two
+// vectors holdAtThresholdFires / holdJustUnderThresholdDoesNotFire are its
+// bench. Everything else here (the arm at the key DOWN, the pump's dueLong
+// leg, the release that cancels, the SELECT consumed after the page) only
+// carries this answer through an app that owns no Timer object per gesture -
+// the due date is booked in the System.getTimer() domain and the view's tick
+// pumps it, the same lesson as the three debounces below.
+const LONG_PRESS_MS = 700;
+function holdingDue(startAt as Lang.Number, now as Lang.Number) as Lang.Boolean {
+	return now - startAt >= LONG_PRESS_MS;
+}
+
 // The Settings page is no longer an id at all (the user's decision of 17 nov.
 // 2026, design B): it is a view pushed above the base, and the pushed view
 // answers its rows through the Settings module with the family each row belongs
@@ -92,6 +106,11 @@ class RemoteDelegate extends Ui.BehaviorDelegate {
 	hidden var pendingSend = false;
 	hidden var dueSet = null;
 	hidden var dueTap = null;
+	// The long press of START (the user's design A, 17 nov. 2026): the arm is a
+	// due date like the three above, never a Timer object; and one flag tells
+	// the SELECT that follows the page that the gesture was already answered.
+	hidden var dueLong = null;
+	hidden var longFired = false;
 	hidden var startKeyAt = null;   // time of the last START key press (onKeyPressed), null = none pending
 	hidden var tapPending = false;
 	hidden var pendingSetFrames = null;
@@ -119,11 +138,25 @@ class RemoteDelegate extends Ui.BehaviorDelegate {
 		var key = startKeyAt != null && Sys.getTimer() - startKeyAt < 2000;
 		inLog("select key=" + key);
 		startKeyAt = null;
+		if (longFired) {
+			// The press was answered by the long gesture: the page was pushed at the
+			// due date, and this SELECT belongs to the gesture, it runs no shutter
+			// (the user's Review Focus 1 - a press of 700 ms or more pages, it never
+			// shoots). The flag lifts here, that is its only life.
+			longFired = false;
+			dueLong = null;
+			return true;
+		}
 		if (!key) {
 			tapPending = true;
 			dueTap = Sys.getTimer() + 150;
 			return false;
 		}
+		// Short press: it answered itself, the long arm has nothing left to say. This
+		// leg is also the short press of the devices that never send the release
+		// (design risk 1, unknown #1 of the bench): with no UP to cancel the arm, the
+		// SELECT that became due cancels it before the threshold is ever reached.
+		dueLong = null;
 		return runStart();
 	}
 
@@ -140,6 +173,7 @@ class RemoteDelegate extends Ui.BehaviorDelegate {
 	// 0x03 / 0x04 pair the bench verified, so a recording ends with cmdStopRec like any
 	// other recording.
 	function runStart() {
+		if (longFired) { return true; }   // the long gesture already answered this press (onSelect)
 		var s = uiState(dev);
 		inLog("START state=" + s + " mode=" + currentModeId + " focus=" + Settings.focus);
 		if (s == UI_SEARCHING) {
@@ -241,9 +275,31 @@ class RemoteDelegate extends Ui.BehaviorDelegate {
 		return true;
 	}
 
-	// START key timestamp for the tap discrimination (see onSelect).
+	// START key timestamp for the tap discrimination (see onSelect). The same
+	// stamp arms the long press (the holdingDue rule above): the arm is booked
+	// as a due date, the view's tick pumps it, and the release below may cancel
+	// it - the press decides nothing by owning a Timer of its own.
 	function onKeyPressed(evt) {
-		if (evt.getKey() == Ui.KEY_ENTER) { startKeyAt = Sys.getTimer(); }
+		if (evt.getKey() == Ui.KEY_ENTER) {
+			startKeyAt = Sys.getTimer();
+			longFired = false;   // a fresh press starts its own story
+			dueLong = startKeyAt + LONG_PRESS_MS;
+		}
+		return false;
+	}
+
+	// The release of START. Whether the base view of a widget-loop host ever
+	// sees it is design risk 1, unknown #1 of the bench; the due-date choice was
+	// made precisely not to depend on the answer. Where the release arrives it
+	// does one thing: a press ended before the threshold cancels the long arm,
+	// nothing more. A release after the threshold finds the leg already answered
+	// - nothing here undoes the page, and the SELECT that follows belongs to the
+	// gesture (onSelect). The release claims nothing of itself.
+	function onKeyReleased(evt) {
+		if (evt.getKey() == Ui.KEY_ENTER && dueLong != null && !holdingDue(startKeyAt, Sys.getTimer())) {
+			inLog("released under the threshold: no page");
+			dueLong = null;
+		}
 		return false;
 	}
 
@@ -411,6 +467,16 @@ class RemoteDelegate extends Ui.BehaviorDelegate {
 		if (dueTap != null && now >= dueTap) {
 			dueTap = null;
 			onTapTimeout();
+		}
+		// The long-press leg, last of the four: a write or a tap fallback that became
+		// due in the same window answers first, and the press is still held here -
+		// the two ways a short press cancels the arm (the release, or its own SELECT)
+		// have not spoken, so at the threshold the press belongs to the page.
+		if (dueLong != null && startKeyAt != null && holdingDue(startKeyAt, now)) {
+			dueLong = null;
+			longFired = true;
+			inLog("long press " + (now - startKeyAt).toString() + " ms: settings page");
+			openSettingsPage();
 		}
 	}
 

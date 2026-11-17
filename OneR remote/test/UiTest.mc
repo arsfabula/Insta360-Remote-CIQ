@@ -77,6 +77,20 @@ function tapIsNotStartButKeyIs(logger) {
 	return tap == false && key == true;
 }
 
+// The one rule of the long press (the user's design A of 17 nov. 2026): the
+// threshold is a pure function, and these two vectors are its bench - at the
+// threshold the gesture belongs to the settings page, just under it it belongs
+// to START. Everything else (the arm in onKeyPressed, the cancellation by the
+// release, the pump leg) only carries this answer.
+(:test)
+function holdAtThresholdFires(logger) {
+	return holdingDue(1000, 1000 + 700) == true;
+}
+(:test)
+function holdJustUnderThresholdDoesNotFire(logger) {
+	return holdingDue(1000, 1000 + 699) == false;
+}
+
 // The crash the user's own simulator run named, held as a vector. At the moment
 // a link becomes writable, the link books three delayed asks (the authorization
 // probe at 500 ms, the camera state at 1500 ms, the card at 2500 ms) and the
