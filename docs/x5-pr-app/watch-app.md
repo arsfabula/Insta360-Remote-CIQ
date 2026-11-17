@@ -16,14 +16,14 @@ work). It is a fork of ArsFabula's Insta360 Remote (MPL-2.0) with a new UI and X
 | Every action waits for the camera (state poll every 2 s, 60 s safety net) | §4.1 | `RemoteView.onTick` |
 | Charging / on-battery, low-battery alarm, SD card state (no card / full / error) on the top arcs, with toasts. No battery level or card space on the X5 (see below) | §6 `GET_STORAGE`, §8 `0x2003` `0x2004` `0x2006` | `BLEBarrel.onFrameX5`, `queryStorageX5`; `RemoteView.drawWidgets` |
 | Identify as a Garmin watch; "Allow on camera" / "Camera allowed" toasts | §2.2 | `BLEBarrel.checkAuthX5` |
-| Settings page (last entry of the mode list, gear icon): SOUND, Power off camera, Exit app. BACK moves the focus, START (or a second tap on the focused row) runs Power off / Exit | — | `Settings.rows("set")`, `RemoteDelegate.onSelect` |
+| Settings page (last entry of the mode list, gear icon): SOUND, Power off camera. BACK steps the focus down the ladder (see the Exit line), START (or a second tap on the focused row) runs Power off | — | `Settings.rows("set")`, `RemoteDelegate.onSelect` |
 | SOUND On / Off = camera mute | §6 `MUTE` (14) | `Settings.frames` `:mute` |
 | Power off camera, after a No / Yes menu with *No* focused (not `Ui.Confirmation`: on the Mk3i it shows Cancel / Confirm without a visible focus, and a second START press confirms). Power-on is not possible from the watch: it needs the wake beacon (§6), and Connect IQ apps cannot advertise. `tools/wake.swift` sends it from a Mac | §6 `SET_SHUTDOWN` (219) | `confirmPowerOff`, `PowerOffDelegate`; `BLEBarrel.shutdownX5` |
 | Per-mode settings: resolution / frame rate, EV (stops at ±4.0), lens, self-timer, photo size, interval, burst, loop length, TimeShift speed, Starlapse duration | §3.3, §5, §5.1 | `Settings.rows`, `Settings.frames`; `RemoteDelegate.stepFocused` |
 | Highlight / *Track That* while recording (UP / DOWN) | §4 `0x3C` | `RemoteDelegate.onPreviousPage`, `onNextPage` |
 | Touch: tap a row = focus it, tap elsewhere = START | — | `RemoteDelegate.onSelect`, `onTap`, `focusRowAt` |
 | GPS overlay (hold-UP menu): older cameras only; hidden and GPS off with an X5 | — | `RemoteDelegate.onMenu`, `Main.gpsSync`, `photoWithGps` |
-| Exit: Settings → Exit app, hold UP → Exit app, or BACK in a mode without settings. Long-press BACK belongs to the OS | — | `RemoteDelegate.onSelect`, `onMenu`, `onBack` |
+| Exit: BACK is the ladder — a setting row climbs to the row above, the mode row ends the ladder and the app exits by the standard mechanism of the root view, identical on both generations. During the warning, BACK exits directly. Long-press BACK belongs to the OS (the hold-UP menu carries no exit row). No `System.exit()` call stands anywhere in the app (see the quirk below) | — | `RemoteDelegate.onBack` |
 
 Connect IQ quirks the app works around:
 
@@ -31,6 +31,11 @@ Connect IQ quirks the app works around:
   (`reassembleX5`, lenient `pbFields`).
 * **`onStart` also runs for the glance:** start BLE only from `getInitialView`, otherwise the glance
   steals the BLE delegate.
+* **`System.exit()` is a no-op on the widget-loop devices** (every API ≤ 3.4 class of the SDK table,
+  plus the two widget-hosted Edges): the call returns, its base view may not be popped, and Garmin's
+  own engineers name BACK at the root view as the only clean exit of that generation. The app calls
+  it nowhere; leaving stands in the BACK ladder of `RemoteDelegate.onBack` on every device (decision
+  of 17 nov. 2026, named on the marq sim bench).
 * **A missing GATT service right after connecting is normal:** never unpair or rescan on it
   (the original code did, which left the camera needing a power cycle).
 * **A tap arrives as `onSelect` first:** `BehaviorDelegate` maps a screen tap to the SELECT

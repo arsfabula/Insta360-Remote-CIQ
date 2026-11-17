@@ -34,7 +34,7 @@ module Settings {
 	//        :lens  SET_ACTIVE_SENSOR
 	//        :mute  SET_OPTIONS option 14 (camera mute), values 0 / 1
 	//        :power START asks, then SET_SHUTDOWN
-	//        :exit  START exits the app
+	// (the :exit row stood here until 17 nov. 2026 — see rows("set") below)
 	function timer(fm) { return ["timer", "TIMER", ["Off", "3s", "5s", "10s", "15s"], :opt, fm, [0, 3, 5, 10, 15], 26, 0]; }
 	function size(fm) { return ["size", "SIZE", ["72MP", "18MP"], :opt, fm, [11, 12], 40, 0]; }
 	function lens() { return ["lens", "LENS", ["360°", "Front"], :lens, 0, [3, 1], 0, 0]; }
@@ -108,9 +108,12 @@ module Settings {
 			// beep (121) options are not stored by firmware 1.13.21, so there is no LIGHT row.
 			// Power off = SET_SHUTDOWN (219), after a confirmation. Power-on needs the wake beacon
 			// (docs/x5-protocol.md §6), which a Connect IQ app cannot send.
+			// The "Exit app" row of this page is gone by the decision of 17 nov.
+			// 2026: System.exit() is a no-op on the widget-loop devices (marq sim
+			// bench of that day) and leaving any generation stands in BACK alone,
+			// the ladder that RemoteDelegate.mc answers above onBack.
 			return [["mute", "SOUND", ["On", "Off"], :mute, 0, [0, 1], 14, 0],
-				["power", "", ["Power off camera"], :power, 0, [0], 0, 0],
-				["exit", "", ["Exit app"], :exit, 0, [0], 0, 0]];
+				["power", "", ["Power off camera"], :power, 0, [0], 0, 0]];
 		}
 		return [];
 	}
@@ -118,7 +121,7 @@ module Settings {
 	function key(id, row) { return (row[3] == :lens || row[3] == :mute) ? row[0] : id + ":" + row[0]; }
 
 	function label(id, row) {
-		if (row[3] == :exit || row[3] == :power) { return row[2][0]; }
+		if (row[3] == :power) { return row[2][0]; }
 		var i = vals[key(id, row)];
 		return (i == null) ? "–" : row[2][i];
 	}

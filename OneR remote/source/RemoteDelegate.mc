@@ -189,12 +189,13 @@ class RemoteDelegate extends Ui.BehaviorDelegate {
 			Ui.requestUpdate();
 			return true;
 		}
-		// Settings page: START runs the focused action (Exit, Power off), never the shutter
+		// Settings page: START runs the focused action (Power off), never the shutter.
+		// The Exit row left this page with the decision of 17 nov. 2026 (the note in
+		// Settings.mc rows): leaving stands in the BACK ladder above onBack alone.
 		if (inSettingsUI()) {
 			var rows = Settings.rows("set");
 			if (Settings.focus > 0 && Settings.focus <= rows.size()) {
 				var k = rows[Settings.focus - 1][3];
-				if (k == :exit) { Sys.exit(); }
 				if (k == :power) { confirmPowerOff(dev); }
 			}
 			return true;
@@ -242,10 +243,10 @@ class RemoteDelegate extends Ui.BehaviorDelegate {
 		var i = Settings.rowAt(xy[0], xy[1]);
 		inLog("tap " + xy[0] + "," + xy[1] + " -> entry " + i);
 		if (i < 0) { return false; }
-		// a second tap on a focused action row (Power off / Exit) runs it, like START
+		// a second tap on a focused action row (Power off) runs it, like START
 		if (i == Settings.focus && i > 0 && inSettingsUI()) {
 			var k = Settings.rows("set")[i - 1][3];
-			if (k == :exit || k == :power) { return runStart(); }
+			if (k == :power) { return runStart(); }
 		}
 		Settings.focus = i;
 		buzz(20);
@@ -260,8 +261,20 @@ class RemoteDelegate extends Ui.BehaviorDelegate {
 		return false;
 	}
 
-	// BACK: move the focus Mode -> setting rows -> Mode; in a mode without settings it exits.
-	// Long-press BACK belongs to the OS: "Exit app" is in the hold-UP menu.
+	// BACK: the exit ladder, the same on both generations (the user's ruling, 17
+	// nov. 2026, over the marq sim bench of the same day). From a setting row it
+	// steps the focus up to the row above, row after row, to the Mode row; from
+	// the Mode row it belongs to the OS: return false and the app exits by the
+	// standard mechanism of the root view. That mechanism is the only clean exit
+	// a widget-loop device has - System.exit() answers nothing there (the marq
+	// bench: the call returned, the handler fell through), the base view of a
+	// true widget may not be popped, and Garmin's own engineers on its forum
+	// name no other way ("a clean exit always requires the user to press BACK
+	// at the top level"). On a glance device the same unclaimed BACK is what
+	// the glance list answers. The endless focus cycle this replaces had left
+	// that generation with no way out once the setting rows stood.
+	// Long-press BACK belongs to the OS as before; the hold-UP menu it opens
+	// carries no exit row anymore (decision of 17 nov., see openWarningMenu).
 	function onBack() {
 		// While the warning stands, BACK is the lesson itself: return false and
 		// the app exits by the standard mechanism of the root view - no exit
@@ -269,7 +282,8 @@ class RemoteDelegate extends Ui.BehaviorDelegate {
 		if (warnHolds("back")) { return false; }
 		var n = Settings.rows(currentModeId).size();
 		if (uiState(dev) != UI_READY || n == 0) { return false; }
-		Settings.focus = (Settings.focus + 1) % (n + 1);
+		if (Settings.focus == 0) { return false; }   // the Mode rung: the ladder ends outside
+		Settings.focus = Settings.focus - 1;
 		buzz(20);
 		Ui.requestUpdate();
 		return true;
@@ -281,7 +295,7 @@ class RemoteDelegate extends Ui.BehaviorDelegate {
 		var rows = Settings.rows(currentModeId);
 		if (Settings.focus > rows.size()) { Settings.focus = 0; stepMode(dir); return; }
 		var row = rows[Settings.focus - 1];
-		if (row[3] == :exit || row[3] == :power) { return; }
+		if (row[3] == :power) { return; }
 		pendingSetFrames = Settings.step(currentModeId, row, dir);
 		pendingSetKey = Settings.key(currentModeId, row);
 		settingHeld = false;   // this write's deferral, when it comes, is named once
@@ -478,7 +492,9 @@ class RemoteDelegate extends Ui.BehaviorDelegate {
 		// the bench axis of the level chain: forcing a model, the same choices as the
 		// mainline menu, so the Phase 5 runs keep their forcing entry in the new UI too
 		menu.addItem(new Ui.MenuItem("Force model", null, "forceopen", {}));
-		menu.addItem(new Ui.MenuItem("Exit app", null, "exit", {}));
+		// No "Exit app" row here anymore (decision of 17 nov. 2026): on the
+		// widget-loop devices Sys.exit() is the firmware's no-op, and leaving now
+		// stands in the BACK ladder above onBack, identical on both generations.
 		menu.setFocus(focus);
 		Ui.pushView(menu, new ModeDelegate(dev), Ui.SLIDE_UP);
 		return true;
@@ -515,12 +531,14 @@ class RemoteDelegate extends Ui.BehaviorDelegate {
 		// sentence is the menu's title (his earlier prescription, both forms
 		// read in full on the 51 mm screen - his photos of 14 nov. evening);
 		// the countdown row, whose content the title already states, becomes
-		// the last item - what still matters at the edge is how to leave
-		// (Exit) and how to pass (Continue). The \n in the title is his split
+		// the last item. The "Exit app" row that led this menu on 14 nov. left
+		// it with the decision of 17 nov. (the marq bench: Sys.exit() is a no-op
+		// of the widget-loop firmware); what the menu answers now is how to pass
+		// (Continue) and the renewal (Countdown) - leaving is BACK, the lesson
+		// the screen already teaches. The \n in the title is his split
 		// point, after the word "display"; the module holds it, the vectors
 		// pin it, and whether the system prints it is the next bench read.
 		var menu = new Ui.Menu2({:title => StartWarning.rowLabel(v)});
-		menu.addItem(new Ui.MenuItem("Exit app", null, "introExit", {}));
 		menu.addItem(new Ui.MenuItem("Continue", null, "introGo", {}));
 		menu.addItem(new Ui.MenuItem("Countdown", null, "introFade", {}));
 		Ui.pushView(menu, new WarningMenuDelegate(), Ui.SLIDE_IMMEDIATE);
@@ -644,7 +662,6 @@ class ModeDelegate extends Ui.Menu2InputDelegate {
 
 	function onSelect(item) {
 		var id = item.getId() as Lang.String;
-		if (id.equals("exit")) { Sys.exit(); }
 		if (id.equals("forceopen")) {
 			// CdC item 159, the ceiling of a visit of the axis — the same rule the
 			// mainline's entry of the same name answers (InputDelegate :657-668): a
@@ -777,10 +794,12 @@ class ForceModelDelegate extends Ui.Menu2InputDelegate {
 	}
 }
 
-// The three choices of the warning screen (design of 14 nov.). "Exit app" is
-// the one exit an in-menu choice can reach: Sys.exit(), the API the 9.1.0 doc
-// gives "from any point" - whether onStop runs there is a bench-named point,
-// not a question this class answers. "Continue" lifts the flag for this cold
+// The two choices the warning screen keeps since the decision of 17 nov. 2026.
+// The "Exit app" row and its Sys.exit() call are gone: the marq sim bench of
+// that day printed the call's own fall-through ("[res] exit -> none", the
+// handler running on into "continue"), the firmware of the widget-loop devices
+// answers nothing to System.exit(), and Garmin's own engineers name BACK at the
+// root view as the only clean exit of that generation. "Continue" lifts the flag for this cold
 // start only: the page behind has kept the facts the link read meanwhile, and
 // shows them. The countdown row writes the renewal - 4, the user's number, so
 // the next readings display 3, then 2, then 1 - and continues like "Continue";
@@ -792,10 +811,6 @@ class WarningMenuDelegate extends Ui.Menu2InputDelegate {
 
 	function onSelect(item) {
 		var id = item.getId() as Lang.String;
-		if (id.equals("introExit")) {
-			inLog("intro menu: exit app");
-			Sys.exit();
-		}
 		if (id.equals("introFade")) {
 			if (!StartWarning.writeLeft(Application.getApp(), StartWarning.pickValue())) {
 				inLog("intro menu: store refused the renewal");

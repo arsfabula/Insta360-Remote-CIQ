@@ -450,7 +450,7 @@ class RemoteView extends WatchUi.View {
 			var id = currentModeId;
 			for (var i = 0; i < setRows.size(); i++) {
 				var focused = Settings.focus == i + 1;
-				var c = focused ? C_AMBER : ((setRows[i][3] == :exit || setRows[i][3] == :power || Settings.isAcked(id, setRows[i])) ? C_TEXT : C_DIM);
+				var c = focused ? C_AMBER : ((setRows[i][3] == :power || Settings.isAcked(id, setRows[i])) ? C_TEXT : C_DIM);
 				rows.add([setRows[i][1], Settings.label(id, setRows[i]), c, focused, setRows[i][2]]);
 			}
 			titleFocused = Settings.focus == 0;
@@ -1030,7 +1030,11 @@ class RemoteView extends WatchUi.View {
 		var h = dc.getHeight();
 		var cx = w / 2;
 		var head = ["Major Change,", "Please Read."];
-		var body = ["To exit app, press menu.", "Press menu to continue", "or Back to exit."];
+		// The first body sentence, "To exit app, press menu.", left with the
+		// decision of 17 nov. 2026 — no menu carries an Exit row anymore and
+		// leaving stands in BACK alone. What remains is the user's own wording,
+		// untouched.
+		var body = ["Press menu to continue", "or Back to exit."];
 		var font = Gfx.FONT_SMALL;
 		var fit = w - 2 * L_PAD;
 		if (dc.getTextWidthInPixels(body[0], font) > fit) { font = Gfx.FONT_TINY; }
