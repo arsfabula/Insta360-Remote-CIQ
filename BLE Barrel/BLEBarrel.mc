@@ -785,7 +785,13 @@ const ASK_MIN_MS = 50;
 
 var linkAlarm as Timer.Timer or Null = null;
 
-(:glance)
+// The (:glance) that sat here (the third site of items 152/154/155) is
+// dropped by the decision of the 17 nov. 2026: what the boot process is
+// allowed to construct and what is annotated must match, and the boot process
+// no longer constructs this class at all - the words of the rule sit at
+// Main.onStart and Main.getInitialView. The class lives in the full mode only;
+// the glance slice fell from 58 402 o to 5 207 o and the marq-generation of
+// the widget class boots again.
 class BleDevice extends BluetoothLowEnergy.BleDelegate {
  var scanning as Lang.Boolean = false;
  var scanTimeout as Lang.Number = 64;
