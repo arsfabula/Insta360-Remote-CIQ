@@ -251,7 +251,7 @@ class RemoteDelegate extends Ui.BehaviorDelegate {
 	}
 
 	// The gear's target is the circle the view published for the icon it drew
-	// this frame (RemoteView.drawBackCue writes gearHit, and a frame that draws
+	// this frame (RemoteView.drawSettingsCue writes gearHit, and a frame that draws
 	// no gear publishes no target): the area of the entry follows the drawn
 	// affordance, at whatever angle the icon stands - it moves with decision 6
 	// and the target needs no second edit.

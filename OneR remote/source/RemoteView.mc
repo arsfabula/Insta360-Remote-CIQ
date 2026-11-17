@@ -103,7 +103,7 @@ function uiState(dev) {
 // True when the link dropped while recording (e.g. underwater): the camera keeps going.
 var recLinkLost = false;
 
-// The gear's tap target: [x, y, r] of the icon drawn this frame by drawBackCue,
+// The gear's tap target: [x, y, r] of the icon drawn this frame by drawSettingsCue,
 // null in a frame that draws no gear. The gear is the screen entry of the pushed
 // settings page (RemoteDelegate.gearTapped reads this circle): what a finger may
 // hit is exactly what the eye was shown, at whatever angle the icon stands - the
@@ -467,7 +467,7 @@ class RemoteView extends WatchUi.View {
 		gearHit = null;   // a frame that draws no gear offers no target: read after any stale circle is dropped
 		if (dots) {
 			drawModeDots(dc, cx, cy, rr);
-			if (setRows.size() > 0) { drawBackCue(dc, cx, cy, rr); }
+			if (setRows.size() > 0) { drawSettingsCue(dc, cx, cy, rr); }
 		}
 		var col = {
 			:title => title, :titleColor => titleColor, :titleFocused => titleFocused,
@@ -735,8 +735,11 @@ class RemoteView extends WatchUi.View {
 		}
 	}
 
-	// Camera name set along the bottom of the ring, upright. With the mode dots and the gear on
-	// screen it sits on the icon + text group's vertical axis, kept clear of the last dot and the gear.
+	// Camera name set along the bottom of the ring, upright. With the mode dots on
+	// screen it sits on the icon + text group's vertical axis, kept clear of the last
+	// dot. The gear's own reserve of this arc fell with the gear (17 nov. 2026, decision
+	// 6): it moved to the ring's top right beside the START cue, off this arc entirely -
+	// the name may now sit as far right as the dots allow.
 	hidden var nameFont = null;
 	hidden function drawNameArc(dc, cx, cy, rr, text, color, withDots, gx) {
 		var rad = rr - 28;
@@ -745,12 +748,12 @@ class RemoteView extends WatchUi.View {
 		if (dx > 0.9) { dx = 0.9; } else if (dx < -0.9) { dx = -0.9; }
 		var deg = 270.0 + Math.toDegrees(Math.asin(dx));
 		if (withDots) {
-			// stay clear of the mode dots and the gear
+			// stay clear of the mode dots (the gear's own reserve fell with its move,
+			// decision 6 of 17 nov. 2026 - see drawSettingsCue)
 			var n = modeList().size();
 			var step = n > 12 ? 6.0 : 8.0;
 			var lastDot = 194.5 + (n - 1) / 2.0 * step + 3;
 			if (deg < lastDot + 22) { deg = lastDot + 22; }
-			if (deg > 324 - 22) { deg = 324 - 22; }
 		}
 		dc.setColor(color, Gfx.COLOR_TRANSPARENT);
 		if (dc has :drawRadialText) {
@@ -768,17 +771,22 @@ class RemoteView extends WatchUi.View {
 			Gfx.TEXT_JUSTIFY_CENTER | Gfx.TEXT_JUSTIFY_VCENTER);
 	}
 
-	// The gear: the screen's entry to the pushed settings page, its tap target
-	// published to gearHit with it. Where it stands and how it is coloured are
-	// the old position and the old amber-on-focus - this task only moved the
-	// page it opens (the pseudo-mode fell, decision 3 of 17 nov. 2026); the
-	// move along the ring beside the START cue and the amber's fall come with
-	// decision 6, the icon's own task.
-	hidden function drawBackCue(dc, cx, cy, rr) {
-		var a = Math.toRadians(-30);
+	// The gear: the screen's entry to the pushed settings page, drawn along the
+	// ring beside the START cue (the user's decision 6 of 17 nov. 2026 - the
+	// choice "next to the START point": the red point at 2 o'clock is the anchor,
+	// so the gear sits above it on the same side, +52° where the point stands
+	// at +30°; the angular spacing is a bench value, to re-tune at the epix/marq look,
+	// and this comment is where the tuned angle stands). Same radius rr-30 and
+	// same size rr*0.065 as the old bottom-right gear. Its colour is the
+	// permanent dim affordance: the amber "a settings row has the focus" fell
+	// with the BACK-focus language it belonged to. The tap target is published
+	// with the icon (gearHit) - the entry's area follows the affordance at
+	// whatever angle it stands.
+	hidden function drawSettingsCue(dc, cx, cy, rr) {
+		var a = Math.toRadians(52);
 		var px = cx + Math.cos(a) * (rr - 30);
 		var py = cy - Math.sin(a) * (rr - 30);
-		ModeIcons.gear(dc, px, py, rr * 0.065, Settings.focus > 0 ? C_AMBER : C_DIM);
+		ModeIcons.gear(dc, px, py, rr * 0.065, C_DIM);
 		gearHit = [px, py, rr * 0.09];
 	}
 

@@ -138,6 +138,16 @@ Série proposée, dans l'ordre où le magasin les montre (6 images) :
 À faire aussi : l'**avertissement de premier lancement** en 7e image si tu veux que
 l'utilisateur voie ce qu'il rencontre en premier (il est déjà décrit en tête de fiche).
 
+> Note de chantier (17 nov. 2026, settings-push — texte de travail, à redire mot à mot
+> avec l'auteur à la fin du plan) : cette série a pris trois coups. Le 7 (l'avertissement)
+> **tombe** — l'écran de premier lancement a disparu, l'app s'ouvre sur la page d'état.
+> Le 1 se reshoote : la roue dentée a quitté le bas droit pour le haut droit, à côté du
+> point START (l'anneau vert et la colonne ne bougent pas). Le 3 se reshoote en page
+> **poussée** (Menu2 au-dessus de la page d'état, sous-titres = valeurs), plus la page
+> pseudo-mode. Le 5 se reshoote : le MENU ne porte plus « Exit app » (sortie = BACK pur,
+> partout), et plus d'entrée « Settings » dans la liste des modes — l'entrée des réglages
+> est l'appui long. Les légendes suivront le texte validé.
+
 Contrainte physique : les écrans 1, 2, 3, 5, 6 supposent une **caméra réellement liée**.
 En atelier, le lien ne se fait que si la caméra est éveillée et accepte l'appairage côté
 écran. Sans caméra, seul l'écran de connexion (4) est atteignable.
