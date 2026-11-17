@@ -16,14 +16,6 @@ class Main extends Application.AppBase {
 	// in. The actuator is only asked when the decision below flips.
 	var gpsLive as Lang.Boolean = false;
 
-	// The start-warning flag (design of 14 nov.): answered once per cold
-	// start, from the property alone, at the view's first draw - the site
-	// note in RemoteView.onUpdate says why that site and not onStart. Never
-	// re-evaluated in the session - this app has no onShow and the wake of
-	// the watch continues the session (verified fact of the design); nothing
-	// but the warning menu's own choices lifts it.
-	var warnIntro as Lang.Boolean = false;
-
 	function initialize() {
 		AppBase.initialize();
 	}

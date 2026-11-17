@@ -10,7 +10,6 @@ using Toybox.Math;
 using Toybox.Lang;
 using Toybox.Attention;
 using BLEBarrel;
-using StartWarning;
 
 // High-level UI state, derived from the BLE module's globals.
 enum {
@@ -146,9 +145,6 @@ class RemoteView extends WatchUi.View {
 	hidden var lostTicks = 0;
 	hidden var prevState = null;
 	hidden var stateTicks = 0;
-	// The decision of the warning flag is asked once per view - and a view
-	// is built once per cold start (getInitialView, never re-built on wake).
-	hidden var warnAsked = false;
 
 	function initialize(device) {
 		View.initialize();
@@ -314,28 +310,6 @@ class RemoteView extends WatchUi.View {
 	}
 
 	function onUpdate(dc) {
-		// The one decision of the warning screen, asked before any pixel: a
-		// read of the property, never a write - writing belongs to the warning
-		// menu, whose opening is the only thing that counts the countdown
-		// (design of 14 nov.). It lives here, at the first draw of a cold
-		// start, and not in Main.onStart where the design first put it: the
-		// entry class calling a source-module function faults "Illegal Access
-		// (Out of Bounds)", one frame deep, callee absent - the second time
-		// this VM showed that shape (the ucd2DiagFrame note in Main.onStart
-		// holds the first). Class scope is the shape the bench proved for
-		// module calls, and a view's first onUpdate answers the same cold-start
-		// question one frame earlier than anything drawn. The scan keeps
-		// running behind the warning: the link is the BLE stack's, not the
-		// page's; this flag answers only what the page draws and what inputs
-		// may do.
-		if (!warnAsked) {
-			warnAsked = true;
-			mainApp.warnIntro = StartWarning.shouldShow(StartWarning.readLeft(Application.getApp()));
-		}
-		// The warning stands, nothing else is drawn: no ring, no state, no
-		// flash of "Scanning" behind the reading. The facts gather untouched
-		// behind it and will be readable the moment the flag is lifted.
-		if (mainApp.warnIntro) { drawWarning(dc); return; }
 		var w = dc.getWidth();
 		var h = dc.getHeight();
 		var cx = w / 2;
@@ -1019,46 +993,6 @@ class RemoteView extends WatchUi.View {
 			// dc.drawLine(p[i][0], p[i][1], q[0], q[1]);
 		// }
 	// }
-
-	// The warning screen of the design of 14 nov.: the user's copy verbatim,
-	// only the line breaks are mine, and the font only ever chosen so the
-	// longest fixed sentence fits the screen - it cannot be shortened, it can
-	// only be made to fit. The page draws; what the keys answer is the
-	// delegate's, and the bench of Task 3 names it.
-	hidden function drawWarning(dc) {
-		var w = dc.getWidth();
-		var h = dc.getHeight();
-		var cx = w / 2;
-		var head = ["Major Change,", "Please Read."];
-		// The first body sentence, "To exit app, press menu.", left with the
-		// decision of 17 nov. 2026 — no menu carries an Exit row anymore and
-		// leaving stands in BACK alone. What remains is the user's own wording,
-		// untouched.
-		var body = ["Press menu to continue", "or Back to exit."];
-		var font = Gfx.FONT_SMALL;
-		var fit = w - 2 * L_PAD;
-		if (dc.getTextWidthInPixels(body[0], font) > fit) { font = Gfx.FONT_TINY; }
-		if (dc.getTextWidthInPixels(body[0], font) > fit) { font = Gfx.FONT_XTINY; }
-		var fh = dc.getFontHeight(font);
-		dc.setColor(C_BG, C_BG);
-		dc.clear();
-		dc.setColor(C_TEXT, C_BG);
-		var y = h * 28 / 100;
-		var i = 0;
-		while (i < head.size()) {
-			dc.drawText(cx, y, font, head[i], Gfx.TEXT_JUSTIFY_CENTER);
-			y += fh;
-			i += 1;
-		}
-		dc.setColor(C_DIM, C_BG);
-		y = h * 52 / 100;
-		i = 0;
-		while (i < body.size()) {
-			dc.drawText(cx, y, font, body[i], Gfx.TEXT_JUSTIFY_CENTER);
-			y += fh + 4;
-			i += 1;
-		}
-	}
 
 	hidden function drawGps(dc, cx, cy, rr) {
 		// The four states of the user's scale (13 nov.): grey - unusable, red -

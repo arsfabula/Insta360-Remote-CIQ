@@ -23,7 +23,7 @@ work). It is a fork of ArsFabula's Insta360 Remote (MPL-2.0) with a new UI and X
 | Highlight / *Track That* while recording (UP / DOWN) | §4 `0x3C` | `RemoteDelegate.onPreviousPage`, `onNextPage` |
 | Touch: tap a row = focus it, tap elsewhere = START | — | `RemoteDelegate.onSelect`, `onTap`, `focusRowAt` |
 | GPS overlay (hold-UP menu): older cameras only; hidden and GPS off with an X5 | — | `RemoteDelegate.onMenu`, `Main.gpsSync`, `photoWithGps` |
-| Exit: BACK is the ladder — a setting row climbs to the row above, the mode row ends the ladder and the app exits by the standard mechanism of the root view, identical on both generations. During the warning, BACK exits directly. Long-press BACK belongs to the OS (the hold-UP menu carries no exit row). No `System.exit()` call stands anywhere in the app (see the quirk below) | — | `RemoteDelegate.onBack` |
+| Exit: BACK is the ladder — a setting row climbs to the row above, the mode row ends the ladder and the app exits by the standard mechanism of the root view, identical on both generations. Long-press BACK belongs to the OS (the hold-UP menu carries no exit row). No `System.exit()` call stands anywhere in the app (see the quirk below). The first-launch warning screen that taught the widget-loop generation was removed by the decision of 17 nov. 2026 — the app opens on the state page directly, the manual lives in the store listing | — | `RemoteDelegate.onBack` |
 
 Connect IQ quirks the app works around:
 
