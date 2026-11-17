@@ -110,8 +110,8 @@ module Settings {
 			// (docs/x5-protocol.md §6), which a Connect IQ app cannot send.
 			// The "Exit app" row of this page is gone by the decision of 17 nov.
 			// 2026: System.exit() is a no-op on the widget-loop devices (marq sim
-			// bench of that day) and leaving any generation stands in BACK alone,
-			// the ladder that RemoteDelegate.mc answers above onBack.
+			// bench of that day) and leaving any generation stands in BACK alone -
+			// BACK is never overloaded anywhere in this app.
 			return [["mute", "SOUND", ["On", "Off"], :mute, 0, [0, 1], 14, 0],
 				["power", "", ["Power off camera"], :power, 0, [0], 0, 0]];
 		}

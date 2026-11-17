@@ -178,7 +178,7 @@ class RemoteDelegate extends Ui.BehaviorDelegate {
 		}
 		// Settings page: START runs the focused action (Power off), never the shutter.
 		// The Exit row left this page with the decision of 17 nov. 2026 (the note in
-		// Settings.mc rows): leaving stands in the BACK ladder above onBack alone.
+		// Settings.mc rows): leaving stands in BACK alone, never overloaded anywhere.
 		if (inSettingsUI()) {
 			var rows = Settings.rows("set");
 			if (Settings.focus > 0 && Settings.focus <= rows.size()) {
@@ -245,29 +245,24 @@ class RemoteDelegate extends Ui.BehaviorDelegate {
 		return false;
 	}
 
-	// BACK: the exit ladder, the same on both generations (the user's ruling, 17
-	// nov. 2026, over the marq sim bench of the same day). From a setting row it
-	// steps the focus up to the row above, row after row, to the Mode row; from
-	// the Mode row it belongs to the OS: return false and the app exits by the
-	// standard mechanism of the root view. That mechanism is the only clean exit
-	// a widget-loop device has - System.exit() answers nothing there (the marq
-	// bench: the call returned, the handler fell through), the base view of a
-	// true widget may not be popped, and Garmin's own engineers on its forum
-	// name no other way ("a clean exit always requires the user to press BACK
-	// at the top level"). On a glance device the same unclaimed BACK is what
-	// the glance list answers. The endless focus cycle this replaces had left
-	// that generation with no way out once the setting rows stood.
-	// Long-press BACK belongs to the OS as before; the menu a hold-UP opens is
-	// the Mode menu of onMenu, it carries no exit row (decision of 17 nov.).
-	function onBack() {
-		var n = Settings.rows(currentModeId).size();
-		if (uiState(dev) != UI_READY || n == 0) { return false; }
-		if (Settings.focus == 0) { return false; }   // the Mode rung: the ladder ends outside
-		Settings.focus = Settings.focus - 1;
-		buzz(20);
-		Ui.requestUpdate();
-		return true;
-	}
+	// BACK: never overloaded (the user's ruling, 17 nov. 2026 evening — "le back
+	// doit etre propre et servir uniquement a sortir de l'app"). This class owns
+	// no onBack anymore: from the base view the system answers the gesture by
+	// its own standard mechanism, and on the widget-loop devices that mechanism
+	// is the only clean exit there is - System.exit() is a firmware no-op (the
+	// SDK's own table names the forty such products), the base view of a true
+	// widget may not be popped, and Garmin's engineers on its forum name no
+	// other way ("a clean exit always requires the user to press BACK at the
+	// top level"). On a glance device the same unclaimed BACK is what the
+	// glance list answers. The exit ladder of that same morning lived exactly
+	// one commit in this file's history: the user's benches judged it twice -
+	// it hid the one pure exit, and on that generation the values it climbed
+	// toward were out of the app's reach anyway, the SDK being formal ("will
+	// never receive either the up/down button or up/down swipe events" on the
+	// base view). Reaching a setting moves, by the same ruling the same day,
+	// to a pushed view where every key does answer. Long-press BACK stays the
+	// OS's; the menu a hold-UP opens is the Mode menu of onMenu, it carries no
+	// exit row.
 
 	// UP / DOWN in ready state: change the focused row (the mode, or a setting).
 	hidden function stepFocused(dir) {
@@ -467,8 +462,8 @@ class RemoteDelegate extends Ui.BehaviorDelegate {
 		// mainline menu, so the Phase 5 runs keep their forcing entry in the new UI too
 		menu.addItem(new Ui.MenuItem("Force model", null, "forceopen", {}));
 		// No "Exit app" row here anymore (decision of 17 nov. 2026): on the
-		// widget-loop devices Sys.exit() is the firmware's no-op, and leaving now
-		// stands in the BACK ladder above onBack, identical on both generations.
+		// widget-loop devices Sys.exit() is the firmware's no-op, and leaving
+		// stands in BACK alone on both generations - BACK is never overloaded.
 		menu.setFocus(focus);
 		Ui.pushView(menu, new ModeDelegate(dev), Ui.SLIDE_UP);
 		return true;
