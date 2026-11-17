@@ -16,12 +16,12 @@ work). It is a fork of ArsFabula's Insta360 Remote (MPL-2.0) with a new UI and X
 | Every action waits for the camera (state poll every 2 s, 60 s safety net) | §4.1 | `RemoteView.onTick` |
 | Charging / on-battery, low-battery alarm, SD card state (no card / full / error) on the top arcs, with toasts. No battery level or card space on the X5 (see below) | §6 `GET_STORAGE`, §8 `0x2003` `0x2004` `0x2006` | `BLEBarrel.onFrameX5`, `queryStorageX5`; `RemoteView.drawWidgets` |
 | Identify as a Garmin watch; "Allow on camera" / "Camera allowed" toasts | §2.2 | `BLEBarrel.checkAuthX5` |
-| Settings page (last entry of the mode list, gear icon): SOUND, Power off camera. BACK steps the focus down the ladder (see the Exit line), START (or a second tap on the focused row) runs Power off | — | `Settings.rows("set")`, `RemoteDelegate.onSelect` |
+| Settings page, pushed above the base: SOUND, Power off camera, and the current mode's option rows. Reached by one action with two entries today — a long press at the screen (`onHold`) and a tap of the gear icon; the long-press START of the button devices carries the same action (in progress). In the page UP / DOWN is the menu's own focus, START steps the row once and the row stays focused with its new value, BACK returns to the base (system behaviour, as in every menu). The pseudo-mode "set" this page used to be is gone (decision of 17 nov. 2026, design B): the page names the family to the Settings module per row — "set" for these rows, the current mode's id for the option rows | — | `Settings.rows("set")`, `RemoteDelegate.openSettingsPage`, `buildSettingsMenu`, `SettingsPageDelegate` |
 | SOUND On / Off = camera mute | §6 `MUTE` (14) | `Settings.frames` `:mute` |
 | Power off camera, after a No / Yes menu with *No* focused (not `Ui.Confirmation`: on the Mk3i it shows Cancel / Confirm without a visible focus, and a second START press confirms). Power-on is not possible from the watch: it needs the wake beacon (§6), and Connect IQ apps cannot advertise. `tools/wake.swift` sends it from a Mac | §6 `SET_SHUTDOWN` (219) | `confirmPowerOff`, `PowerOffDelegate`; `BLEBarrel.shutdownX5` |
-| Per-mode settings: resolution / frame rate, EV (stops at ±4.0), lens, self-timer, photo size, interval, burst, loop length, TimeShift speed, Starlapse duration | §3.3, §5, §5.1 | `Settings.rows`, `Settings.frames`; `RemoteDelegate.stepFocused` |
+| Per-mode settings: resolution / frame rate, EV (stops at ±4.0), lens, self-timer, photo size, interval, burst, loop length, TimeShift speed, Starlapse duration — two ways in: on the base page of the touch devices (tap focuses a row, a swipe steps it — kept by decision 5 of 17 nov. 2026), and on the pushed settings page everywhere else (START steps the focused row once) | §3.3, §5, §5.1 | `Settings.rows`, `Settings.frames`; `RemoteDelegate.stepFocused`, `stepRow` |
 | Highlight / *Track That* while recording (UP / DOWN) | §4 `0x3C` | `RemoteDelegate.onPreviousPage`, `onNextPage` |
-| Touch: tap a row = focus it, tap elsewhere = START | — | `RemoteDelegate.onSelect`, `onTap`, `focusRowAt` |
+| Touch: tap a row = focus it, tap the gear = push the settings page, long press at the screen = the same page, tap elsewhere = START | — | `RemoteDelegate.onSelect`, `onTap`, `gearTapped`, `onHold`, `focusRowAt` |
 | GPS overlay (hold-UP menu): older cameras only; hidden and GPS off with an X5 | — | `RemoteDelegate.onMenu`, `Main.gpsSync`, `photoWithGps` |
 | Exit: BACK is pure — the base view never claims it, and the app exits by the standard mechanism of the root view, identical on both generations. No `onBack` override stands anywhere in the app (decision of 17 nov. 2026; the exit ladder that preceded this by one commit is in the git history and the code note). Long-press BACK belongs to the OS (the hold-UP menu carries no exit row). No `System.exit()` call stands anywhere in the app (see the quirk below) | — | none — system behaviour |
 
@@ -34,8 +34,14 @@ Connect IQ quirks the app works around:
 * **`System.exit()` is a no-op on the widget-loop devices** (every API ≤ 3.4 class of the SDK table,
   plus the two widget-hosted Edges): the call returns, its base view may not be popped, and Garmin's
   own engineers name BACK at the root view as the only clean exit of that generation. The app calls
-  it nowhere; leaving stands in the BACK ladder of `RemoteDelegate.onBack` on every device (decision
-  of 17 nov. 2026, named on the marq sim bench).
+  it nowhere; leaving stands in the system's own BACK at the root view, never overloaded, on every
+  device (decision of 17 nov. 2026, named on the marq sim bench; see the Exit row above).
+* **The base view of a widget-loop device takes no UP / DOWN:** the SDK is formal (it "will never
+  receive either the up/down button or up/down swipe events"); only views pushed above it escape —
+  "Any views pushed on top of the base view... will not have these input restrictions". That is why
+  the settings live in a pushed page (`RemoteDelegate.openSettingsPage`) and not on the state
+  screen, while the state screen keeps its direct way for the touch devices only (decision of
+  17 nov. 2026, after the user's marq sim bench of that day).
 * **A missing GATT service right after connecting is normal:** never unpair or rescan on it
   (the original code did, which left the camera needing a power cycle).
 * **A tap arrives as `onSelect` first:** `BehaviorDelegate` maps a screen tap to the SELECT

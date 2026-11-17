@@ -2,8 +2,11 @@ using Toybox.Lang;
 using BLEBarrel;
 
 // Per-mode shooting settings for the X5. Only values confirmed on a camera screen are listed
-// (docs/x5-protocol.md §5). BACK moves the focus Mode -> row 1 -> ... -> Mode; UP/DOWN change the
-// focused value. The camera's replies with current values are longer than 20 bytes, so the
+// (docs/x5-protocol.md §5). Since 17 nov. 2026 these rows have two hosts, never a pseudo-mode
+// page: on the base view of the touch devices, tapping a row focuses it and a swipe steps it
+// (the modern way kept by the user's decision 5); on the pushed settings page every key answers
+// (RemoteDelegate: buildSettingsMenu / SettingsPageDelegate - menu focus on UP/DOWN, one step on
+// the chosen row). The camera's replies with current values are longer than 20 bytes, so the
 // watch cannot read them: a value is shown once the watch has set it ("–" before), dim until the
 // camera acks it.
 module Settings {

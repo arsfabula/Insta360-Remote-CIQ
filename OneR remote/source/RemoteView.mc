@@ -103,6 +103,13 @@ function uiState(dev) {
 // True when the link dropped while recording (e.g. underwater): the camera keeps going.
 var recLinkLost = false;
 
+// The gear's tap target: [x, y, r] of the icon drawn this frame by drawBackCue,
+// null in a frame that draws no gear. The gear is the screen entry of the pushed
+// settings page (RemoteDelegate.gearTapped reads this circle): what a finger may
+// hit is exactly what the eye was shown, at whatever angle the icon stands - the
+// target of the entry follows the affordance, it never leads it.
+var gearHit = null;
+
 // Short message drawn by RemoteView at the bottom of the screen, over the camera name.
 // Not WatchUi.showToast: the native toast swallows the next button press (it only dismisses
 // itself), so START to stop a recording right after "Highlight added" was lost. This one takes
@@ -397,7 +404,7 @@ class RemoteView extends WatchUi.View {
 				startCue = C_TEXT;
 				break;
 			default:
-			startCue = inSettingsUI() ? null : (BLEBarrel.videoMode ? C_RED : C_TEXT);
+			startCue = BLEBarrel.videoMode ? C_RED : C_TEXT;
 			setRows = Settings.rows(currentModeId);
 			Settings.clampFocus(currentModeId);
 		}
@@ -457,6 +464,7 @@ class RemoteView extends WatchUi.View {
 		} else {
 			ModeIcons.stateIcon(dc, ix, cy, isz, hero, heroColor);
 		}
+		gearHit = null;   // a frame that draws no gear offers no target: read after any stale circle is dropped
 		if (dots) {
 			drawModeDots(dc, cx, cy, rr);
 			if (setRows.size() > 0) { drawBackCue(dc, cx, cy, rr); }
@@ -760,13 +768,18 @@ class RemoteView extends WatchUi.View {
 			Gfx.TEXT_JUSTIFY_CENTER | Gfx.TEXT_JUSTIFY_VCENTER);
 	}
 
-	// Gear beside the BACK button (about 330°): BACK moves the settings focus. Amber while a
-	// settings row has the focus.
+	// The gear: the screen's entry to the pushed settings page, its tap target
+	// published to gearHit with it. Where it stands and how it is coloured are
+	// the old position and the old amber-on-focus - this task only moved the
+	// page it opens (the pseudo-mode fell, decision 3 of 17 nov. 2026); the
+	// move along the ring beside the START cue and the amber's fall come with
+	// decision 6, the icon's own task.
 	hidden function drawBackCue(dc, cx, cy, rr) {
 		var a = Math.toRadians(-30);
 		var px = cx + Math.cos(a) * (rr - 30);
 		var py = cy - Math.sin(a) * (rr - 30);
 		ModeIcons.gear(dc, px, py, rr * 0.065, Settings.focus > 0 ? C_AMBER : C_DIM);
+		gearHit = [px, py, rr * 0.09];
 	}
 
 	// Page-indicator dots along the left edge, centred between UP (180°) and DOWN (209°):

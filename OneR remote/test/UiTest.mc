@@ -58,13 +58,16 @@ function otherRowsStillWrap(logger) {
 // decline it so onTap, which knows the position, can focus the row. A real
 // START press (onKeyPressed KEY_ENTER first) is handled by onSelect. (PR
 // vector; the same contract as the delegate ported it.)
+// The grip this vector holds on the delegate's state was the pseudo-mode
+// "set" - it kept every runStart leg at an answer of true with no frame on
+// the wire. The pseudo-mode fell (settings-push, 17 nov. 2026); the same
+// fact is now held the honest way, by the UI_STARTING leg: the camera never
+// confirmed, the press cancels the wait, writes nothing, asks nothing of a
+// link this vector's device does not have. The assertions do not move.
 (:test)
 function tapIsNotStartButKeyIs(logger) {
 	var dev = uiLink();
-	BLEBarrel.currentMode = "set";
-	BLEBarrel.currentLabel = "Settings";
-	BLEBarrel.recState = BLEBarrel.stateStopRec;
-	Settings.focus = 1;   // SOUND: START does nothing here, so the test has no side effects
+	BLEBarrel.recState = BLEBarrel.stateStarting;
 	var d = new RemoteDelegate(dev);
 	var tap = d.onSelect();
 	d.onTapTimeout();     // fallback path (no onTap followed): runs START once, harmless here

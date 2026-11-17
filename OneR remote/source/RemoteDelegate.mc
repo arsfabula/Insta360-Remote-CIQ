@@ -28,19 +28,14 @@ function inLog(msg) {
 	Sys.println("[in] " + msg);
 }
 
-// The Settings page is an app-side id, never a camera mode. The mainline barrel has no
-// inSettings() - the PR's barrel did - so the question is asked where the id lives.
-function inSettingsUI() {
-	var m = BLEBarrel.currentMode;
-	return m instanceof Lang.String && m.equals("set");
-}
-
-// The mode remembered when the Settings page was opened, so returning from it lands on
-// the mode the camera was left in. The PR kept this in its barrel (camMode); here it
-// cannot share the name - BLEBarrel.camModeId is the camera's own reported mode, a
-// different datum, read nowhere in this file.
-var setReturnMode = null;
-var setReturnLabel = null;
+// The Settings page is no longer an id at all (the user's decision of 17 nov.
+// 2026, design B): it is a view pushed above the base, and the pushed view
+// answers its rows through the Settings module with the family each row belongs
+// to - the mode id for the option rows, "set" for sound and power. The
+// pseudo-mode "set", its inSettingsUI() question and the setReturnMode
+// accounting of the PR (its barrel kept the return mode as camMode; here that
+// name is the camera's own reported mode, a different datum) all fall with it:
+// the base view never leaves its mode, so there is nothing to remember.
 
 // The three debounces of this delegate (the tap fallback, the mode-write
 // debounce, the settings-write debounce) own no Timer object: an app's Timer
@@ -60,10 +55,13 @@ var uiPump = null;
 // this app, not an id). The echo gate is armed with the id, never the frame.
 var currentModeId = "DefaultV";
 
-// The mode wheel and the Mode menu answer the chain, not a hand-written list: the rows
-// of the level in force, [label, id] pairs in the order of the table, plus the
-// Settings entry on the levels that have option rows. The ucd2 sentinel row of the
-// replacing level stays where the table put it (its selection arms the envelope).
+// The mode wheel and the Mode menu answer the chain, not a hand-written list: the
+// rows of the level in force, [label, id] pairs in the order of the table. The ucd2
+// sentinel row of the replacing level stays where the table put it (its selection
+// arms the envelope). The "Settings" entry of the levels that had option rows fell
+// with the pseudo-mode it named (17 nov. 2026): the wheel and the menu only ever
+// name modes again, the one action that reaches the settings page is the long
+// gesture and the gear, both calling openSettingsPage.
 function modeList() {
 	var out = [];
 	var rows = Levels.rowsMain(BLEBarrel.menuLevel);
@@ -71,9 +69,6 @@ function modeList() {
 	while (i < rows.size()) {
 		out.add([rows[i][Levels.RLB], rows[i][Levels.RID]]);
 		i += 1;
-	}
-	if (BLEBarrel.menuLevel >= 2) {
-		out.add(["Settings", "set"]);
 	}
 	return out;
 }
@@ -176,17 +171,6 @@ class RemoteDelegate extends Ui.BehaviorDelegate {
 			Ui.requestUpdate();
 			return true;
 		}
-		// Settings page: START runs the focused action (Power off), never the shutter.
-		// The Exit row left this page with the decision of 17 nov. 2026 (the note in
-		// Settings.mc rows): leaving stands in BACK alone, never overloaded anywhere.
-		if (inSettingsUI()) {
-			var rows = Settings.rows("set");
-			if (Settings.focus > 0 && Settings.focus <= rows.size()) {
-				var k = rows[Settings.focus - 1][3];
-				if (k == :power) { confirmPowerOff(dev); }
-			}
-			return true;
-		}
 		// READY: start recording / take the shot
 		dueSend = null;   // a pending mode write is flushed now, not later
 		flushMode();
@@ -209,17 +193,40 @@ class RemoteDelegate extends Ui.BehaviorDelegate {
 		return true;
 	}
 
-	// Touch: tap / hold a settings row to focus it; tap elsewhere = START. Swipes arrive as
-	// onPreviousPage / onNextPage, so swiping up / down changes the focused value.
+	// Touch: a tap on a base-page row focuses it (the modern touch way, kept by
+	// the user's decision 5 of 17 nov. 2026, validated at the epix bench); a tap
+	// on the gear pushes the settings page; a tap elsewhere is START. Swipes
+	// arrive as onPreviousPage / onNextPage, so swiping up / down changes the
+	// focused value.
 	function onTap(evt) {
 		tapPending = false;
 		dueTap = null;   // the tap answered itself: no fallback
+		if (gearTapped(evt)) { openSettingsPage(); return true; }
 		if (focusRowAt(evt)) { return true; }
 		return runStart();
 	}
 
+	// A long press at the screen is the settings page, the same single action as
+	// a long press on the START key (the user's decision 2 of 17 nov. 2026,
+	// "boutons comme tactiles" - one gesture, one action, on both generations).
+	// The per-row focus this entry used to answer gave way to the gesture; the
+	// tap still focuses a row, above.
 	function onHold(evt) {
-		return focusRowAt(evt);
+		openSettingsPage();
+		return true;
+	}
+
+	// The gear's target is the circle the view published for the icon it drew
+	// this frame (RemoteView.drawBackCue writes gearHit, and a frame that draws
+	// no gear publishes no target): the area of the entry follows the drawn
+	// affordance, at whatever angle the icon stands - it moves with decision 6
+	// and the target needs no second edit.
+	hidden function gearTapped(evt) {
+		if (gearHit == null) { return false; }
+		var xy = evt.getCoordinates();
+		var dx = xy[0] - gearHit[0];
+		var dy = xy[1] - gearHit[1];
+		return dx * dx + dy * dy <= gearHit[2] * gearHit[2];
 	}
 
 	hidden function focusRowAt(evt) {
@@ -228,11 +235,6 @@ class RemoteDelegate extends Ui.BehaviorDelegate {
 		var i = Settings.rowAt(xy[0], xy[1]);
 		inLog("tap " + xy[0] + "," + xy[1] + " -> entry " + i);
 		if (i < 0) { return false; }
-		// a second tap on a focused action row (Power off) runs it, like START
-		if (i == Settings.focus && i > 0 && inSettingsUI()) {
-			var k = Settings.rows("set")[i - 1][3];
-			if (k == :power) { return runStart(); }
-		}
 		Settings.focus = i;
 		buzz(20);
 		Ui.requestUpdate();
@@ -271,11 +273,42 @@ class RemoteDelegate extends Ui.BehaviorDelegate {
 		if (Settings.focus > rows.size()) { Settings.focus = 0; stepMode(dir); return; }
 		var row = rows[Settings.focus - 1];
 		if (row[3] == :power) { return; }
-		pendingSetFrames = Settings.step(currentModeId, row, dir);
-		pendingSetKey = Settings.key(currentModeId, row);
+		stepRow(currentModeId, row, dir);
+	}
+
+	// One setting step, one leg: the base page above and the pushed settings
+	// page (SettingsPageDelegate, through the live delegate uiPump) write
+	// identically here - the frames built, the deferred write booked, the pump
+	// and its mode-change guard answering (the user's design B of 17 nov.
+	// 2026: "l'écriture différée et sa attente de changement de mode sont
+	// gardées telles quelles"). The family id names the row's family to the
+	// module: the current mode's id for its option rows, "set" for the page's
+	// sound and power rows - the pseudo-mode passed "set" everywhere by
+	// construction, and the page must not lose that distinction quietly.
+	// Public, like pumpDue: the pushed page's delegate reaches it through
+	// uiPump, the same way RemoteView reaches the pump (hidden would ask the
+	// compiler a class-vs-file visibility question this file never tests).
+	function stepRow(id, row, dir) {
+		pendingSetFrames = Settings.step(id, row, dir);
+		pendingSetKey = Settings.key(id, row);
 		settingHeld = false;   // this write's deferral, when it comes, is named once
 		dueSet = Sys.getTimer() + 800;
 		Ui.requestUpdate();
+	}
+
+	// The one action of every settings entry - long press START (the pump's
+	// dueLong leg, the next task), long press at the screen (onHold), tap of
+	// the gear (onTap): push the settings page above the base (the user's
+	// decisions 2 and 3 of 17 nov. 2026). It is this class's method rather
+	// than the file-level function the plan first named: the page writes
+	// through this instance's deferred-write state (the stepRow note above),
+	// and the live instance is already what every caller here reaches (the
+	// uiPump note). One gesture named, one action, on both generations.
+	function openSettingsPage() {
+		var fams = [];
+		var menu = buildSettingsMenu(fams);
+		menu.setFocus(0);
+		Ui.pushView(menu, new SettingsPageDelegate(self, dev, fams), Ui.SLIDE_UP);
 	}
 
 	function flushSetting() as Void {
@@ -409,9 +442,6 @@ class RemoteDelegate extends Ui.BehaviorDelegate {
 		// (UI_NOT_FOUND) is what the screen shows there, and the pose stays
 		// due for the bond that answers it.
 		if (dev == null || !dev.hasLink()) { return; }
-		// The Settings and resolution legs own the current id while they are on
-		// screen; the pose would fight them and it is never due on those pages.
-		if (inSettingsUI()) { return; }
 		var pose = Levels.poseFor(level, dev.peekKeptModeId(), currentModeId, BLEBarrel.currentLabel);
 		if (pose == null) { return; }
 		var id = pose[Levels.RID] as Lang.String;
@@ -493,20 +523,6 @@ function applyMode(dev, id, label, send) {
 	BLEBarrel.cmdStopRec = [0x12, 0, 0, 0, 0x4, 0, 0, 0x5, 0, 0x2, 0xff, 0, 0, 0x80, 0, 0, 0x10, 0x1]b;
 	BLEBarrel.recState = BLEBarrel.stateStopRec;
 
-	if (id.equals("set")) {
-		// Settings page: the camera keeps its mode (remembered for the return)
-		if (!inSettingsUI()) {
-			setReturnMode = currentModeId;
-			setReturnLabel = BLEBarrel.currentLabel;
-		}
-		currentModeId = "set";
-		BLEBarrel.currentMode = "set";
-		BLEBarrel.currentLabel = label;
-		BLEBarrel.mMessage = label + "\n" + BLEBarrel.startMessage;
-		return;
-	}
-	if (setReturnMode != null && !id.equals(setReturnMode)) { setReturnMode = null; setReturnLabel = null; }
-
 	// GPS photo of the legacy lines (the mainline's measured path, case p0 and case
 	// Photo): the fix is written into the photo header before the mode. That header
 	// is a frame of the older envelope - at the X5 line the rows carry other ids,
@@ -577,7 +593,6 @@ function applyMode(dev, id, label, send) {
 // then the state ask), armed at the barrel's echo gate with the id - the gate the
 // mainline built in phase 3, fed here as the PR fed its own modeReq.
 function sendCurrentMode(dev) {
-	if (inSettingsUI()) { return; }
 	if (currentModeId.equals("DefaultV")) { return; }
 	var m = BLEBarrel.currentMode;
 	if (!(m instanceof Lang.ByteArray)) { return; }
@@ -751,5 +766,81 @@ class PowerOffDelegate extends Ui.Menu2InputDelegate {
 			buzz(150);
 			toast("Camera powering off");
 		}
+	}
+}
+
+// The settings page's rows, one page for both generations and both families
+// (the user's decision 3 of 17 nov. 2026, design B): the current mode's
+// option rows first, then the sound and power family - a title of the row's
+// label, a sublabel of its current value, the row's id "r<n>" being its index
+// in fams and in the menu. fams collects the [family id, row] pair of every
+// drawn row: the page names the family per row to the Settings module, the
+// distinction the pseudo-mode got for free (it was "set", so every row it
+// drew answered "set") and that a pushed page could quietly lose - mode rows
+// must step through the mode's id, the sound and power rows through "set".
+// The Settings module keeps both families in rows(); only the host moved.
+function buildSettingsMenu(fams) {
+	var menu = new Ui.Menu2({:title => "Settings"});
+	var fam = currentModeId;
+	var rows = Settings.rows(fam);
+	var i = 0;
+	while (i < rows.size()) {
+		menu.addItem(new Ui.MenuItem(rows[i][1], Settings.label(fam, rows[i]), "r" + fams.size(), {}));
+		fams.add([fam, rows[i]]);
+		i += 1;
+	}
+	fam = "set";
+	rows = Settings.rows(fam);
+	i = 0;
+	while (i < rows.size()) {
+		menu.addItem(new Ui.MenuItem(rows[i][1], Settings.label(fam, rows[i]), "r" + fams.size(), {}));
+		fams.add([fam, rows[i]]);
+		i += 1;
+	}
+	return menu;
+}
+
+// The pushed settings page's answers (the ModeDelegate and PowerOffDelegate
+// precedent: a Menu2 and its delegate, pushed and answered from this file).
+// UP / DOWN belong to the menu's own focus, as in every menu of this app -
+// that is what the pushed view escapes the base view's restriction for (the
+// SDK on the widget-loop base view: "will never receive either the up/down
+// button or up/down swipe events"; "Any views pushed on top... will not have
+// these input restrictions"). START steps the chosen row once, and the row
+// stays on screen focused with its new value: the design's "r'ouvre la page à
+// la ligne choisie" is answered by rewriting the row's sublabel in place -
+// this SDK's WatchUi owns no replaceView / popAndPushView (read in its 9.3.0
+// symbol table, 17 nov.), and this file already names the in-place rewriting
+// of a changed row (the GPSon row of the Mode menu, item.setSubLabel). Same
+// page, same row focused, new value: BACK stays one pop to the base, the pure
+// exit of the user's decision 1 of 17 nov. 2026 is never re-asked. The
+// write itself is the base page's deferred leg, unchanged (pump.stepRow, its
+// pump and its mode-change guard included). The :power row answers the same
+// confirmation as ever (confirmPowerOff) - it left the base page with the
+// Exit rows of that morning, this is where it stands now.
+class SettingsPageDelegate extends Ui.Menu2InputDelegate {
+	hidden var pump;
+	hidden var dev;
+	hidden var fams;
+
+	function initialize(pumpRef, device, famsArr) {
+		Menu2InputDelegate.initialize();
+		pump = pumpRef;
+		dev = device;
+		fams = famsArr;
+	}
+
+	function onSelect(item) {
+		var id = item.getId() as Lang.String;
+		var idx = id.substring(1, id.length() - 1).toNumber();
+		var fam = fams[idx][0];
+		var row = fams[idx][1];
+		if (row[3] == :power) { confirmPowerOff(dev); return; }
+		pump.stepRow(fam, row, 1);
+		// The row arrays are literals of the static table (rows() hands the same
+		// shape on every call): the stale one this page was built with carries
+		// the same key and choices, and the value lives in the module under that
+		// key - the fresh label therefore reads true, at once.
+		item.setSubLabel(Settings.label(fam, row));
 	}
 }
