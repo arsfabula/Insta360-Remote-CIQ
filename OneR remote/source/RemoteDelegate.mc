@@ -30,13 +30,15 @@ function inLog(msg) {
 
 // The one rule of the long press (the user's design A, decision of 17 nov.
 // 2026): at 700 ms the press belongs to the settings page, under it the press
-// belongs to START. The rule is this pure function, and the suite's two
-// vectors holdAtThresholdFires / holdJustUnderThresholdDoesNotFire are its
-// bench. Everything else here (the arm at the key DOWN, the pump's dueLong
-// leg, the release that cancels, the SELECT consumed after the page) only
-// carries this answer through an app that owns no Timer object per gesture -
-// the due date is booked in the System.getTimer() domain and the view's tick
-// pumps it, the same lesson as the three debounces below.
+// belongs to START. The rule is this pure function, and the suite holds it:
+// holdAtThresholdFires / holdJustUnderThresholdDoesNotFire for the threshold,
+// startPressWaitsForTheRelease for the venues. Everything else here (the arm
+// at the key DOWN, the release that decides under the threshold, the pump's
+// leg that pages at it, the key down's SELECT that only consumes) carries
+// this answer - no Timer object per gesture, the same System.getTimer()
+// domain as the three debounces below. The venues are dated by the bench of
+// 18 nov. 2026: the base view delivers a key press's SELECT at the key DOWN
+// (see onSelect), so no decision may be taken there.
 const LONG_PRESS_MS = 700;
 function holdingDue(startAt as Lang.Number, now as Lang.Number) as Lang.Boolean {
 	return now - startAt >= LONG_PRESS_MS;
@@ -106,11 +108,13 @@ class RemoteDelegate extends Ui.BehaviorDelegate {
 	hidden var pendingSend = false;
 	hidden var dueSet = null;
 	hidden var dueTap = null;
-	// The long press of START (the user's design A, 17 nov. 2026): the arm is a
-	// due date like the three above, never a Timer object; and one flag tells
-	// the SELECT that follows the page that the gesture was already answered.
-	hidden var dueLong = null;
-	hidden var longFired = false;
+	// The press in progress of START (the user's design A, 17 nov. 2026, its
+	// venues corrected by the bench of 18 nov.): the key down arms this stamp;
+	// the release under the threshold (onKeyReleased, it decides) or the view's
+	// tick at the threshold (pumpDue, it pages) is what answers. No due date is
+	// booked and no flag is kept: the tick asks holdingDue of this stamp every
+	// 125 ms, so the rule stays the only comparison in the file.
+	hidden var heldStartAt = null;
 	hidden var startKeyAt = null;   // time of the last START key press (onKeyPressed), null = none pending
 	hidden var tapPending = false;
 	hidden var pendingSetFrames = null;
@@ -129,35 +133,34 @@ class RemoteDelegate extends Ui.BehaviorDelegate {
 		uiPump = self;
 	}
 
-	// Connect IQ turns a screen tap into the SELECT behaviour first and only calls onTap when
-	// onSelect returns false. A START press always reaches onKeyPressed (KEY_ENTER) before
-	// onSelect, a tap never does. So onSelect without a fresh START key press is a tap: hand it
-	// to onTap (which knows where the finger was). If no onTap follows, the fallback
-	// deadline runs START on the next pump, so a press is never lost.
+	// Connect IQ turns a screen tap into the SELECT behaviour first and only calls
+	// onTap when onSelect returns false. A START press always reaches onKeyPressed
+	// (KEY_ENTER) before onSelect, a tap never does. So onSelect without a fresh
+	// START key press is a tap: hand it to onTap (which knows where the finger
+	// was). If no onTap follows, the fallback deadline runs START on the next
+	// pump, so a tap is never lost.
 	function onSelect() {
 		var key = startKeyAt != null && Sys.getTimer() - startKeyAt < 2000;
 		inLog("select key=" + key);
 		startKeyAt = null;
-		if (longFired) {
-			// The press was answered by the long gesture: the page was pushed at the
-			// due date, and this SELECT belongs to the gesture, it runs no shutter
-			// (the user's Review Focus 1 - a press of 700 ms or more pages, it never
-			// shoots). The flag lifts here, that is its only life.
-			longFired = false;
-			dueLong = null;
-			return true;
-		}
 		if (!key) {
 			tapPending = true;
 			dueTap = Sys.getTimer() + 150;
 			return false;
 		}
-		// Short press: it answered itself, the long arm has nothing left to say. This
-		// leg is also the short press of the devices that never send the release
-		// (design risk 1, unknown #1 of the bench): with no UP to cancel the arm, the
-		// SELECT that became due cancels it before the threshold is ever reached.
-		dueLong = null;
-		return runStart();
+		// The SELECT of a key press consumes and decides nothing. The bench of
+		// 18 nov. 2026 (marq + epix sims, the author's runs: "ca demarre
+		// directement un enregistrement") named what this port had assumed
+		// away: the base view delivers this callback at the key DOWN, a few ms
+		// after onKeyPressed, and that moment says nothing of the press length.
+		// The decision belongs to the venues that know the length: the release
+		// under the threshold (onKeyReleased, it shoots) and the tick at the
+		// threshold (pumpDue, it pages). A host that never delivers the release
+		// is answered by the leg too - at the threshold, as a long press - and
+		// the [in] key up line of onKeyReleased names such a host at the bench.
+		// The tap fallback above keeps its own deadline: a tap has no release
+		// to wait for.
+		return true;
 	}
 
 	function onTapTimeout() as Void {
@@ -173,7 +176,6 @@ class RemoteDelegate extends Ui.BehaviorDelegate {
 	// 0x03 / 0x04 pair the bench verified, so a recording ends with cmdStopRec like any
 	// other recording.
 	function runStart() {
-		if (longFired) { return true; }   // the long gesture already answered this press (onSelect)
 		var s = uiState(dev);
 		inLog("START state=" + s + " mode=" + currentModeId + " focus=" + Settings.focus);
 		if (s == UI_SEARCHING) {
@@ -276,30 +278,31 @@ class RemoteDelegate extends Ui.BehaviorDelegate {
 	}
 
 	// START key timestamp for the tap discrimination (see onSelect). The same
-	// stamp arms the long press (the holdingDue rule above): the arm is booked
-	// as a due date, the view's tick pumps it, and the release below may cancel
-	// it - the press decides nothing by owning a Timer of its own.
+	// instant arms the press in progress (heldStartAt): the release below or
+	// the view's tick will decide its length - the press owns no Timer.
 	function onKeyPressed(evt) {
 		if (evt.getKey() == Ui.KEY_ENTER) {
 			startKeyAt = Sys.getTimer();
-			longFired = false;   // a fresh press starts its own story
-			dueLong = startKeyAt + LONG_PRESS_MS;
+			heldStartAt = startKeyAt;
 		}
 		return false;
 	}
 
-	// The release of START. Whether the base view of a widget-loop host ever
-	// sees it is design risk 1, unknown #1 of the bench; the due-date choice was
-	// made precisely not to depend on the answer. Where the release arrives it
-	// does one thing: a press ended before the threshold cancels the long arm,
-	// nothing more. A release after the threshold finds the leg already answered
-	// - nothing here undoes the page, and the SELECT that follows belongs to the
-	// gesture (onSelect). The release claims nothing of itself.
+	// The release of START: under the threshold it is where a short press
+	// decides. A release at or after the threshold says nothing more - the tick
+	// has already booked the press as long, and what it pages, it does not
+	// undo. Whether every host delivers this callback is design risk 1, unknown
+	// #1 of the bench, still open on real hardware: the [in] key up line below
+	// names the hosts that answer it, and where none answers, the threshold
+	// leg of pumpDue is what answers.
 	function onKeyReleased(evt) {
-		if (evt.getKey() == Ui.KEY_ENTER && dueLong != null && !holdingDue(startKeyAt, Sys.getTimer())) {
-			inLog("released under the threshold: no page");
-			dueLong = null;
-		}
+		if (evt.getKey() != Ui.KEY_ENTER) { return false; }
+		var now = Sys.getTimer();
+		inLog("key up ENTER held=" + (heldStartAt != null ? (now - heldStartAt).toString() : "none") + "ms");
+		if (heldStartAt == null) { return false; }
+		if (holdingDue(heldStartAt, now)) { return false; }
+		heldStartAt = null;
+		runStart();
 		return false;
 	}
 
@@ -353,7 +356,7 @@ class RemoteDelegate extends Ui.BehaviorDelegate {
 	}
 
 	// The one action of every settings entry - long press START (the pump's
-	// dueLong leg, the next task), long press at the screen (onHold), tap of
+	// threshold leg), long press at the screen (onHold), tap of
 	// the gear (onTap): push the settings page above the base (the user's
 	// decisions 2 and 3 of 17 nov. 2026). It is this class's method rather
 	// than the file-level function the plan first named: the page writes
@@ -468,14 +471,15 @@ class RemoteDelegate extends Ui.BehaviorDelegate {
 			dueTap = null;
 			onTapTimeout();
 		}
-		// The long-press leg, last of the four: a write or a tap fallback that became
-		// due in the same window answers first, and the press is still held here -
-		// the two ways a short press cancels the arm (the release, or its own SELECT)
-		// have not spoken, so at the threshold the press belongs to the page.
-		if (dueLong != null && startKeyAt != null && holdingDue(startKeyAt, now)) {
-			dueLong = null;
-			longFired = true;
-			inLog("long press " + (now - startKeyAt).toString() + " ms: settings page");
+		// The long-press leg, last of the four: at the threshold the press belongs
+		// to the page. A release under the threshold has already disarmed the stamp
+		// and decided; the key down's SELECT owns nothing here. Where a host never
+		// delivers the release, this leg is also where a short press lands, as a
+		// long one - the [in] key up line of onKeyReleased is what names such a
+		// host at the bench.
+		if (heldStartAt != null && holdingDue(heldStartAt, now)) {
+			inLog("long press " + (now - heldStartAt).toString() + " ms: settings page");
+			heldStartAt = null;
 			openSettingsPage();
 		}
 	}

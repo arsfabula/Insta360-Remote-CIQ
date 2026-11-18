@@ -62,11 +62,11 @@ function otherRowsStillWrap(logger) {
 // "set" - it kept every runStart leg at an answer of true with no frame on
 // the wire. The pseudo-mode fell (settings-push, 17 nov. 2026); the state
 // now walked through is the UI_STARTING leg: the fallback press cancels the
-// unconfirmed start (that leg sends no frame), and the KEY press that
-// follows finds the READY the fallback restored - it takes the capture leg
-// and books a frame on this vector's fake device. The vector never asserts
-// on the wire: what it holds is the tap/key distinction alone (false from
-// the tap, true from the key). The assertions do not move.
+// unconfirmed start (that leg sends no frame). The KEY press that follows is
+// consumed and deferred (the bench of 18 nov. moved the decision to the
+// release, and this vector sends none) - the vector holds the tap/key
+// distinction alone, false from the tap, true from the key. The assertions
+// do not move.
 (:test)
 function tapIsNotStartButKeyIs(logger) {
 	var dev = uiLink();
@@ -80,8 +80,8 @@ function tapIsNotStartButKeyIs(logger) {
 	return tap == false && key == true;
 }
 
-// The one rule of the long press (the user's design A of 17 nov. 2026): the
-// threshold is a pure function, and these two vectors are its bench - at the
+// The threshold of the long press (the user's design A of 17 nov. 2026): the
+// rule is a pure function, and these two vectors are its bench - at the
 // threshold the gesture belongs to the settings page, just under it it belongs
 // to START. Everything else (the arm in onKeyPressed, the cancellation by the
 // release, the pump leg) only carries this answer.
@@ -92,6 +92,33 @@ function holdAtThresholdFires(logger) {
 (:test)
 function holdJustUnderThresholdDoesNotFire(logger) {
 	return holdingDue(1000, 1000 + 699) == false;
+}
+
+// Where the short press is decided. The bench of 18 nov. 2026 (marq + epix
+// sims, the author's own runs) named the defect the port had assumed away:
+// the base view receives the SELECT of a key press at the key DOWN, a few ms
+// after onKeyPressed, and that moment says nothing of the press length - the
+// old leg shot the shutter there, so a long press "demarre directement un
+// enregistrement" and its threshold leg could never ring (it also read the
+// startKeyAt stamp, which the SELECT clears). The venue the delegate answers
+// at now: the SELECT of a key press consumes and decides nothing; the release
+// under the threshold is what decides. The observable is the UI_STARTING leg
+// (the same shape the tap vector above chose): an unconfirmed start, which a
+// deciding press cancels and a deferred one leaves standing. No link needed,
+// no frame promised. The threshold itself stays held by the two vectors
+// above; this one holds the venues.
+(:test)
+function startPressWaitsForTheRelease(logger) {
+	var dev = uiLink();
+	BLEBarrel.recState = BLEBarrel.stateStarting;
+	var d = new RemoteDelegate(dev);
+	d.onKeyPressed(new Ui.KeyEvent(Ui.KEY_ENTER, Ui.PRESS_TYPE_ACTION));
+	var sel = d.onSelect();
+	var deferred = BLEBarrel.recState == BLEBarrel.stateStarting;
+	d.onKeyReleased(new Ui.KeyEvent(Ui.KEY_ENTER, Ui.PRESS_TYPE_UP));
+	var decided = BLEBarrel.recState == BLEBarrel.stateStopRec;
+	logger.debug("sel=" + sel + " deferred=" + deferred + " decided=" + decided);
+	return sel == true && deferred && decided;
 }
 
 // The crash the user's own simulator run named, held as a vector. At the moment
