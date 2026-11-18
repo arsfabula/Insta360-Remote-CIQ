@@ -32,7 +32,7 @@ suit la formule du dépôt (`@no84by`, auteur du PR d'origine et du travail de p
 
 * **UP / DOWN / SWIPE** — change mode, or change the value of the focused setting.
 * **START** — start recording / take the photo; while recording, stop it. On the "No camera" screen it starts a new search.
-* **START (long press; on some models the first long press only unlocks the watch — hold again)** — open the settings of the shooting mode (resolution, lens, etc.). On touch-screen devices, select a setting directly on screen, swipe to change it.
+* **START long press (This will also lock your watch, long press again to unlock)** — open the settings of the shooting mode (resolution, lens, etc.). On touch-screen devices, select a setting directly on screen, swipe to change it.
 * **BACK** — exit the app.
 * **MENU** — app menu: mode list, GPS overlay, Force model.
 * While recording: **UP** adds a highlight, **DOWN** = Track That.
@@ -72,7 +72,7 @@ UI and additional settings thanks to the work of **@no84by**
 
 **CE QU'ELLE FAIT**
 
-* Pilote une caméra Insta360 depuis votre montre Garmin, en Bluetooth : **X6, X5, X4 / X4 Air, gammes X3 / X2 / ONE**. Les gammes GO et Ace ne sont pas prises en charge.
+* Pilote une caméra Insta360 depuis votre montre Garmin, en Bluetooth : **X6, X5, X4 / X4 Air, / X3 / X2 / ONE**. Les gammes GO et Ace ne sont pas prises en charge.
 * Prend en charge plusieurs modes de prise de vue et plusieurs réglages.
 * L'overlay GPS est pris en charge. Activez-le dans le menu.
 * Se connecte à la première caméra Insta360 qu'il voit. Aucun appairage nécessaire.
@@ -81,7 +81,7 @@ UI and additional settings thanks to the work of **@no84by**
 
 * **UP / DOWN / BALAYAGE** — changer de mode, ou changer la valeur du réglage sélectionné.
 * **START** — démarrer l'enregistrement / déclencher la photo ; pendant l'enregistrement, l'arrêter. Sur l'écran « No camera », relance une recherche.
-* **START (appui long ; sur certains modèles, le premier appui long ne fait que déverrouiller la montre — recommencez)** — ouvrir les réglages du mode de prise de vue (résolution, lentille, etc.). Sur les modèles à écran tactile, sélectionnez un réglage directement à l'écran, balayez pour le modifier.
+* **START appui long (le premier appui long va verrouiller la montre — refaire un appui long pour la déverouiller)** — ouvrir les réglages du mode de prise de vue (résolution, lentille, etc.). Sur les modèles à écran tactile, sélectionnez un réglage directement à l'écran, balayez pour le modifier.
 * **BACK** — quitter l'application.
 * **MENU** — menu de l'application : liste des modes, GPS overlay, Force model.
 * Pendant l'enregistrement : **UP** ajoute un repère (highlight), **DOWN** = Track That.
@@ -106,7 +106,7 @@ Interface et réglages supplémentaires grâce aux travaux de **@no84by**
 * Le modèle de caméra est reconnu par son nom ; MENU → **Force model** permet d'essayer les fonctions d'un autre modèle. **À vos risques !**
 * Pendant l'enregistrement : **highlight** (UP) et **Track That** (DOWN).
 * Fiabilité : corrections de mémoire insuffisante et de démarrage.
-* 10 anciens appareils dont la mémoire ne peut pas héberger cette application ont été retirés de la liste des produits pris en charge.
+* 10 anciennes montres dont la mémoire ne peut pas héberger cette application ont été retirés de la liste des produits pris en charge.
 * Merci à **@no84by**, pour l'interface et ses contributions à la compréhension du protocole de communication.
 
 ---
@@ -172,6 +172,15 @@ l'utilisateur voie ce qu'il rencontre en premier (il est déjà décrit en tête
 > traduction fidèle du nouvel anglais : mêmes lignes, dans le même ordre —
 > notamment la ligne « avis de premier lancement » tombée et 13 → 10 appareils
 > retirés (13 l'avaient été par 56d70f7, 3 sont revenus par bd347f7).
+>
+> Image bannière (1440×720, demande de l'auteur) : hero-1440x720.png, mashup
+> en cascade des six captures rondes (jamais edge ni Glance) — chaque cadran
+> garde sa partie gauche, recouvert sur sa droite par le suivant, l'accueil
+> lié entier en bout de course. Fond transparent comme les captures. Généré par
+> tools/hero-mashup.ps1 (ordre : Connecting, Starting, Recording,
+> Main+settings, Menu, Main ; pas de 144 px). 312 872 octets — si le magasin
+> borne le hero comme la couverture, le même script avec une qualité JPEG ou
+> un ordre plus court le fera passer sous la limite.
 
 Contrainte physique : les écrans 1, 2, 3, 5, 6 supposent une **caméra réellement liée**.
 En atelier, le lien ne se fait que si la caméra est éveillée et accepte l'appairage côté
