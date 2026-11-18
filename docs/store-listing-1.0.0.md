@@ -15,11 +15,11 @@ suit la formule du dépôt (`@no84by`, auteur du PR d'origine et du travail de p
 
 ## 1. Description (EN)
 
-**MAJOR UPDATE — READ FIRST: HOW TO QUIT THIS APP**
+**MAJOR UPDATE — PLEASE READ**
 
-* BACK on the watch does not close it.
-* To leave it: press **MENU**, then choose **Exit app**.
-* As a safety, the first few starts show a warning about this behaviour.
+* Brand new UI.
+* More modes & settings supported.
+* Experimental X6 support.
 
 **WHAT IT DOES**
 
@@ -32,8 +32,9 @@ suit la formule du dépôt (`@no84by`, auteur du PR d'origine et du travail de p
 
 * **UP / DOWN / SWIPE** — change mode, or change the value of the focused setting.
 * **START** — start recording / take the photo; while recording, stop it. On the "No camera" screen it starts a new search.
-* **BACK** — move the settings focus (mode → settings rows → mode).
-* **MENU** — app menu: mode list, GPS on/off, Force model, Exit app.
+* **START (long press; on some models the first long press only unlocks the watch — hold again)** — open the settings of the shooting mode (resolution, lens, etc.). On touch-screen devices, select a setting directly on screen, swipe to change it.
+* **BACK** — exit the app.
+* **MENU** — app menu: mode list, GPS overlay, Force model.
 * While recording: **UP** adds a highlight, **DOWN** = Track That.
 * Touch models: tap a row to focus it, swipe to change it, tap the middle to start.
 * The Settings page can power the camera off.
@@ -45,8 +46,7 @@ suit la formule du dépôt (`@no84by`, auteur du PR d'origine et du travail de p
 * X6 support is experimental. Please use the "Contact developer" link to report bugs.
 
 **CREDIT**
-This version is a rebuild, and it stands on the original app and its protocol work by
-**@no84by** — much of what works here works because of him.
+UI and additional settings thanks to the work of **@no84by**
 
 ---
 
@@ -55,21 +55,20 @@ This version is a rebuild, and it stands on the original app and its protocol wo
 * The app has been rebuilt: new screen with a status ring, mode dots, and the camera's settings column on the watch.
 * **Insta360 X6 support** — experimental.
 * The camera model is recognised by its name; MENU → **Force model** lets you try another model's functions. **Use at your own risk!**
-* A first-run notice explains how to quit the app.
 * While recording you can **highlight** (UP) and **Track That** (DOWN).
 * Reliability: out-of-memory and start-up fixes.
-* 13 older devices whose memory cannot hold this app were taken off the supported list.
+* 10 older devices whose memory cannot hold this app were taken off the supported list.
 * Thanks to **@no84by**, for the UI and his additions to the understanding of the communication protocol.
 
 ---
 
 ## 3. Description (FR)
 
-**MISE À JOUR IMPORTANTE — LISEZ D'ABORD : COMMENT QUITTER CETTE APPLICATION**
+**MISE À JOUR IMPORTANTE — VEUILLEZ LIRE**
 
-* La touche BACK de la montre ne la ferme pas.
-* Pour la quitter : appuyer sur **MENU**, puis choisir **Exit app**.
-* Par sécurité, les premiers démarrages affichent un avertissement à ce sujet.
+* Interface entièrement nouvelle.
+* Davantage de modes et de réglages pris en charge.
+* Prise en charge expérimentale du X6.
 
 **CE QU'ELLE FAIT**
 
@@ -82,10 +81,11 @@ This version is a rebuild, and it stands on the original app and its protocol wo
 
 * **UP / DOWN / BALAYAGE** — changer de mode, ou changer la valeur du réglage sélectionné.
 * **START** — démarrer l'enregistrement / déclencher la photo ; pendant l'enregistrement, l'arrêter. Sur l'écran « No camera », relance une recherche.
-* **BACK** — déplace la sélection des réglages (mode → lignes de réglage → mode).
-* **MENU** — menu de l'application : liste des modes, GPS on/off, Force model, Exit app.
+* **START (appui long ; sur certains modèles, le premier appui long ne fait que déverrouiller la montre — recommencez)** — ouvrir les réglages du mode de prise de vue (résolution, lentille, etc.). Sur les modèles à écran tactile, sélectionnez un réglage directement à l'écran, balayez pour le modifier.
+* **BACK** — quitter l'application.
+* **MENU** — menu de l'application : liste des modes, GPS overlay, Force model.
 * Pendant l'enregistrement : **UP** ajoute un repère (highlight), **DOWN** = Track That.
-* Modèles tactiles : toucher une ligne pour la sélectionner, balayer pour changer, toucher le centre pour démarrer.
+* Modèles tactiles : touchez une ligne pour la sélectionner, balayez pour modifier, touchez le centre pour démarrer.
 * La page Settings peut éteindre la caméra.
 
 **BON À SAVOIR**
@@ -95,8 +95,7 @@ This version is a rebuild, and it stands on the original app and its protocol wo
 * La prise en charge du X6 est expérimentale. Merci d'utiliser le lien « Contact developer » pour signaler les problèmes.
 
 **CRÉDIT**
-Cette version est une reconstruction, qui repose sur l'application d'origine et le travail
-de protocole de **@no84by** — beaucoup de ce qui fonctionne ici vient de lui.
+Interface et réglages supplémentaires grâce aux travaux de **@no84by**
 
 ---
 
@@ -105,10 +104,9 @@ de protocole de **@no84by** — beaucoup de ce qui fonctionne ici vient de lui.
 * L'application a été reconstruite : nouvel écran avec anneau d'état, points de modes et colonne des réglages de la caméra sur la montre.
 * **Prise en charge de l'Insta360 X6** — expérimentale.
 * Le modèle de caméra est reconnu par son nom ; MENU → **Force model** permet d'essayer les fonctions d'un autre modèle. **À vos risques !**
-* Un avis de premier lancement explique comment quitter l'application.
 * Pendant l'enregistrement : **highlight** (UP) et **Track That** (DOWN).
 * Fiabilité : corrections de mémoire insuffisante et de démarrage.
-* 13 anciens appareils dont la mémoire ne peut pas héberger cette application ont été retirés de la liste des produits pris en charge.
+* 10 anciens appareils dont la mémoire ne peut pas héberger cette application ont été retirés de la liste des produits pris en charge.
 * Merci à **@no84by**, pour l'interface et ses contributions à la compréhension du protocole de communication.
 
 ---
@@ -163,6 +161,17 @@ l'utilisateur voie ce qu'il rencontre en premier (il est déjà décrit en tête
 > de l'auteur ; le format reste carré, l'appareil rond centré dedans, comme les
 > consignes Garmin le demandent) ; edge.png garde son fond noir, carré 640×640
 > sous la limite des 150 Ko.
+>
+> Textes au 18 nov. au soir : l'auteur a réécrit lui-même l'anglais (sections 1
+> et 2) — c'est sa validation, ses mots. La vérification contre le code à HEAD
+> n'a trouvé qu'une erreur de fait : la ligne MENU promettait encore « Exit app »,
+> rangée supprimée par la décision du 17 nov. — corrigée, avec le libellé réel
+> « GPS overlay » (pour « GPS on/off ») et la grammaire (le « twice » de l'appui
+> long explique maintenant pourquoi un second appui long est parfois nécessaire,
+> l'appel système qui verrouille la montre). Sections 3 et 4 réécrites comme
+> traduction fidèle du nouvel anglais : mêmes lignes, dans le même ordre —
+> notamment la ligne « avis de premier lancement » tombée et 13 → 10 appareils
+> retirés (13 l'avaient été par 56d70f7, 3 sont revenus par bd347f7).
 
 Contrainte physique : les écrans 1, 2, 3, 5, 6 supposent une **caméra réellement liée**.
 En atelier, le lien ne se fait que si la caméra est éveillée et accepte l'appairage côté
