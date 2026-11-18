@@ -159,6 +159,10 @@ l'utilisateur voie ce qu'il rencontre en premier (il est déjà décrit en tête
 > posée par l'auteur : sur toute image, le numéro de série de la caméra est
 > remplacé par « R3M073 » — la vraie suffixe est la clé de wake de la caméra et
 > ne doit jamais paraître dans un fichier public (même règle que tools.md).
+> Fond transparent hors du disque d'écran sur les sept captures rondes (demande
+> de l'auteur ; le format reste carré, l'appareil rond centré dedans, comme les
+> consignes Garmin le demandent) ; edge.png garde son fond noir, carré 640×640
+> sous la limite des 150 Ko.
 
 Contrainte physique : les écrans 1, 2, 3, 5, 6 supposent une **caméra réellement liée**.
 En atelier, le lien ne se fait que si la caméra est éveillée et accepte l'appairage côté
