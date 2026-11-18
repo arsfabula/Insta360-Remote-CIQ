@@ -902,7 +902,17 @@ class SettingsPageDelegate extends Ui.Menu2InputDelegate {
 
 	function onSelect(item) {
 		var id = item.getId() as Lang.String;
-		var idx = id.substring(1, id.length() - 1).toNumber();
+		// The id is "r" + the slot in fams (buildSettingsMenu). Read it back
+		// with substring's real signature - (startIndex, END index): the bench
+		// of 18 nov. 2026 (epix sim) crashed here reading it as a length,
+		// "r0".substring(1, 1) -> "" -> toNumber null -> fams[null]. The
+		// file's own precedent for the end form is addMenuLevelItems' forced-
+		// model leg (substring(5, id.length())). The [set] line names the row
+		// the page answers - at the bench it also tells whether a pushed menu
+		// takes the release of the very press that opened it (a line with no
+		// press between, design risk 1) or only deliberate START presses.
+		Sys.println("[set] page select id=" + id);
+		var idx = id.substring(1, id.length()).toNumber();
 		var fam = fams[idx][0];
 		var row = fams[idx][1];
 		if (row[3] == :power) { confirmPowerOff(dev); return; }

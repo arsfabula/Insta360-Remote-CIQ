@@ -121,6 +121,52 @@ function startPressWaitsForTheRelease(logger) {
 	return sel == true && deferred && decided;
 }
 
+// The pushed page's id round trip, held as a vector because only a real bench
+// could see it: the user's epix sim run of 18 nov. 2026 ended with
+//   Error: Unhandled Exception / UnexpectedTypeException: Expected Number,
+//   given null / onSelect() at RemoteDelegate.mc:906
+// ("la selection de la valeur fait crasher l'app"). buildSettingsMenu hands
+// each row the id "r" + its slot and SettingsPageDelegate.onSelect reads that
+// id back; String.substring takes an END index as its second argument, not a
+// length, so every two-character id ("r0"..."r9", the whole page under ten
+// rows) parsed to an empty string, toNumber answered null, and fams[null]
+// threw. The suite never saw it because stepRow was always reached directly,
+// never through a MenuItem's id. This vector is the bench's own walk: build a
+// real page, hand every real item to a real SettingsPageDelegate, and the row
+// its id names must be the row that moves. Red before the fix is the
+// exception itself - it ends the vector as an error, the same shape as the
+// "Too Many Timers" note above: not catchable, only preventable.
+(:test)
+function settingsPageSelectStepsTheRowItsIdNames(logger) {
+	BLEBarrel.menuLevel = 2;
+	currentModeId = "p3";   // two option rows (burst, timer) over the two "set" rows
+	var fams = [];
+	var menu = buildSettingsMenu(fams);
+	var dev = uiLink();
+	var pump = new RemoteDelegate(dev);
+	var page = new SettingsPageDelegate(pump, dev, fams);
+	var ok = true;
+	var steps = 0;
+	var i = 0;
+	while (i < 40) {
+		var it = menu.getItem(i);
+		if (it == null) { break; }
+		var fam = fams[i][0];
+		var row = fams[i][1];
+		if (row[3] == :power) { i++; continue; }   // the confirmation path, not a step
+		var before = Settings.label(fam, row);
+		page.onSelect(it);
+		var after = Settings.label(fam, row);
+		logger.debug("row" + i.toString() + " " + fam + ":" + row[0] + " " + before + " -> " + after);
+		ok = ok && !after.equals(before) && !after.equals("–");
+		steps += 1;
+		i++;
+	}
+	// p3 answers two option rows and "set" one stepping row (power is skipped):
+	// three steps through three real ids, and no fourth item on the walk.
+	return ok && steps == 3;
+}
+
 // The crash the user's own simulator run named, held as a vector. At the moment
 // a link becomes writable, the link books three delayed asks (the authorization
 // probe at 500 ms, the camera state at 1500 ms, the card at 2500 ms) and the
