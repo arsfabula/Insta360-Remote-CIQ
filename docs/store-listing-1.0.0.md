@@ -115,7 +115,8 @@ Interface et réglages supplémentaires grâce aux travaux de **@no84by**
 
 Formats à respecter (vérifiés le 16 nov. dans les consignes Garmin et les retours du
 forum développeur) : image de couverture 500×500 px max 300 Ko ; captures d'écran
-JPG/PNG **max 150 Ko chacune** ; image « hero » 1440×720 px ; icône sur appareil
+JPG/PNG **max 150 Ko chacune** ; image « hero » 1440×720 px **max 2 048 Ko** (chiffre
+de l'auteur, 18 nov.) ; icône sur appareil
 128×128 px. Le site du magasin **déforme les images qui ne sont pas carrées** : garder un
 carré (l'appareil rond centré dedans), jamais l'écran étiré.
 
@@ -180,8 +181,8 @@ l'utilisateur voie ce qu'il rencontre en premier (il est déjà décrit en tête
 > finir sur Main+settings. Ordre actuel : Connecting, Starting, Recording,
 > Menu, Main+settings ; pas de 180 px. Fond transparent comme les captures.
 > Généré par tools/hero-mashup.ps1 (l'ordre et le pas s'y changent). 350 936
-> octets — si le magasin borne le hero comme la couverture, le même script en
-> JPEG ou avec un ordre plus court le fera passer sous la limite.
+> octets, sans souci : la borne du hero est 2 048 Ko (chiffre de l'auteur) —
+> les 150 Ko ne bornent que les captures.
 
 Contrainte physique : les écrans 1, 2, 3, 5, 6 supposent une **caméra réellement liée**.
 En atelier, le lien ne se fait que si la caméra est éveillée et accepte l'appairage côté
