@@ -395,6 +395,11 @@ class RemoteDelegate extends Ui.BehaviorDelegate {
 		// the last frame's answer decides the row's ok / refused mark (the PR's
 		// sendSettingX5 discipline, on this app's armWriteAck witness)
 		dev.armWriteAck(pendingSetKey);
+		// The crossing gets its own line: the bench of 18 nov. judged a
+		// setting only from the camera's silence. One line per write, at the
+		// moment the frames go to the transport, the same [set] prefix as the
+		// held leg - together they name every write's fate at the bench.
+		Sys.println("[set] " + pendingSetKey + " sent x" + frames.size().toString());
 		Ui.requestUpdate();
 	}
 
@@ -883,9 +888,18 @@ function buildSettingsMenu(fams) {
 // symbol table, 17 nov.), and this file already names the in-place rewriting
 // of a changed row (the GPSon row of the Mode menu, item.setSubLabel). Same
 // page, same row focused, new value: BACK stays one pop to the base, the pure
-// exit of the user's decision 1 of 17 nov. 2026 is never re-asked. The
-// write itself is the base page's deferred leg, unchanged (pump.stepRow, its
-// pump and its mode-change guard included). The :power row answers the same
+// exit of the user's decision 1 of 17 nov. 2026 is never re-asked. The write
+// answers on the page's own ground - the base page's deferred leg cannot ring
+// here: its due dates belong to the base view's 125 ms tick, and that tick
+// stops while a view is pushed on top (View.onHide is documented "when a new
+// View object is pushed on top of the current one", RemoteView.onHide stops
+// the timer there - the bench of 18 nov. eve named it: "les valeurs
+// selectionnees ne semblent pas etre transmises a la camera", while the touch
+// path on the base screen crossed fine). The pushed menu that has always
+// reached the camera answers at the selection - applyMode in ModeDelegate -
+// and that is the precedent the page follows: step, flush at once, and
+// onBack gives one last try at a write the mode-window guard held before the
+// page leaves. The :power row answers the same
 // confirmation as ever (confirmPowerOff) - it left the base page with the
 // Exit rows of that morning, this is where it stands now.
 class SettingsPageDelegate extends Ui.Menu2InputDelegate {
@@ -908,19 +922,43 @@ class SettingsPageDelegate extends Ui.Menu2InputDelegate {
 		// "r0".substring(1, 1) -> "" -> toNumber null -> fams[null]. The
 		// file's own precedent for the end form is addMenuLevelItems' forced-
 		// model leg (substring(5, id.length())). The [set] line names the row
-		// the page answers - at the bench it also tells whether a pushed menu
-		// takes the release of the very press that opened it (a line with no
-		// press between, design risk 1) or only deliberate START presses.
+		// the page answers; the bench of 18 nov. already read it once: no such
+		// line ever appeared between the page opening and a deliberate START -
+		// the pushed menu does NOT take the release of the press that opened
+		// it (design risk 1 / unknown #1, answered negative on both hosts).
 		Sys.println("[set] page select id=" + id);
 		var idx = id.substring(1, id.length()).toNumber();
 		var fam = fams[idx][0];
 		var row = fams[idx][1];
 		if (row[3] == :power) { confirmPowerOff(dev); return; }
 		pump.stepRow(fam, row, 1);
+		// And the write crosses here, at the select - not on a due date behind
+		// this page (the header above names why). stepRow keeps its bookkeeping
+		// for the shared rules it holds; flushSetting is asked at once, its
+		// mode-window guard included: a write the guard holds stays booked,
+		// named once by the [set] held line, and onBack below tries it again
+		// before the page leaves.
+		pump.flushSetting();
 		// The row arrays are literals of the static table (rows() hands the same
 		// shape on every call): the stale one this page was built with carries
 		// the same key and choices, and the value lives in the module under that
 		// key - the fresh label therefore reads true, at once.
 		item.setSubLabel(Settings.label(fam, row));
+	}
+
+	// The page's BACK is the pure pop of decision 1 (17 nov. 2026) - one
+	// gesture, one return, nothing the user can feel added. Menu2 says it
+	// plainly: "If this method is not overridden, it will pop the active
+	// view" - so the override owns the pop, and takes it exactly as the Mode
+	// menu's precedent takes its own (Ui.popView, SLIDE_DOWN, the same slide
+	// the system would have). What belongs here is the write's last chance:
+	// flushSetting's retry is a due date on a pump this page covers, so a
+	// write held by the mode-window guard would otherwise sit booked behind a
+	// page that leaves. Where the guard still holds at the pop, the write
+	// stays booked and the base pump takes it back over (the [set] held line
+	// named it once already).
+	function onBack() {
+		pump.flushSetting();
+		Ui.popView(Ui.SLIDE_DOWN);
 	}
 }

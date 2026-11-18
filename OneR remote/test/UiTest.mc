@@ -1,6 +1,7 @@
 using Toybox.Test;
 using Toybox.WatchUi as Ui;
 using Toybox.Application;
+using Toybox.System as Sys;
 using BLEBarrel;
 
 // The UI half of the unit suite: PR #2's UiTest vectors (pr2-ref, green at
@@ -165,6 +166,73 @@ function settingsPageSelectStepsTheRowItsIdNames(logger) {
 	// p3 answers two option rows and "set" one stepping row (power is skipped):
 	// three steps through three real ids, and no fourth item on the walk.
 	return ok && steps == 3;
+}
+
+// The same bench, minutes later: "les valeurs selectionnees ne semblent pas
+// etre transmises a la camera" - on the epix the touch path to a row is fine,
+// the page reached by the long press is not. The page had booked its write on
+// the base page's deferred leg (stepRow's +800 ms date, rung by the base
+// view's 125 ms tick) - and the base view's tick stops the moment another
+// view is pushed: View.onHide is documented "when a new View object is pushed
+// on top of the current one", and RemoteView.onHide stops its timer there.
+// The date can only ring after a return, and on this generation the app will
+// not trust what the platform does to a covered widget-loop base: a menu
+// pushed above it that has always reached the camera - the Mode menu -
+// answers its write AT THE SELECTION (applyMode), and that precedent is what
+// this vector asks the settings page for. The witness is the barrel's own:
+// armWriteAck books x5WriteName at the wire, and freshLink left it the empty
+// string. Red before the fix: still "".
+(:test)
+function settingsPageWriteCrossesAtTheSelect(logger) {
+	BLEBarrel.menuLevel = 2;
+	currentModeId = "p3";
+	var fams = [];
+	var menu = buildSettingsMenu(fams);
+	var dev = uiLink();   // the link reset leaves x5WriteName = ""
+	var pump = new RemoteDelegate(dev);
+	var page = new SettingsPageDelegate(pump, dev, fams);
+	page.onSelect(menu.getItem(0));   // the burst row of the mode, r0
+	var witnessed = BLEBarrel.x5WriteName;
+	logger.debug("witness=" + show(witnessed));
+	return witnessed != null && witnessed.equals("p3:burst");
+}
+
+// The page's BACK, same decision of 17 nov. as ever - pure: the system's one
+// pop to the base, nothing else the user can feel. What belongs to this
+// delegate alone is one last try at a write its guard held: flushSetting's
+// retry is booked on the pump this page covers (the note above), so a write
+// stepped while a mode change still holds its window would otherwise sit
+// booked behind a page that leaves. The vector books both halves: after a
+// select under a closed window the barrel has the witness, and the gesture
+// answers false - the page never consumes BACK.
+(:test)
+function settingsPageBackStaysPureAndRetriesTheHeldWrite(logger) {
+	BLEBarrel.menuLevel = 2;
+	currentModeId = "p3";
+	var fams = [];
+	var menu = buildSettingsMenu(fams);
+	var dev = uiLink();
+	var pump = new RemoteDelegate(dev);
+	var page = new SettingsPageDelegate(pump, dev, fams);
+	// A select while the mode window is open is held - the guard is the
+	// same rule the base page obeys, and the hold is the vector's setup,
+	// not its want: the write must not have crossed yet.
+	BLEBarrel.modeReqId = "x";
+	BLEBarrel.modeHoldUntil = Sys.getTimer() + 5000;
+	page.onSelect(menu.getItem(0));
+	var held = BLEBarrel.x5WriteName == null || BLEBarrel.x5WriteName.equals("");
+	// The window closes; the page's BACK is next. The page is pushed for real
+	// first - the overridden Menu2 onBack owns the pop its doc promises the
+	// default would have done, and the vector's world must end as it began.
+	// The gesture answers the held write once more; it is the system's pop,
+	// consumed by nothing (the pop itself is the bench's half, as ever).
+	BLEBarrel.modeReqId = null;
+	BLEBarrel.modeHoldUntil = 0;
+	Ui.pushView(menu, page, Ui.SLIDE_IMMEDIATE);
+	page.onBack();
+	var witnessed = BLEBarrel.x5WriteName;
+	logger.debug("held=" + held + " witness=" + show(witnessed));
+	return held && witnessed != null && witnessed.equals("p3:burst");
 }
 
 // The crash the user's own simulator run named, held as a vector. At the moment
