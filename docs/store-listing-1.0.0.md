@@ -174,13 +174,14 @@ l'utilisateur voie ce qu'il rencontre en premier (il est déjà décrit en tête
 > retirés (13 l'avaient été par 56d70f7, 3 sont revenus par bd347f7).
 >
 > Image bannière (1440×720, demande de l'auteur) : hero-1440x720.png, mashup
-> en cascade des six captures rondes (jamais edge ni Glance) — chaque cadran
-> garde sa partie gauche, recouvert sur sa droite par le suivant, l'accueil
-> lié entier en bout de course. Fond transparent comme les captures. Généré par
-> tools/hero-mashup.ps1 (ordre : Connecting, Starting, Recording,
-> Main+settings, Menu, Main ; pas de 144 px). 312 872 octets — si le magasin
-> borne le hero comme la couverture, le même script avec une qualité JPEG ou
-> un ordre plus court le fera passer sous la limite.
+> en cascade des captures rondes (jamais edge ni Glance) — chaque cadran garde
+> sa partie gauche, recouvert sur sa droite par le suivant. Ébauche à six
+> (acceptée « bonne ébauche »), retouchée à cinq sur son mot : retirer Main,
+> finir sur Main+settings. Ordre actuel : Connecting, Starting, Recording,
+> Menu, Main+settings ; pas de 180 px. Fond transparent comme les captures.
+> Généré par tools/hero-mashup.ps1 (l'ordre et le pas s'y changent). 350 936
+> octets — si le magasin borne le hero comme la couverture, le même script en
+> JPEG ou avec un ordre plus court le fera passer sous la limite.
 
 Contrainte physique : les écrans 1, 2, 3, 5, 6 supposent une **caméra réellement liée**.
 En atelier, le lien ne se fait que si la caméra est éveillée et accepte l'appairage côté

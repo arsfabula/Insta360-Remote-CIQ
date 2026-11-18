@@ -1,6 +1,6 @@
 # hero-mashup.ps1 — banniere 1440x720 : cascade de cadrans, partie gauche conservee
 $d = "C:\Users\greg\git\int-x5\docs\Screenshots"
-$order = @('Connecting.png','Starting.png','Recording.png','Main+settings.png','Menu.png','Main.png')
+$order = @('Connecting.png','Starting.png','Recording.png','Menu.png','Main+settings.png')
 $out = Join-Path $d 'hero-1440x720.png'
 
 Add-Type -AssemblyName System.Drawing
@@ -13,7 +13,7 @@ $g.InterpolationMode = [System.Drawing.Drawing2D.InterpolationMode]::HighQuality
 $g.PixelOffsetMode = [System.Drawing.Drawing2D.PixelOffsetMode]::HighQuality
 
 $side = $Hc                               # chaque cadran a la hauteur pleine (720)
-$pitch = [int](($Wc - $side) / ($order.Count - 1))   # pas = 144 : chacun montre sa gauche, recouvert a droite
+$pitch = [int](($Wc - $side) / ($order.Count - 1))   # pas : chacun montre sa gauche, recouvert a droite
 "pas = $pitch px, cadran = $side px"
 
 $i = 0
