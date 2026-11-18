@@ -5,7 +5,7 @@ Textes : anglais (principal), puis français. Sections « description » et « w
 à coller telles quelles dans le formulaire du développeur.
 Ce fichier n'est pas la fiche publiée : il en est la source versionnée.
 
-Faits vérifiés dans le code à `b672c68` (125 produits, 125 OK en 9.3.0) : commandes et
+Faits vérifiés dans le code à `bd347f7` (128 produits, 128 OK en 9.3.0) : commandes et
 textes d'écran dans `OneR remote/source/RemoteDelegate.mc` / `RemoteView.mc` /
 `Settings.mc` / `Levels.mc` (la liste nommait encore `StartWarning.mc` : l'écran est
 coupé depuis le 17 nov. 2026, voir la note de chantier en fin de fichier). Le crédit
@@ -150,6 +150,15 @@ l'utilisateur voie ce qu'il rencontre en premier (il est déjà décrit en tête
 > à droite), le 3 se reshoote en page poussée (Menu2 au-dessus de l'état,
 > sous-titres = valeurs), le 5 se reshoote sans « Exit app », la 7e image
 > proposée ne se shoote plus.
+>
+> État au 18 nov. au soir (ruling de l'auteur) : les deux modèles nouveaux
+> (Instinct 3 Solar 45 mm, Instinct E) sont validés au banc simulateur par
+> l'auteur, « tout ok » ; `instincte40mm` n'est pas benché à part — même famille
+> que le 45 mm, validé par la matrice seulement. Toutes les captures de la série
+> ont été retournées par l'auteur sur le nouveau design. Règle de caviardage
+> posée par l'auteur : sur toute image, le numéro de série de la caméra est
+> remplacé par « R3M073 » — la vraie suffixe est la clé de wake de la caméra et
+> ne doit jamais paraître dans un fichier public (même règle que tools.md).
 
 Contrainte physique : les écrans 1, 2, 3, 5, 6 supposent une **caméra réellement liée**.
 En atelier, le lien ne se fait que si la caméra est éveillée et accepte l'appairage côté
