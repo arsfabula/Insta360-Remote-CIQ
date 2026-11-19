@@ -438,3 +438,44 @@ Keep-alive states observed:
 Conclusion: every command in the barrel is accepted by the real X5 camera. The codec and
 envelope are correct. The exact state machine (which commands trigger which transitions)
 requires further investigation (step 2/4).
+
+## 19 nov. — a second X6 user reports; the X6 GATT table is bigger than we knew
+
+A store user (X6 + Venu 4, building a personal Connect IQ app for the X6 — time sync
+for GPS overlays, video-mode selection, start/stop) sent his findings. He confirmed
+the widget starts recording on his real X6 — an independent field confirmation of
+plain start/stop control on X6.
+
+Corroborations (nothing to change on our side):
+
+- UCD2 replaces the X3/X4/X5 framing on X6's BE81/BE82; magic/version/0x0C/type
+  0x04-0x05/8-bit counter/uint32 length — as documented.
+- He read byte 5 as "header length 0x0C": it is a constant flags byte; 12 coincides
+  with the header size. The trap holds.
+- His "affine CRC-like check value with no standard CRC-32 match" is the wall we
+  solved: poly `0x04C11DB7`, init `0xFFFFFFFF`, no reflection, no final xor, each
+  input byte xored into the LOW byte of the state, 4×8 MSB-first steps, appended
+  little-endian, covering from byte 7 inclusive. His word "affine" is exactly the
+  form the shipped `ucd2SeqXor` table exploits.
+- Phone-side session start from an iPhone HCI capture: `0xF0`, then `0xF1` with a
+  65-byte uncompressed EC P-256 public key (ECDH), then encrypted frames with an
+  extended 43-byte header. `0xF0`/`0xF1` = 240/241 in the command table
+  (`ENCRYPT_CAPABILITY_QUERY` / `ENCRYPT_KEY_EXCHANGE`). Note: the shipped widget
+  sends neither, and the camera answers — the ECDH leg is the phone app's encrypted
+  session, not a precondition for control. His camera ignoring his frames is the
+  expected symptom of an invalid trailer, not of missing auth.
+- Connect IQ's 23-byte ATT MTU truncating notifications at 20 bytes: same wall as
+  ours (docs/x5-protocol.md §2.4, §6).
+
+New to us, unverified here:
+
+- Beyond BE81/BE82/BE83, the X6 exposes **BE84/BE85 and BE86/BE87** — two
+  read-write + notify pairs the official app never touches during connection.
+  Candidate for a probe when a real X6 is on the bench: unauthenticated remote
+  channel? preview/stream leg? Nothing observed on our X5 survey.
+
+The reply sent to him (same day) covers: the CRC parameters, the sequence-restamp
+and 0x0C traps, "F0/F1 not required", the fact that the source is already public
+(`BLE Barrel/BLEBarrel.mc`, `tools/ucd2_crc.py`, golden frames in
+`tools/test_golden.py`, `docs/x5-protocol.md`), and an invitation to map
+BE84–BE87 and share findings on time sync.
