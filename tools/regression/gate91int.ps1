@@ -1,7 +1,7 @@
 $int  = "C:\Users\greg\git\Insta360-Remote-CIQ V1.0.0\OneR remote"
 $sdk  = "C:\Users\greg\AppData\Roaming\Garmin\ConnectIQ\Sdks\connectiq-sdk-win-9.1.0-2026-03-09-6a872a80b\bin\monkeyc.bat"
 $key  = "C:\Users\greg\Documents\Default Project\Insta360 Remote\developer_key"
-$d    = "C:\Users\greg\git\int-x5-build"
+$d    = "C:\Users\greg\git\Insta360-Remote-CIQ-Build"
 Push-Location $int
 & $sdk -f "monkey.jungle;barrels.jungle" -d epix2pro51mm -y $key -o "$int\..\int.prg" 2>&1 | Out-File -Encoding utf8 "$d\int-errors.txt"
 "INT_EXIT=$LASTEXITCODE"

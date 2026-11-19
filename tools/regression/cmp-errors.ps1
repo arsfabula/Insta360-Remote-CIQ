@@ -1,6 +1,6 @@
 # Compares two monkeyc error logs after stripping the build-tree prefix.
 param()
-$d = "C:\Users\greg\git\int-x5-build"
+$d = "C:\Users\greg\git\Insta360-Remote-CIQ-Build"
 function norm($p, $rp) {
   (Get-Content $p) | Where-Object { $_ -match "ERROR:" } |
     ForEach-Object { $_ -replace [regex]::Escape($rp), "@".PadRight(1) } |

@@ -46,7 +46,7 @@ the compile matrix — and the frozen baselines they compare against. They
 were kept outside version control while the release was being assembled;
 this is their copy, so the same proof can be re-run on the next change.
 They hard-code this machine's SDK paths and use a scratch tree beside the
-repo (`C:\Users\greg\git\int-x5-build`) for their output; they read the
+repo (`C:\Users\greg\git\Insta360-Remote-CIQ-Build`) for their output; they read the
 app from this checkout. Never run one while a simulator session is live:
 the drivers kill `simulator` and its child `java` on purpose (a surviving
 JVM squatting the monkeydo port caused three false failures on 17 nov.).

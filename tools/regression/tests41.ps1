@@ -8,11 +8,11 @@ $flat = "910"
 $int = "C:\Users\greg\git\Insta360-Remote-CIQ V1.0.0\OneR remote"
 $key = "C:\Users\greg\Documents\Default Project\Insta360 Remote\developer_key"
 $device = "descentmk351mm"
-$log = "C:\Users\greg\git\int-x5-build\oneremote-tests-run41-longpress.log"
+$log = "C:\Users\greg\git\Insta360-Remote-CIQ-Build\oneremote-tests-run41-longpress.log"
 "" | Set-Content $log
 
 # 1. hote de test (test.jungle), pas l'application livree. Le -t exige un -o.
-$testprg = "C:\Users\greg\git\int-x5-build\oneremote-test-$flat.prg"
+$testprg = "C:\Users\greg\git\Insta360-Remote-CIQ-Build\oneremote-test-$flat.prg"
 Push-Location $int
 & "$sdkPath\bin\monkeyc.bat" -t -f "test.jungle;barrels.jungle" -d $device -y $key -o $testprg 2>&1 |
   Out-File -Append -Encoding utf8 $log

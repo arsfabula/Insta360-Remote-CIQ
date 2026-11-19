@@ -23,18 +23,18 @@ $flat = $Sdk -replace '\.', ''
 $sdks = "C:\Users\greg\AppData\Roaming\Garmin\ConnectIQ\Sdks"
 $sdkPath = if ($Sdk -eq "9.3.0") { "$sdks\connectiq-sdk-win-9.3.0-2026-10-20-95888f262" }
            else { "$sdks\connectiq-sdk-win-9.1.0-2026-03-09-6a872a80b" }
-$prg = if ($NewAppId) { "C:\Users\greg\git\int-x5-build\oneremote-probe-$flat.prg" }
-       else { "C:\Users\greg\git\int-x5-build\oneremote-bench-$flat.prg" }
+$prg = if ($NewAppId) { "C:\Users\greg\git\Insta360-Remote-CIQ-Build\oneremote-probe-$flat.prg" }
+       else { "C:\Users\greg\git\Insta360-Remote-CIQ-Build\oneremote-bench-$flat.prg" }
 
 # 1. le PRG de banc (benchbuild.ps1 fait les copies et leve les deux portillons;
 # -NewAppId leve le troisieme: le manifest de copie recoit un autre id d'app,
 # l'identite que la camera agree - c'est le tir qui rouvre le prompt, cf. la
 # note "LE MECANISME DU PROMPT EST NOMME" au plan).
 if ($NewAppId) {
-  & "C:\Users\greg\git\int-x5-build\benchbuild.ps1" -Sdk $Sdk -Device $Device -NewAppId |
+  & "C:\Users\greg\git\Insta360-Remote-CIQ-Build\benchbuild.ps1" -Sdk $Sdk -Device $Device -NewAppId |
     Select-String -Pattern 'GATE|JUNGLE|APP_EXIT|ERROR|SUCCESSFUL|PRG' | ForEach-Object { $_.Line.Trim() }
 } else {
-  & "C:\Users\greg\git\int-x5-build\benchbuild.ps1" -Sdk $Sdk -Device $Device |
+  & "C:\Users\greg\git\Insta360-Remote-CIQ-Build\benchbuild.ps1" -Sdk $Sdk -Device $Device |
     Select-String -Pattern 'GATE|JUNGLE|APP_EXIT|ERROR|SUCCESSFUL|PRG' | ForEach-Object { $_.Line.Trim() }
 }
 $built = Get-Item $prg -ErrorAction SilentlyContinue
@@ -51,7 +51,7 @@ Start-Sleep -Seconds 35
 # monkeydo sans /t pousse l'app et reste attache a la session: la console de l'app
 # defile dans ce terminal ET dans le log. Ctrl+C ici ferme la session de lecture du
 # log; le simulateur reste ouvert pour continuer a observer la montre.
-$log = "C:\Users\greg\git\int-x5-build\bench-run-$(if ($NewAppId) { 'probe-' })$flat-$(Get-Date -Format 'HHmmss').log"
+$log = "C:\Users\greg\git\Insta360-Remote-CIQ-Build\bench-run-$(if ($NewAppId) { 'probe-' })$flat-$(Get-Date -Format 'HHmmss').log"
 "LOG: $log"
 "PRET: fenetre du simulateur -> demarrer le widget, allumer le X5. Ctrl+C ici a la fin."
 & "$sdkPath\bin\monkeydo.bat" $prg $Device *>&1 | ForEach-Object {
