@@ -1,0 +1,93 @@
+﻿monkeyc.bat : ERROR: epix2pro51mm: C:\Users\greg\AppData\Local\Temp\opencode\int-base\Capacites 
+Barrel\source\Capacites.mc:371,26: Object of type '$.Toybox.Lang.Number' does not match return type 
+'$.Toybox.Lang.Int'.
+Au caractère Ligne:1 : 288
++ ... ocation $b; & $sdk -f "monkey.jungle;barrels.jungle" -d epix2pro51mm  ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (ERROR: epix2pro...ybox.Lang.Int'.:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+ERROR: epix2pro51mm: C:\Users\greg\AppData\Local\Temp\opencode\int-base\Capacites Barrel\source\Capacites.mc:373,2: 
+Object of type '$.Toybox.Lang.Number' does not match return type '$.Toybox.Lang.Int'.
+ERROR: epix2pro51mm: C:\Users\greg\AppData\Local\Temp\opencode\int-base\Capacites Barrel\source\Capacites.mc:378,2: 
+Cannot perform operation 'lt' on types '$.Toybox.Lang.Int' and '$.Toybox.Lang.Number'.
+ERROR: epix2pro51mm: C:\Users\greg\AppData\Local\Temp\opencode\int-base\Capacites Barrel\source\Capacites.mc:379,2: 
+Invalid '$.Toybox.Lang.Int' passed as array index of type '$.Toybox.Lang.Number'.
+ERROR: epix2pro51mm: C:\Users\greg\AppData\Local\Temp\opencode\int-base\Capacites Barrel\source\Capacites.mc:384,2: 
+Cannot perform operation 'lt' on types '$.Toybox.Lang.Int' and '$.Toybox.Lang.Number'.
+ERROR: epix2pro51mm: C:\Users\greg\AppData\Local\Temp\opencode\int-base\Capacites Barrel\source\Capacites.mc:385,2: 
+Invalid '$.Toybox.Lang.Int' passed as array index of type '$.Toybox.Lang.Number'.
+ERROR: epix2pro51mm: C:\Users\greg\AppData\Local\Temp\opencode\int-base\Capacites Barrel\source\Capacites.mc:390,2: 
+Cannot perform operation 'lt' on types '$.Toybox.Lang.Int' and '$.Toybox.Lang.Number'.
+ERROR: epix2pro51mm: C:\Users\greg\AppData\Local\Temp\opencode\int-base\Capacites Barrel\source\Capacites.mc:391,2: 
+Invalid '$.Toybox.Lang.Int' passed as array index of type '$.Toybox.Lang.Number'.
+ERROR: epix2pro51mm: C:\Users\greg\AppData\Local\Temp\opencode\int-base\Capacites Barrel\source\Capacites.mc:395,2: 
+Object of type '$.Toybox.Lang.Int' does not match return type '$.Toybox.Lang.Int'.
+ERROR: epix2pro51mm: C:\Users\greg\AppData\Local\Temp\opencode\int-base\Capacites Barrel\source\Capacites.mc:416,37: 
+Object of type '$.Toybox.Lang.Number' does not match return type '$.Toybox.Lang.Int'.
+ERROR: epix2pro51mm: C:\Users\greg\AppData\Local\Temp\opencode\int-base\Capacites Barrel\source\Capacites.mc:418,2: 
+Object of type '$.Toybox.Lang.Number' does not match return type '$.Toybox.Lang.Int'.
+ERROR: epix2pro51mm: C:\Users\greg\AppData\Local\Temp\opencode\int-base\Capacites Barrel\source\Capacites.mc:512,29: 
+Object of type '$.Toybox.Lang.Number' does not match return type '$.Toybox.Lang.Int'.
+ERROR: epix2pro51mm: C:\Users\greg\AppData\Local\Temp\opencode\int-base\Capacites Barrel\source\Capacites.mc:515,2: 
+Object of type '$.Toybox.Lang.Number' does not match return type '$.Toybox.Lang.Int'.
+ERROR: epix2pro51mm: C:\Users\greg\AppData\Local\Temp\opencode\int-base\Capacites Barrel\source\Capacites.mc:524,2: 
+Cannot perform operation 'gte' on types '$.Toybox.Lang.Int' and '$.Toybox.Lang.Number'.
+ERROR: epix2pro51mm: C:\Users\greg\AppData\Local\Temp\opencode\int-base\Capacites Barrel\source\Capacites.mc:524,17: 
+Object of type '$.Toybox.Lang.Int' does not match return type '$.Toybox.Lang.Int'.
+ERROR: epix2pro51mm: C:\Users\greg\AppData\Local\Temp\opencode\int-base\Capacites Barrel\source\Capacites.mc:526,2: 
+Cannot perform operation 'gte' on types '$.Toybox.Lang.Int' and '$.Toybox.Lang.Number'.
+ERROR: epix2pro51mm: C:\Users\greg\AppData\Local\Temp\opencode\int-base\Capacites Barrel\source\Capacites.mc:526,17: 
+Cannot perform operation 'add' on types '$.Toybox.Lang.Number' and '$.Toybox.Lang.Int'.
+ERROR: epix2pro51mm: C:\Users\greg\AppData\Local\Temp\opencode\int-base\Capacites Barrel\source\Capacites.mc:528,2: 
+Cannot perform operation 'gte' on types '$.Toybox.Lang.Int' and '$.Toybox.Lang.Number'.
+ERROR: epix2pro51mm: C:\Users\greg\AppData\Local\Temp\opencode\int-base\Capacites Barrel\source\Capacites.mc:528,17: 
+Cannot perform operation 'add' on types '$.Toybox.Lang.Number' and '$.Toybox.Lang.Int'.
+ERROR: epix2pro51mm: C:\Users\greg\AppData\Local\Temp\opencode\int-base\Capacites Barrel\source\Capacites.mc:529,2: 
+Object of type '$.Toybox.Lang.Number' does not match return type '$.Toybox.Lang.Int'.
+ERROR: epix2pro51mm: C:\Users\greg\AppData\Local\Temp\opencode\int-base\Capacites Barrel\source\Capacites.mc:542,2: 
+Cannot perform operation 'lt' on types '$.Toybox.Lang.Int' and '$.Toybox.Lang.Number'.
+ERROR: epix2pro51mm: C:\Users\greg\AppData\Local\Temp\opencode\int-base\Capacites Barrel\source\Capacites.mc:543,2: 
+Cannot perform operation 'div' on types '$.Toybox.Lang.Int' and '$.Toybox.Lang.Number'.
+ERROR: epix2pro51mm: C:\Users\greg\AppData\Local\Temp\opencode\int-base\Capacites Barrel\source\Capacites.mc:544,2: 
+Cannot perform operation 'mod' on types '$.Toybox.Lang.Int' and '$.Toybox.Lang.Number'.
+ERROR: epix2pro51mm: C:\Users\greg\AppData\Local\Temp\opencode\int-base\Capacites Barrel\source\Capacites.mc:558,2: 
+Cannot perform operation 'lt' on types '$.Toybox.Lang.Int' and '$.Toybox.Lang.Number'.
+ERROR: epix2pro51mm: C:\Users\greg\AppData\Local\Temp\opencode\int-base\Capacites Barrel\source\Capacites.mc:559,2: 
+Cannot perform operation 'div' on types '$.Toybox.Lang.Int' and '$.Toybox.Lang.Number'.
+ERROR: epix2pro51mm: C:\Users\greg\AppData\Local\Temp\opencode\int-base\Capacites Barrel\source\Capacites.mc:560,2: 
+Cannot perform operation 'mod' on types '$.Toybox.Lang.Int' and '$.Toybox.Lang.Number'.
+ERROR: epix2pro51mm: C:\Users\greg\AppData\Local\Temp\opencode\int-base\Capacites Barrel\source\Capacites.mc:576,2: 
+Cannot perform operation 'lt' on types '$.Toybox.Lang.Int' and '$.Toybox.Lang.Number'.
+ERROR: epix2pro51mm: C:\Users\greg\AppData\Local\Temp\opencode\int-base\Capacites Barrel\source\Capacites.mc:576,15: 
+Object of type '$.Toybox.Lang.Number' does not match return type '$.Toybox.Lang.Int'.
+ERROR: epix2pro51mm: C:\Users\greg\AppData\Local\Temp\opencode\int-base\Capacites Barrel\source\Capacites.mc:577,2: 
+Invalid '$.Toybox.Lang.Int' passed as array index of type '$.Toybox.Lang.Number'.
+ERROR: epix2pro51mm: C:\Users\greg\AppData\Local\Temp\opencode\int-base\Capacites Barrel\source\Capacites.mc:577,2: 
+Object of type '$.Toybox.Lang.Number' does not match return type '$.Toybox.Lang.Int'.
+ERROR: epix2pro51mm: C:\Users\greg\AppData\Local\Temp\opencode\int-base\OneR remote\source\InputDelegate.mc:406,8: 
+Invalid '$.Toybox.Lang.Number' passed as parameter 1 of type '$.Toybox.Lang.Int'.
+ERROR: epix2pro51mm: C:\Users\greg\AppData\Local\Temp\opencode\int-base\OneR remote\source\InputDelegate.mc:565,2: 
+Cannot find symbol ':toString' on type '$.Toybox.Lang.Int'.
+ERROR: epix2pro51mm: C:\Users\greg\AppData\Local\Temp\opencode\int-base\OneR remote\source\InputDelegate.mc:657,8: 
+Cannot find symbol ':MAX_SIZE' on class definition '$.Toybox.WatchUi.Menu'.
+ERROR: epix2pro51mm: C:\Users\greg\AppData\Local\Temp\opencode\int-base\OneR remote\source\InputDelegate.mc:738,2: 
+Cannot find symbol ':substring' on type 'PolyType<Null or $.Toybox.Lang.Object>'.
+ERROR: epix2pro51mm: C:\Users\greg\AppData\Local\Temp\opencode\int-base\OneR remote\source\InputDelegate.mc:891,2: 
+Cannot find symbol ':length' on type 'PolyType<Null or $.Toybox.Lang.Object>'.
+ERROR: epix2pro51mm: C:\Users\greg\AppData\Local\Temp\opencode\int-base\OneR remote\source\InputDelegate.mc:891,2: 
+Cannot find symbol ':substring' on type 'PolyType<Null or $.Toybox.Lang.Object>'.
+ERROR: epix2pro51mm: C:\Users\greg\AppData\Local\Temp\opencode\int-base\OneR remote\source\InputDelegate.mc:911,2: 
+Cannot find symbol ':length' on type 'PolyType<Null or $.Toybox.Lang.Object>'.
+ERROR: epix2pro51mm: C:\Users\greg\AppData\Local\Temp\opencode\int-base\OneR remote\source\InputDelegate.mc:911,2: 
+Cannot find symbol ':substring' on type 'PolyType<Null or $.Toybox.Lang.Object>'.
+ERROR: epix2pro51mm: C:\Users\greg\AppData\Local\Temp\opencode\int-base\OneR remote\source\InputDelegate.mc:969,4: 
+Invalid 'PolyType<Null or $.Toybox.Lang.Object>' passed as parameter 1 of type '$.Toybox.Lang.String'.
+ERROR: epix2pro51mm: C:\Users\greg\AppData\Local\Temp\opencode\int-base\OneR remote\source\InputDelegate.mc:1028,5: 
+Cannot find symbol ':substring' on type 'PolyType<Null or $.Toybox.Lang.Object>'.
+ERROR: epix2pro51mm: C:\Users\greg\AppData\Local\Temp\opencode\int-base\OneR remote\source\InputDelegate.mc:1032,6: 
+Cannot find symbol ':substring' on type 'PolyType<Null or $.Toybox.Lang.Object>'.
+ERROR: epix2pro51mm: C:\Users\greg\AppData\Local\Temp\opencode\int-base\OneR remote\source\InputDelegate.mc:1218,8: 
+Cannot perform operation 'gte' on types '$.Toybox.Lang.Int' and '$.Toybox.Lang.Number'.
+ERROR: epix2pro51mm: C:\Users\greg\AppData\Local\Temp\opencode\int-base\OneR remote\source\InputDelegate.mc:1219,12: 
+Cannot find symbol ':toString' on type '$.Toybox.Lang.Int'.
