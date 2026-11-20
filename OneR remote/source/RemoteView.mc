@@ -49,7 +49,7 @@ const C_TOAST_BG = 0x8A1C14;  // toast pill (dark red, white text)
 // CE FICHIER EST LE SEUL a definir vNum : un const est global a toute l'application,
 // et la gate du 16 nov. l'a montre (Redefinition of 'vNum' des que ViewData le
 // declarait aussi). La vue hors service, ViewData, ne fait plus que le nommer.
-const vNum = "1.0.0";
+const vNum = "1.0.1";
 
 // Le nom LIVRE de l'appli, tel que le manifest le declare : resources/strings.xml porte
 // AppName = « Insta360 Remote » et les deux manifestes pointent @Strings.AppName. Ici il

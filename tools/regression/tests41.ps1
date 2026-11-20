@@ -1,8 +1,10 @@
-# run41 - suite unitaire, suite 62 de la tache 4 (holdingDue: 60 + 2 vecteurs de
-# seuil). Pilotage durci (lecon des faux echecs run36/38: le simulateur rendu
+# run41 - suite unitaire, suite 67 (la liste ci-dessous fait foi: StatusTest 30,
+# X6MenuTest 16, Ucd2Test 5, UiTest 16). Le chiffre de l'entete (62 a la tache 4:
+# holdingDue 60 + 2 vecteurs de seuil) avait vieilli par rapport a la liste, lecon
+# du 20 nov. Pilotage durci (lecon des faux
+# echecs run36/38: le simulateur rendu
 # disponible est attendu par l'epreuve, pas par un sommeil aveugle; java est tue
-# avec simulator, cause des trois faux echecs du 17 nov.). Attendu : 62/62 sur
-# l'arbre de la tache 4.
+# avec simulator, cause des trois faux echecs du 17 nov.). Attendu : 67/67.
 $sdkPath = "C:\Users\greg\AppData\Roaming\Garmin\ConnectIQ\Sdks\connectiq-sdk-win-9.1.0-2026-03-09-6a872a80b"
 $flat = "910"
 $int = "C:\Users\greg\git\Insta360-Remote-CIQ V1.0.0\OneR remote"
@@ -87,14 +89,15 @@ $all = @(
   'ucd2TxFramesMatchTheReferenceCodec','ucd2AnswerReadAtTheFirstTwentyNotAtTheTrailer',
   'ucd2OpenFrameYieldsAndOversizedDeclaredNeverWedges','ucd2LegacyAnswerReadWhileUcd2Armed',
   'ucd2OpenFrameDoesNotSwallowALegacyAnswer',
-  # UiTest (15) - seuil + lieu de la decision courte, puis les trois defauts de la
-  # page poussee nommes par le banc du 18 nov. (id, ecriture, BACK)
+  # UiTest (16) - seuil + lieu de la decision courte, puis les trois defauts de la
+  # page poussee nommes par le banc du 18 nov. (id, ecriture, BACK), puis la roue
+  # au niveau 0 nommee par le rapport ERA du magasin (19 nov.)
   'evStopsAtEnds','otherRowsStillWrap','tapIsNotStartButKeyIs','startupWithLinkAsksArmed',
   'linkScheduleKeepsNearestDate','authSurfaceNamesTheCameraEdges','titleTapAreaCoversAllLines',
   'startupUiSmoke','screenTruthNamesTheAbsentCamera',
   'holdAtThresholdFires','holdJustUnderThresholdDoesNotFire','startPressWaitsForTheRelease',
   'settingsPageSelectStepsTheRowItsIdNames','settingsPageWriteCrossesAtTheSelect',
-  'settingsPageBackStaysPureAndRetriesTheHeldWrite'
+  'settingsPageBackStaysPureAndRetriesTheHeldWrite','modeWheelAtLevelZeroStaysPut'
 )
 "TOTAL VECTEURS: $($all.Count)" | Add-Content $log
 for ($i = 0; $i -lt $all.Count; $i += 15) {

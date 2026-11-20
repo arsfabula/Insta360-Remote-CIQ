@@ -430,8 +430,20 @@ class RemoteDelegate extends Ui.BehaviorDelegate {
 	}
 
 	// Change the shown mode at once; tell the camera only once the user settles.
-	hidden function stepMode(dir) {
+	// Public, like stepRow and pumpDue: the level-0 wheel vector (the store's
+	// ERA report of 19 nov. 2026) names this function by name - its callers,
+	// stepFocused and the record-state guards, sit behind a READY state no unit
+	// route leads to (the note at the absent-camera vector in UiTest).
+	function stepMode(dir) {
 		var items = modeList();
+		if (items.size() == 0) {
+			// Level 0 names an empty menu by decision (the CdC note at the
+			// barrel's model chain, BLEBarrel :4050): a wheel with no row
+			// does not move. The rotation below is a modulo by that size -
+			// the Invalid Value of the store's report of 19 nov. 2026
+			// (Forerunner 970, 1.0.0, the chain 441 <- 330 <- 428).
+			return;
+		}
 		var idx = 0;
 		var i = 0;
 		while (i < items.size()) {

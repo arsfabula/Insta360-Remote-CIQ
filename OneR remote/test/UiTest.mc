@@ -447,3 +447,34 @@ function screenTruthNamesTheAbsentCamera(logger) {
 	logger.debug("truth crossed");
 	return ok;
 }
+
+// The store's own report, seen in the ERA viewer on 20 nov. 2026 (one
+// occurrence on 19 nov., Forerunner 970 fw 19.23, app 1.0.0, fre):
+//   Error: Invalid Value / RemoteDelegate.stepMode:441 <- stepFocused:330 <-
+//   onNextPage:428
+// The chain is the customer's walk, not ours: a camera whose name the model
+// table does not answer falls to level 0 at the scan (the barrel's default
+// before any prefix branch), the level-0 menu is empty by decision (the CdC
+// note at the model chain, BLEBarrel:4050 - "level 0, whose menu is empty"),
+// and the wheel's rotation at :441 is a modulo by that empty size - the
+// Invalid Value. No unit route leads to READY (the note above), and
+// onPreviousPage/onNextPage stand behind it, so this vector names the wheel
+// itself; stepMode stands public for it, the same way stepRow and pumpDue
+// stand public for their venues. Red before the guard is the error itself -
+// this runtime refusal is not catchable, only preventable, like the two
+// precedents above. Green: the wheel does not move, and it books nothing.
+(:test)
+function modeWheelAtLevelZeroStaysPut(logger) {
+	var dev = uiLink();
+	BLEBarrel.menuLevel = 0;   // the level an unnamed prefix falls to
+	var emptyMenu = modeList().size() == 0;   // the fact the wheel must respect
+	var d = new RemoteDelegate(dev);
+	d.stepMode(1);
+	d.stepMode(-1);
+	var labelHolds = BLEBarrel.currentLabel.equals("Default Video");
+	var modeHolds = BLEBarrel.currentMode.equals("DefaultV");
+	var nothingBooked = BLEBarrel.modeHoldUntil == 0;   // freshLink's before-value
+	logger.debug("emptyMenu=" + emptyMenu + " label=" + labelHolds +
+		" mode=" + modeHolds + " booked=" + nothingBooked);
+	return emptyMenu && labelHolds && modeHolds && nothingBooked;
+}

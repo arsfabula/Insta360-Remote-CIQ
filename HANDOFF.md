@@ -479,3 +479,43 @@ and 0x0C traps, "F0/F1 not required", the fact that the source is already public
 (`BLE Barrel/BLEBarrel.mc`, `tools/ucd2_crc.py`, golden frames in
 `tools/test_golden.py`, `docs/x5-protocol.md`), and an invitation to map
 BE84–BE87 and share findings on time sync.
+
+## 20 nov. — the store's first crash report, and the level-0 wheel
+
+Opened the SDK's ERA viewer (`bin/era.jar`, SDK 9.3) with the developer account —
+first live look at the store's own error reports. The listing answers under its
+FR name **"Télécommande One R"** (the store translates the name for FR); an
+ERA search for "Insta360 Remote" finds nothing, the entry is the old One R one.
+
+One report, app version **1.0.0**, one occurrence 19 nov., **Forerunner 970**
+fw 19.23, language fre:
+
+```
+Error: Invalid Value
+RemoteDelegate.stepMode:441 <- stepFocused:330 <- onNextPage:428
+```
+
+Root cause, read from the shipped tree (sources unchanged since the v1.0.0 tag,
+line numbers line up): a camera whose name the model table does not answer falls
+to **level 0** at the scan (the barrel's default before any prefix branch), and
+the level-0 menu is empty by decision — the CdC note at the model chain
+(BLEBarrel:4050) already names it: "level 0, whose menu is empty". `modeList()`
+answers `[]`, and `stepMode`'s wheel rotation at :441 is `(idx + dir + size) %
+size` — a modulo by zero. No device on our bench reaches this: every camera we
+own answers a prefix branch. The customer pressed DOWN with an unnamed camera
+paired. Also noted: the store's app runs on Forerunner devices, outside our
+compile matrix — the manifest coverage is wider than what we compile-test.
+
+Fix (this tree): a guard at the top of `stepMode` — an empty wheel does not
+move. `stepMode` stands public for the vector that names it (same precedent as
+`stepRow`/`pumpDue`; no unit route leads to READY, the UiTest note names it).
+New vector `modeWheelAtLevelZeroStaysPut` (UiTest): red before the guard with
+exactly the report's `Invalid Value`, green after it — label, mode and the
+barrel's booking witnesses untouched. tests41: **67/67** (the header's "62" had
+gone stale against the list's own section counts; corrected to name what exists).
+
+Decision (20 nov., the author): bumped to **1.0.1** in this tree (manifest +
+`vNum`; the BLEBarrel module's own version stands, its source is unchanged).
+Publication on the portal is held about a week on purpose, to see whether ERA
+reports anything more before shipping. The guard alone changes no path our bench
+walks.
