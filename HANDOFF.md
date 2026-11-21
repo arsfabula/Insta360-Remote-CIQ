@@ -519,3 +519,25 @@ Decision (20 nov., the author): bumped to **1.0.1** in this tree (manifest +
 Publication on the portal is held about a week on purpose, to see whether ERA
 reports anything more before shipping. The guard alone changes no path our bench
 walks.
+
+## 21 nov. — the same defect, wider: six occurrences, four devices
+
+ERA added two reports, both app 1.0.0, both our level-0 modulo — no new defect.
+ERA groups by backtrace, which is why the same root cause now reads as two rows:
+
+- UP leg: `stepMode:441 <- stepFocused:330 <- onPreviousPage:415`, 2 occurrences
+  21 nov., fēnix 7 / quatix 7 fw 27.18, fre.
+- DOWN leg: the 19 nov. aggregate grown — 4 occurrences 19-21 nov., fēnix 7 /
+  quatix 7, Forerunner 970 fw 19.23, Forerunner 955/Solar fw 29.52, fre and spa.
+
+Totals: six occurrences in three days, four devices, two languages. Every one
+names a customer whose camera falls to level 0 (a name the model table does not
+answer). ERA does not name the camera, so which product is popular and missing
+from the table stays unknown — a candidate question if one of these users
+surfaces in the community.
+
+The shipped guard covers both legs by construction (one choke point, `stepMode`),
+and the vector drives both directions (`stepMode(1)` and `stepMode(-1)`). The
+fix already in this tree answers both reports; what remains is the author's
+publication timing — the per-day count is the honest argument for not waiting
+the full week.
