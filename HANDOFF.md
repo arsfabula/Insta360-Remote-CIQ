@@ -629,8 +629,15 @@ Open on this branch:
   that lets a real retry expire - power the X5 off a second after a start tap,
   wait ten seconds, power on, let the link return. Exercises armRetry's due
   path, not just its guard.
-- Publication of DF 0.9.31 is the author's, as always; the ERA watch: the
-  `armLinkAlarm:2076` row must stop growing once the store serves it.
+- Published the same day (the author's signed .iq to the portal); the tag
+  `df-0.9.31` names the committed state, same convention as v1.0.0/v1.0.1.
+  Known mismatch, recorded on purpose: the published build also carried the
+  author's still-uncommitted DF device list (edge1060, edgeexplore3/3plus in,
+  epix2 out) - whether that list enters the tree is the author's call.
+- The ERA watch now carries two rows, re-check 28 nov.: `stepMode:441`
+  (widget, expected frozen since 1.0.1 on 21 nov.) and `armLinkAlarm:2076`
+  (DF, expected frozen once the store serves 0.9.31). New occurrences naming
+  the new versions mean real new defects, signed by their own backtrace.
 - New project, author's ruling of today: the DF is NOT at the widget's feature
   level (no level menus, no mode wheel - a single command surface). Aligning
   them is a separate chantier, not started, no decision taken on shape.
