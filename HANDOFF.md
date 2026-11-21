@@ -541,3 +541,23 @@ and the vector drives both directions (`stepMode(1)` and `stepMode(-1)`). The
 fix already in this tree answers both reports; what remains is the author's
 publication timing — the per-day count is the honest argument for not waiting
 the full week.
+
+Same day, decision taken: **1.0.1 published to the portal** (the author produced
+the signed .iq; the tag `v1.0.1` points at this tree's state, the same
+convention as v1.0.0). The watch on ERA: the two `stepMode:441` rows must stop
+growing once the store serves 1.0.1 - new occurrences would then name
+`App Versions: 1.0.1` and a real new defect. The old 1.0.0 rows age out of the
+30-day window around 19-21 dec. First re-check worth doing around 28 nov.
+
+Tooling notes from the day, both cost a minute each and name themselves here so
+they cost nothing next time:
+
+- `barrels.jungle` carries a machine-local absolute path to the BLE Barrel (the
+  committed copy predates the folder renames - hence its permanent modified
+  state and the no-commit rule). After any `git reset`/`checkout` over these
+  files, re-solder both to this worktree before compiling, else: "Cannot
+  resolve module '$.BLEBarrel'".
+- Moving the branch to an already-pushed commit: `git update-ref`, never
+  `reset --hard` - the hard form also drops the author's uncommitted work (it
+  took the DF manifest device additions; restored byte-for-byte from a captured
+  diff, blob hashes matching).
