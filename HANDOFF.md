@@ -561,3 +561,76 @@ they cost nothing next time:
   `reset --hard` - the hard form also drops the author's uncommitted work (it
   took the DF manifest device additions; restored byte-for-byte from a captured
   diff, blob hashes matching).
+
+---
+
+## 21 nov. (2e volet) - Le DF sur Edge : le mur du pool de Timers, l'hote qui sonne
+
+The second store report of the week, first one naming the data-field variant
+(ERA): Unhandled Exception, six occurrences, Edge 840 fw 31.33/31.74, app
+0.9.30, spa. Backtrace: OneRremoteDFInputDelegate.onTap:177 -> BLEBarrel.
+sendCMD:3258 -> transmit:3333 -> scheduleRetry:3496 -> armRetry:3509 ->
+armLinkAlarm:2076. Line 2076 is `linkAlarm = new Timer.Timer()` - the link's
+one alarm object is itself what the device refused. Every transmit arms its
+write retry, so on the reporting Edge the first tap of the field was fatal.
+
+The mechanism, and my first hypothesis corrected. I claimed "a data field owns
+zero timers"; the author's bench says otherwise, and the bench outranks me. Same
+0.9.30 binary, same day, two devices: refused six times at that line on an Edge
+840, granted on the author's Edge Explore, where the whole link ran (the
+captured log: TX labelled TimeLapse/Photo, RX ACKs, recording events, and the
+already-handled "Operation already in Progress" writes). The truth measured: the
+Timer pool is shared per process and the free budget varies by device, firmware
+and session - the widget measured the ceiling at four objects on 12 nov. A
+field app cannot know which side of the ceiling it is on. The fix is therefore
+never to ask.
+
+Design agreed with the author (same shape as the widget's pumpDue, host owns
+the bell, barrel owns the dates):
+
+- BLEBarrel: `hostRingsTheBell` (default false - the app/widget path is
+  untouched); armLinkAlarm returns without building the object when set, the
+  dates book exactly as before. `pumpLinkAsks()` exposed by name: it is
+  onLinkAlarm, already idempotent and self-rearming.
+- DF: the flag named at OneRremoteDFApp.onStart before any ask exists;
+  OneRremoteDFView.compute rings the bell at the field's own once-a-second
+  cycle, placed before the no-GPS early return. Accepted cost: the five delayed
+  actions ring with at most one host cycle of jitter - every delay here is far
+  above one second.
+- Choice kept for the user: the widget still covers all 16 Edge products and
+  keeps its Timer alarm (build edge840 passes); the DF is the option for those
+  who want it as a field.
+- DF versions aligned at 0.9.31 - three homes disagreed (store 0.9.30, manifest
+  0.9.16, vNum 0.9.29).
+- DF barrels.jungle re-soldered to the barrel SOURCE (it pointed at the binary
+  BLE Barrel-1.0.0.barrel, frozen 15 nov. while the source moved on 17 nov.).
+  The source junction is what the main app uses; the .barrel artifact stays
+  out of the DF's way.
+
+Evidence, weakest first: vector `hostBellBooksDatesAndRingsThem` (dates book,
+linkAlarm stays null, the bell rings due dates, re-arm inert - the test host is
+an app with a pool, so it names the DF shape, not the refusal); tests41 68/68;
+Edge 840 sim 9.1.0: no crash, scan/discover/relink reached; real Edge Explore
+(author's bench, the proof): link established when the X5 was powered on, the
+X5 authorization prompt appeared - that prompt IS the +500 ms auth probe,
+delivered with no Timer object anywhere, the design proven on hardware - then
+video start/stop and photo capture, no crash.
+
+Reading trap I fell into, recorded so nobody repeats it: the `NNN Type 0` log
+lines are ONE TOUCH PER LINE, the debug print at OneRremoteDFInputDelegate.
+onTap:149 (x-coordinate + event type) - not received frames. My first reading
+of the sim log claimed an exchange it did not contain. The Edge logs worth
+attaching are full-session exports (the on-device log is a ~60-line rotating
+buffer: the interesting start is often already rotated out).
+
+Open on this branch:
+
+- Field evidence still missing (optional, not blocking): one bench scenario
+  that lets a real retry expire - power the X5 off a second after a start tap,
+  wait ten seconds, power on, let the link return. Exercises armRetry's due
+  path, not just its guard.
+- Publication of DF 0.9.31 is the author's, as always; the ERA watch: the
+  `armLinkAlarm:2076` row must stop growing once the store serves it.
+- New project, author's ruling of today: the DF is NOT at the widget's feature
+  level (no level menus, no mode wheel - a single command surface). Aligning
+  them is a separate chantier, not started, no decision taken on shape.

@@ -1,10 +1,10 @@
-# run41 - suite unitaire, suite 67 (la liste ci-dessous fait foi: StatusTest 30,
+# run41 - suite unitaire, suite 68 (la liste ci-dessous fait foi: StatusTest 31,
 # X6MenuTest 16, Ucd2Test 5, UiTest 16). Le chiffre de l'entete (62 a la tache 4:
 # holdingDue 60 + 2 vecteurs de seuil) avait vieilli par rapport a la liste, lecon
 # du 20 nov. Pilotage durci (lecon des faux
 # echecs run36/38: le simulateur rendu
 # disponible est attendu par l'epreuve, pas par un sommeil aveugle; java est tue
-# avec simulator, cause des trois faux echecs du 17 nov.). Attendu : 67/67.
+# avec simulator, cause des trois faux echecs du 17 nov.). Attendu : 68/68.
 $sdkPath = "C:\Users\greg\AppData\Roaming\Garmin\ConnectIQ\Sdks\connectiq-sdk-win-9.1.0-2026-03-09-6a872a80b"
 $flat = "910"
 $int = "C:\Users\greg\git\Insta360-Remote-CIQ V1.0.0\OneR remote"
@@ -66,7 +66,7 @@ function Invoke-Chunk($chunkList) {
   return $false
 }
 $all = @(
-  # StatusTest (30)
+  # StatusTest (31)
   'connectSyncAdoptsRecording','connectSyncUnknownStateStaysUnknown','connectSyncIdleKeepsWatchMode',
   'firstLinkBeatsThenCode200Answers','hexWitnessPrintsHighOctets','cameraSideModeChangeFollowed',
   'modeEchoGateOpensOnOwnEchoOnly','holdEndOpensSettingsGateWithoutEcho','batteryPushCutGivesPowerOnly',
@@ -78,6 +78,7 @@ $all = @(
   'recordingFoundFromRestIsMarkedJoined','pureVideoStateTwentyFourCountsLikeRecording',
   'stopConfirmedByCameraPushCancelsTheStopRetry','exhaustedStopRetryNeverOverwritesObservedRest',
   'exhaustedStopRetryWithNoFactsRestoresRecording','exhaustedStartRetryKeepsFactsAndUndoesOptimistic',
+  'hostBellBooksDatesAndRingsThem',
   # X6MenuTest (16)
   'x6TableIsL2MinusBurst','x6ResTableIsLiteralInheritance','ucd2LegNamesOnlyStartStop','keepsUcd2OnlyAtX6Level',
   'dLegWrapsEveryLegacyFrameUnderDetectedX6','dForcedLevel3WrapsTheWholeLegacyFamily',

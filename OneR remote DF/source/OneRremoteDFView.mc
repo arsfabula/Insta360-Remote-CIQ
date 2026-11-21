@@ -7,7 +7,7 @@ using Toybox.System;
 using Toybox.Time;
 using BLEBarrel;
 
-const vNum = "0.9.29";
+const vNum = "0.9.31";
 var width as Lang.Number = 0;
 var height as Lang.Number = 0;
 var selectedFont as Graphics.FontDefinition = Graphics.FONT_LARGE;
@@ -25,6 +25,13 @@ class OneRremoteDFView extends WatchUi.DataField {
     // Note that compute() and onUpdate() are asynchronous, and there is no
     // guarantee that compute() will be called before onUpdate().
     function compute(info as Activity.Info) as Void {
+        // The bell of this host, first: the link's delayed actions are due on
+        // the data field's own rhythm (hostRingsTheBell, named at the app's
+        // onStart). This cycle runs even where the GPS legs below do not.
+        if (bleDevice != null) {
+        	bleDevice.pumpLinkAsks();
+        }
+
         // See Activity.Info in the documentation for available information.
         var GPSinfo = new Position.Info();
 

@@ -785,6 +785,22 @@ const ASK_MIN_MS = 50;
 
 var linkAlarm as Timer.Timer or Null = null;
 
+// A host that cannot count on the timer pool rings the bell itself. The pool
+// is shared per process and the free budget varies by device, firmware and
+// session - measured once at four objects in total (the widget's "Too Many
+// Timers" at RemoteView.onShow, 12 nov.). The store's Edge 840 report of
+// 20 nov. 2026 shows the floor: six Unhandled Exceptions at armLinkAlarm:2076,
+// the pool already spent when the link built its alarm. The very same 0.9.30
+// on the author's Edge Explore (21 nov.) built that Timer without a fuss and
+// ran the whole link - a field app cannot know which side of the ceiling it
+// is on, so the DF shape never asks. With this flag the link books its dates
+// exactly as above but never builds the Timer object; the host calls
+// pumpLinkAsks on its own once-a-second compute/update cycle and the five
+// delayed actions live on that rhythm - a jitter of one host cycle, and every
+// delay here is far above one second. The flag belongs to the host, not to
+// the link: the DF's app sets it once at onStart, before any ask can be armed.
+var hostRingsTheBell as Lang.Boolean = false;
+
 // The (:glance) that sat here (the third site of items 152/154/155) is
 // dropped by the decision of the 17 nov. 2026: what the boot process is
 // allowed to construct and what is annotated must match, and the boot process
@@ -2068,6 +2084,12 @@ class BleDevice extends BluetoothLowEnergy.BleDelegate {
 	// and so does the pump: the alarm is never armed for anything but the
 	// nearest date, which is what lets five delayed actions live in one object.
 	function armLinkAlarm() as Void {
+		if (hostRingsTheBell) {
+			// A bell-ringing host never owns the Timer object; the dates the
+			// callers just booked stand, and pumpLinkAsks rings them on the
+			// host's own cycle.
+			return;
+		}
 		var next = earliestAskDue();
 		if (linkAlarm == null) {
 			if (next == ASK_NONE) {
@@ -2132,6 +2154,16 @@ class BleDevice extends BluetoothLowEnergy.BleDelegate {
 			onStartDelay();
 		}
 		armLinkAlarm();
+	}
+
+	// The bell, by name, for a host that owns no timer pool: a data field
+	// (hostRingsTheBell, the Edge report of 20 nov.) calls this from its own
+	// once-a-second compute cycle, exactly as RemoteView.onTick drives the
+	// delegate's pumpDue (RemoteDelegate.mc names that one "Public, like
+	// pumpDue"). Calling it while nothing is due is inert: the five date
+	// checks above answer their own guard, and the re-arm is a no-op.
+	function pumpLinkAsks() as Void {
+		onLinkAlarm();
 	}
 
 	// The three first asks of a link, armed at the one place this link is

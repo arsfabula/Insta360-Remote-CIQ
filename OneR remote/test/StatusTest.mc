@@ -827,3 +827,35 @@ function exhaustedStartRetryKeepsFactsAndUndoesOptimistic(logger) {
 	logger.debug("keptRecording=" + keptRecording.toString() + " undone=" + undone.toString() + " kind=" + d.retryKind.toString());
 	return keptRecording && undone && d.retryKind == 0;
 }
+
+// The wall the real Edge named (ERA, 20 nov. 2026: Edge 840, data field, six
+// occurrences, Unhandled Exception at BLEBarrel.armLinkAlarm:2076 - the timer
+// pool was already spent at the moment the link built its alarm; the same
+// 0.9.30 on the author's Edge Explore, 21 nov., was granted the Timer and ran
+// the whole link, so the free budget varies by device and a field app cannot
+// know. The fix is never to ask: with hostRingsTheBell the dates book exactly
+// as before and no Timer object ever appears - the link answers to the host's
+// bell instead. The test host is an app with a pool, so this names the DF
+// shape, not the refusal; the refusal and the grant are both field evidence,
+// named above. The probe's own send stays guarded (device null here,
+// askAuthProbe's own line), so the witness is the pump clearing its due and
+// the alarm field staying null.
+(:test)
+function hostBellBooksDatesAndRingsThem(logger) {
+	var d = freshLink();
+	BLEBarrel.hostRingsTheBell = true;
+	d.scheduleAuthProbe();
+	var booked = BLEBarrel.authProbeDue != null;
+	var noAlarm = BLEBarrel.linkAlarm == null;   // the schedule armed no Timer
+	// The host's cycle rings: move the date into the past and call the bell.
+	BLEBarrel.authProbeDue = 0;
+	d.pumpLinkAsks();
+	var rang = BLEBarrel.authProbeDue == null;   // onAuthProbe ran, cleared its date
+	// The pump's re-arm stays a no-op: still no Timer object on the link.
+	d.pumpLinkAsks();
+	var stillNoAlarm = BLEBarrel.linkAlarm == null;
+	BLEBarrel.hostRingsTheBell = false;   // back to the app shape for the others
+	logger.debug("booked=" + booked + " noAlarm=" + noAlarm + " rang=" + rang +
+		" stillNoAlarm=" + stillNoAlarm);
+	return booked && noAlarm && rang && stillNoAlarm;
+}
