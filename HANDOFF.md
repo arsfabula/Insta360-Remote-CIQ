@@ -625,10 +625,15 @@ buffer: the interesting start is often already rotated out).
 
 Open on this branch:
 
-- Field evidence still missing (optional, not blocking): one bench scenario
-  that lets a real retry expire - power the X5 off a second after a start tap,
-  wait ten seconds, power on, let the link return. Exercises armRetry's due
-  path, not just its guard.
+- Field scenario run the same day, at the author's bench: the X5 powered off
+  mid-recording. Verdict no crash; the captured windows show the whole recovery
+  machinery working - rescan while the camera is off, a tap restarting a stopped
+  scan, discover + relink at power-on, open() + profile re-register on the
+  fresh link, no wedge anywhere. The expired retry's own frames are NOT in the
+  log, and that is a reading limit worth keeping: the on-device log is a ~150
+  line rotating buffer and the scan spam writes ~2 lines a second, so anything
+  worth reading must be exported within a minute or two of happening. Ask for
+  the export immediately after the moment of interest.
 - Published the same day (the author's signed .iq to the portal); the tag
   `df-0.9.31` names the committed state, same convention as v1.0.0/v1.0.1.
   Known mismatch, recorded on purpose: the published build also carried the
